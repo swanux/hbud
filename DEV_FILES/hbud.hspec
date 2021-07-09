@@ -1,0 +1,49 @@
+[platform]
+os = debian
+arch = amd64
+
+[packager]
+name = Dániel Kolozsi
+email = dani@kolozsi.net
+
+[general_details]
+pkgname = hbud
+pretty_name = HBud
+licensev = 0
+version = 0.1.1
+section = 18
+priority = 0
+depends = ${misc:Depends}
+	${python3:Depends}
+	python3-gi
+	python3-mutagen
+	python3-gst-1.0
+build_deps = debhelper (>= 11)
+	dh-python
+	python3
+	python3-all
+homepage = https://github.com/swanux/hbud
+
+[description]
+short = Simple music / video player and karaoke app written in Python and GTK - Because why not
+longue = Simple music / video player and karaoke app written in Python and GTK - Because why not
+
+[misc]
+rules = 0
+min_pyver = 3.4
+postinst = ln -s /usr/share/hbud/HBud.py /usr/bin/hbud || echo "No need for it"
+postrm = rm /usr/bin/hbud || echo "No need for it2"
+
+[changelog]
+target = focal
+urgency = 1
+changes = Initial release
+
+[data]
+root = /home/daniel/GitRepos/hbud/DEV_FILES
+program = icons/
+	hbud.glade
+	HBud.py
+	tools/
+entry = hbud.desktop
+

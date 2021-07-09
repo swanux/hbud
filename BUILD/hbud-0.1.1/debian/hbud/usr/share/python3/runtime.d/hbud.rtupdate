@@ -1,0 +1,7 @@
+#! /bin/sh
+set -e
+
+if [ "$1" = rtupdate ]; then
+	py3clean -p hbud /usr/share/hbud
+	py3compile -p hbud -V 3.4- /usr/share/hbud
+fi
