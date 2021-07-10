@@ -33,12 +33,15 @@ class GUI:
         self.relPos = 0
         self.tnum = 0
         self.player = ""
+        self.needSub = False
         self.nowIn = ""
         self.fulle = False
         self.resete = False
         self.hardReset = False
         self.size = 35000
         self.size2 = 15000
+        self.size3 = 20250
+        self.size4 = 30
         self.globSeek = True
         self.seekBack = False
         self.sub = self.builder.get_object('sub')
@@ -76,6 +79,7 @@ class GUI:
         self.scrollable_treelist.add(self.tree)
         self.playlistBox.pack_start(self.scrollable_treelist, True, True, 0)
         self.playing = False
+        self.header = self.builder.get_object("header")
         self.label1 = self.builder.get_object('label1')
         self.label2 = self.builder.get_object('label2')
         self.label3 = self.builder.get_object('label3')
@@ -90,6 +94,8 @@ class GUI:
         self.strBut = self.builder.get_object("strBut")
         self.mainStack = self.builder.get_object("mainStack")
         self.strBox= self.builder.get_object("strBox")
+        self.strOverlay = self.builder.get_object("strOverlay")
+        self.theTitle = self.builder.get_object("theTitle")
         self.res = False
         self.opener = self.builder.get_object('openFolderBut')
         self.window = self.builder.get_object('main')
@@ -98,6 +104,7 @@ class GUI:
         else:
             self.window.set_title(version)
         self.sub.connect('size-allocate', self._on_size_allocated)
+        self.window.connect('size-allocate', self._on_size_allocated0)
         # Display the program
         self.window.show_all()
         self.createPipeline("local")
@@ -119,8 +126,11 @@ class GUI:
             playerFactory = self.videoPipe.get_factory()
             gtksink = playerFactory.make('gtksink')
             self.videoPipe.set_property("video-sink", gtksink)
-            self.strBox.pack_start(gtksink.props.widget, True, True, 0)
+            gtksink.props.widget.set_valign(Gtk.Align.FILL)
+            gtksink.props.widget.set_halign(Gtk.Align.FILL)
+            self.strOverlay.add(gtksink.props.widget)
             gtksink.props.widget.show()
+            self.strOverlay.add_overlay(self.theTitle)
             bus = self.videoPipe.get_bus()
             bus.add_signal_watch()
             bus.connect("message", self.on_message)
@@ -146,6 +156,7 @@ class GUI:
             if self.nowIn == "video" and self.playing == True:
                 self.on_playBut_clicked("xy")
             self.useMode = "audio"
+            self.needSub = False
             GLib.idle_add(self.strBut.set_active, False)
         elif self.mainStack.get_visible_child() == self.playlistBox:
             GLib.idle_add(button.set_active, True)
@@ -440,8 +451,8 @@ class GUI:
         self.tree.set_cursor(self.relPos)
         self.player.set_state(Gst.State.PLAYING)
         self.plaicon.set_from_icon_name("media-playback-pause", Gtk.IconSize.BUTTON)
-        GLib.idle_add(250, self.updateSlider)
-        GLib.idle_add(80, self.updatePos)
+        GLib.idle_add(self.updateSlider)
+        GLib.idle_add(self.updatePos)
         # GLib.timeout_add(250, self.updateSlider)
         # GLib.timeout_add(80, self.updatePos)
 
@@ -520,12 +531,25 @@ class GUI:
         self.res = True
         self.playing = True
         self.position = 0
+        filename = self.url.replace("file://", "").split("/")[-1]
         if self.useMode == "audio":
             GLib.idle_add(self.tree.set_cursor, self.relPos)
+        else:
+            tmpdbnow = os.listdir(self.url.replace("file://", "").replace(filename, ""))
+            if os.path.splitext(filename)[0]+".srt" in tmpdbnow:
+                print("Subtitle found!")
+                with open (os.path.splitext(self.url.replace("file://", ""))[0]+".srt", 'r') as subfile:
+                    presub = subfile.read()
+                subtitle_gen = srt.parse(presub)
+                subtitle = list(subtitle_gen)
+                self.needSub = True
+                subs = futures.ThreadPoolExecutor(max_workers=4)
+                subs.submit(self.subShow, subtitle)
         if misc != "continue":
             self.player.set_state(Gst.State.NULL)
             self.player.set_property("uri", self.url)
         self.player.set_state(Gst.State.PLAYING)
+        GLib.idle_add(self.header.set_subtitle, filename)
         self.plaicon.set_from_icon_name("media-playback-pause", Gtk.IconSize.BUTTON)
         GLib.timeout_add(250, self.updateSlider)
         GLib.timeout_add(80, self.updatePos)
@@ -536,7 +560,8 @@ class GUI:
     def on_playBut_clicked(self, button):
         if self.nowIn == self.useMode or self.nowIn == "" or "/" in button:
             if not self.playing:
-                if not self.res or "/" in button:
+                print("HEY")
+                if not self.res or "/" in str(button):
                     self.play(button)
                 else:
                     self.resume()
@@ -564,6 +589,7 @@ class GUI:
                 pass
             self.force = True
             self.stopKar = True
+            self.needSub = False
             raise SystemExit
         elif res == Gtk.ResponseType.NO:
             print('No pressed')
@@ -626,9 +652,17 @@ class GUI:
             print (f"Error: {err}", debug)
 
     def _on_size_allocated(self, widget, alloc):
+        time.sleep(0.01)
         x, y = self.sub.get_size()
         self.size = 50*x
         self.size2 = 21.4285714*x
+    
+    def _on_size_allocated0(self, widget, alloc):
+        time.sleep(0.01)
+        if self.needSub == True:
+            x, y = self.window.get_size()
+            self.size3 = 30*y
+            self.size4 = 0.06667*y
 
     def on_karaoke_activate(self, button):
         if self.nowIn == "audio":
@@ -644,7 +678,7 @@ class GUI:
                         x = i
                         dbnow.append(f"{self.folderPath}/{x}")
                 self.sub.set_title(f'{track} - {artist}')
-                tmp, ext = os.path.splitext(self.playlist[self.tnum]["uri"])
+                tmp = os.path.splitext(self.playlist[self.tnum]["uri"])[0]
                 print(dbnow)
                 print(tmp)
                 if f"{tmp}.srt" not in dbnow:
@@ -713,6 +747,20 @@ class GUI:
         if event.changed_mask & Gdk.WindowState.FULLSCREEN:
             self.fulle = bool(event.new_window_state & Gdk.WindowState.FULLSCREEN)
             print(self.fulle)
+
+    def subShow(self, subtitle):
+        while self.needSub == True:
+            time.sleep(0.001)
+            for line in subtitle:
+                if self.position >= line.start.total_seconds() and self.position <= line.end.total_seconds():
+                    GLib.idle_add(self.theTitle.set_markup, f"<span size='{int(self.size3)}'>{line.content}</span>")
+                    self.theTitle.set_margin_bottom(self.size4)
+                    GLib.idle_add(self.theTitle.show)
+                    while self.needSub == True and self.position <= line.end.total_seconds():
+                        time.sleep(0.001)
+                        pass
+                    GLib.idle_add(self.theTitle.hide)
+                    GLib.idle_add(self.theTitle.set_label, "")
 
     def start_karaoke(self, sfile):
         print('HEY')

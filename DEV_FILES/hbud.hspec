@@ -16,7 +16,6 @@ priority = 0
 depends = ${misc:Depends}
 	${python3:Depends}
 	python3-gi
-	python3-mutagen
 	python3-gst-1.0
 build_deps = debhelper (>= 11)
 	dh-python

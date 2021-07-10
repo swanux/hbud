@@ -38,36 +38,6 @@ Author: Swanux
     <property name="icon_name">audio-x-generic</property>
     <property name="use_fallback">True</property>
   </object>
-  <object class="GtkImage" id="next">
-    <property name="visible">True</property>
-    <property name="can_focus">False</property>
-    <property name="icon_name">media-skip-forward</property>
-    <property name="use_fallback">True</property>
-  </object>
-  <object class="GtkImage" id="opFol">
-    <property name="visible">True</property>
-    <property name="can_focus">False</property>
-    <property name="icon_name">folder-open</property>
-    <property name="use_fallback">True</property>
-  </object>
-  <object class="GtkImage" id="play">
-    <property name="visible">True</property>
-    <property name="can_focus">False</property>
-    <property name="icon_name">media-playback-start</property>
-    <property name="use_fallback">True</property>
-  </object>
-  <object class="GtkImage" id="previous">
-    <property name="visible">True</property>
-    <property name="can_focus">False</property>
-    <property name="icon_name">media-skip-backward</property>
-    <property name="use_fallback">True</property>
-  </object>
-  <object class="GtkImage" id="shuff">
-    <property name="visible">True</property>
-    <property name="can_focus">False</property>
-    <property name="icon_name">media-playlist-shuffle</property>
-    <property name="use_fallback">True</property>
-  </object>
   <object class="GtkWindow" id="main">
     <property name="width_request">350</property>
     <property name="height_request">225</property>
@@ -158,7 +128,20 @@ Author: Swanux
                 <property name="can_focus">False</property>
                 <property name="orientation">vertical</property>
                 <child>
-                  <placeholder/>
+                  <object class="GtkOverlay" id="strOverlay">
+                    <property name="visible">True</property>
+                    <property name="can_focus">False</property>
+                    <property name="hexpand">True</property>
+                    <property name="vexpand">True</property>
+                    <child>
+                      <placeholder/>
+                    </child>
+                  </object>
+                  <packing>
+                    <property name="expand">False</property>
+                    <property name="fill">True</property>
+                    <property name="position">0</property>
+                  </packing>
                 </child>
               </object>
               <packing>
@@ -179,6 +162,8 @@ Author: Swanux
             <property name="height_request">80</property>
             <property name="visible">True</property>
             <property name="can_focus">False</property>
+            <property name="margin_left">5</property>
+            <property name="margin_right">5</property>
             <property name="spacing">5</property>
             <signal name="enter-notify-event" handler="mouse_enter" swapped="no"/>
             <signal name="leave-notify-event" handler="mouse_leave" swapped="no"/>
@@ -188,8 +173,6 @@ Author: Swanux
                 <property name="height_request">80</property>
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
-                <property name="margin_left">3</property>
-                <property name="margin_right">3</property>
                 <property name="margin_top">3</property>
                 <property name="margin_bottom">3</property>
                 <property name="stock">gtk-missing-image</property>
@@ -244,7 +227,6 @@ Author: Swanux
                         <property name="can_focus">False</property>
                         <property name="receives_default">True</property>
                         <property name="valign">end</property>
-                        <property name="margin_left">3</property>
                         <property name="margin_top">7</property>
                         <property name="hexpand">True</property>
                         <property name="image">opFol</property>
@@ -333,7 +315,6 @@ Author: Swanux
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
                         <property name="receives_default">True</property>
-                        <property name="margin_right">5</property>
                         <property name="margin_top">7</property>
                         <property name="hexpand">True</property>
                         <property name="image">kar</property>
@@ -673,5 +654,57 @@ Author: Swanux
         </child>
       </object>
     </child>
+  </object>
+  <object class="GtkImage" id="next">
+    <property name="visible">True</property>
+    <property name="can_focus">False</property>
+    <property name="icon_name">media-skip-forward</property>
+    <property name="use_fallback">True</property>
+  </object>
+  <object class="GtkImage" id="opFol">
+    <property name="visible">True</property>
+    <property name="can_focus">False</property>
+    <property name="icon_name">folder-open</property>
+    <property name="use_fallback">True</property>
+  </object>
+  <object class="GtkImage" id="play">
+    <property name="visible">True</property>
+    <property name="can_focus">False</property>
+    <property name="icon_name">media-playback-start</property>
+    <property name="use_fallback">True</property>
+  </object>
+  <object class="GtkImage" id="previous">
+    <property name="visible">True</property>
+    <property name="can_focus">False</property>
+    <property name="icon_name">media-skip-backward</property>
+    <property name="use_fallback">True</property>
+  </object>
+  <object class="GtkImage" id="shuff">
+    <property name="visible">True</property>
+    <property name="can_focus">False</property>
+    <property name="icon_name">media-playlist-shuffle</property>
+    <property name="use_fallback">True</property>
+  </object>
+  <object class="GtkWindow" id="subtit">
+    <property name="can_focus">False</property>
+    <child type="titlebar">
+      <placeholder/>
+    </child>
+    <child>
+      <placeholder/>
+    </child>
+  </object>
+  <object class="GtkLabel" id="theTitle">
+    <property name="can_focus">False</property>
+    <property name="halign">center</property>
+    <property name="valign">end</property>
+    <property name="margin_bottom">30</property>
+    <property name="hexpand">False</property>
+    <property name="vexpand">False</property>
+    <property name="label" translatable="yes">label</property>
+    <attributes>
+      <attribute name="weight" value="ultraheavy"/>
+      <attribute name="foreground" value="#ffffffffffff"/>
+    </attributes>
   </object>
 </interface>
