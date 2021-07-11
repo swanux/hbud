@@ -1,9 +1,9 @@
 Package: hbud
-Version: 0.1.5.3-1
+Version: 0.1.5.4-1
 Architecture: amd64
 Maintainer: Dániel Kolozsi <dani@kolozsi.net>
 Installed-Size: 252
-Depends: python3:any (>= 3.4~), python3-gi, python3-gst-1.0, python3-mutagen, gstreamer1.0-alsa, gstreamer1.0-plugins-base-apps, gstreamer1.0-plugins-good, gstreamer1.0-gl, gstreamer1.0-plugins-ugly, gstreamer1.0-gtk3, gstreamer1.0-pulseaudio, gstreamer1.0-libav, gstreamer1.0-vaapi, gstreamer1.0-plugins-bad
+Depends: python3:any (>= 3.4~), python3-gi, python3-gst-1.0, python3-mutagen, gstreamer1.0-libav, gstreamer1.0-plugins-bad, gstreamer1.0-plugins-ugly, gstreamer1.0-vaapi, libavcodec-extra
 Section: sound
 Priority: optional
 Homepage: <https://github.com/swanux/hbud>

@@ -1,11 +1,11 @@
 abe5f27e12e7b502a26846159b47f8a0  usr/share/applications/hbud.desktop
-5fbbfe71d1c486741a6412bc138552cd  usr/share/doc/hbud/changelog.Debian.gz
+a15767473a09a26912ee99c76c008adb  usr/share/doc/hbud/changelog.Debian.gz
 f634012b6cb80cd56aefc0f896c8384a  usr/share/doc/hbud/copyright
 d957993d14456e725431e7f9584a5483  usr/share/hbud/HBud.py
 6198422f0050f3eb622a0b016e80d3e8  usr/share/hbud/hbud.glade
 df829726eab2481eb8fd7692ffec608a  usr/share/hbud/icons/hbud.png
 ad284b66a188056999340174077328a8  usr/share/hbud/icons/hbud_64.png
-cce56d22cec358fc5a36553d8c29ee42  usr/share/hbud/icons/track.png
+2befab0959544f652c7a7bcb266aae8d  usr/share/hbud/icons/track.png
 4478917071f8ca733ba98f0f426a8ce2  usr/share/hbud/tools/mediafile.py
 78bc770809c3dac09d0680abf4a95fb3  usr/share/hbud/tools/srt.py
 d41d8cd98f00b204e9800998ecf8427e  usr/share/hbud/tools/srt_tools/__init__.py
