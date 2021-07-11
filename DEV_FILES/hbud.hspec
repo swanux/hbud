@@ -10,7 +10,7 @@ email = dani@kolozsi.net
 pkgname = hbud
 pretty_name = HBud
 licensev = 0
-version = 0.1.5.2
+version = 0.1.5.3
 section = 18
 priority = 0
 depends = ${misc:Depends}
@@ -18,6 +18,16 @@ depends = ${misc:Depends}
 	python3-gi
 	python3-gst-1.0
 	python3-mutagen
+	gstreamer1.0-alsa
+	gstreamer1.0-plugins-base-apps
+	gstreamer1.0-plugins-good
+	gstreamer1.0-gl
+	gstreamer1.0-plugins-ugly
+	gstreamer1.0-gtk3
+	gstreamer1.0-pulseaudio
+	gstreamer1.0-libav
+	gstreamer1.0-vaapi
+	gstreamer1.0-plugins-bad
 build_deps = debhelper (>= 11)
 	dh-python
 	python3
