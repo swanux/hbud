@@ -10,7 +10,7 @@ email = dani@kolozsi.net
 pkgname = hbud
 pretty_name = HBud
 licensev = 0
-version = 0.1.1
+version = 0.1.5
 section = 18
 priority = 0
 depends = ${misc:Depends}
@@ -36,7 +36,7 @@ postrm = rm /usr/bin/hbud || echo "No need for it2"
 [changelog]
 target = focal
 urgency = 1
-changes = Initial release
+changes = A shitload of bugfixes and new features
 
 [data]
 root = /home/daniel/GitRepos/hbud/DEV_FILES
