@@ -458,7 +458,7 @@ class GUI:
         self.res = False
         self.playing = False
         self.label.set_text("0:00")
-        self.plaicon.set_from_icon_name("media-playback-start", Gtk.IconSize.BUTTON)
+        GLib.idle_add(self.plaicon.set_from_icon_name, "media-playback-start", Gtk.IconSize.BUTTON)
         self.slider.set_value(0)
         self.player.set_state(Gst.State.NULL)
 
@@ -471,7 +471,7 @@ class GUI:
         print("Pause")
         self.playing = False
         self.tree.set_cursor(self.relPos)
-        self.plaicon.set_from_icon_name("media-playback-start", Gtk.IconSize.BUTTON)
+        GLib.idle_add(self.plaicon.set_from_icon_name, "media-playback-start", Gtk.IconSize.BUTTON)
         self.player.set_state(Gst.State.PAUSED)
     
     def resume(self):
@@ -479,7 +479,7 @@ class GUI:
         self.playing = True
         self.tree.set_cursor(self.relPos)
         self.player.set_state(Gst.State.PLAYING)
-        self.plaicon.set_from_icon_name("media-playback-pause", Gtk.IconSize.BUTTON)
+        GLib.idle_add(self.plaicon.set_from_icon_name, "media-playback-pause", Gtk.IconSize.BUTTON)
         GLib.idle_add(self.updateSlider)
         GLib.idle_add(self.updatePos)
         # GLib.timeout_add(250, self.updateSlider)
@@ -579,7 +579,7 @@ class GUI:
             self.player.set_property("uri", self.url)
         self.player.set_state(Gst.State.PLAYING)
         GLib.idle_add(self.header.set_subtitle, filename)
-        self.plaicon.set_from_icon_name("media-playback-pause", Gtk.IconSize.BUTTON)
+        GLib.idle_add(self.plaicon.set_from_icon_name, "media-playback-pause", Gtk.IconSize.BUTTON)
         GLib.timeout_add(250, self.updateSlider)
         GLib.timeout_add(80, self.updatePos)
         if self.useMode == "audio":
