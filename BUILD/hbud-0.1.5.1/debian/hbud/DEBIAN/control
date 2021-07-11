@@ -1,0 +1,11 @@
+Package: hbud
+Version: 0.1.5.1-1
+Architecture: amd64
+Maintainer: Dániel Kolozsi <dani@kolozsi.net>
+Installed-Size: 252
+Depends: python3:any (>= 3.4~), python3-gi, python3-gst-1.0, python3-mutagen
+Section: sound
+Priority: optional
+Homepage: <https://github.com/swanux/hbud>
+Description: Simple music / video player and karaoke app written in Python and GTK - Because why not
+ Simple music / video player and karaoke app written in Python and GTK - Because why not

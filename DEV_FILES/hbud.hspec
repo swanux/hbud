@@ -10,13 +10,14 @@ email = dani@kolozsi.net
 pkgname = hbud
 pretty_name = HBud
 licensev = 0
-version = 0.1.5
+version = 0.1.5.1
 section = 18
 priority = 0
 depends = ${misc:Depends}
 	${python3:Depends}
 	python3-gi
 	python3-gst-1.0
+	python3-mutagen
 build_deps = debhelper (>= 11)
 	dh-python
 	python3
@@ -36,7 +37,7 @@ postrm = rm /usr/bin/hbud || echo "No need for it2"
 [changelog]
 target = focal
 urgency = 1
-changes = A shitload of bugfixes and new features
+changes = Hotfix
 
 [data]
 root = /home/daniel/GitRepos/hbud/DEV_FILES
