@@ -10,14 +10,12 @@ email = dani@kolozsi.net
 pkgname = hbud
 pretty_name = HBud
 licensev = 0
-version = 0.1.5.4
+version = 0.1.5.5
 section = 18
 priority = 0
 depends = ${misc:Depends}
 	${python3:Depends}
 	python3-gi
-	python3-gst-1.0
-	python3-mutagen
 	gstreamer1.0-libav
 	gstreamer1.0-plugins-bad
 	gstreamer1.0-plugins-ugly
