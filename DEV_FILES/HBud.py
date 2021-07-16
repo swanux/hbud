@@ -241,7 +241,7 @@ class GUI:
                 al.append(playlistLoc[i]["album"])
                 y.append(playlistLoc[i]["year"])
                 il.append(i)
-            doapp()
+            GLib.idle_add(doapp)
             if not again:
                 print("First time")
                 for i, column_title in enumerate(["Title", "Artist", "Album", "Year", "ID"]):
@@ -264,7 +264,6 @@ class GUI:
                     column.set_sort_indicator(False)
                     self.tree.append_column(column)
             self.playlistPlayer = True
-            self.mainStack.set_visible_child(self.playlistBox)
 
     def loader(self, path):
         pltmp = []
