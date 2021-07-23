@@ -1,0 +1,3 @@
+#!/bin/bash +e
+
+ln -s /usr/share/hbud/HBud.bin /usr/bin/hbud || echo "No need for it"

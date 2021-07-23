@@ -156,6 +156,34 @@ Author: Swanux
                 <property name="position">2</property>
               </packing>
             </child>
+            <child>
+              <object class="GtkLabel" id="sub_lab">
+                <property name="visible">True</property>
+                <property name="can_focus">False</property>
+                <property name="margin_right">5</property>
+                <property name="label" translatable="yes">Subtitles</property>
+                <attributes>
+                  <attribute name="weight" value="bold"/>
+                </attributes>
+              </object>
+              <packing>
+                <property name="expand">False</property>
+                <property name="fill">True</property>
+                <property name="position">3</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkSwitch" id="sub_check">
+                <property name="visible">True</property>
+                <property name="can_focus">False</property>
+                <signal name="state-set" handler="on_act_sub" swapped="no"/>
+              </object>
+              <packing>
+                <property name="expand">False</property>
+                <property name="fill">True</property>
+                <property name="position">4</property>
+              </packing>
+            </child>
           </object>
         </child>
       </object>
@@ -325,7 +353,7 @@ Author: Swanux
                                 <property name="visible">True</property>
                                 <property name="can_focus">False</property>
                                 <property name="label" translatable="yes">Note:
-- These values are relative values
+- These values are relative values, they automatically adjust to the current window size
 - New settings take effect immediately</property>
                                 <property name="wrap">True</property>
                                 <attributes>
@@ -414,14 +442,14 @@ Author: Swanux
                                 <property name="valign">center</property>
                                 <property name="hexpand">False</property>
                                 <property name="vexpand">False</property>
-                                <property name="label" translatable="yes">v0.1 | Snapshot 5
+                                <property name="label" translatable="yes">v0.1 | Snapshot 6
 
 Ridiculously simple audio and video player
 
 FAQ :
 
-- How can I load subtitles?
-+ The same way as you can lyrics : place the .srt file alongside the media file with the same name</property>
+- How can I load subtitles / lyrics?
++ Place the .srt file alongside the audio / video file with the same name</property>
                                 <property name="justify">center</property>
                                 <property name="wrap">True</property>
                                 <attributes>
@@ -440,7 +468,7 @@ FAQ :
                                 <property name="visible">True</property>
                                 <property name="can_focus">False</property>
                                 <property name="halign">center</property>
-                                <property name="valign">center</property>
+                                <property name="valign">end</property>
                                 <property name="margin_top">20</property>
                                 <property name="hexpand">False</property>
                                 <property name="vexpand">False</property>
@@ -745,6 +773,104 @@ Suite 330, Boston, MA  02111-1307  USA</property>
       </object>
     </child>
   </object>
+  <object class="GtkWindow" id="nosub">
+    <property name="width_request">400</property>
+    <property name="height_request">200</property>
+    <property name="can_focus">False</property>
+    <property name="skip_taskbar_hint">True</property>
+    <property name="attached_to">main</property>
+    <signal name="delete-event" handler="nosub_hide" swapped="no"/>
+    <child type="titlebar">
+      <placeholder/>
+    </child>
+    <child>
+      <object class="GtkScrolledWindow" id="scroll3">
+        <property name="visible">True</property>
+        <property name="can_focus">True</property>
+        <property name="shadow_type">in</property>
+        <child>
+          <object class="GtkViewport" id="view3">
+            <property name="visible">True</property>
+            <property name="can_focus">False</property>
+            <child>
+              <object class="GtkBox" id="box3">
+                <property name="visible">True</property>
+                <property name="can_focus">False</property>
+                <property name="homogeneous">True</property>
+                <child>
+                  <object class="GtkLabel" id="nolab">
+                    <property name="visible">True</property>
+                    <property name="can_focus">False</property>
+                    <property name="margin_left">30</property>
+                    <property name="margin_right">10</property>
+                    <property name="margin_top">20</property>
+                    <property name="margin_bottom">20</property>
+                    <property name="label" translatable="yes">Can't load subtitle. Please place the subtitle (.srt) file alongside the video file, with the same name as the video file.</property>
+                    <property name="justify">center</property>
+                    <property name="wrap">True</property>
+                    <attributes>
+                      <attribute name="weight" value="bold"/>
+                      <attribute name="size" value="12000"/>
+                    </attributes>
+                  </object>
+                  <packing>
+                    <property name="expand">False</property>
+                    <property name="fill">True</property>
+                    <property name="position">0</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkBox" id="box2">
+                    <property name="visible">True</property>
+                    <property name="can_focus">False</property>
+                    <property name="margin_top">30</property>
+                    <property name="orientation">vertical</property>
+                    <child>
+                      <object class="GtkLinkButton" id="sublink">
+                        <property name="label" translatable="yes">button</property>
+                        <property name="visible">True</property>
+                        <property name="can_focus">False</property>
+                        <property name="focus_on_click">False</property>
+                        <property name="receives_default">True</property>
+                        <property name="relief">none</property>
+                        <property name="uri">https://subscene.com/</property>
+                      </object>
+                      <packing>
+                        <property name="expand">False</property>
+                        <property name="fill">True</property>
+                        <property name="position">0</property>
+                      </packing>
+                    </child>
+                    <child>
+                      <object class="GtkLinkButton" id="oplink">
+                        <property name="label" translatable="yes">button</property>
+                        <property name="visible">True</property>
+                        <property name="can_focus">False</property>
+                        <property name="focus_on_click">False</property>
+                        <property name="receives_default">True</property>
+                        <property name="relief">none</property>
+                        <property name="uri">https://www.opensubtitles.org/</property>
+                      </object>
+                      <packing>
+                        <property name="expand">False</property>
+                        <property name="fill">True</property>
+                        <property name="position">1</property>
+                      </packing>
+                    </child>
+                  </object>
+                  <packing>
+                    <property name="expand">False</property>
+                    <property name="fill">True</property>
+                    <property name="position">1</property>
+                  </packing>
+                </child>
+              </object>
+            </child>
+          </object>
+        </child>
+      </object>
+    </child>
+  </object>
   <object class="GtkWindow" id="sub">
     <property name="can_focus">False</property>
     <property name="default_width">700</property>
@@ -841,11 +967,11 @@ Suite 330, Boston, MA  02111-1307  USA</property>
   </object>
   <object class="GtkWindow" id="sub2">
     <property name="width_request">400</property>
-    <property name="height_request">250</property>
+    <property name="height_request">320</property>
     <property name="can_focus">False</property>
     <property name="window_position">center-on-parent</property>
     <property name="default_width">400</property>
-    <property name="default_height">250</property>
+    <property name="default_height">320</property>
     <property name="destroy_with_parent">True</property>
     <property name="skip_taskbar_hint">True</property>
     <property name="urgency_hint">True</property>
@@ -986,40 +1112,6 @@ Suite 330, Boston, MA  02111-1307  USA</property>
                   </packing>
                 </child>
                 <child>
-                  <object class="GtkButton" id="canBut">
-                    <property name="label" translatable="yes">Cancel</property>
-                    <property name="visible">True</property>
-                    <property name="can_focus">False</property>
-                    <property name="receives_default">True</property>
-                    <property name="halign">center</property>
-                    <property name="valign">center</property>
-                    <property name="hexpand">True</property>
-                    <property name="vexpand">True</property>
-                    <signal name="clicked" handler="sub2_hide" swapped="no"/>
-                  </object>
-                  <packing>
-                    <property name="left_attach">0</property>
-                    <property name="top_attach">4</property>
-                  </packing>
-                </child>
-                <child>
-                  <object class="GtkButton" id="savBut">
-                    <property name="label" translatable="yes">Save</property>
-                    <property name="visible">True</property>
-                    <property name="can_focus">False</property>
-                    <property name="receives_default">True</property>
-                    <property name="halign">center</property>
-                    <property name="valign">center</property>
-                    <property name="hexpand">True</property>
-                    <property name="vexpand">True</property>
-                    <signal name="clicked" handler="on_save" swapped="no"/>
-                  </object>
-                  <packing>
-                    <property name="left_attach">1</property>
-                    <property name="top_attach">4</property>
-                  </packing>
-                </child>
-                <child>
                   <object class="GtkSpinButton" id="yrEnt">
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
@@ -1040,6 +1132,73 @@ Suite 330, Boston, MA  02111-1307  USA</property>
                     <property name="top_attach">0</property>
                   </packing>
                 </child>
+                <child>
+                  <object class="GtkButton" id="savBut">
+                    <property name="label" translatable="yes">Save</property>
+                    <property name="visible">True</property>
+                    <property name="can_focus">False</property>
+                    <property name="receives_default">True</property>
+                    <property name="halign">center</property>
+                    <property name="valign">center</property>
+                    <property name="hexpand">True</property>
+                    <property name="vexpand">True</property>
+                    <signal name="clicked" handler="on_save" swapped="no"/>
+                  </object>
+                  <packing>
+                    <property name="left_attach">1</property>
+                    <property name="top_attach">5</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkButton" id="canBut">
+                    <property name="label" translatable="yes">Cancel</property>
+                    <property name="visible">True</property>
+                    <property name="can_focus">False</property>
+                    <property name="receives_default">True</property>
+                    <property name="halign">center</property>
+                    <property name="valign">center</property>
+                    <property name="hexpand">True</property>
+                    <property name="vexpand">True</property>
+                    <signal name="clicked" handler="sub2_hide" swapped="no"/>
+                  </object>
+                  <packing>
+                    <property name="left_attach">0</property>
+                    <property name="top_attach">5</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkLabel" id="iLab">
+                    <property name="visible">True</property>
+                    <property name="can_focus">False</property>
+                    <property name="label" translatable="yes">Cover art :</property>
+                    <property name="wrap">True</property>
+                    <property name="ellipsize">end</property>
+                    <attributes>
+                      <attribute name="weight" value="bold"/>
+                    </attributes>
+                  </object>
+                  <packing>
+                    <property name="left_attach">0</property>
+                    <property name="top_attach">4</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkFileChooserButton" id="iChoser">
+                    <property name="visible">True</property>
+                    <property name="can_focus">False</property>
+                    <property name="focus_on_click">False</property>
+                    <property name="valign">center</property>
+                    <property name="margin_right">5</property>
+                    <property name="hexpand">False</property>
+                    <property name="vexpand">False</property>
+                    <property name="create_folders">False</property>
+                    <property name="title" translatable="yes"/>
+                  </object>
+                  <packing>
+                    <property name="left_attach">1</property>
+                    <property name="top_attach">4</property>
+                  </packing>
+                </child>
               </object>
             </child>
           </object>
@@ -1047,26 +1206,13 @@ Suite 330, Boston, MA  02111-1307  USA</property>
       </object>
     </child>
   </object>
-  <object class="GtkWindow" id="subtit">
-    <property name="can_focus">False</property>
-    <child type="titlebar">
-      <placeholder/>
-    </child>
-    <child>
-      <placeholder/>
-    </child>
-  </object>
   <object class="GtkLabel" id="theTitle">
     <property name="can_focus">False</property>
-    <property name="halign">center</property>
     <property name="valign">end</property>
-    <property name="margin_bottom">30</property>
-    <property name="hexpand">False</property>
     <property name="vexpand">False</property>
     <property name="label" translatable="yes">label</property>
     <attributes>
       <attribute name="weight" value="ultraheavy"/>
-      <attribute name="foreground" value="#ffffffffffff"/>
     </attributes>
   </object>
 </interface>

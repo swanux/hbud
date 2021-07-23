@@ -1,22 +1,10 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-import os, gi, dbus, random, dbus.mainloop.glib, dbus.service, time, sys
-if os.path.exists('/home/daniel/GitRepos/hbud'):
-    fdir = "/home/daniel/GitRepos/hbud/DEV_FILES/"
-    print(fdir)
-    os.chdir(fdir)
-    print('Running in development mode.')
-else:
-    fdir = "/usr/share/hbud/"
-    print(fdir)
-    os.chdir(fdir)
-    print('Running in production mode.')
-sys.path.append("tools")
+import os, gi, dbus, random, dbus.mainloop.glib, dbus.service, time, sys, srt
 from concurrent import futures
 from configparser import ConfigParser
 from mediafile import MediaFile
-import srt
 gi.require_version('Gtk', '3.0')
 gi.require_version('Gst', '1.0')
 from gi.repository import Gtk, Gst, GLib, GdkPixbuf, Gdk
@@ -34,7 +22,7 @@ class GUI:
             print(self.clickedE)
         except:
             self.clickedE = False
-        version = 'HBud Alpha 0.1-S5'
+        version = 'HBud Alpha 0.1-S6'
         print('Init here')
         self.builder = Gtk.Builder()
         self.builder.add_from_file(UI_FILE)
@@ -114,6 +102,20 @@ class GUI:
         self.infBook = self.builder.get_object("infBook")
         self.subSpin = self.builder.get_object("subSpin")
         self.subMarSpin = self.builder.get_object("subSpin1")
+        self.sublab = self.builder.get_object("sub_lab")
+        self.subcheck = self.builder.get_object("sub_check")
+        self.nosub = self.builder.get_object("nosub")
+        oplink = self.builder.get_object("oplink")
+        sublink = self.builder.get_object("sublink")
+        self.iChoser = self.builder.get_object("iChoser")
+        image_filter=Gtk.FileFilter()
+        image_filter.set_name("Image files")
+        image_filter.add_mime_type("image/*")
+        self.iChoser.add_filter(image_filter)
+        GLib.idle_add(self.subcheck.hide)
+        GLib.idle_add(self.sublab.hide)
+        GLib.idle_add(oplink.set_label, "Visit OpenSubtitles")
+        GLib.idle_add(sublink.set_label, "Visit Subscene")
         self.subSpin.set_value(self.sSize)
         self.subMarSpin.set_value(self.sMarg)
         self.res = False
@@ -174,6 +176,8 @@ class GUI:
             GLib.idle_add(self.exBot.show)
             GLib.idle_add(self.trackCover.show)
             GLib.idle_add(self.shuffBut.show)
+            GLib.idle_add(self.sublab.hide)
+            GLib.idle_add(self.subcheck.hide)
             GLib.idle_add(self.karaokeBut.set_from_icon_name, "audio-x-generic", Gtk.IconSize.BUTTON)
             if self.nowIn == "video" and self.playing == True:
                 self.on_playBut_clicked("xy")
@@ -190,6 +194,8 @@ class GUI:
             GLib.idle_add(self.exBot.show)
             GLib.idle_add(self.trackCover.hide)
             GLib.idle_add(self.shuffBut.hide)
+            GLib.idle_add(self.sublab.show)
+            GLib.idle_add(self.subcheck.show)
             GLib.idle_add(self.karaokeBut.set_from_icon_name, "view-fullscreen", Gtk.IconSize.BUTTON)
             if self.nowIn == "audio" and self.playing == True:
                 self.on_playBut_clicked("xy")
@@ -203,6 +209,8 @@ class GUI:
         if self.mainStack.get_visible_child() != self.infBook and button.get_active() == True:
             self.mainStack.set_visible_child(self.infBook)
             GLib.idle_add(self.exBot.hide)
+            GLib.idle_add(self.sublab.hide)
+            GLib.idle_add(self.subcheck.hide)
             if self.playing == True:
                 self.on_playBut_clicked("xy")
             GLib.idle_add(self.locBut.set_active, False)
@@ -243,7 +251,8 @@ class GUI:
                 il.append(i)
             GLib.idle_add(doapp)
             if not again:
-                print("First time")
+                for column in self.tree.get_columns():
+                    self.tree.remove_column(column)
                 for i, column_title in enumerate(["Title", "Artist", "Album", "Year", "ID"]):
                     renderer = Gtk.CellRendererText(xalign=0)
                     renderer.set_property("ellipsize", 3)
@@ -348,6 +357,12 @@ class GUI:
         f.artist = self.arEnt.get_text()
         f.album = self.alEnt.get_text()
         f.title = self.tiEnt.get_text()
+        newCover = self.iChoser.get_filename()
+        if os.path.isfile(newCover):
+            tf = open(newCover, "rb")
+            binary = tf.read()
+            tf.close()
+            f.art = binary
         f.save()
         self.playlist[self.storePlaylist[self.edithis][-1]]["year"] = self.yrEnt.get_value_as_int()
         self.playlist[self.storePlaylist[self.edithis][-1]]["artist"] = self.arEnt.get_text()
@@ -538,6 +553,31 @@ class GUI:
         if self.nowIn == "audio":
             self.gen_playlist_view(name='shuffle')
 
+    def nosub_hide(self, misc, e=""):
+        self.nosub.hide()
+        return True
+
+    def on_act_sub(self, switch, state):
+        if state == True and self.nowIn == "video":
+            filename = self.url.replace("file://", "").split("/")[-1]
+            tmpdbnow = os.listdir(self.url.replace("file://", "").replace(filename, ""))
+            if os.path.splitext(filename)[0]+".srt" in tmpdbnow:
+                print("Subtitle found!")
+                with open (os.path.splitext(self.url.replace("file://", ""))[0]+".srt", 'r') as subfile:
+                    presub = subfile.read()
+                subtitle_gen = srt.parse(presub)
+                subtitle = list(subtitle_gen)
+                self.needSub = True
+                subs = futures.ThreadPoolExecutor(max_workers=4)
+                subs.submit(self.subShow, subtitle)
+            else:
+                self.nosub.set_title("Subtitle file not found")
+                self.nosub.show_all()
+                GLib.idle_add(self.subcheck.set_state, False)
+                self.pause()
+        else:
+            self.needSub = False
+
     def play(self, misc=""):
         if self.clickedE:
             self.url = "file://"+self.clickedE
@@ -574,17 +614,6 @@ class GUI:
         filename = self.url.replace("file://", "").split("/")[-1]
         if self.useMode == "audio":
             GLib.idle_add(self.tree.set_cursor, self.relPos)
-        else:
-            tmpdbnow = os.listdir(self.url.replace("file://", "").replace(filename, ""))
-            if os.path.splitext(filename)[0]+".srt" in tmpdbnow:
-                print("Subtitle found!")
-                with open (os.path.splitext(self.url.replace("file://", ""))[0]+".srt", 'r') as subfile:
-                    presub = subfile.read()
-                subtitle_gen = srt.parse(presub)
-                subtitle = list(subtitle_gen)
-                self.needSub = True
-                subs = futures.ThreadPoolExecutor(max_workers=4)
-                subs.submit(self.subShow, subtitle)
         if misc != "continue":
             self.player.set_state(Gst.State.NULL)
             self.player.set_property("uri", self.url)
@@ -711,11 +740,18 @@ class GUI:
                 track = self.playlist[self.tnum]["title"]
                 artist = self.playlist[self.tnum]["artist"]
                 dbnow = []
-                tmpdbnow = os.listdir(self.folderPath)
+                if self.clickedE:
+                    folPathClick = self.clickedE.replace(self.clickedE.split("/")[-1], "")
+                    tmpdbnow = os.listdir(folPathClick)
+                else:
+                    tmpdbnow = os.listdir(self.folderPath)
                 for i in tmpdbnow:
                     if ".srt" in i:
                         x = i
-                        dbnow.append(f"{self.folderPath}/{x}")
+                        if self.clickedE:
+                            dbnow.append(f"{folPathClick}{x}")
+                        else:
+                            dbnow.append(f"{self.folderPath}/{x}")
                 self.sub.set_title(f'{track} - {artist}')
                 tmp = os.path.splitext(self.playlist[self.tnum]["uri"])[0]
                 print(dbnow)
@@ -962,6 +998,16 @@ class GUI:
 
 if __name__ == "__main__":
     # Dev/Use mode
+    if os.path.exists('/home/daniel/GitRepos/hbud'):
+        fdir = "/home/daniel/GitRepos/hbud/DEV_FILES/"
+        print(fdir)
+        os.chdir(fdir)
+        print('Running in development mode.')
+    else:
+        fdir = "/usr/share/hbud/"
+        print(fdir)
+        os.chdir(fdir)
+        print('Running in production mode.')
     user = os.popen("who|awk '{print $1}'r").read()
     user = user.rstrip()
     user = user.split('\n')[0]

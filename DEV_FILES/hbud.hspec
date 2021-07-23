@@ -10,7 +10,7 @@ email = dani@kolozsi.net
 pkgname = hbud
 pretty_name = HBud
 licensev = 0
-version = 0.1.5.5
+version = 0.1.6.1
 section = 18
 priority = 0
 depends = ${misc:Depends}
@@ -34,19 +34,22 @@ longue = Simple music / video player and karaoke app written in Python and GTK -
 [misc]
 rules = 0
 min_pyver = 3.4
-postinst = ln -s /usr/share/hbud/HBud.py /usr/bin/hbud || echo "No need for it"
+postinst = ln -s /usr/share/hbud/HBud.bin /usr/bin/hbud || echo "No need for it"
 postrm = rm /usr/bin/hbud || echo "No need for it2"
 
 [changelog]
 target = focal
 urgency = 1
-changes = Hotfix
+changes = Bugfixes
+	Performance improvements
+	Using Nuitka as a compiler, including modules in the binary
+	Added subtitle switch and option to visit OpenSubtitles / Subscenes
+	Added cover art support for metadata editor
 
 [data]
 root = /home/daniel/GitRepos/hbud/DEV_FILES
 program = icons/
 	hbud.glade
-	HBud.py
-	tools/
+	HBud.bin
 entry = hbud.desktop
 

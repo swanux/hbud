@@ -1,0 +1,9 @@
+hbud (0.1.6.1-1) focal; urgency=medium
+
+  * Bugfixes
+  * Performance improvements
+  * Using Nuitka as a compiler, including modules in the binary
+  * Added subtitle switch and option to visit OpenSubtitles / Subscenes
+  * Added cover art support for metadata editor
+
+ -- Dániel Kolozsi <dani@kolozsi.net>  Fri, 23 Jul 2021 15:03:19 +0100
