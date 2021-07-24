@@ -6,7 +6,7 @@ Simple music / video player and karaoke app written in Python and GTK - Because 
 # Features
 - Video and audio playback (for supported formats, refer to GStreamer docs)
 - Subtitle support
-- Karaoke mode (synced lyrics needed in own srt format, I'll provide instructions on that later)
+- Karaoke mode (synced lyrics needed in own srt format, see below for instructions)
 - Metadata editor (for audio files)
 - Playlists (from folder structure)
 - Seamlessly switch back and forth between video and audio playback (remembers where to continue)
