@@ -265,6 +265,7 @@ Author: Swanux
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
                         <property name="receives_default">True</property>
+                        <property name="tooltip_text" translatable="yes">Save current order</property>
                         <signal name="clicked" handler="on_order_save" swapped="no"/>
                       </object>
                       <packing>
@@ -279,6 +280,7 @@ Author: Swanux
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
                         <property name="receives_default">True</property>
+                        <property name="tooltip_text" translatable="yes">Look for new tracks and append them at the end</property>
                         <signal name="clicked" handler="on_rescan_order" swapped="no"/>
                       </object>
                       <packing>
@@ -293,6 +295,7 @@ Author: Swanux
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
                         <property name="receives_default">True</property>
+                        <property name="tooltip_text" translatable="yes">Clear saved order</property>
                         <signal name="clicked" handler="on_clear_order" swapped="no"/>
                       </object>
                       <packing>
