@@ -10,21 +10,16 @@ email = dani@kolozsi.net
 pkgname = hbud
 pretty_name = HBud
 licensev = 0
-version = 0.1.6.1
+version = 0.2.1.2
 section = 18
 priority = 0
-depends = ${misc:Depends}
-	${python3:Depends}
-	python3-gi
-	gstreamer1.0-libav
+depends = gstreamer1.0-libav
+	gstreamer1.0-plugins-good
 	gstreamer1.0-plugins-bad
 	gstreamer1.0-plugins-ugly
 	gstreamer1.0-vaapi
 	libavcodec-extra
 build_deps = debhelper (>= 11)
-	dh-python
-	python3
-	python3-all
 homepage = https://github.com/swanux/hbud
 
 [description]
@@ -32,24 +27,32 @@ short = Simple music / video player and karaoke app written in Python and GTK - 
 longue = Simple music / video player and karaoke app written in Python and GTK - Because why not
 
 [misc]
-rules = 0
-min_pyver = 3.4
-postinst = ln -s /usr/share/hbud/HBud.bin /usr/bin/hbud || echo "No need for it"
+rules = 1
+min_pyver = None
+postinst = ln -s /usr/share/hbud/HBud.dist/HBud /usr/bin/hbud || echo "No need for it"
 postrm = rm /usr/bin/hbud || echo "No need for it2"
 
 [changelog]
 target = focal
 urgency = 1
-changes = Bugfixes
-	Performance improvements
-	Using Nuitka as a compiler, including modules in the binary
-	Added subtitle switch and option to visit OpenSubtitles / Subscenes
-	Added cover art support for metadata editor
+changes = Bugfixes and quality improvements
+	Optimized stability and performane
+	Added online lyric support (static lyric)
+	Added AppImage build
+	Added a lots of small comfort functions
+	Now showing both elapsed and remaining time
+	Added optional rounded corners (why not?)
+	Own widgets instead of TreeView (improved visuals, stability and performance)
+	Added new drag and drop support
+	Added new keyboard controls (Up, Down, Left, Right, Del, F11, ESC)
+	Added option to save playlist order (speeds up loading time too) - rescan to append new tracks
+	Added proper sort method (multiple options)
+	Added search method
 
 [data]
 root = /home/daniel/GitRepos/hbud/DEV_FILES
 program = icons/
 	hbud.glade
-	HBud.bin
+	HBud.dist/
 entry = hbud.desktop
 

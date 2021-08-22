@@ -1,52 +1,80 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-import os, gi, dbus, random, dbus.mainloop.glib, dbus.service, time, sys, srt
+import os, gi, dbus, srt, azapi, dbus.mainloop.glib, json
 from concurrent import futures
+from time import sleep, time
+from operator import itemgetter
+from collections import deque
+from datetime import timedelta
+from sys import argv
+from random import sample
 from configparser import ConfigParser
 from mediafile import MediaFile
 gi.require_version('Gtk', '3.0')
 gi.require_version('Gst', '1.0')
 from gi.repository import Gtk, Gst, GLib, GdkPixbuf, Gdk
 
+class TrackBox(Gtk.EventBox):
+    def __init__(self, title, artist, id, year, length, album):
+        super(TrackBox, self).__init__()
+        # imaje = Gtk.Image.new()
+        # imaje.set_margin_start(10)
+        # imaje.set_margin_end(10)
+        # imaje.set_margin_top(5)
+        self.set_can_focus(False)
+        self.set_name(f"trackbox_{id}")
+        self.set_size_request(-1, 60)
+        subBox = Gtk.Box.new(0, 5)
+        comboBox = Gtk.Box.new(1, 5)
+        tiLab = Gtk.Label.new()
+        alLab = Gtk.Label.new(album)
+        arLab = Gtk.Label.new(artist)
+        yeLab = Gtk.Label.new(str(year))
+        leLab = Gtk.Label.new()
+        leLab.set_markup(f'<b>{length}</b>')
+        tiLab.set_ellipsize(3)
+        tiLab.set_halign(Gtk.Align(1))
+        tiLab.set_margin_top(15)
+        tiLab.set_markup(f"<b><span size='12000'>{title}</span></b>")
+        alLab.set_ellipsize(3)
+        alLab.set_halign(Gtk.Align(1))
+        alLab.set_margin_bottom(15)
+        arLab.set_ellipsize(3)
+        arLab.set_halign(Gtk.Align(1))
+        comboBox.pack_start(tiLab, False, False, 0)
+        comboBox.pack_start(alLab, False, False, 0)
+        subBox.pack_start(comboBox, True, True, 15)
+        subBox.pack_end(leLab, False, False, 10)
+        subBox.pack_end(yeLab, False, False, 20)
+        subBox.pack_end(arLab, False, False, 20)
+        self.add(subBox)
+        self.set_margin_end(15)
+        targs = [Gtk.TargetEntry.new("dummy", Gtk.TargetFlags.SAME_APP, 1)]
+        self.drag_source_set(Gdk.ModifierType.BUTTON1_MASK, targs, Gdk.DragAction.MOVE)
+        self.drag_dest_set(Gtk.DestDefaults.HIGHLIGHT | Gtk.DestDefaults.DROP | Gtk.DestDefaults.MOTION, targs, Gdk.DragAction.MOVE)
+
 class GUI:
     def __init__(self):
-        UI_FILE = "hbud.glade"
+        UI_FILE, version = "hbud.glade", "HBud 0.2 Yennefer"
         self.useMode = "audio"
-        self.supportedList = ['.3gp', '.aa', '.aac', '.aax', '.aiff', '.flac', '.m4a', '.m4p', '.mp3', '.ogg', '.wav', '.wma', '.wv']
+        self.supportedList = ['.3gp', '.aa', '.aac', '.aax', '.aiff', '.flac', '.m4a', '.mp3', '.ogg', '.wav', '.wma', '.wv']
         try:
-            self.clickedE = sys.argv[1]
-            if os.path.splitext(self.clickedE.split("/")[-1])[-1] not in self.supportedList:
-                self.useMode = "video"
-                print("video click")
-            print(self.clickedE)
+            self.clickedE = argv[1]
+            if os.path.splitext(self.clickedE)[-1] not in self.supportedList and os.path.splitext(self.clickedE)[-1] != "":
+                self.useMode = "video" 
+                print("video, now", self.clickedE)
         except:
             self.clickedE = False
-        version = 'HBud Alpha 0.1-S6'
-        print('Init here')
         self.builder = Gtk.Builder()
         self.builder.add_from_file(UI_FILE)
         self.builder.connect_signals(self)
-        self.position = 0
-        self.playlistPlayer = False
-        self.playlist = []
-        self.relPos = 0
-        self.tnum = 0
-        self.player = ""
-        self.needSub = False
-        self.nowIn = ""
-        self.fulle = False
-        self.resete = False
-        self.hardReset = False
-        self.sSize = int(float(sSize))
-        self.sMarg = int(float(sMarg))
-        self.size = 35000
-        self.size2 = 15000
-        self.size3 = self.sSize*450
-        self.size4 = float(f"0.0{self.sMarg}")*450
-        self.globSeek = True
-        self.seekBack = False
-        self.sub = self.builder.get_object('sub')
+        self.playlistPlayer, self.needSub, self.nowIn = False, False, ""
+        self.DAPI = azapi.AZlyrics('duckduckgo', accuracy=0.7)
+        self.fulle, self.resete, self.keepReset, self.hardReset, self.tnum, self.sorted = False, False, False, False, 0, False
+        self.sSize, self.sMarg = int(float(sSize)), int(float(sMarg))
+        self.size, self.size2, self.size3, self.size4 = 35000, 15000, self.sSize*450, float(f"0.0{self.sMarg}")*450
+        self.sub, self.seekBack, self.playing, self.res = self.builder.get_object('sub'), False, False, False
         self.slider = Gtk.HScale()
         self.slider.set_can_focus(False)
         self.slider.set_margin_start(6)
@@ -55,32 +83,22 @@ class GUI:
         self.slider.set_increments(1, 10)
         self.slider_handler_id = self.slider.connect("value-changed", self.on_slider_seek)
         self.box = self.builder.get_object("slidBox")
-        self.box.pack_start(self.slider, True, True, 0)
         self.label = Gtk.Label(label='0:00')
         self.label.set_margin_start(6)
         self.label.set_margin_end(6)
-        self.trackCover = self.builder.get_object("coverImg")
+        self.label_end = Gtk.Label(label='0:00')
+        self.label_end.set_margin_start(6)
+        self.label_end.set_margin_end(6)
         self.box.pack_start(self.label, False, False, 0)
+        self.box.pack_start(self.slider, True, True, 0)
+        self.box.pack_start(self.label_end, False, False, 0)
+        self.trackCover = self.builder.get_object("cover_img")
+        self.trackCover.set_name("cover_img")
         self.plaicon = self.builder.get_object("play")
         self.slider.connect("enter-notify-event", self.mouse_enter)
         self.slider.connect("leave-notify-event", self.mouse_leave)
-        self.label.connect("enter-notify-event", self.mouse_enter)
-        self.label.connect("leave-notify-event", self.mouse_leave)
-        self.storePlaylist = Gtk.ListStore(str, str, str, int, int)
-        self.tree = Gtk.TreeView.new_with_model(self.storePlaylist)
-        self.tree.set_can_focus(False)
-        self.tree.connect("row-activated", self.row_activated)
-        self.tree.connect("button_press_event", self.mouse_click)
-        self.tree.set_reorderable(True)
-        self.tree.set_grid_lines(Gtk.TreeViewGridLines(1))
         self.playlistBox = self.builder.get_object("expanded")
-        self.scrollable_treelist = Gtk.ScrolledWindow()
-        self.scrollable_treelist.set_can_focus(False)
-        self.scrollable_treelist.set_vexpand(True)
         self.exBot = self.builder.get_object("extendedBottom")
-        self.scrollable_treelist.add(self.tree)
-        self.playlistBox.pack_start(self.scrollable_treelist, True, True, 0)
-        self.playing = False
         self.header = self.builder.get_object("header")
         self.label1 = self.builder.get_object('label1')
         self.label2 = self.builder.get_object('label2')
@@ -96,40 +114,42 @@ class GUI:
         self.locBut = self.builder.get_object("locBut")
         self.strBut = self.builder.get_object("strBut")
         self.mainStack = self.builder.get_object("mainStack")
-        self.strBox= self.builder.get_object("strBox")
         self.strOverlay = self.builder.get_object("strOverlay")
         self.theTitle = self.builder.get_object("theTitle")
-        self.infBook = self.builder.get_object("infBook")
         self.subSpin = self.builder.get_object("subSpin")
         self.subMarSpin = self.builder.get_object("subSpin1")
-        self.sublab = self.builder.get_object("sub_lab")
         self.subcheck = self.builder.get_object("sub_check")
         self.nosub = self.builder.get_object("nosub")
-        oplink = self.builder.get_object("oplink")
-        sublink = self.builder.get_object("sublink")
         self.iChoser = self.builder.get_object("iChoser")
+        self.roundSpin = self.builder.get_object("round_spin")
+        self.roundSpin.set_value(int(rounded))
+        self.topBox = self.builder.get_object("topBox")
+        self.drop_but = self.builder.get_object("drop_but")
         image_filter=Gtk.FileFilter()
         image_filter.set_name("Image files")
         image_filter.add_mime_type("image/*")
         self.iChoser.add_filter(image_filter)
         GLib.idle_add(self.subcheck.hide)
-        GLib.idle_add(self.sublab.hide)
-        GLib.idle_add(oplink.set_label, "Visit OpenSubtitles")
-        GLib.idle_add(sublink.set_label, "Visit Subscene")
+        GLib.idle_add(self.builder.get_object("oplink").set_label, "Visit OpenSubtitles")
+        GLib.idle_add(self.builder.get_object("sublink").set_label, "Visit Subscene")
         self.subSpin.set_value(self.sSize)
+        self.subStack = self.builder.get_object("subStack")
+        self.lyrLab = self.builder.get_object("lyrLab")
+        self.karmode = self.builder.get_object("req_scroll")
+        self.lyrmode = self.builder.get_object("req_scroll2")
         self.subMarSpin.set_value(self.sMarg)
-        self.res = False
-        self.opener = self.builder.get_object('openFolderBut')
         self.window = self.builder.get_object('main')
-        if os.geteuid() == 0:
-            self.window.set_title(version+' (as superuser)')
-        else:
-            self.window.set_title(version)
         self.sub.connect('size-allocate', self._on_size_allocated)
         self.window.connect('size-allocate', self._on_size_allocated0)
+        self.switchDict = {"locBut" : [self.builder.get_object("placeholder"), "audio-input-microphone", "audio", self.strBut, self.infBut], "strBut" : [self.builder.get_object("strBox"), "view-fullscreen", "video", self.locBut, self.infBut], "infBut" : [self.builder.get_object("infBook"), "", "", self.locBut, self.strBut]}
+        self.provider = Gtk.CssProvider()
+        self.themer(str(rounded))
         # Display the program
+        self.window.set_title(version)
         self.window.show_all()
         self.createPipeline("local")
+        self.topBox.hide()
+        self.drop_but.hide()
         self.locBut.set_active(True)
         if self.clickedE:
             if self.useMode == "audio":
@@ -140,10 +160,109 @@ class GUI:
                 self.on_playBut_clicked("xy")
         self.listener() # Do not write anything after this in init
 
+    def highlight(self, widget, event):
+        if event.button == 3:
+            self.ednum = int(widget.get_name().replace("trackbox_", ""))
+            menu = Gtk.Menu()
+            menu.set_can_focus(False)
+            menu_item = Gtk.MenuItem.new_with_label('Delete from current playqueue')
+            menu_item.set_can_focus(False)
+            menu_item.connect("activate", self.del_cur)
+            menu.add(menu_item)
+            menu_item = Gtk.MenuItem.new_with_label('Edit metadata')
+            menu_item.set_can_focus(False)
+            menu_item.connect("activate", self.ed_cur)
+            menu.add(menu_item)
+            menu.show_all()
+            menu.popup_at_pointer()
+        else:
+            self.tnum = int(widget.get_name().replace("trackbox_", ""))
+            self.themer(self.roundSpin.get_value(), self.tnum)
+            self.on_next("clickMode")
+
+    def on_search(self, widget):
+        term = widget.get_text().lower()
+        if term != "":
+            results = []
+            for i, item in enumerate(self.playlist):
+                if term in item["title"].lower() or term in item["artist"].lower() or term in item["album"].lower():
+                    results.append(i)
+            for i, item in enumerate(self.supBox.get_children()):
+                if i not in results: GLib.idle_add(item.hide)
+        else:
+            GLib.idle_add(self.supBox.show_all)
+
+    def on_sort_change(self, widget):
+        aid = int(widget.get_active_id())
+        if self.sorted == False: self.archive = self.playlist
+        self.sorted = True
+        if aid == 0 and self.sorted == True:
+            self.playlist = self.archive
+            self.sorted = False
+        elif aid == 1: self.playlist = sorted(self.archive, key=itemgetter('artist'),reverse=False)
+        elif aid == 2: self.playlist = sorted(self.archive, key=itemgetter('artist'),reverse=True)
+        elif aid == 3: self.playlist = sorted(self.archive, key=itemgetter('title'),reverse=False)
+        elif aid == 4: self.playlist = sorted(self.archive, key=itemgetter('title'),reverse=True)
+        elif aid == 5: self.playlist = sorted(self.archive, key=itemgetter('year'),reverse=False)
+        elif aid == 6: self.playlist = sorted(self.archive, key=itemgetter('year'),reverse=True)
+        elif aid == 7: self.playlist = sorted(self.archive, key=itemgetter('length'),reverse=False)
+        elif aid == 8: self.playlist = sorted(self.archive, key=itemgetter('length'),reverse=True)
+        self.neo_playlist_gen()
+
+    def on_clear_order(self, _): os.system(f"rm {self.folderPath}/.saved.order")
+
+    def on_rescan_order(self, _):
+        GLib.idle_add(self.loader, self.folderPath, True)
+
+    def on_order_save(self, _):
+        f = open(f"{self.folderPath}/.saved.order", "w+")
+        f.write(json.dumps(self.playlist))
+        f.close()
+
+    def themer(self, v, w=""):
+        css = """#cover_img {
+            padding-bottom: %spx;
+        }
+        menu, .popup {
+            border-radius: %spx;
+        }
+        decoration, headerbar {
+            border-radius: %spx;
+        }
+        button, menuitem, entry {
+            border-radius: %spx;
+            margin: 5px;
+        }
+        .titlebar, tab {
+            border-top-left-radius: %spx;
+            border-top-right-radius: %spx;
+            border-bottom-left-radius: 0px;
+            border-bottom-right-radius: 0px;
+        }
+        window, notebook, stack, box, scrolledwindow, viewport {
+            border-top-left-radius: 0px;
+            border-top-right-radius: 0px;
+            border-bottom-left-radius: %spx;
+            border-bottom-right-radius: %spx;
+            border-width: 0px;
+            border-image: none;
+            box-shadow: none;
+        }
+        #trackbox_%s{
+            background: #11949c;
+            color: #000;
+            border-radius: %spx;
+        }
+        .maximized, .fullscreen, .maximized .titlebar {
+            border-radius: 0px;
+        }""" % (int(v)/2.6,int(v)/1.5,v,v,v,v,v,v,w,v) # decoration, window, window.background, window.titlebar, .titlebar
+        css = str.encode(css)
+        self.provider.load_from_data(css)
+        self.window.get_style_context().add_provider_for_screen(Gdk.Screen.get_default(), self.provider, Gtk.STYLE_PROVIDER_PRIORITY_APPLICATION)
+
     def createPipeline(self, mode):
         if mode == "local":
-            self.videoPipe = Gst.ElementFactory.make("playbin")
-            self.audioPipe = Gst.ElementFactory.make("playbin")
+            self.videoPipe, self.audioPipe = Gst.ElementFactory.make("playbin3"), Gst.ElementFactory.make("playbin3")
             # self.audioPipe = Gst.parse_launch('filesrc  ! decodebin ! audioconvert ! rgvolume ! audioconvert ! audioresample ! alsasink')
             playerFactory = self.videoPipe.get_factory()
             gtksink = playerFactory.make('gtksink')
@@ -163,312 +282,222 @@ class GUI:
         # elif mode == "stream":
             # self.player = Gst.parse_launch(f"souphttpsrc is-live=false location={self.url} ! decodebin ! audioconvert ! autoaudiosink")
 
-    def checker(self, widget):
-        if widget.get_active() == True:
-            widget.set_active(True)
-            return False
+    def on_dropped(self, _):
+        if self.topBox.get_visible() == True:
+            GLib.idle_add(self.drop_but.get_image().set_from_icon_name, "gtk-go-down", Gtk.IconSize.BUTTON)
+            GLib.idle_add(self.topBox.hide)
         else:
-            return True
+            GLib.idle_add(self.drop_but.get_image().set_from_icon_name, "gtk-go-up", Gtk.IconSize.BUTTON)
+            GLib.idle_add(self.topBox.show)
 
-    def lcToggle(self, button):
-        if self.mainStack.get_visible_child() != self.playlistBox and button.get_active() == True:
-            self.mainStack.set_visible_child(self.playlistBox)
-            GLib.idle_add(self.exBot.show)
-            GLib.idle_add(self.trackCover.show)
-            GLib.idle_add(self.shuffBut.show)
-            GLib.idle_add(self.sublab.hide)
-            GLib.idle_add(self.subcheck.hide)
-            GLib.idle_add(self.karaokeBut.set_from_icon_name, "audio-x-generic", Gtk.IconSize.BUTTON)
-            if self.nowIn == "video" and self.playing == True:
-                self.on_playBut_clicked("xy")
-            self.useMode = "audio"
+    def allToggle(self, button):
+        btn = Gtk.Buildable.get_name(button)
+        if self.mainStack.get_visible_child() != self.switchDict[btn][0] and button.get_active() == True:
+            self.mainStack.set_visible_child(self.switchDict[btn][0])
+            if self.playing == True: self.on_playBut_clicked("xy")
+            if btn != "infBut":
+                GLib.idle_add(self.exBot.show)
+                if btn == "locBut":
+                    GLib.idle_add(self.trackCover.show)
+                    GLib.idle_add(self.shuffBut.show)
+                    if self.playlistPlayer == True: GLib.idle_add(self.drop_but.show)
+                    GLib.idle_add(self.subcheck.hide)
+                else:
+                    GLib.idle_add(self.trackCover.hide)
+                    GLib.idle_add(self.shuffBut.hide)
+                    GLib.idle_add(self.drop_but.hide)
+                    GLib.idle_add(self.subcheck.show)
+                GLib.idle_add(self.karaokeBut.set_from_icon_name, self.switchDict[btn][1], Gtk.IconSize.BUTTON)
+                self.useMode = self.switchDict[btn][2]
+            else:
+                GLib.idle_add(self.exBot.hide)
+                GLib.idle_add(self.subcheck.hide)
+                GLib.idle_add(self.drop_but.hide)
             self.needSub = False
-            GLib.idle_add(self.strBut.set_active, False)
-            GLib.idle_add(self.infBut.set_active, False)
-        elif self.mainStack.get_visible_child() == self.playlistBox:
-            GLib.idle_add(button.set_active, True)
+            GLib.idle_add(self.switchDict[btn][3].set_active, False)
+            GLib.idle_add(self.switchDict[btn][4].set_active, False)
+        elif self.mainStack.get_visible_child() == self.switchDict[btn][0]: GLib.idle_add(button.set_active, True) 
 
-    def strToggle(self, button):
-        if self.mainStack.get_visible_child() != self.strBox and button.get_active() == True:
-            self.mainStack.set_visible_child(self.strBox)
-            GLib.idle_add(self.exBot.show)
-            GLib.idle_add(self.trackCover.hide)
-            GLib.idle_add(self.shuffBut.hide)
-            GLib.idle_add(self.sublab.show)
-            GLib.idle_add(self.subcheck.show)
-            GLib.idle_add(self.karaokeBut.set_from_icon_name, "view-fullscreen", Gtk.IconSize.BUTTON)
-            if self.nowIn == "audio" and self.playing == True:
-                self.on_playBut_clicked("xy")
-            self.useMode = "video"
-            GLib.idle_add(self.locBut.set_active, False)
-            GLib.idle_add(self.infBut.set_active, False)
-        elif self.mainStack.get_visible_child() == self.strBox:
-            GLib.idle_add(button.set_active, True)
+    def cleaner(self, lis):
+        if lis == []: pass
+        else: [i.destroy() for i in lis]
     
-    def infToggle(self, button):
-        if self.mainStack.get_visible_child() != self.infBook and button.get_active() == True:
-            self.mainStack.set_visible_child(self.infBook)
-            GLib.idle_add(self.exBot.hide)
-            GLib.idle_add(self.sublab.hide)
-            GLib.idle_add(self.subcheck.hide)
-            if self.playing == True:
-                self.on_playBut_clicked("xy")
-            GLib.idle_add(self.locBut.set_active, False)
-            GLib.idle_add(self.strBut.set_active, False)
-        elif self.mainStack.get_visible_child() == self.infBook:
-            GLib.idle_add(button.set_active, True)
-
-    def gen_playlist_view(self, playlistLoc='', name='', again=False, allPos=''):
+    def neo_playlist_gen(self, name="", src=0, dst=0):
         if name == 'shuffle':
             if self.playlistPlayer == True:
-                self.relPos = 0
-                playlistLoc = random.sample(self.playlist, len(self.playlist))
-                self.playlist = playlistLoc
-                self.gen_playlist_view(name='playlistPlayer', again=self.playlistPlayer, allPos='regen')
-                self.on_next('clickModel')
-        elif name == 'playlistPlayer':
-            if allPos == 'regen':
-                print('Regenerate only')
-            else:
-                print('Passing in generator')
-            playlistLoc = self.playlist
-            self.storePlaylist = Gtk.ListStore(str, str, str, int, int)
-            self.tree.set_model(self.storePlaylist)
-            def doapp():
-                for x in range(len(playlistLoc)):
-                    self.storePlaylist.append([t[x], a[x], al[x], y[x], il[x]])
-                return False
-            t = []
-            a = []
-            al = []
-            y = []
-            il = []
-            for i in range(len(playlistLoc)):
-                t.append(playlistLoc[i]["title"])
-                a.append(playlistLoc[i]["artist"])
-                al.append(playlistLoc[i]["album"])
-                y.append(playlistLoc[i]["year"])
-                il.append(i)
-            GLib.idle_add(doapp)
-            if not again:
-                for column in self.tree.get_columns():
-                    self.tree.remove_column(column)
-                for i, column_title in enumerate(["Title", "Artist", "Album", "Year", "ID"]):
-                    renderer = Gtk.CellRendererText(xalign=0)
-                    renderer.set_property("ellipsize", 3)
-                    renderer.set_fixed_size(-1, 50)
-                    column = Gtk.TreeViewColumn(column_title, renderer, text=i)
-                    if column_title == "Title" or column_title == "Album":
-                        column.set_resizable(True)
-                        column.set_expand(True)
-                    elif column_title == "Artist":
-                        column.set_max_width(150)
-                        column.set_resizable(True)
-                        column.set_expand(True)
-                    elif column_title == "ID" or column_title == "Year":
-                        column.set_max_width(60)
-                        column.set_resizable(False)
-                        column.set_expand(False)
-                    column.set_sort_column_id(i)
-                    column.set_sort_indicator(False)
-                    self.tree.append_column(column)
+                playlistLoc = sample(self.playlist, len(self.playlist))
+                self.playlist, self.tnum = playlistLoc, 0
+                self.neo_playlist_gen()
+                self.on_next('clickMode')
+        elif name == "rename":
+            srcBox = self.supBox.get_children()[src]
+            self.supBox.reorder_child(srcBox, dst)
+            tmpList = self.supBox.get_children()
+            for i in range(len(self.playlist)):
+                tmpList[i].set_name(f"trackbox_{i}")
+            if self.tnum == src: self.tnum = dst
+            elif src > dst: self.tnum += 1
+            elif src < dst: self.tnum -= 1
+            self.themer(self.roundSpin.get_value(), self.tnum)
+        else:
+            self.cleaner(self.playlistBox.get_children())
+            self.supBox = Gtk.Box.new(1, 0)
+            self.supBox.set_can_focus(False)
+            for i, item in enumerate(self.playlist):
+                trBox = TrackBox(item["title"].replace("&", "&amp;"), item["artist"], i, item["year"], item["length"], item["album"])
+                trBox.connect("button_release_event", self.highlight)
+                trBox.connect('drag-begin', self.pause)
+                trBox.connect('drag-drop', self._sig_drag_drop)
+                trBox.connect('drag-end', self._sig_drag_end)
+                self.supBox.pack_start(trBox, False, False, 0)
+            yetScroll = Gtk.ScrolledWindow()
+            yetScroll.set_can_focus(False)
+            yetScroll.set_vexpand(True)
+            yetScroll.set_hexpand(True)
+            yetScroll.set_margin_end(10)
+            yetScroll.add(self.supBox)
+            self.playlistBox.pack_end(yetScroll, True, True, 0)
+            yetScroll.show_all()
             self.playlistPlayer = True
+            GLib.idle_add(self.drop_but.show)
 
-    def loader(self, path):
-        pltmp = []
+    def metas(self, location, extrapath, misc=False):
+        f = MediaFile(location)
+        title, artist, album, year, length = f.title, f.artist, f.album, f.year, str(timedelta(seconds=round(f.length))).replace("0:", "")
+        if not title: title = os.path.splitext(extrapath)[0]
+        if not artist: artist = "Unknown"
+        if not album: album = "Unknown"
+        if not year: year = 0
+        itmp = {"uri" : location, "title" : title, "artist" : artist, "year" : year, "album" : album, "length" : length}
+        if misc == True:
+            if itmp not in self.playlist: self.pltmp.append(itmp)
+        else: self.pltmp.append(itmp)
+
+    def loader(self, path, misc=False):
+        self.pltmp = []
         if self.clickedE:
-            f = MediaFile(self.clickedE)
-            title, artist, album, year = f.title, f.artist, f.album, f.year
-            if not title:
-                title = os.path.splitext(self.clickedE.split("/")[-1])[0]
-            if not artist:
-                artist = "Unknown"
-            if not album:
-                album = "Unknown"
-            if not year:
-                year = 0
-            itmp = {"uri" : self.clickedE, "title" : title, "artist" : artist, "year" : year, "album" : album}
-            pltmp.append(itmp)
+            self.metas(self.clickedE, self.clickedE.split("/")[-1])
         else:
             pltmpin = os.listdir(path)
             for i in pltmpin:
                 ityp = os.path.splitext(i)[1]
                 if ityp in self.supportedList:
-                    f = MediaFile(f"{path}/{i}")
-                    title, artist, album, year = f.title, f.artist, f.album, f.year
-                    if not title:
-                        title = os.path.splitext(i)[0]
-                    if not artist:
-                        artist = "Unknown"
-                    if not album:
-                        album = "Unknown"
-                    if not year:
-                        year = 0
-                    itmp = {"uri" : f"{path}/{i}", "title" : title, "artist" : artist, "year" : year, "album" : album}
-                    pltmp.append(itmp)
-        self.playlist = pltmp
-        self.gen_playlist_view(name="playlistPlayer")
+                    self.metas(f"{path}/{i}", i, misc)
+        if misc == False: self.playlist = self.pltmp
+        else: [self.playlist.append(item) for item in self.pltmp]
+        GLib.idle_add(self.neo_playlist_gen)
 
-    def on_openFolderBut_clicked(self, button):
-        if self.playing == True:
-            self.pause()
-        if self.useMode == "audio":
-            filechooserdialog = Gtk.FileChooserDialog(title="Please choose a folder",
-                parent=self.window,
-                action=Gtk.FileChooserAction.SELECT_FOLDER)
-            filechooserdialog.add_button("_Cancel", Gtk.ResponseType.CANCEL)
-            filechooserdialog.add_button("_Open", Gtk.ResponseType.OK)
-            filechooserdialog.set_default_response(Gtk.ResponseType.OK)
-            filechooserdialog.set_current_folder(f"/home/{user}/Music")
-            response = filechooserdialog.run()
-            if response == Gtk.ResponseType.OK:
-                self.folderPath = filechooserdialog.get_uri().replace("file://", "")
-                print("Select clicked")
-                print("Folder selected: " + self.folderPath)
-                d_pl = futures.ThreadPoolExecutor(max_workers=4)
-                d_pl.submit(self.loader, self.folderPath)
-            elif response == Gtk.ResponseType.CANCEL:
-                print("Cancel clicked")
-        else:
-            filechooserdialog = Gtk.FileChooserDialog(title="Please choose a video file",
-                parent=self.window,
-                action=Gtk.FileChooserAction.OPEN)
+    def on_openFolderBut_clicked(self, *_):
+        if self.playing == True: self.pause()
+        self.fcconstructer("Please choose a folder", Gtk.FileChooserAction.SELECT_FOLDER, "Music") if self.useMode == "audio" else self.fcconstructer("Please choose a video file", Gtk.FileChooserAction.OPEN, "Videos")     
+
+    def fcconstructer (self, title, action, folder):
+        filechooserdialog = Gtk.FileChooserDialog(title=title, parent=self.window, action=action)
+        if folder == "Videos":
             filterr = Gtk.FileFilter()
             filterr.set_name("Video files")
             filterr.add_mime_type("video/*")
             filechooserdialog.add_filter(filterr)
-            filechooserdialog.add_button("_Cancel", Gtk.ResponseType.CANCEL)
-            filechooserdialog.add_button("_Open", Gtk.ResponseType.OK)
-            filechooserdialog.set_default_response(Gtk.ResponseType.OK)
-            filechooserdialog.set_current_folder(f"/home/{user}/Videos")
-            response = filechooserdialog.run()
-            if response == Gtk.ResponseType.OK:
-                print("Open clicked")
+        filechooserdialog.add_button("_Cancel", Gtk.ResponseType.CANCEL)
+        filechooserdialog.add_button("_Open", Gtk.ResponseType.OK)
+        filechooserdialog.set_default_response(Gtk.ResponseType.OK)
+        filechooserdialog.set_current_folder(f"/home/{user}/{folder}")
+        response = filechooserdialog.run()
+        if response == Gtk.ResponseType.OK:
+            if folder == "Music":
+                self.folderPath = filechooserdialog.get_uri().replace("file://", "")
+                print("Folder selected: " + self.folderPath)
+                if os.path.isfile(f"{self.folderPath}/.saved.order"):
+                    f = open(f"{self.folderPath}/.saved.order", "r")
+                    self.playlist = json.loads(f.read())
+                    f.close()
+                    for item in self.playlist[:]:
+                        if os.path.isfile(f"{item['uri']}") == False: self.playlist.remove(item)
+                    GLib.idle_add(self.neo_playlist_gen)
+                else:
+                    d_pl = futures.ThreadPoolExecutor(max_workers=4)
+                    d_pl.submit(self.loader, self.folderPath)
+            else:
                 videoPath = filechooserdialog.get_filename()
                 print("File selected: " + videoPath)
                 self.on_playBut_clicked(videoPath)
-            elif response == Gtk.ResponseType.CANCEL:
-                print("Cancel clicked")
+        elif response == Gtk.ResponseType.CANCEL: print("Cancel clicked")
         filechooserdialog.destroy()
 
-    def on_save(self, button):
+    def on_save(self, *_):
         f = MediaFile(self.editingFile)
-        f.year = self.yrEnt.get_value_as_int()
-        f.artist = self.arEnt.get_text()
-        f.album = self.alEnt.get_text()
-        f.title = self.tiEnt.get_text()
-        newCover = self.iChoser.get_filename()
-        if os.path.isfile(newCover):
-            tf = open(newCover, "rb")
-            binary = tf.read()
-            tf.close()
-            f.art = binary
+        f.year, f.artist, f.album, f.title, newCover = self.yrEnt.get_value_as_int(), self.arEnt.get_text(), self.alEnt.get_text(), self.tiEnt.get_text(), self.iChoser.get_filename()
+        try:
+            if os.path.isfile(newCover):
+                tf = open(newCover, "rb")
+                binary = tf.read()
+                tf.close()
+                f.art = binary
+        except: pass
         f.save()
-        self.playlist[self.storePlaylist[self.edithis][-1]]["year"] = self.yrEnt.get_value_as_int()
-        self.playlist[self.storePlaylist[self.edithis][-1]]["artist"] = self.arEnt.get_text()
-        self.playlist[self.storePlaylist[self.edithis][-1]]["album"] = self.alEnt.get_text()
-        self.playlist[self.storePlaylist[self.edithis][-1]]["title"] = self.tiEnt.get_text()
+        self.playlist[self.ednum]["year"] = self.yrEnt.get_value_as_int()
+        self.playlist[self.ednum]["artist"] = self.arEnt.get_text()
+        self.playlist[self.ednum]["album"] = self.alEnt.get_text()
+        self.playlist[self.ednum]["title"] = self.tiEnt.get_text()
         self.sub2_hide("xy")
-        self.gen_playlist_view(name='playlistPlayer', again=True, allPos='regen')
+        self.neo_playlist_gen()
 
-    def sub2_hide(self, misc, e=""):
+    def sub2_hide(self, *_):
         self.sub2.hide()
         return True
 
-    def ed_cur(self, item):
-        self.edithis = self.tree.get_selection().get_selected_rows()[1][0][0]
-        self.editingFile = self.playlist[self.storePlaylist[self.edithis][-1]]["uri"].replace("file://", "")
-        self.yrEnt.set_value(self.playlist[self.storePlaylist[self.edithis][-1]]["year"])
-        self.arEnt.set_text(self.playlist[self.storePlaylist[self.edithis][-1]]["artist"])
-        self.alEnt.set_text(self.playlist[self.storePlaylist[self.edithis][-1]]["album"])
-        self.tiEnt.set_text(self.playlist[self.storePlaylist[self.edithis][-1]]["title"])
+    def ed_cur(self, *_):
+        self.editingFile = self.playlist[self.ednum]["uri"].replace("file://", "")
+        self.yrEnt.set_value(self.playlist[self.ednum]["year"])
+        self.arEnt.set_text(self.playlist[self.ednum]["artist"])
+        self.alEnt.set_text(self.playlist[self.ednum]["album"])
+        self.tiEnt.set_text(self.playlist[self.ednum]["title"])
         self.sub2.set_title(f"Edit metadata for {self.editingFile.split('/')[-1]}")
         self.sub2.show_all()
 
-    def mouse_click0(self, widget, event):
-        if event.button == 1:
-            self.on_playBut_clicked(0)
+    def mouse_click0(self, _, event):
+        if event.button == 1: self.on_playBut_clicked(0)
 
-    def mouse_click(self, widget, event):
-        if event.button == 3:
-            menu = Gtk.Menu()
-            menu.set_can_focus(False)
-            pthinfo = self.tree.get_path_at_pos(event.x, event.y)
-            path,col,cellx,celly = pthinfo
-            self.tree.grab_focus()
-            self.tree.set_cursor(path,col,0)
-            menu_item = Gtk.MenuItem.new_with_label('Delete from current playqueue')
-            menu_item.set_can_focus(False)
-            menu_item.connect("activate", self.del_cur)
-            menu.add(menu_item)
-            menu_item = Gtk.MenuItem.new_with_label('Edit metadata')
-            menu_item.set_can_focus(False)
-            menu_item.connect("activate", self.ed_cur)
-            menu.add(menu_item)
-            menu.show_all()
-            menu.popup_at_pointer()
-
-    def del_cur(self, item):
-        this = self.tree.get_selection().get_selected_rows()[1][0][0]
-        self.playlist.remove(self.playlist[self.storePlaylist[this][-1]])
-        self.gen_playlist_view(name='playlistPlayer', again=self.playlistPlayer, allPos='regen')
+    def del_cur(self, *_):
+        self.playlist.remove(self.playlist[self.ednum])
+        self.neo_playlist_gen()
+        if self.tnum == self.ednum: self.play()
 
     def on_next(self, button):
         if self.nowIn == self.useMode or button == "clickMode":
-            print("Next")
             if self.nowIn == "audio" or button == "clickMode":
-                if button == "clickMode":
-                    self.tnum = self.storePlaylist[self.relPos][-1]
-                elif button == "clickModel":
-                    self.tnum = 0
-                else:
-                    self.tree.set_cursor(self.relPos)
-                    self.relPos = self.tree.get_selection().get_selected_rows()[1][0][0]
-                    self.relPos = self.relPos + 1
-                    if self.relPos >= len(self.playlist):
-                        self.relPos = 0
-                    self.tnum = self.storePlaylist[self.relPos][-1]
+                if button != "clickMode":
+                    self.tnum += 1
+                    if self.tnum >= len(self.playlist): self.tnum = 0
                 try:
-                    self.globSeek = False
                     self.stop()
-                except:
-                    print("No playbin yet to stop.")
-                self.globSeek = True
+                except: print("No playbin yet to stop.")
                 self.play()
+                if self.sub.get_visible(): self.on_karaoke_activate("xy")
             elif self.nowIn == "video":
                 seek_time_secs = self.player.query_position(Gst.Format.TIME)[1] + 10 * Gst.SECOND
                 self.player.seek_simple(Gst.Format.TIME,  Gst.SeekFlags.FLUSH | Gst.SeekFlags.KEY_UNIT, seek_time_secs)
 
     def load_cover(self):
-        nam = self.url.replace('file://', '')
-        binary = MediaFile(nam).art
-        if not binary:
-            tmpLoc = "icons/track.png"
+        binary = MediaFile(self.url.replace('file://', '')).art
+        if not binary: tmpLoc = "icons/track.png"
         else:
             tmpLoc = "/tmp/cacheCover.jpg"
             f = open(tmpLoc, "wb")
             f.write(binary)
             f.close()
         coverBuf = GdkPixbuf.Pixbuf.new_from_file_at_scale(tmpLoc, 80, 80, True)
-        tg = GLib.idle_add(self.trackCover.set_from_pixbuf, coverBuf)
+        GLib.idle_add(self.trackCover.set_from_pixbuf, coverBuf)
 
-    def on_prev(self, button):
+    def on_prev(self, *_):
         if self.nowIn == self.useMode:
-            print("Prev")
             if self.nowIn == "audio":
-                self.tree.set_cursor(self.relPos)
-                self.relPos = self.tree.get_selection().get_selected_rows()[1][0][0]
-                self.relPos = self.relPos - 1
-                if self.relPos < 0:
-                    self.relPos = len(self.playlist)-1
-                self.tnum = self.storePlaylist[self.relPos][-1]
+                self.tnum -= 1
+                if self.tnum < 0: self.tnum = len(self.playlist)-1
                 try:
                     self.pause()
-                    self.globSeek = False
                     self.stop()
-                    self.globSeek = True
-                except:
-                    print("No playbin yet to stop.")
+                except: print("No playbin yet to stop.")
                 self.play()
             elif self.nowIn == "video":
                 seek_time_secs = self.player.query_position(Gst.Format.TIME)[1] - 10 * Gst.SECOND
@@ -477,198 +506,149 @@ class GUI:
     def stop(self):
         print("Stop")
         self.player.set_state(Gst.State.PAUSED)
-        if self.nowIn == "audio":
-            self.audioPipe = self.player
-        elif self.nowIn == "video":
-            self.videoPipe = self.player
+        if self.nowIn == "audio": self.audioPipe = self.player
+        elif self.nowIn == "video": self.videoPipe = self.player
         self.res = False
         self.playing = False
         self.label.set_text("0:00")
+        self.label_end.set_text("0:00")
         GLib.idle_add(self.plaicon.set_from_icon_name, "media-playback-start", Gtk.IconSize.BUTTON)
+        self.slider.handler_block(self.slider_handler_id)
         self.slider.set_value(0)
+        self.slider.handler_unblock(self.slider_handler_id)
         self.player.set_state(Gst.State.NULL)
 
-    def row_activated(self, widget, row, col):
-        self.relPos = self.tree.get_selection().get_selected_rows()[1][0][0]
-        print(self.relPos)
-        self.on_next("clickMode")
-
-    def pause(self): 
+    def pause(self, *_): 
         print("Pause")
         self.playing = False
-        self.tree.set_cursor(self.relPos)
-        GLib.idle_add(self.plaicon.set_from_icon_name, "media-playback-start", Gtk.IconSize.BUTTON)
-        self.player.set_state(Gst.State.PAUSED)
+        try:
+            GLib.idle_add(self.plaicon.set_from_icon_name, "media-playback-start", Gtk.IconSize.BUTTON)
+            self.player.set_state(Gst.State.PAUSED)
+        except: print("Pause exception")
     
     def resume(self):
         print("Resume")
         self.playing = True
-        self.tree.set_cursor(self.relPos)
         self.player.set_state(Gst.State.PLAYING)
         GLib.idle_add(self.plaicon.set_from_icon_name, "media-playback-pause", Gtk.IconSize.BUTTON)
-        GLib.idle_add(self.updateSlider)
-        GLib.idle_add(self.updatePos)
-        # GLib.timeout_add(250, self.updateSlider)
-        # GLib.timeout_add(80, self.updatePos)
+        GLib.timeout_add(50, self.updateSlider)
 
-    def updatePos(self):
-        if(self.playing == False):
-            return False
-        nanosecs = self.player.query_position(Gst.Format.TIME)[1]
-        self.position = float(nanosecs) / Gst.SECOND
-        return True
-
-    def on_slider_seek(self, widget):
+    def on_slider_seek(self, *_):
         if self.useMode == self.nowIn:
-            if self.globSeek:
-                seek_time_secs = self.slider.get_value()
-                if seek_time_secs < self.position:
-                    self.seekBack = True
-                    print('back')
-                    print(seek_time_secs, self.position)
-                self.player.seek_simple(Gst.Format.TIME,  Gst.SeekFlags.FLUSH | Gst.SeekFlags.KEY_UNIT, seek_time_secs * Gst.SECOND)
-            else:
-                print("No need to seek")
+            seek_time_secs = self.slider.get_value()
+            if seek_time_secs < self.position:
+                self.seekBack = True
+                print('back')
+            self.player.seek_simple(Gst.Format.TIME,  Gst.SeekFlags.FLUSH | Gst.SeekFlags.KEY_UNIT, seek_time_secs * Gst.SECOND)
 
     def updateSlider(self):
-        if(self.playing == False):
-            return False # cancel timeout
+        if(self.playing == False): return False # cancel timeout
         try:
-                nanosecs = self.player.query_position(Gst.Format.TIME)[1]
-                duration_nanosecs = self.player.query_duration(Gst.Format.TIME)[1]
-                # block seek handler so we don't seek when we set_value()
-                self.slider.handler_block(self.slider_handler_id)
-                duration = float(duration_nanosecs) / Gst.SECOND
-                position = float(nanosecs) / Gst.SECOND
-                self.slider.set_range(0, duration)
-                self.slider.set_value(position)
-                self.label.set_text ("%d" % (position / 60) + ":%02d" % (position % 60))
-                self.slider.handler_unblock(self.slider_handler_id)
+            duration_nanosecs = self.player.query_duration(Gst.Format.TIME)[1]
+            position_nanosecs = self.player.query_position(Gst.Format.TIME)[1]
+            if duration_nanosecs == -1: return True
+            # block seek handler so we don't seek when we set_value()
+            self.slider.handler_block(self.slider_handler_id)
+            duration = float(duration_nanosecs) / Gst.SECOND
+            self.position = float(position_nanosecs) / Gst.SECOND
+            remaining = float(duration_nanosecs - position_nanosecs) / Gst.SECOND
+            self.slider.set_range(0, duration)
+            self.slider.set_value(self.position)
+            fvalue, svalue = str(timedelta(seconds=round(self.position))), str(timedelta(seconds=int(remaining)))
+            self.label.set_text(fvalue)
+            self.label_end.set_text(svalue)
+            self.slider.handler_unblock(self.slider_handler_id)
         except Exception as e:
             print (f'W: {e}')
             pass
         return True
 
-    def on_shuffBut_clicked(self, button):
-        if self.nowIn == "audio":
-            self.gen_playlist_view(name='shuffle')
+    def on_shuffBut_clicked(self, *_): self.neo_playlist_gen(name='shuffle')
 
-    def nosub_hide(self, misc, e=""):
+    def nosub_hide(self, *_):
         self.nosub.hide()
         return True
 
-    def on_act_sub(self, switch, state):
+    def on_act_sub(self, _, state):
         if state == True and self.nowIn == "video":
             filename = self.url.replace("file://", "").split("/")[-1]
             tmpdbnow = os.listdir(self.url.replace("file://", "").replace(filename, ""))
             if os.path.splitext(filename)[0]+".srt" in tmpdbnow:
                 print("Subtitle found!")
-                with open (os.path.splitext(self.url.replace("file://", ""))[0]+".srt", 'r') as subfile:
+                srfile = os.path.splitext(self.url.replace("file://", ""))[0]+".srt"
+                print(srfile)
+                with open (srfile, 'r') as subfile:
                     presub = subfile.read()
                 subtitle_gen = srt.parse(presub)
                 subtitle = list(subtitle_gen)
                 self.needSub = True
-                subs = futures.ThreadPoolExecutor(max_workers=4)
+                subs = futures.ThreadPoolExecutor(max_workers=2)
                 subs.submit(self.subShow, subtitle)
             else:
                 self.nosub.set_title("Subtitle file not found")
                 self.nosub.show_all()
                 GLib.idle_add(self.subcheck.set_state, False)
                 self.pause()
-        else:
-            self.needSub = False
+        else: self.needSub = False
 
     def play(self, misc=""):
         if self.clickedE:
-            self.url = "file://"+self.clickedE
-            self.nowIn = self.useMode
-            if self.useMode == "audio":
-                self.player = self.audioPipe
-            else:
-                self.player = self.videoPipe
+            self.url, self.nowIn = "file://"+self.clickedE, self.useMode
+            if self.useMode == "audio": self.player = self.audioPipe
+            else: self.player = self.videoPipe
         elif "/" in misc:
-            try:
-                self.url = "file://"+misc
-                self.nowIn = "video"
-                self.player = self.videoPipe
-            except:
-                return
+            self.url, self.nowIn, self.player = "file://"+misc, "video", self.videoPipe
+            GLib.idle_add(self.subcheck.set_state, False)
         elif misc == "continue":
             if self.useMode == "audio":
-                self.player = self.audioPipe
-                self.nowIn = "audio"
+                if self.audioPipe.get_state(1)[1] == Gst.State.NULL: return
+                self.player, self.nowIn = self.audioPipe, "audio"
             else:
-                self.player = self.videoPipe
-                self.nowIn = "video"
+                if self.videoPipe.get_state(1)[1] == Gst.State.NULL: return
+                self.player, self.nowIn = self.videoPipe, "video"
         else:
-            try:
-                self.url = "file://"+self.playlist[self.tnum]["uri"]
-                self.nowIn = "audio"
-                self.player = self.audioPipe
-            except:
-                return
+            try: self.url, self.nowIn, self.player = "file://"+self.playlist[self.tnum]["uri"], "audio", self.audioPipe
+            except: return
         print("Play")
-        self.res = True
-        self.playing = True
-        self.position = 0
-        filename = self.url.replace("file://", "").split("/")[-1]
-        if self.useMode == "audio":
-            GLib.idle_add(self.tree.set_cursor, self.relPos)
+        self.res, self.playing, self.position = True, True, 0
+        if self.useMode == "audio": self.themer(self.roundSpin.get_value(), self.tnum)
         if misc != "continue":
             self.player.set_state(Gst.State.NULL)
             self.player.set_property("uri", self.url)
         self.player.set_state(Gst.State.PLAYING)
-        GLib.idle_add(self.header.set_subtitle, filename)
+        GLib.idle_add(self.header.set_subtitle, self.url.replace("file://", "").split("/")[-1])
         GLib.idle_add(self.plaicon.set_from_icon_name, "media-playback-pause", Gtk.IconSize.BUTTON)
-        GLib.timeout_add(250, self.updateSlider)
-        GLib.timeout_add(80, self.updatePos)
-        if self.useMode == "audio":
-            ld_cov = futures.ThreadPoolExecutor(max_workers=4)
+        GLib.timeout_add(50, self.updateSlider)
+        if self.useMode == "audio" and misc != "continue":
+            ld_cov = futures.ThreadPoolExecutor(max_workers=1)
             ld_cov.submit(self.load_cover)
+
+    def diabuilder (self, text, title, mtype, buts):
+        x, y = self.window.get_position()
+        sx, sy = self.window.get_size()
+        dialogWindow = Gtk.MessageDialog(parent=self.window, modal=True, destroy_with_parent=True, message_type=mtype, buttons=buts, text=text, title=title)
+        dsx, dsy = dialogWindow.get_size()
+        dialogWindow.move(x+((sx-dsx)/2), y+((sy-dsy)/2))
+        dialogWindow.show_all()
+        dialogWindow.run()
+        dialogWindow.destroy()
 
     def on_playBut_clicked(self, button):
         if self.nowIn == self.useMode or self.nowIn == "" or "/" in button:
             if not self.playing:
-                if not self.res or "/" in str(button):
-                    self.play(button)
-                else:
-                    self.resume()
-            else:
-                self.pause()
-        else:
-            self.play("continue")
+                if not self.res or "/" in str(button): self.play(button)
+                else: self.resume()
+            else: self.pause()
+        else: self.play("continue")
 
     def on_main_delete_event(self, window, e):
-        x, y = window.get_position()
-        sx, sy = window.get_size()
-        dialogWindow = Gtk.MessageDialog(parent=self.window, modal=True, destroy_with_parent=True, message_type=Gtk.MessageType.QUESTION, buttons=Gtk.ButtonsType.YES_NO, text='Do you really would like to exit now?')
-        dialogWindow.set_title("Prompt")
-        dsx, dsy = dialogWindow.get_size()
-        dialogWindow.move(x+((sx-dsx)/2), y+((sy-dsy)/2))
-        dx, dy = dialogWindow.get_position()
-        dialogWindow.show_all()
-        res = dialogWindow.run()
-        if res == Gtk.ResponseType.YES:
-            print('OK pressed')
-            dialogWindow.destroy()
-            try:
-                self.mainloop.quit()
-            except:
-                pass
-            self.force = True
-            self.stopKar = True
-            self.needSub = False
-            raise SystemExit
-        elif res == Gtk.ResponseType.NO:
-            print('No pressed')
-            dialogWindow.destroy()
-            return True
-        else:
-            dialogWindow.destroy()
-            return True
+        try: self.mainloop.quit()
+        except: pass
+        self.force, self.stopKar, self.needSub, self.hardReset = True, True, False, True
+        raise SystemExit
 
     def listener(self):
-        APP_ID="hbud"
+        APP_ID = "hbud"
         dbus.mainloop.glib.DBusGMainLoop(set_as_default=True)
         bus = dbus.Bus(dbus.Bus.TYPE_SESSION)
         bus_object = bus.get_object('org.gnome.SettingsDaemon', '/org/gnome/SettingsDaemon/MediaKeys')
@@ -681,97 +661,118 @@ class GUI:
     def on_media(self, app, action):
         print(app, action)
         if app == "hbud" and self.url:
-            if action == "Next":
-                try:
-                    self.on_next("xy")
-                except:
-                    print('Next error')
-            elif action == "Previous":
-                try:
-                    self.on_prev("xy")
-                except:
-                    print('Previous error')
-            elif not self.playing:
-                try:
-                    self.resume()
-                except:
-                    print("Resume error")
-            elif self.playing:
-                try:
-                    self.pause()
-                except:
-                    print('Pause error')
+            if action == "Next": self.on_next("xy")
+            elif action == "Previous": self.on_prev("xy")
+            elif not self.playing: self.resume()
+            elif self.playing: self.pause()
     
-    def on_key(self, widget, key):
-        # Add on_key as key_press signal to the ui file - main window preferably
-        try:
-            if key.keyval == 32 and self.url:
-                self.on_playBut_clicked(0)
-        except:
-            pass
+    def _sig_drag_drop(self, widget, *_): self.dst = int(widget.get_name().replace("trackbox_", ""))
 
-    def on_message(self, bus, message):
+    def _sig_drag_end(self, widget, _): self.reorderer(int(widget.get_name().replace("trackbox_", "")), self.dst)
+
+    def reorderer(self, src, dst):
+        playlistLoc, cutList = self.playlist, []
+        if dst < src:
+            [cutList.append(playlistLoc[i]) for i in range(dst, src+1)]
+            rby, corrector = 1, dst
+        elif dst > src:
+            [cutList.append(playlistLoc[i]) for i in range(src, dst+1)]
+            rby, corrector = -1, src
+        cutList = deque(cutList)
+        cutList.rotate(rby)
+        cutList = list(cutList)
+        for i in range(len(cutList)):
+            self.playlist[i+corrector] = cutList[i]
+        GLib.idle_add(self.neo_playlist_gen, "rename", src, dst)
+
+    def on_key(self, _, key):
+        # Add on_key as key_press signal to the ui file - main window preferably
+        # print(key.keyval)
+        try:
+            if key.keyval == 32 and self.url: self.on_playBut_clicked(0) # Space
+            elif key.keyval == 65307 or key.keyval == 65480:
+                if self.useMode == "video": self.on_karaoke_activate(0) # ESC and F11
+            elif key.keyval == 65363: self.on_next("") # Right
+            elif key.keyval == 65361: self.on_prev("") # Left
+            elif key.keyval == 65535 and self.useMode == "audio": # Delete
+                self.ednum = self.tnum
+                self.del_cur()
+            elif key.keyval == 65362 and self.useMode == "audio": # Up
+                self.reorderer(self.tnum, self.tnum-1)
+            elif key.keyval == 65364 and self.useMode == "audio": # Down
+                self.reorderer(self.tnum, self.tnum+1)
+        except: pass
+
+    def on_message(self, _, message):
         t = message.type
-        if t == Gst.MessageType.EOS and self.nowIn == "audio":
-            self.on_next("xy")
+        if t == Gst.MessageType.EOS and self.nowIn == "audio": self.on_next("xy")
         elif t == Gst.MessageType.ERROR:
             self.player.set_state(Gst.State.NULL)
             err, debug = message.parse_error()
             print (f"Error: {err}", debug)
 
-    def _on_size_allocated(self, widget, alloc):
-        time.sleep(0.01)
+    def _on_size_allocated(self, *_):
+        sleep(0.01)
         x, y = self.sub.get_size()
-        self.size = 50*x
-        self.size2 = 21.4285714*x
+        self.size, self.size2 = 50*x, 21.4285714*x
     
-    def _on_size_allocated0(self, widget, alloc):
-        time.sleep(0.01)
+    def _on_size_allocated0(self, *_):
+        sleep(0.01)
         if self.needSub == True:
             x, y = self.window.get_size()
-            self.size3 = self.sSize*y
-            self.size4 = float(f"0.0{self.sMarg}")*y
+            self.size3, self.size4 = self.sSize*y, float(f"0.0{self.sMarg}")*y
 
-    def on_karaoke_activate(self, button):
+    def get_lyrics(self, title, artist):
+        self.DAPI.title, self.DAPI.artist = title, artist
+        try: result = self.DAPI.getLyrics()
+        except: result = 0
+        return result
+
+    def on_karaoke_activate(self, *_):
         if self.nowIn == "audio":
             if self.playing == True or self.res == True:
                 print('Karaoke')
                 self.stopKar = False
                 track = self.playlist[self.tnum]["title"]
-                artist = self.playlist[self.tnum]["artist"]
+                try:
+                    artist = self.playlist[self.tnum]["artist"].split("/")[0]
+                    if artist == "AC": artist = self.playlist[self.tnum]["artist"]
+                except: artist = self.playlist[self.tnum]["artist"]
                 dbnow = []
                 if self.clickedE:
                     folPathClick = self.clickedE.replace(self.clickedE.split("/")[-1], "")
                     tmpdbnow = os.listdir(folPathClick)
-                else:
-                    tmpdbnow = os.listdir(self.folderPath)
+                else: tmpdbnow = os.listdir(self.folderPath)
                 for i in tmpdbnow:
-                    if ".srt" in i:
+                    if ".srt" in i or ".txt" in i:
                         x = i
-                        if self.clickedE:
-                            dbnow.append(f"{folPathClick}{x}")
-                        else:
-                            dbnow.append(f"{self.folderPath}/{x}")
+                        if self.clickedE: dbnow.append(f"{folPathClick}{x}")
+                        else: dbnow.append(f"{self.folderPath}/{x}")
                 self.sub.set_title(f'{track} - {artist}')
                 tmp = os.path.splitext(self.playlist[self.tnum]["uri"])[0]
-                print(dbnow)
-                print(tmp)
                 if f"{tmp}.srt" not in dbnow:
-                    x, y = self.window.get_position()
-                    sx, sy = self.window.get_size()
-                    dialogWindow = Gtk.MessageDialog(parent=self.window, modal=True, destroy_with_parent=True, message_type=Gtk.MessageType.INFO, buttons=Gtk.ButtonsType.OK, text=f'The current track does not have synced lyrics. Please place the synced .srt file alongside the audio file, with the same name as the audio file.')
-                    dialogWindow.set_title("Information")
-                    dsx, dsy = dialogWindow.get_size()
-                    dialogWindow.move(x+((sx-dsx)/2), y+((sy-dsy)/2))
-                    dialogWindow.show_all()
-                    res = dialogWindow.run()
-                    if res == Gtk.ResponseType.OK:
-                        dialogWindow.destroy()
+                    if f"{tmp}.txt" in dbnow:
+                        f = open(f"{tmp}.txt", "r")
+                        lyric = f.read()
+                        f.close()
+                        self.lyrLab.set_label(lyric)
+                        self.subStack.set_visible_child(self.lyrmode)
+                        self.sub.show_all()
                     else:
-                        dialogWindow.destroy()
+                        lyric = self.get_lyrics(track, artist)
+                        if lyric == 0:
+                            self.diabuilder('Can not get lyrics for the current track. Please place the synced .srt file  or the raw .txt file alongside the audio file, with the same name as the audio file.', "Information", Gtk.MessageType.INFO, Gtk.ButtonsType.OK)
+                        else:
+                            f = open(f"{tmp}.txt", "w+")
+                            f.write(lyric)
+                            f.close()
+                            self.lyrLab.set_label(lyric)
+                            self.subStack.set_visible_child(self.lyrmode)
+                            self.sub.show_all()
                 else:
                     print("FOUND")
                     self.start_karaoke(f"{tmp}.srt")
+                    self.subStack.set_visible_child(self.karmode)
                     self.sub.show_all()
         elif self.useMode == "video":
             if self.fulle == False:
@@ -781,75 +782,69 @@ class GUI:
                 ld_clock.submit(self.clock)
             else:
                 GLib.idle_add(self.karaokeBut.set_from_icon_name, "view-fullscreen", Gtk.IconSize.BUTTON)
-                self.resete = False
-                self.hardReset = False
+                self.resete, self.keepReset = False, False
                 self.window.unfullscreen()
+                self.mage()
 
-    def mouse_enter(self, widget, event):
-        if self.fulle == True:
-            self.hardReset = True
+    def mouse_enter(self, *_):
+        if self.fulle == True: self.keepReset = True
     
-    def mouse_leave(self, widget, event):
-        if self.fulle == True:
-            self.hardReset = False
+    def mouse_leave(self, *_):
+        if self.fulle == True: self.keepReset = False
     
-    def mouse_moving(self, widget, event):
+    def mage(self):
+        GLib.idle_add(self.exBot.show)
+        cursor = Gdk.Cursor.new_from_name(self.window.get_display(), 'default')
+        self.window.get_window().set_cursor(cursor)
+
+    def mouse_moving(self, *_):
         if self.fulle == True:
             self.resete = True
             if self.exBot.get_visible() == False:
-                GLib.idle_add(self.exBot.show)
-                cursor = Gdk.Cursor.new_from_name(widget.get_display(), 'default')
-                self.window.get_window().set_cursor(cursor)
+                self.mage()
                 ld_clock = futures.ThreadPoolExecutor(max_workers=1)
                 ld_clock.submit(self.clock)
 
     def clock(self):
-        start = time.time()
-        while time.time() - start < 3:
-            time.sleep(0.00001)
-            if self.hardReset == True:
-                start = time.time()
-            elif self.resete == True:
-                start = time.time()
-                self.resete = False
+        start = time()
+        while time() - start < 3:
+            sleep(0.00001)
+            if self.hardReset == True: return
+            if self.keepReset == True: start = time()
+            elif self.resete == True: start, self.resete = time(), False    
         if self.fulle == True:
             GLib.idle_add(self.exBot.hide)
-            display = self.window.get_display()
-            cursor = Gdk.Cursor.new_for_display(display, Gdk.CursorType.BLANK_CURSOR)
+            cursor = Gdk.Cursor.new_for_display(self.window.get_display(), Gdk.CursorType.BLANK_CURSOR)
             self.window.get_window().set_cursor(cursor)
 
-    def on_state_change(self, window, event):
+    def on_state_change(self, _, event):
         if event.changed_mask & Gdk.WindowState.FULLSCREEN:
             self.fulle = bool(event.new_window_state & Gdk.WindowState.FULLSCREEN)
             print(self.fulle)
 
     def subShow(self, subtitle):
         while self.needSub == True:
-            time.sleep(0.001)
+            sleep(0.001)
             for line in subtitle:
                 if self.position >= line.start.total_seconds() and self.position <= line.end.total_seconds():
                     GLib.idle_add(self.theTitle.set_markup, f"<span size='{int(self.size3)}'>{line.content}</span>")
                     self.theTitle.set_margin_bottom(self.size4)
                     GLib.idle_add(self.theTitle.show)
                     while self.needSub == True and self.position <= line.end.total_seconds() and self.position >= line.start.total_seconds():
-                        time.sleep(0.001)
+                        sleep(0.001)
                         pass
                     GLib.idle_add(self.theTitle.hide)
                     GLib.idle_add(self.theTitle.set_label, "")
 
     def start_karaoke(self, sfile):
-        print('HEY')
-        with open (sfile, "r") as subfile:
-            presub = subfile.read()
+        with open (sfile, "r") as subfile: presub = subfile.read()
         subtitle_gen = srt.parse(presub)
-        subtitle = list(subtitle_gen)
-        lyrs = futures.ThreadPoolExecutor(max_workers=4)
+        subtitle, lyrs = list(subtitle_gen), futures.ThreadPoolExecutor(max_workers=2)
         lyrs.submit(self.slideShow, subtitle)
 
     def slideShow(self, subtitle):
         self.lenlist = len(subtitle)-1
         while not self.stopKar:
-            # time.sleep(0.01)
             self.line1 = []
             self.line2 = []
             self.line3 = []
@@ -962,11 +957,11 @@ class GUI:
                     break
                 leftover += f"{y.content.replace('#', '')} "
             try:
-                tg = GLib.idle_add(self.label1.set_markup, f"<span size='{self.size}' color='green'>{done}</span> <span size='{self.size}' color='green'>{xy.content.replace('#', '')}</span> <span size='{self.size}' color='white'>{leftover}</span>")
+                tg = GLib.idle_add(self.label1.set_markup, f"<span size='{self.size}' color='green'>{done}</span> <span size='{self.size}' color='green'> {xy.content.replace('#', '')}</span> <span size='{self.size}'> {leftover}</span>")
             except:
-                tg = GLib.idle_add(self.label1.set_markup, f"<span size='{self.size}' color='green'>{done}</span> <span size='{self.size}' color='green'>{xy}</span> <span size='{self.size}' color='white'>{leftover}</span>")
+                tg = GLib.idle_add(self.label1.set_markup, f"<span size='{self.size}' color='green'>{done}</span> <span size='{self.size}' color='green'> {xy}</span> <span size='{self.size}' color='white'> {leftover}</span>")
             while not self.stopKar:
-                time.sleep(0.01)
+                sleep(0.01)
                 if it > maxit:
                     if self.position >= xy.end.total_seconds()-0.05 and self.position >= 0.5:
                         break
@@ -978,53 +973,51 @@ class GUI:
                     break
             it += 1
             try:
-                done += f"{xy.content.replace('#', '')} "
+                if done == "":
+                    done += f"{xy.content.replace('#', '')}"
+                else:
+                    done += f" {xy.content.replace('#', '')}"
             except:
                 pass
 
-    def config_write(self, button):
-        parser.set('subtitles', 'margin', str(int(float(self.subMarSpin.get_value()))))
-        parser.set('subtitles', 'size', str(int(float(self.subSpin.get_value()))))
+    def config_write(self, *_):
+        tmp1, tmp2, tmp3 = int(self.subSpin.get_value()), int(self.subMarSpin.get_value()), int(self.roundSpin.get_value())
+        parser.set('subtitles', 'margin', str(tmp2))
+        parser.set('subtitles', 'size', str(tmp1))
+        parser.set('gui', 'rounded', str(tmp3))
         file = open(confP, "w+")
         parser.write(file)
         file.close()
-        self.sSize = int(float(self.subSpin.get_value()))
-        self.sMarg = int(float(self.subMarSpin.get_value()))
+        self.themer(str(tmp3))
+        self.sSize, self.sMarg = tmp1, tmp2
 
-    def on_hide(self, window, e):
+    def on_hide(self, *_):
         self.stopKar = True
         self.sub.hide()
         return True
 
 if __name__ == "__main__":
-    # Dev/Use mode
-    if os.path.exists('/home/daniel/GitRepos/hbud'):
-        fdir = "/home/daniel/GitRepos/hbud/DEV_FILES/"
-        print(fdir)
-        os.chdir(fdir)
-        print('Running in development mode.')
-    else:
-        fdir = "/usr/share/hbud/"
-        print(fdir)
-        os.chdir(fdir)
-        print('Running in production mode.')
-    user = os.popen("who|awk '{print $1}'r").read()
-    user = user.rstrip()
-    user = user.split('\n')[0]
-    parser = ConfigParser()
-    confP = f"/home/{user}/.config/hbud.ini"
-    if os.path.isfile(confP):
-        parser.read(confP)
+    abspath = os.path.abspath(__file__)
+    dname = os.path.dirname(abspath)
+    print(dname)
+    os.chdir(dname.replace("HBud.dist", ""))
+    if "DEV_FILES" in dname: print("Running in development mode")
+    else: print("Running in production mode")
+    user = os.popen("who|awk '{print $1}'r").read().rstrip().split('\n')[0]
+    parser, confP = ConfigParser(), f"/home/{user}/.config/hbud.ini"
+    if os.path.isfile(confP): parser.read(confP)
     else:
         os.system(f"touch {confP}")
         parser.add_section('subtitles')
         parser.set('subtitles', 'margin', str(66))
         parser.set('subtitles', 'size', str(30))
+        parser.add_section('gui')
+        parser.set('gui', 'rounded', "10")
         file = open(confP, "w+")
         parser.write(file)
         file.close()
-    sSize = parser.get('subtitles', 'size')
-    sMarg = parser.get('subtitles', 'margin')
+    sSize, sMarg = parser.get('subtitles', 'size'), parser.get('subtitles', 'margin')
+    rounded = parser.get('gui', 'rounded')
     Gst.init(None)
     app = GUI()
     Gtk.main()

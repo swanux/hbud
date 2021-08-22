@@ -1,3 +1,4 @@
 #!/bin/bash
 
-nuitka3 HBud.py --nofollow-imports --include-module=mediafile --include-module=srt --include-module=six --include-module=mutagen --include-module=dbus
+nuitka3 --standalone --nofollow-import-to=pytest --python-flag=nosite,-O --plugin-enable=anti-bloat,implicit-imports,pylint-warnings --clang --warn-implicit-exceptions --warn-unusual-code --prefer-source-code HBud.py
+upx -9 HBud.dist/HBud

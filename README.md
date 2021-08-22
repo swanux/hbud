@@ -1,16 +1,18 @@
 # HBud
 Simple music / video player and karaoke app written in Python and GTK - Because why not
 
-# [Website](https://swanux.github.io/hbud.html)
+# [Website](https://swanux.github.io/hbud.html) | [Feedback](https://swanux.github.io/feedbacks.html)
 
 # Features
 - Video and audio playback (for supported formats, refer to GStreamer docs)
 - Subtitle support
 - Karaoke mode (synced lyrics needed in own srt format, see below for instructions)
+- Static lyric (for nearly every music)
 - Metadata editor (for audio files)
 - Playlists (from folder structure)
 - Seamlessly switch back and forth between video and audio playback (remembers where to continue)
 - Native, lightweight and simple
+- AppImage (for portable mode, supports every linux distro) and native .deb package for Debian/Ubuntu based distros (updates through PPA)
 
 # Generate synced lyrics
 
@@ -32,6 +34,17 @@ Here I'll show you how to generate synced lyrics for yourslef
 5. Run [tosrt.py](https://github.com/swanux/hbud/blob/master/tools/) from this repo like this: `python3 tosrt.py aligned.txt lyrics.txt output.srt`
 7. Move and rename the resulted output file alongside your audio file
 
+# Downloading music
+
+I recommend using [spotDL](https://github.com/spotDL/spotify-downloader)
+
+# Generate subtitles
+
+You can use [AutoSub](https://github.com/abhirooptalasila/AutoSub) which is a nice tool if you want to generate your own subtitles.
+
+A manual alternative is the GTK program [Gnome Subtitles](https://gnomesubtitles.org)
+*Note: You can also use this program, to adjust already generated synced lyrics to different audio files of the same song.*
+
 # Credits
 * [GTK](https://www.gtk.org) - For the GUI framework
 * [GStreamer](https://gstreamer.freedesktop.org) - For the multimedia framework
@@ -42,3 +55,4 @@ Here I'll show you how to generate synced lyrics for yourslef
 * [mediafile](https://pypi.org/project/mediafile/) - For the wrapper around mutagen
 * [mutagen](https://pypi.org/project/mutagen/) - For this extensive module
 * [Nuitka](https://nuitka.net) - For the compiler
+* [azapi](https://github.com/elmoiv/azapi) - For the AZLyrics API

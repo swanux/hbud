@@ -1,3 +1,0 @@
-shlibs:Depends=libc6 (>= 2.29), libpython3.8 (>= 3.8.2)
-misc:Depends=
-misc:Pre-Depends=
