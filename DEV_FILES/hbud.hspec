@@ -10,7 +10,7 @@ email = dani@kolozsi.net
 pkgname = hbud
 pretty_name = HBud
 licensev = 0
-version = 0.2.1.2
+version = 0.2.2.0
 section = 18
 priority = 0
 depends = gstreamer1.0-libav
@@ -18,8 +18,16 @@ depends = gstreamer1.0-libav
 	gstreamer1.0-plugins-bad
 	gstreamer1.0-plugins-ugly
 	gstreamer1.0-vaapi
+	gstreamer1.0-gtk3
+	gstreamer-1.0
 	libavcodec-extra
+	python3 (>= 3.8)
+	python3-dbus
+	python3-gi
+	python3-gst-1.0
 build_deps = debhelper (>= 11)
+	python3-all
+	dh-python
 homepage = https://github.com/swanux/hbud
 
 [description]
@@ -27,32 +35,26 @@ short = Simple music / video player and karaoke app written in Python and GTK - 
 longue = Simple music / video player and karaoke app written in Python and GTK - Because why not
 
 [misc]
-rules = 1
-min_pyver = None
-postinst = ln -s /usr/share/hbud/HBud.dist/HBud /usr/bin/hbud || echo "No need for it"
+rules = 0
+min_pyver = 3.8
+postinst = ln -s /usr/share/hbud/HBud.py /usr/bin/hbud || echo "No need for it"
 postrm = rm /usr/bin/hbud || echo "No need for it2"
 
 [changelog]
 target = focal
 urgency = 1
-changes = Bugfixes and quality improvements
-	Optimized stability and performane
-	Added online lyric support (static lyric)
-	Added AppImage build
-	Added a lots of small comfort functions
-	Now showing both elapsed and remaining time
-	Added optional rounded corners (why not?)
-	Own widgets instead of TreeView (improved visuals, stability and performance)
-	Added new drag and drop support
-	Added new keyboard controls (Up, Down, Left, Right, Del, F11, ESC)
-	Added option to save playlist order (speeds up loading time too) - rescan to append new tracks
-	Added proper sort method (multiple options)
-	Added search method
+changes = Added option to force dark mode
+	Fixed some bugs (GUI and dependency related)
+	Added option to enable background for subtitles
+	Optimized code
+	Dropped AppImage support (it was fun, but it has no real use)
+	Smaller size (compiled code is nice, but it has not much use again)
 
 [data]
 root = /home/daniel/GitRepos/hbud/DEV_FILES
 program = icons/
 	hbud.glade
-	HBud.dist/
+	HBud.py
+	modules/
 entry = hbud.desktop
 

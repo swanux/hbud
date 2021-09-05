@@ -12,7 +12,7 @@ Simple music / video player and karaoke app written in Python and GTK - Because 
 - Playlists (from folder structure)
 - Seamlessly switch back and forth between video and audio playback (remembers where to continue)
 - Native, lightweight and simple
-- AppImage (for portable mode, supports every linux distro) and native .deb package for Debian/Ubuntu based distros (updates through PPA)
+- Native .deb package for Debian/Ubuntu based distros (updates through PPA)
 
 # Generate synced lyrics
 
@@ -43,10 +43,11 @@ I recommend using [spotDL](https://github.com/spotDL/spotify-downloader)
 You can use [AutoSub](https://github.com/abhirooptalasila/AutoSub) which is a nice tool if you want to generate your own subtitles.
 
 A manual alternative is the GTK program [Gnome Subtitles](https://gnomesubtitles.org)
+
 *Note: You can also use this program, to adjust already generated synced lyrics to different audio files of the same song.*
 
 # Credits
-* [GTK](https://www.gtk.org) - For the GUI framework
+* [GTK3](https://www.gtk.org) - For the GUI framework
 * [GStreamer](https://gstreamer.freedesktop.org) - For the multimedia framework
 * [PyGObject](https://pygobject.readthedocs.io/en/latest/) - For the Python bindings
 * [Lazka](https://lazka.github.io/pgi-docs/) - For the documentation
@@ -54,5 +55,4 @@ A manual alternative is the GTK program [Gnome Subtitles](https://gnomesubtitles
 * [srt](https://pypi.org/project/srt/) - For the Python srt module
 * [mediafile](https://pypi.org/project/mediafile/) - For the wrapper around mutagen
 * [mutagen](https://pypi.org/project/mutagen/) - For this extensive module
-* [Nuitka](https://nuitka.net) - For the compiler
 * [azapi](https://github.com/elmoiv/azapi) - For the AZLyrics API

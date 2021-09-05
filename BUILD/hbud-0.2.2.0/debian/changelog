@@ -1,0 +1,10 @@
+hbud (0.2.2.0-1) focal; urgency=medium
+
+  * Added option to force dark mode
+  * Fixed some bugs (GUI and dependency related)
+  * Added option to enable background for subtitles
+  * Optimized code
+  * Dropped AppImage support (it was fun, but it has no real use)
+  * Smaller size (compiled code is nice, but it has not much use again)
+
+ -- Dániel Kolozsi <dani@kolozsi.net>  Sun, 05 Sep 2021 15:23:02 +0100

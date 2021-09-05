@@ -60,7 +60,8 @@ Author: Swanux
   <object class="GtkImage" id="image2">
     <property name="visible">True</property>
     <property name="can_focus">False</property>
-    <property name="stock">gtk-go-down</property>
+    <property name="icon_name">gtk-go-down</property>
+    <property name="use_fallback">True</property>
   </object>
   <object class="GtkImage" id="kar">
     <property name="visible">True</property>
@@ -265,6 +266,7 @@ Author: Swanux
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
                         <property name="receives_default">True</property>
+                        <property name="tooltip_text" translatable="yes">Save current order</property>
                         <signal name="clicked" handler="on_order_save" swapped="no"/>
                       </object>
                       <packing>
@@ -279,6 +281,7 @@ Author: Swanux
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
                         <property name="receives_default">True</property>
+                        <property name="tooltip_text" translatable="yes">Look for new tracks and append them at the end</property>
                         <signal name="clicked" handler="on_rescan_order" swapped="no"/>
                       </object>
                       <packing>
@@ -293,6 +296,7 @@ Author: Swanux
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
                         <property name="receives_default">True</property>
+                        <property name="tooltip_text" translatable="yes">Clear saved order</property>
                         <signal name="clicked" handler="on_clear_order" swapped="no"/>
                       </object>
                       <packing>
@@ -472,7 +476,7 @@ Author: Swanux
                               </object>
                               <packing>
                                 <property name="left_attach">0</property>
-                                <property name="top_attach">3</property>
+                                <property name="top_attach">5</property>
                               </packing>
                             </child>
                             <child>
@@ -483,7 +487,7 @@ Author: Swanux
                                 <property name="receives_default">True</property>
                                 <property name="halign">end</property>
                                 <property name="valign">end</property>
-                                <property name="margin_right">10</property>
+                                <property name="margin_right">15</property>
                                 <property name="margin_bottom">5</property>
                                 <property name="hexpand">True</property>
                                 <property name="vexpand">True</property>
@@ -491,7 +495,39 @@ Author: Swanux
                               </object>
                               <packing>
                                 <property name="left_attach">1</property>
-                                <property name="top_attach">3</property>
+                                <property name="top_attach">5</property>
+                              </packing>
+                            </child>
+                            <child>
+                              <object class="GtkLabel" id="subLab4">
+                                <property name="visible">True</property>
+                                <property name="can_focus">False</property>
+                                <property name="halign">start</property>
+                                <property name="margin_left">15</property>
+                                <property name="hexpand">False</property>
+                                <property name="label" translatable="yes">Force dark mode :
+(Default : Off)</property>
+                                <attributes>
+                                  <attribute name="weight" value="bold"/>
+                                </attributes>
+                              </object>
+                              <packing>
+                                <property name="left_attach">0</property>
+                                <property name="top_attach">4</property>
+                              </packing>
+                            </child>
+                            <child>
+                              <object class="GtkSwitch" id="dark_switch">
+                                <property name="visible">True</property>
+                                <property name="can_focus">True</property>
+                                <property name="halign">start</property>
+                                <property name="valign">center</property>
+                                <property name="margin_left">20</property>
+                                <property name="margin_right">15</property>
+                              </object>
+                              <packing>
+                                <property name="left_attach">1</property>
+                                <property name="top_attach">4</property>
                               </packing>
                             </child>
                             <child>
@@ -503,6 +539,24 @@ Author: Swanux
                                 <property name="hexpand">False</property>
                                 <property name="label" translatable="yes">Rounded corners :
 (Default : 10)</property>
+                                <attributes>
+                                  <attribute name="weight" value="bold"/>
+                                </attributes>
+                              </object>
+                              <packing>
+                                <property name="left_attach">0</property>
+                                <property name="top_attach">3</property>
+                              </packing>
+                            </child>
+                            <child>
+                              <object class="GtkLabel" id="subLab5">
+                                <property name="visible">True</property>
+                                <property name="can_focus">False</property>
+                                <property name="halign">start</property>
+                                <property name="margin_left">15</property>
+                                <property name="hexpand">False</property>
+                                <property name="label" translatable="yes">Subtitle background :
+(Default : Off)</property>
                                 <attributes>
                                   <attribute name="weight" value="bold"/>
                                 </attributes>
@@ -523,6 +577,20 @@ Author: Swanux
                                 <property name="adjustment">adjustment4</property>
                                 <property name="numeric">True</property>
                                 <property name="value">10</property>
+                              </object>
+                              <packing>
+                                <property name="left_attach">1</property>
+                                <property name="top_attach">3</property>
+                              </packing>
+                            </child>
+                            <child>
+                              <object class="GtkSwitch" id="bg_switch">
+                                <property name="visible">True</property>
+                                <property name="can_focus">True</property>
+                                <property name="halign">start</property>
+                                <property name="valign">center</property>
+                                <property name="margin_left">20</property>
+                                <property name="margin_right">15</property>
                               </object>
                               <packing>
                                 <property name="left_attach">1</property>
@@ -606,7 +674,7 @@ Author: Swanux
                                 <property name="valign">center</property>
                                 <property name="hexpand">False</property>
                                 <property name="vexpand">False</property>
-                                <property name="label" translatable="yes">v0.2 | Snapshot 1
+                                <property name="label" translatable="yes">v0.2.2
 Codename: Yennefer
 
 Ridiculously simple audio and video player

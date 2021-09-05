@@ -1,7 +1,0 @@
-#!/bin/sh
-
-act=$1
-
-cd "$(dirname "$0")"
-echo $act
-exec HBud.dist/./HBud "$act"

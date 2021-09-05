@@ -1,0 +1,4 @@
+#!/bin/bash +e
+
+rm /usr/bin/hbud || echo "No need for it2"
+#DEBHELPER#
