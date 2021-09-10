@@ -1,11 +1,11 @@
 10cbdbe3a4dcf5b0279c3b5e621abbcf  usr/share/applications/hbud.desktop
-f5250b9ab872ef78c66388f8713c965b  usr/share/doc/hbud/changelog.Debian.gz
+f017f522e32101053a0c8d0bede98789  usr/share/doc/hbud/changelog.Debian.gz
 f634012b6cb80cd56aefc0f896c8384a  usr/share/doc/hbud/copyright
-66f96e8aa21a9bd646ac314945dac4a7  usr/share/hbud/HBud.py
+f98b4cb27c5cdd108b1b94126e6ada15  usr/share/hbud/HBud.py
 44e607965f2828920dbab78139273a54  usr/share/hbud/hbud.glade
 df829726eab2481eb8fd7692ffec608a  usr/share/hbud/icons/hbud.png
 ad284b66a188056999340174077328a8  usr/share/hbud/icons/hbud_64.png
-1f2ba755e23492b948882e6af19b54d4  usr/share/hbud/icons/track.png
+ebdd14ad12b2e739c60b6728c366d56b  usr/share/hbud/icons/track.png
 03ed685b779214bf93a694f6e4467a3d  usr/share/hbud/modules/__pycache__/mediafile.cpython-38.pyc
 d6bf4315df7cfcf699e4351ecbb026b4  usr/share/hbud/modules/__pycache__/six.cpython-38.pyc
 4168d46689eab68087acf8551411b5da  usr/share/hbud/modules/__pycache__/srt.cpython-38.pyc

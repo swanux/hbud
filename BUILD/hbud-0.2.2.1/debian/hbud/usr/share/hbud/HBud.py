@@ -969,9 +969,12 @@ if __name__ == "__main__":
     abspath = os.path.abspath(__file__)
     dname = os.path.dirname(abspath)
     print(dname)
-    os.chdir(dname.replace("HBud.dist", ""))
-    if "DEV_FILES" in dname: print("Running in development mode")
-    else: print("Running in production mode")
+    if "DEV_FILES" in dname:
+        print("Running in development mode")
+        os.chdir(dname)
+    else:
+        print("Running in production mode")
+        os.chdir("/usr/share/hbud/")
     user = os.popen("who|awk '{print $1}'r").read().rstrip().split('\n')[0]
     parser, confP = ConfigParser(), f"/home/{user}/.config/hbud.ini"
     if os.path.isfile(confP): parser.read(confP)
