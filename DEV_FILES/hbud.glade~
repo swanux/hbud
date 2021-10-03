@@ -801,7 +801,7 @@ Author: Swanux
                                 <property name="valign">center</property>
                                 <property name="hexpand">False</property>
                                 <property name="vexpand">False</property>
-                                <property name="label" translatable="yes">v0.2.3
+                                <property name="label" translatable="yes">v0.2.2
 Codename: Yennefer
 
 FAQ :

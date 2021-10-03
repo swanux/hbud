@@ -1,0 +1,10 @@
+hbud (0.2.3-1) focal; urgency=medium
+
+  * Modernized and revamped the settings menu
+  * Added option to change accent color
+  * Fixed packaging issues
+  * Fixed some bugs
+  * Added some shortcuts (double click to fullscreen, etc.)
+  * Added release notes to about section
+
+ -- Dániel Kolozsi <dani@kolozsi.net>  Sun, 03 Oct 2021 11:42:58 +0100

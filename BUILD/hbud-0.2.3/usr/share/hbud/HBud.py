@@ -2,8 +2,18 @@
 # -*- coding: utf-8 -*-
 
 from sys import argv, path
+import os
+abspath = os.path.abspath(__file__)
+dname = os.path.dirname(abspath)
+print(dname)
+if "DEV_FILES" in dname:
+    print("Running in development mode")
+    os.chdir(dname)
+else:
+    print("Running in production mode")
+    os.chdir("/usr/share/hbud/")
 path.append("modules")
-import os, gi, dbus, srt, azapi, dbus.mainloop.glib, json
+import gi, dbus, srt, azapi, dbus.mainloop.glib, json
 from concurrent import futures
 from time import sleep, time
 from operator import itemgetter
@@ -53,7 +63,7 @@ class TrackBox(Gtk.EventBox):
 
 class GUI:
     def __init__(self):
-        UI_FILE, version = "hbud.glade", "HBud 0.2.2 Yennefer"
+        UI_FILE, version = "hbud.glade", "HBud 0.2.3 Yennefer"
         self.useMode = "audio"
         self.supportedList = ['.3gp', '.aa', '.aac', '.aax', '.aiff', '.flac', '.m4a', '.mp3', '.ogg', '.wav', '.wma', '.wv']
         try:
@@ -66,8 +76,20 @@ class GUI:
         self.builder = Gtk.Builder()
         self.builder.add_from_file(UI_FILE)
         self.builder.connect_signals(self)
+        whview = self.builder.get_object("whView")
+        buffer = Gtk.TextBuffer()
+        buffer.set_text("""
+ v0.2.3 - Oct 03 2021 :
+
+        * Modernized and revamped the settings menu
+        * Added option to change accent color
+        * Fixed packaging issues
+        * Fixed some bugs
+        * Added some shortcuts (double click to fullscreen, etc.)
+        * Added release notes to about section""")
+        whview.set_buffer(buffer)
         self.playlistPlayer, self.needSub, self.nowIn = False, False, ""
-        self.DAPI = azapi.AZlyrics('duckduckgo', accuracy=0.7)
+        self.DAPI = azapi.AZlyrics('duckduckgo', accuracy=0.65)
         self.fulle, self.resete, self.keepReset, self.hardReset, self.tnum, self.sorted = False, False, False, False, 0, False
         self.sSize, self.sMarg = int(float(sSize)), int(float(sMarg))
         self.size, self.size2, self.size3, self.size4 = 35000, 15000, self.sSize*450, float(f"0.0{self.sMarg}")*450
@@ -123,6 +145,11 @@ class GUI:
         self.nosub = self.builder.get_object("nosub")
         self.iChoser = self.builder.get_object("iChoser")
         self.roundSpin = self.builder.get_object("round_spin")
+        self.colorer = self.builder.get_object("colorer")
+        self.color = color
+        coco = Gdk.RGBA()
+        coco.parse(self.color)
+        self.colorer.set_rgba(coco)
         self.roundSpin.set_value(int(rounded))
         self.dark_switch, self.bg_switch = self.builder.get_object("dark_switch"), self.builder.get_object("bg_switch")
         self.dark_switch.set_state(self.darke)
@@ -253,14 +280,17 @@ class GUI:
             border-image: none;
             box-shadow: none;
         }
+        switch:checked {
+            background-color: %s;
+        }
         #trackbox_%s{
-            background: #11949c;
+            background: %s;
             color: #000;
             border-radius: %spx;
         }
         .maximized, .fullscreen, .maximized .titlebar {
             border-radius: 0px;
-        }""" % (int(v)/2.6,int(v)/1.5,v,v,v,v,v,v,w,v) # decoration, window, window.background, window.titlebar, .titlebar
+        }""" % (int(v)/2.6,int(v)/1.5,v,v,v,v,v,v,self.color,w,self.color,v) # decoration, window, window.background, window.titlebar, .titlebar
         css = str.encode(css)
         self.provider.load_from_data(css)
         self.window.get_style_context().add_provider_for_screen(Gdk.Screen.get_default(), self.provider, Gtk.STYLE_PROVIDER_PRIORITY_APPLICATION)
@@ -462,7 +492,9 @@ class GUI:
         self.sub2.show_all()
 
     def mouse_click0(self, _, event):
-        if event.button == 1: self.on_playBut_clicked(0)
+        if event.type == Gdk.EventType._2BUTTON_PRESS: 
+            if self.useMode == "video": self.on_karaoke_activate(0)
+        elif event.type == Gdk.EventType.BUTTON_PRESS: self.on_playBut_clicked(0)
 
     def del_cur(self, *_):
         self.playlist.remove(self.playlist[self.ednum])
@@ -654,15 +686,18 @@ class GUI:
         raise SystemExit
 
     def listener(self):
-        APP_ID = "hbud"
-        dbus.mainloop.glib.DBusGMainLoop(set_as_default=True)
-        bus = dbus.Bus(dbus.Bus.TYPE_SESSION)
-        bus_object = bus.get_object('org.gnome.SettingsDaemon', '/org/gnome/SettingsDaemon/MediaKeys')
-        dbus_interface='org.gnome.SettingsDaemon.MediaKeys'
-        bus_object.GrabMediaPlayerKeys(APP_ID, 0, dbus_interface=dbus_interface)
-        bus_object.connect_to_signal('MediaPlayerKeyPressed', self.on_media)
-        self.mainloop = GLib.MainLoop()
-        self.mainloop.run()
+        try:
+            APP_ID = "hbud"
+            dbus.mainloop.glib.DBusGMainLoop(set_as_default=True)
+            bus = dbus.Bus(dbus.Bus.TYPE_SESSION)
+            bus_object = bus.get_object('org.gnome.SettingsDaemon', '/org/gnome/SettingsDaemon/MediaKeys')
+            dbus_interface='org.gnome.SettingsDaemon.MediaKeys'
+            bus_object.GrabMediaPlayerKeys(APP_ID, 0, dbus_interface=dbus_interface)
+            bus_object.connect_to_signal('MediaPlayerKeyPressed', self.on_media)
+            self.mainloop = GLib.MainLoop()
+            self.mainloop.run()
+        except:
+            print("I: Not compatible with Gnome MediaKeys daemon")
     
     def on_media(self, app, action):
         print(app, action)
@@ -813,7 +848,7 @@ class GUI:
 
     def clock(self):
         start = time()
-        while time() - start < 3:
+        while time() - start < 2:
             sleep(0.00001)
             if self.hardReset == True: return
             if self.keepReset == True: start = time()
@@ -930,7 +965,7 @@ class GUI:
                 if self.stopKar or self.seekBack: break
                 leftover += f"{y.content.replace('#', '')} "
             try: GLib.idle_add(self.label1.set_markup, f"<span size='{self.size}' color='green'>{done}</span> <span size='{self.size}' color='green'> {xy.content.replace('#', '')}</span> <span size='{self.size}'> {leftover}</span>")
-            except: GLib.idle_add(self.label1.set_markup, f"<span size='{self.size}' color='green'>{done}</span> <span size='{self.size}' color='green'> {xy}</span> <span size='{self.size}' color='white'> {leftover}</span>")
+            except: GLib.idle_add(self.label1.set_markup, f"<span size='{self.size}' color='green'>{done}</span> <span size='{self.size}' color='green'> {xy}</span> <span size='{self.size}'> {leftover}</span>")
             while not self.stopKar:
                 sleep(0.01)
                 if it > maxit:
@@ -946,13 +981,14 @@ class GUI:
             except: pass
 
     def config_write(self, *_):
-        self.darke, self.bge = self.dark_switch.get_state(), self.bg_switch.get_state()
+        self.darke, self.bge, self.color = self.dark_switch.get_state(), self.bg_switch.get_state(), self.colorer.get_rgba().to_string()
         tmp1, tmp2, tmp3 = int(self.subSpin.get_value()), int(self.subMarSpin.get_value()), int(self.roundSpin.get_value())
         parser.set('subtitles', 'margin', str(tmp2))
         parser.set('subtitles', 'size', str(tmp1))
         parser.set('subtitles', 'bg', str(self.bge))
         parser.set('gui', 'rounded', str(tmp3))
         parser.set('gui', 'dark', str(self.darke))
+        parser.set('gui', 'color', self.color)
         file = open(confP, "w+")
         parser.write(file)
         file.close()
@@ -966,15 +1002,6 @@ class GUI:
         return True
 
 if __name__ == "__main__":
-    abspath = os.path.abspath(__file__)
-    dname = os.path.dirname(abspath)
-    print(dname)
-    if "DEV_FILES" in dname:
-        print("Running in development mode")
-        os.chdir(dname)
-    else:
-        print("Running in production mode")
-        os.chdir("/usr/share/hbud/")
     user = os.popen("who|awk '{print $1}'r").read().rstrip().split('\n')[0]
     parser, confP = ConfigParser(), f"/home/{user}/.config/hbud.ini"
     if os.path.isfile(confP): parser.read(confP)
@@ -987,11 +1014,12 @@ if __name__ == "__main__":
         parser.add_section('gui')
         parser.set('gui', 'rounded', "10")
         parser.set('gui', 'dark', "False")
+        parser.set('gui', 'color', "rgb(17, 148, 156)")
         file = open(confP, "w+")
         parser.write(file)
         file.close()
-    sSize, sMarg = parser.get('subtitles', 'size'), parser.get('subtitles', 'margin')
-    rounded, dark, bg = parser.get('gui', 'rounded'), parser.get('gui', 'dark'), parser.get('subtitles', 'bg')
+    sSize, sMarg, bg = parser.get('subtitles', 'size'), parser.get('subtitles', 'margin'), parser.get('subtitles', 'bg')
+    rounded, dark, color = parser.get('gui', 'rounded'), parser.get('gui', 'dark'), parser.get('gui', 'color')
     Gst.init(None)
     app = GUI()
     Gtk.main()

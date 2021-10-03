@@ -10,7 +10,7 @@ email = dani@kolozsi.net
 pkgname = hbud
 pretty_name = HBud
 licensev = 0
-version = 0.2.2.1
+version = 0.2.3
 section = 18
 priority = 0
 depends = gstreamer1.0-libav
@@ -38,19 +38,18 @@ longue = Simple music / video player and karaoke app written in Python and GTK -
 [misc]
 rules = 0
 min_pyver = 3.8
-postinst = 
+postinst = ln -s /usr/share/hbud/HBud.py /usr/bin/hbud || echo "No need for it"
 postrm = 
 
 [changelog]
 target = focal
 urgency = 1
-changes = Added option to force dark mode
-	Fixed some bugs (GUI and dependency related)
-	Added option to enable background for subtitles
-	Optimized code
-	Fixed dependency issues
-	Dropped AppImage support (it was fun, but it has no real use)
-	Smaller size (compiled code is nice, but it has not much use again)
+changes = Modernized and revamped the settings menu
+	Added option to change accent color
+	Fixed packaging issues
+	Fixed some bugs
+	Added some shortcuts (double click to fullscreen, etc.)
+	Added release notes to about section
 
 [data]
 root = /home/daniel/GitRepos/hbud/DEV_FILES

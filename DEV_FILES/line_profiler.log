@@ -1,0 +1,1422 @@
+Total time: 0.061188 s
+File: ./benchmark_hbud.py
+Function: __init__ at line 35
+
+Line #      Hits         Time  Per Hit   % Time  Line Contents
+==============================================================
+    35                                               @profile
+    36                                               def __init__(self, title, artist, id, year, length, album):
+    37       296       2669.0      9.0      4.4          super(TrackBox, self).__init__()
+    38       296        772.0      2.6      1.3          self.set_can_focus(False)
+    39       296       1053.0      3.6      1.7          self.set_name(f"trackbox_{id}")
+    40       296        868.0      2.9      1.4          self.set_size_request(-1, 60)
+    41       296       4676.0     15.8      7.6          subBox = Gtk.Box.new(0, 5)
+    42       296       3641.0     12.3      6.0          comboBox = Gtk.Box.new(1, 5)
+    43       296       1862.0      6.3      3.0          tiLab = Gtk.Label.new()
+    44       296       1895.0      6.4      3.1          alLab = Gtk.Label.new(album)
+    45       296       1755.0      5.9      2.9          arLab = Gtk.Label.new(artist)
+    46       296       1866.0      6.3      3.0          yeLab = Gtk.Label.new(str(year))
+    47       296       1466.0      5.0      2.4          leLab = Gtk.Label.new()
+    48       296       3083.0     10.4      5.0          leLab.set_markup(f'<b>{length}</b>')
+    49       296       1132.0      3.8      1.9          tiLab.set_ellipsize(3)
+    50       296       2236.0      7.6      3.7          tiLab.set_halign(Gtk.Align(1))
+    51       296        600.0      2.0      1.0          tiLab.set_margin_top(15)
+    52       296       3372.0     11.4      5.5          tiLab.set_markup(f"<b><span size='12000'>{title}</span></b>")
+    53       296        847.0      2.9      1.4          alLab.set_ellipsize(3)
+    54       296       1525.0      5.2      2.5          alLab.set_halign(Gtk.Align(1))
+    55       296        581.0      2.0      0.9          alLab.set_margin_bottom(15)
+    56       296        634.0      2.1      1.0          arLab.set_ellipsize(3)
+    57       296       1185.0      4.0      1.9          arLab.set_halign(Gtk.Align(1))
+    58       296       1727.0      5.8      2.8          comboBox.pack_start(tiLab, False, False, 0)
+    59       296       1097.0      3.7      1.8          comboBox.pack_start(alLab, False, False, 0)
+    60       296       1116.0      3.8      1.8          subBox.pack_start(comboBox, True, True, 15)
+    61       296       1122.0      3.8      1.8          subBox.pack_end(leLab, False, False, 10)
+    62       296       1097.0      3.7      1.8          subBox.pack_end(yeLab, False, False, 20)
+    63       296       1081.0      3.7      1.8          subBox.pack_end(arLab, False, False, 20)
+    64       296       2468.0      8.3      4.0          self.add(subBox)
+    65       296        738.0      2.5      1.2          self.set_margin_end(15)
+    66       296       2538.0      8.6      4.1          targs = [Gtk.TargetEntry.new("dummy", Gtk.TargetFlags.SAME_APP, 1)]
+    67       296       5918.0     20.0      9.7          self.drag_source_set(Gdk.ModifierType.BUTTON1_MASK, targs, Gdk.DragAction.MOVE)
+    68       296       4568.0     15.4      7.5          self.drag_dest_set(Gtk.DestDefaults.HIGHLIGHT | Gtk.DestDefaults.DROP | Gtk.DestDefaults.MOTION, targs, Gdk.DragAction.MOVE)
+
+Total time: 0.317127 s
+File: ./benchmark_hbud.py
+Function: __init__ at line 71
+
+Line #      Hits         Time  Per Hit   % Time  Line Contents
+==============================================================
+    71                                               @profile
+    72                                               def __init__(self):
+    73         1          5.0      5.0      0.0          UI_FILE, version = "hbud.glade", "HBud 0.2.3 Yennefer"
+    74         1          4.0      4.0      0.0          self.useMode = "audio"
+    75         1          3.0      3.0      0.0          self.supportedList = ['.3gp', '.aa', '.aac', '.aax', '.aiff', '.flac', '.m4a', '.mp3', '.ogg', '.wav', '.wma', '.wv']
+    76         1          2.0      2.0      0.0          try:
+    77         1          6.0      6.0      0.0              self.clickedE = argv[1]
+    78                                                       if os.path.splitext(self.clickedE)[-1] not in self.supportedList and os.path.splitext(self.clickedE)[-1] != "":
+    79                                                           self.useMode = "video" 
+    80                                                           print("video, now", self.clickedE)
+    81         1          2.0      2.0      0.0          except:
+    82         1          4.0      4.0      0.0              self.clickedE = False
+    83         1         27.0     27.0      0.0          self.builder = Gtk.Builder()
+    84         1     179180.0 179180.0     56.5          self.builder.add_from_file(UI_FILE)
+    85         1       3405.0   3405.0      1.1          self.builder.connect_signals(self)
+    86         1        448.0    448.0      0.1          whview = self.builder.get_object("whView")
+    87         1         17.0     17.0      0.0          buffer = Gtk.TextBuffer()
+    88         1         51.0     51.0      0.0          buffer.set_text("""
+    89                                            v0.2.3 - Oct 03 2021 :
+    90                                           
+    91                                                   * Modernized and revamped the settings menu
+    92                                                   * Added option to change accent color
+    93                                                   * Fixed packageing issues
+    94                                                   * Fixed some bugs
+    95                                                   * Added some shortcuts (double click to fullscreen, etc.)
+    96                                                   * Added release notes to about section""")
+    97         1         54.0     54.0      0.0          whview.set_buffer(buffer)
+    98         1          5.0      5.0      0.0          self.playlistPlayer, self.needSub, self.nowIn = False, False, ""
+    99         1         26.0     26.0      0.0          self.DAPI = azapi.AZlyrics('duckduckgo', accuracy=0.65)
+   100         1          5.0      5.0      0.0          self.fulle, self.resete, self.keepReset, self.hardReset, self.tnum, self.sorted = False, False, False, False, 0, False
+   101         1          6.0      6.0      0.0          self.sSize, self.sMarg = int(float(sSize)), int(float(sMarg))
+   102         1          9.0      9.0      0.0          self.size, self.size2, self.size3, self.size4 = 35000, 15000, self.sSize*450, float(f"0.0{self.sMarg}")*450
+   103         1         10.0     10.0      0.0          self.sub, self.seekBack, self.playing, self.res = self.builder.get_object('sub'), False, False, False
+   104         1          2.0      2.0      0.0          if dark == "False": self.darke = False
+   105         1          2.0      2.0      0.0          else: self.darke = True
+   106         1          3.0      3.0      0.0          if bg == "False": self.bge = False
+   107                                                   else: self.bge = True
+   108         1        880.0    880.0      0.3          self.slider = Gtk.HScale()
+   109         1         25.0     25.0      0.0          self.slider.set_can_focus(False)
+   110         1         15.0     15.0      0.0          self.slider.set_margin_start(6)
+   111         1         12.0     12.0      0.0          self.slider.set_margin_end(6)
+   112         1         18.0     18.0      0.0          self.slider.set_draw_value(False)
+   113         1         23.0     23.0      0.0          self.slider.set_increments(1, 10)
+   114         1         17.0     17.0      0.0          self.slider_handler_id = self.slider.connect("value-changed", self.on_slider_seek)
+   115         1          7.0      7.0      0.0          self.box = self.builder.get_object("slidBox")
+   116         1         36.0     36.0      0.0          self.label = Gtk.Label(label='0:00')
+   117         1          5.0      5.0      0.0          self.label.set_margin_start(6)
+   118         1          3.0      3.0      0.0          self.label.set_margin_end(6)
+   119         1         16.0     16.0      0.0          self.label_end = Gtk.Label(label='0:00')
+   120         1          4.0      4.0      0.0          self.label_end.set_margin_start(6)
+   121         1          3.0      3.0      0.0          self.label_end.set_margin_end(6)
+   122         1         28.0     28.0      0.0          self.box.pack_start(self.label, False, False, 0)
+   123         1          8.0      8.0      0.0          self.box.pack_start(self.slider, True, True, 0)
+   124         1          7.0      7.0      0.0          self.box.pack_start(self.label_end, False, False, 0)
+   125         1        297.0    297.0      0.1          self.trackCover = self.builder.get_object("cover_img")
+   126         1         19.0     19.0      0.0          self.trackCover.set_name("cover_img")
+   127         1          5.0      5.0      0.0          self.plaicon = self.builder.get_object("play")
+   128         1          9.0      9.0      0.0          self.slider.connect("enter-notify-event", self.mouse_enter)
+   129         1          8.0      8.0      0.0          self.slider.connect("leave-notify-event", self.mouse_leave)
+   130         1          4.0      4.0      0.0          self.playlistBox = self.builder.get_object("expanded")
+   131         1          3.0      3.0      0.0          self.exBot = self.builder.get_object("extendedBottom")
+   132         1        275.0    275.0      0.1          self.header = self.builder.get_object("header")
+   133         1          7.0      7.0      0.0          self.label1 = self.builder.get_object('label1')
+   134         1          4.0      4.0      0.0          self.label2 = self.builder.get_object('label2')
+   135         1          3.0      3.0      0.0          self.label3 = self.builder.get_object('label3')
+   136         1        414.0    414.0      0.1          self.yrEnt = self.builder.get_object("yrEnt")
+   137         1          6.0      6.0      0.0          self.tiEnt = self.builder.get_object("tiEnt")
+   138         1          5.0      5.0      0.0          self.infBut = self.builder.get_object("infBut")
+   139         1          4.0      4.0      0.0          self.alEnt = self.builder.get_object("alEnt")
+   140         1          3.0      3.0      0.0          self.arEnt = self.builder.get_object("arEnt")
+   141         1          4.0      4.0      0.0          self.karaokeBut = self.builder.get_object("kar")
+   142         1          3.0      3.0      0.0          self.sub2 = self.builder.get_object("sub2")
+   143         1          5.0      5.0      0.0          self.shuffBut = self.builder.get_object("shuffBut")
+   144         1          3.0      3.0      0.0          self.locBut = self.builder.get_object("locBut")
+   145         1          4.0      4.0      0.0          self.strBut = self.builder.get_object("strBut")
+   146         1        277.0    277.0      0.1          self.mainStack = self.builder.get_object("mainStack")
+   147         1        273.0    273.0      0.1          self.strOverlay = self.builder.get_object("strOverlay")
+   148         1          7.0      7.0      0.0          self.theTitle = self.builder.get_object("theTitle")
+   149         1          4.0      4.0      0.0          self.subSpin = self.builder.get_object("subSpin")
+   150         1          3.0      3.0      0.0          self.subMarSpin = self.builder.get_object("subSpin1")
+   151         1          3.0      3.0      0.0          self.subcheck = self.builder.get_object("sub_check")
+   152         1          3.0      3.0      0.0          self.nosub = self.builder.get_object("nosub")
+   153         1        356.0    356.0      0.1          self.iChoser = self.builder.get_object("iChoser")
+   154         1          8.0      8.0      0.0          self.roundSpin = self.builder.get_object("round_spin")
+   155         1        483.0    483.0      0.2          self.colorer = self.builder.get_object("colorer")
+   156         1          2.0      2.0      0.0          self.color = color
+   157         1         25.0     25.0      0.0          coco = Gdk.RGBA()
+   158         1         22.0     22.0      0.0          coco.parse(self.color)
+   159         1         45.0     45.0      0.0          self.colorer.set_rgba(coco)
+   160         1         21.0     21.0      0.0          self.roundSpin.set_value(int(rounded))
+   161         1          8.0      8.0      0.0          self.dark_switch, self.bg_switch = self.builder.get_object("dark_switch"), self.builder.get_object("bg_switch")
+   162         1         66.0     66.0      0.0          self.dark_switch.set_state(self.darke)
+   163         1          4.0      4.0      0.0          self.bg_switch.set_state(self.bge)
+   164         1          6.0      6.0      0.0          self.topBox = self.builder.get_object("topBox")
+   165         1          4.0      4.0      0.0          self.drop_but = self.builder.get_object("drop_but")
+   166         1        275.0    275.0      0.1          image_filter = Gtk.FileFilter()
+   167         1         19.0     19.0      0.0          image_filter.set_name("Image files")
+   168         1         15.0     15.0      0.0          image_filter.add_mime_type("image/*")
+   169         1         78.0     78.0      0.0          self.iChoser.add_filter(image_filter)
+   170         1         38.0     38.0      0.0          GLib.idle_add(self.subcheck.hide)
+   171         1         11.0     11.0      0.0          GLib.idle_add(self.builder.get_object("oplink").set_label, "Visit OpenSubtitles")
+   172         1          7.0      7.0      0.0          GLib.idle_add(self.builder.get_object("sublink").set_label, "Visit Subscene")
+   173         1          8.0      8.0      0.0          self.subSpin.set_value(self.sSize)
+   174         1          6.0      6.0      0.0          self.subStack = self.builder.get_object("subStack")
+   175         1          4.0      4.0      0.0          self.lyrLab = self.builder.get_object("lyrLab")
+   176         1          4.0      4.0      0.0          self.karmode = self.builder.get_object("req_scroll")
+   177         1          5.0      5.0      0.0          self.lyrmode = self.builder.get_object("req_scroll2")
+   178         1         71.0     71.0      0.0          self.subMarSpin.set_value(self.sMarg)
+   179         1          6.0      6.0      0.0          self.window = self.builder.get_object('main')
+   180         1         12.0     12.0      0.0          self.sub.connect('size-allocate', self._on_size_allocated)
+   181         1         10.0     10.0      0.0          self.window.connect('size-allocate', self._on_size_allocated0)
+   182         1        340.0    340.0      0.1          self.switchDict = {"locBut" : [self.builder.get_object("placeholder"), "audio-input-microphone", "audio", self.strBut, self.infBut], "strBut" : [self.builder.get_object("strBox"), "view-fullscreen", "video", self.locBut, self.infBut], "infBut" : [self.builder.get_object("infBook"), "", "", self.locBut, self.strBut]}
+   183         1        523.0    523.0      0.2          self.provider, self.settings = Gtk.CssProvider(), Gtk.Settings.get_default()
+   184         1       1031.0   1031.0      0.3          self.themer(str(rounded))
+   185         1      15376.0  15376.0      4.8          self.settings.set_property("gtk-application-prefer-dark-theme", self.darke)
+   186                                                   # Display the program
+   187         1         40.0     40.0      0.0          self.window.set_title(version)
+   188         1      98315.0  98315.0     31.0          self.window.show_all()
+   189         1      13654.0  13654.0      4.3          self.createPipeline("local")
+   190         1         74.0     74.0      0.0          self.topBox.hide()
+   191         1         17.0     17.0      0.0          self.drop_but.hide()
+   192         1         98.0     98.0      0.0          self.locBut.set_active(True)
+   193         1          2.0      2.0      0.0          if self.clickedE:
+   194                                                       if self.useMode == "audio":
+   195                                                           self.loader("xy")
+   196                                                           self.on_playBut_clicked("xy")
+   197                                                       else:
+   198                                                           self.strBut.set_active(True)
+   199                                                           self.on_playBut_clicked("xy")
+   200                                                   self.listener() # Do not write anything after this in init
+
+Total time: 0.027671 s
+File: ./benchmark_hbud.py
+Function: highlight at line 202
+
+Line #      Hits         Time  Per Hit   % Time  Line Contents
+==============================================================
+   202                                               @profile
+   203                                               def highlight(self, widget, event):
+   204         2         52.0     26.0      0.2          if event.button == 3:
+   205                                                       self.ednum = int(widget.get_name().replace("trackbox_", ""))
+   206                                                       menu = Gtk.Menu()
+   207                                                       menu.set_can_focus(False)
+   208                                                       menu_item = Gtk.MenuItem.new_with_label('Delete from current playqueue')
+   209                                                       menu_item.set_can_focus(False)
+   210                                                       menu_item.connect("activate", self.del_cur)
+   211                                                       menu.add(menu_item)
+   212                                                       menu_item = Gtk.MenuItem.new_with_label('Edit metadata')
+   213                                                       menu_item.set_can_focus(False)
+   214                                                       menu_item.connect("activate", self.ed_cur)
+   215                                                       menu.add(menu_item)
+   216                                                       menu.show_all()
+   217                                                       menu.popup_at_pointer()
+   218                                                   else:
+   219         2        112.0     56.0      0.4              self.tnum = int(widget.get_name().replace("trackbox_", ""))
+   220         2      10698.0   5349.0     38.7              self.themer(self.roundSpin.get_value(), self.tnum)
+   221         2      16809.0   8404.5     60.7              self.on_next("clickMode")
+
+Total time: 0.001515 s
+File: ./benchmark_hbud.py
+Function: on_search at line 223
+
+Line #      Hits         Time  Per Hit   % Time  Line Contents
+==============================================================
+   223                                               @profile
+   224                                               def on_search(self, widget):
+   225         2         97.0     48.5      6.4          term = widget.get_text().lower()
+   226         2          5.0      2.5      0.3          if term != "":
+   227         1          2.0      2.0      0.1              results = []
+   228        75         95.0      1.3      6.3              for i, item in enumerate(self.playlist):
+   229        74        278.0      3.8     18.3                  if term in item["title"].lower() or term in item["artist"].lower() or term in item["album"].lower():
+   230         2          4.0      2.0      0.3                      results.append(i)
+   231        75        249.0      3.3     16.4              for i, item in enumerate(self.supBox.get_children()):
+   232        74        754.0     10.2     49.8                  if i not in results: GLib.idle_add(item.hide)
+   233                                                   else:
+   234         1         31.0     31.0      2.0              GLib.idle_add(self.supBox.show_all)
+
+Total time: 0.078457 s
+File: ./benchmark_hbud.py
+Function: on_sort_change at line 236
+
+Line #      Hits         Time  Per Hit   % Time  Line Contents
+==============================================================
+   236                                               @profile
+   237                                               def on_sort_change(self, widget):
+   238         2        133.0     66.5      0.2          aid = int(widget.get_active_id())
+   239         2         13.0      6.5      0.0          if self.sorted == False: self.archive = self.playlist
+   240         2          5.0      2.5      0.0          self.sorted = True
+   241         2          4.0      2.0      0.0          if aid == 0 and self.sorted == True:
+   242         1          7.0      7.0      0.0              self.playlist = self.archive
+   243         1          3.0      3.0      0.0              self.sorted = False
+   244         1          1.0      1.0      0.0          elif aid == 1: self.playlist = sorted(self.archive, key=itemgetter('artist'),reverse=False)
+   245         1         58.0     58.0      0.1          elif aid == 2: self.playlist = sorted(self.archive, key=itemgetter('artist'),reverse=True)
+   246                                                   elif aid == 3: self.playlist = sorted(self.archive, key=itemgetter('title'),reverse=False)
+   247                                                   elif aid == 4: self.playlist = sorted(self.archive, key=itemgetter('title'),reverse=True)
+   248                                                   elif aid == 5: self.playlist = sorted(self.archive, key=itemgetter('year'),reverse=False)
+   249                                                   elif aid == 6: self.playlist = sorted(self.archive, key=itemgetter('year'),reverse=True)
+   250                                                   elif aid == 7: self.playlist = sorted(self.archive, key=itemgetter('length'),reverse=False)
+   251                                                   elif aid == 8: self.playlist = sorted(self.archive, key=itemgetter('length'),reverse=True)
+   252         2      78233.0  39116.5     99.7          self.neo_playlist_gen()
+
+Total time: 0 s
+File: ./benchmark_hbud.py
+Function: on_clear_order at line 254
+
+Line #      Hits         Time  Per Hit   % Time  Line Contents
+==============================================================
+   254                                               @profile
+   255                                               def on_clear_order(self, _): os.system(f"rm {self.folderPath}/.saved.order")
+
+Total time: 0 s
+File: ./benchmark_hbud.py
+Function: on_rescan_order at line 257
+
+Line #      Hits         Time  Per Hit   % Time  Line Contents
+==============================================================
+   257                                               @profile
+   258                                               def on_rescan_order(self, _):
+   259                                                   GLib.idle_add(self.loader, self.folderPath, True)
+
+Total time: 0 s
+File: ./benchmark_hbud.py
+Function: on_order_save at line 261
+
+Line #      Hits         Time  Per Hit   % Time  Line Contents
+==============================================================
+   261                                               @profile
+   262                                               def on_order_save(self, _):
+   263                                                   f = open(f"{self.folderPath}/.saved.order", "w+")
+   264                                                   f.write(json.dumps(self.playlist))
+   265                                                   f.close()
+
+Total time: 0.024009 s
+File: ./benchmark_hbud.py
+Function: themer at line 267
+
+Line #      Hits         Time  Per Hit   % Time  Line Contents
+==============================================================
+   267                                               @profile
+   268                                               def themer(self, v, w=""):
+   269        16        226.0     14.1      0.9          css = """#cover_img {
+   270                                                       padding-bottom: %spx;
+   271                                                   }
+   272                                                   menu, .popup {
+   273                                                       border-radius: %spx;
+   274                                                   }
+   275                                                   decoration, headerbar {
+   276                                                       border-radius: %spx;
+   277                                                   }
+   278                                                   button, menuitem, entry {
+   279                                                       border-radius: %spx;
+   280                                                       margin: 5px;
+   281                                                   }
+   282                                                   .titlebar, tab {
+   283                                                       border-top-left-radius: %spx;
+   284                                                       border-top-right-radius: %spx;
+   285                                                       border-bottom-left-radius: 0px;
+   286                                                       border-bottom-right-radius: 0px;
+   287                                                   }
+   288                                                   window, notebook, stack, box, scrolledwindow, viewport {
+   289                                                       border-top-left-radius: 0px;
+   290                                                       border-top-right-radius: 0px;
+   291                                                       border-bottom-left-radius: %spx;
+   292                                                       border-bottom-right-radius: %spx;
+   293                                                       border-width: 0px;
+   294                                                       border-image: none;
+   295                                                       box-shadow: none;
+   296                                                   }
+   297                                                   switch:checked {
+   298                                                       background-color: %s;
+   299                                                   }
+   300                                                   #trackbox_%s{
+   301                                                       background: %s;
+   302                                                       color: #000;
+   303                                                       border-radius: %spx;
+   304                                                   }
+   305                                                   .maximized, .fullscreen, .maximized .titlebar {
+   306                                                       border-radius: 0px;
+   307         8         42.0      5.2      0.2          }""" % (int(v)/2.6,int(v)/1.5,v,v,v,v,v,v,self.color,w,self.color,v) # decoration, window, window.background, window.titlebar, .titlebar
+   308         8         34.0      4.2      0.1          css = str.encode(css)
+   309         8      10886.0   1360.8     45.3          self.provider.load_from_data(css)
+   310         8      12821.0   1602.6     53.4          self.window.get_style_context().add_provider_for_screen(Gdk.Screen.get_default(), self.provider, Gtk.STYLE_PROVIDER_PRIORITY_APPLICATION)
+
+Total time: 0.013354 s
+File: ./benchmark_hbud.py
+Function: createPipeline at line 312
+
+Line #      Hits         Time  Per Hit   % Time  Line Contents
+==============================================================
+   312                                               @profile
+   313                                               def createPipeline(self, mode):
+   314         1          3.0      3.0      0.0          if mode == "local":
+   315         1       9074.0   9074.0     67.9              self.videoPipe, self.audioPipe = Gst.ElementFactory.make("playbin3"), Gst.ElementFactory.make("playbin3")
+   316                                                       # self.audioPipe = Gst.parse_launch('filesrc  ! decodebin ! audioconvert ! rgvolume ! audioconvert ! audioresample ! alsasink')
+   317         1         23.0     23.0      0.2              playerFactory = self.videoPipe.get_factory()
+   318         1       3020.0   3020.0     22.6              gtksink = playerFactory.make('gtksink')
+   319         1         13.0     13.0      0.1              self.videoPipe.set_property("video-sink", gtksink)
+   320         1        796.0    796.0      6.0              gtksink.props.widget.set_valign(Gtk.Align.FILL)
+   321         1         27.0     27.0      0.2              gtksink.props.widget.set_halign(Gtk.Align.FILL)
+   322         1         15.0     15.0      0.1              gtksink.props.widget.connect("button_press_event", self.mouse_click0)
+   323         1         34.0     34.0      0.3              self.strOverlay.add(gtksink.props.widget)
+   324         1         18.0     18.0      0.1              gtksink.props.widget.show()
+   325         1         28.0     28.0      0.2              self.strOverlay.add_overlay(self.theTitle)
+   326         1        256.0    256.0      1.9              bus = self.videoPipe.get_bus()
+   327         1         24.0     24.0      0.2              bus.add_signal_watch()
+   328         1         11.0     11.0      0.1              bus.connect("message", self.on_message)
+   329         1          5.0      5.0      0.0              bus = self.audioPipe.get_bus()
+   330         1          3.0      3.0      0.0              bus.add_signal_watch()
+   331         1          4.0      4.0      0.0              bus.connect("message", self.on_message)
+   332                                                   # elif mode == "stream":
+   333                                                       # self.player = Gst.parse_launch(f"souphttpsrc is-live=false location={self.url} ! decodebin ! audioconvert ! autoaudiosink")
+
+Total time: 0.000246 s
+File: ./benchmark_hbud.py
+Function: on_dropped at line 335
+
+Line #      Hits         Time  Per Hit   % Time  Line Contents
+==============================================================
+   335                                               @profile
+   336                                               def on_dropped(self, _):
+   337         2         46.0     23.0     18.7          if self.topBox.get_visible() == True:
+   338         1         76.0     76.0     30.9              GLib.idle_add(self.drop_but.get_image().set_from_icon_name, "gtk-go-down", Gtk.IconSize.BUTTON)
+   339         1         18.0     18.0      7.3              GLib.idle_add(self.topBox.hide)
+   340                                                   else:
+   341         1         96.0     96.0     39.0              GLib.idle_add(self.drop_but.get_image().set_from_icon_name, "gtk-go-up", Gtk.IconSize.BUTTON)
+   342         1         10.0     10.0      4.1              GLib.idle_add(self.topBox.show)
+
+Total time: 0.004085 s
+File: ./benchmark_hbud.py
+Function: allToggle at line 344
+
+Line #      Hits         Time  Per Hit   % Time  Line Contents
+==============================================================
+   344                                               @profile
+   345                                               def allToggle(self, button):
+   346         9        274.0     30.4      6.7          btn = Gtk.Buildable.get_name(button)
+   347         9        201.0     22.3      4.9          if self.mainStack.get_visible_child() != self.switchDict[btn][0] and button.get_active() == True:
+   348         4       2862.0    715.5     70.1              self.mainStack.set_visible_child(self.switchDict[btn][0])
+   349         4         16.0      4.0      0.4              if self.playing == True: self.on_playBut_clicked("xy")
+   350         4          9.0      2.2      0.2              if btn != "infBut":
+   351         3        103.0     34.3      2.5                  GLib.idle_add(self.exBot.show)
+   352         3          5.0      1.7      0.1                  if btn == "locBut":
+   353         2         26.0     13.0      0.6                      GLib.idle_add(self.trackCover.show)
+   354         2         22.0     11.0      0.5                      GLib.idle_add(self.shuffBut.show)
+   355         2         20.0     10.0      0.5                      if self.playlistPlayer == True: GLib.idle_add(self.drop_but.show)
+   356         2         22.0     11.0      0.5                      GLib.idle_add(self.subcheck.hide)
+   357                                                           else:
+   358         1         13.0     13.0      0.3                      GLib.idle_add(self.trackCover.hide)
+   359         1         10.0     10.0      0.2                      GLib.idle_add(self.shuffBut.hide)
+   360         1         10.0     10.0      0.2                      GLib.idle_add(self.drop_but.hide)
+   361         1         10.0     10.0      0.2                      GLib.idle_add(self.subcheck.show)
+   362         3         67.0     22.3      1.6                  GLib.idle_add(self.karaokeBut.set_from_icon_name, self.switchDict[btn][1], Gtk.IconSize.BUTTON)
+   363         3         12.0      4.0      0.3                  self.useMode = self.switchDict[btn][2]
+   364                                                       else:
+   365         1         36.0     36.0      0.9                  GLib.idle_add(self.exBot.hide)
+   366         1         13.0     13.0      0.3                  GLib.idle_add(self.subcheck.hide)
+   367         1         11.0     11.0      0.3                  GLib.idle_add(self.drop_but.hide)
+   368         4          8.0      2.0      0.2              self.needSub = False
+   369         4         43.0     10.8      1.1              GLib.idle_add(self.subcheck.set_state, False)
+   370         4         40.0     10.0      1.0              GLib.idle_add(self.switchDict[btn][3].set_active, False)
+   371         4        219.0     54.8      5.4              GLib.idle_add(self.switchDict[btn][4].set_active, False)
+   372         5         33.0      6.6      0.8          elif self.mainStack.get_visible_child() == self.switchDict[btn][0]: GLib.idle_add(button.set_active, True) 
+
+Total time: 0.014615 s
+File: ./benchmark_hbud.py
+Function: cleaner at line 374
+
+Line #      Hits         Time  Per Hit   % Time  Line Contents
+==============================================================
+   374                                               @profile
+   375                                               def cleaner(self, lis):
+   376         4         10.0      2.5      0.1          if lis == []: pass
+   377         3      14605.0   4868.3     99.9          else: [i.destroy() for i in lis]
+
+Total time: 0.158639 s
+File: ./benchmark_hbud.py
+Function: neo_playlist_gen at line 379
+
+Line #      Hits         Time  Per Hit   % Time  Line Contents
+==============================================================
+   379                                               @profile
+   380                                               def neo_playlist_gen(self, name="", src=0, dst=0):
+   381         5         13.0      2.6      0.0          if name == 'shuffle':
+   382         1          2.0      2.0      0.0              if self.playlistPlayer == True:
+   383         1        423.0    423.0      0.3                  playlistLoc = sample(self.playlist, len(self.playlist))
+   384         1          3.0      3.0      0.0                  self.playlist, self.tnum = playlistLoc, 0
+   385         1          4.0      4.0      0.0                  self.neo_playlist_gen()
+   386         1       7768.0   7768.0      4.9                  self.on_next('clickMode')
+   387         4          9.0      2.2      0.0          elif name == "rename":
+   388                                                       srcBox = self.supBox.get_children()[src]
+   389                                                       self.supBox.reorder_child(srcBox, dst)
+   390                                                       tmpList = self.supBox.get_children()
+   391                                                       for i in range(len(self.playlist)):
+   392                                                           tmpList[i].set_name(f"trackbox_{i}")
+   393                                                       if self.tnum == src: self.tnum = dst
+   394                                                       elif src > dst: self.tnum += 1
+   395                                                       elif src < dst: self.tnum -= 1
+   396                                                       self.themer(self.roundSpin.get_value(), self.tnum)
+   397                                                   else:
+   398         4      14956.0   3739.0      9.4              self.cleaner(self.playlistBox.get_children())
+   399         4      15179.0   3794.8      9.6              self.supBox = Gtk.Box.new(1, 0)
+   400         4         32.0      8.0      0.0              self.supBox.set_can_focus(False)
+   401       300        358.0      1.2      0.2              for i, item in enumerate(self.playlist):
+   402       296      72197.0    243.9     45.5                  trBox = TrackBox(item["title"].replace("&", "&amp;"), item["artist"], i, item["year"], item["length"], item["album"])
+   403       296       2052.0      6.9      1.3                  trBox.connect("button_release_event", self.highlight)
+   404       296       1245.0      4.2      0.8                  trBox.connect('drag-begin', self.pause)
+   405       296       1214.0      4.1      0.8                  trBox.connect('drag-drop', self._sig_drag_drop)
+   406       296       1186.0      4.0      0.7                  trBox.connect('drag-end', self._sig_drag_end)
+   407       296       2341.0      7.9      1.5                  self.supBox.pack_start(trBox, False, False, 0)
+   408         4       1277.0    319.2      0.8              yetScroll = Gtk.ScrolledWindow()
+   409         4         23.0      5.8      0.0              yetScroll.set_can_focus(False)
+   410         4         36.0      9.0      0.0              yetScroll.set_vexpand(True)
+   411         4         22.0      5.5      0.0              yetScroll.set_hexpand(True)
+   412         4          9.0      2.2      0.0              yetScroll.set_margin_end(10)
+   413         4        896.0    224.0      0.6              yetScroll.add(self.supBox)
+   414         4       4723.0   1180.8      3.0              self.playlistBox.pack_end(yetScroll, True, True, 0)
+   415         4      32593.0   8148.2     20.5              yetScroll.show_all()
+   416         4          8.0      2.0      0.0              self.playlistPlayer = True
+   417         4         70.0     17.5      0.0              GLib.idle_add(self.drop_but.show)
+
+Total time: 0 s
+File: ./benchmark_hbud.py
+Function: metas at line 419
+
+Line #      Hits         Time  Per Hit   % Time  Line Contents
+==============================================================
+   419                                               @profile
+   420                                               def metas(self, location, extrapath, misc=False):
+   421                                                   f = MediaFile(location)
+   422                                                   title, artist, album, year, length = f.title, f.artist, f.album, f.year, str(timedelta(seconds=round(f.length))).replace("0:", "")
+   423                                                   if not title: title = os.path.splitext(extrapath)[0]
+   424                                                   if not artist: artist = "Unknown"
+   425                                                   if not album: album = "Unknown"
+   426                                                   if not year: year = 0
+   427                                                   itmp = {"uri" : location, "title" : title, "artist" : artist, "year" : year, "album" : album, "length" : length}
+   428                                                   if misc == True:
+   429                                                       if itmp not in self.playlist: self.pltmp.append(itmp)
+   430                                                   else: self.pltmp.append(itmp)
+
+Total time: 0 s
+File: ./benchmark_hbud.py
+Function: loader at line 432
+
+Line #      Hits         Time  Per Hit   % Time  Line Contents
+==============================================================
+   432                                               @profile
+   433                                               def loader(self, path, misc=False):
+   434                                                   self.pltmp = []
+   435                                                   if self.clickedE:
+   436                                                       self.metas(self.clickedE, self.clickedE.split("/")[-1])
+   437                                                   else:
+   438                                                       pltmpin = os.listdir(path)
+   439                                                       for i in pltmpin:
+   440                                                           ityp = os.path.splitext(i)[1]
+   441                                                           if ityp in self.supportedList:
+   442                                                               self.metas(f"{path}/{i}", i, misc)
+   443                                                   if misc == False: self.playlist = self.pltmp
+   444                                                   else: [self.playlist.append(item) for item in self.pltmp]
+   445                                                   GLib.idle_add(self.neo_playlist_gen)
+
+Total time: 3.82229 s
+File: ./benchmark_hbud.py
+Function: on_openFolderBut_clicked at line 447
+
+Line #      Hits         Time  Per Hit   % Time  Line Contents
+==============================================================
+   447                                               @profile
+   448                                               def on_openFolderBut_clicked(self, *_):
+   449         2         17.0      8.5      0.0          if self.playing == True: self.pause()
+   450         2    3822272.0 1911136.0    100.0          self.fcconstructer("Please choose a folder", Gtk.FileChooserAction.SELECT_FOLDER, "Music") if self.useMode == "audio" else self.fcconstructer("Please choose a video file", Gtk.FileChooserAction.OPEN, "Videos")     
+
+Total time: 3.82165 s
+File: ./benchmark_hbud.py
+Function: fcconstructer at line 452
+
+Line #      Hits         Time  Per Hit   % Time  Line Contents
+==============================================================
+   452                                               @profile
+   453                                               def fcconstructer (self, title, action, folder):
+   454         2      82803.0  41401.5      2.2          filechooserdialog = Gtk.FileChooserDialog(title=title, parent=self.window, action=action)
+   455         2          5.0      2.5      0.0          if folder == "Videos":
+   456         1         20.0     20.0      0.0              filterr = Gtk.FileFilter()
+   457         1         10.0     10.0      0.0              filterr.set_name("Video files")
+   458         1          2.0      2.0      0.0              filterr.add_mime_type("video/*")
+   459         1         55.0     55.0      0.0              filechooserdialog.add_filter(filterr)
+   460         2        505.0    252.5      0.0          filechooserdialog.add_button("_Cancel", Gtk.ResponseType.CANCEL)
+   461         2        269.0    134.5      0.0          filechooserdialog.add_button("_Open", Gtk.ResponseType.OK)
+   462         2         34.0     17.0      0.0          filechooserdialog.set_default_response(Gtk.ResponseType.OK)
+   463         2         68.0     34.0      0.0          filechooserdialog.set_current_folder(f"/home/{user}/{folder}")
+   464         2    3710746.0 1855373.0     97.1          response = filechooserdialog.run()
+   465         2         55.0     27.5      0.0          if response == Gtk.ResponseType.OK:
+   466         2          7.0      3.5      0.0              if folder == "Music":
+   467         1        100.0    100.0      0.0                  self.folderPath = filechooserdialog.get_uri().replace("file://", "")
+   468         1         56.0     56.0      0.0                  print("Folder selected: " + self.folderPath)
+   469         1         55.0     55.0      0.0                  if os.path.isfile(f"{self.folderPath}/.saved.order"):
+   470                                                               f = open(f"{self.folderPath}/.saved.order", "r")
+   471                                                               self.playlist = json.loads(f.read())
+   472                                                               f.close()
+   473                                                               for item in self.playlist[:]:
+   474                                                                   if os.path.isfile(f"{item['uri']}") == False: self.playlist.remove(item)
+   475                                                               GLib.idle_add(self.neo_playlist_gen)
+   476                                                           else:
+   477         1       4022.0   4022.0      0.1                      d_pl = futures.ThreadPoolExecutor(max_workers=4)
+   478         1        402.0    402.0      0.0                      d_pl.submit(self.loader, self.folderPath)
+   479                                                       else:
+   480         1         72.0     72.0      0.0                  videoPath = filechooserdialog.get_filename()
+   481         1         32.0     32.0      0.0                  print("File selected: " + videoPath)
+   482         1       1103.0   1103.0      0.0                  self.on_playBut_clicked(videoPath)
+   483                                                   elif response == Gtk.ResponseType.CANCEL: print("Cancel clicked")
+   484         2      21234.0  10617.0      0.6          filechooserdialog.destroy()
+
+Total time: 0 s
+File: ./benchmark_hbud.py
+Function: on_save at line 486
+
+Line #      Hits         Time  Per Hit   % Time  Line Contents
+==============================================================
+   486                                               @profile
+   487                                               def on_save(self, *_):
+   488                                                   f = MediaFile(self.editingFile)
+   489                                                   f.year, f.artist, f.album, f.title, newCover = self.yrEnt.get_value_as_int(), self.arEnt.get_text(), self.alEnt.get_text(), self.tiEnt.get_text(), self.iChoser.get_filename()
+   490                                                   try:
+   491                                                       if os.path.isfile(newCover):
+   492                                                           tf = open(newCover, "rb")
+   493                                                           binary = tf.read()
+   494                                                           tf.close()
+   495                                                           f.art = binary
+   496                                                   except: pass
+   497                                                   f.save()
+   498                                                   self.playlist[self.ednum]["year"] = self.yrEnt.get_value_as_int()
+   499                                                   self.playlist[self.ednum]["artist"] = self.arEnt.get_text()
+   500                                                   self.playlist[self.ednum]["album"] = self.alEnt.get_text()
+   501                                                   self.playlist[self.ednum]["title"] = self.tiEnt.get_text()
+   502                                                   self.sub2_hide("xy")
+   503                                                   self.neo_playlist_gen()
+
+Total time: 0 s
+File: ./benchmark_hbud.py
+Function: sub2_hide at line 505
+
+Line #      Hits         Time  Per Hit   % Time  Line Contents
+==============================================================
+   505                                               @profile
+   506                                               def sub2_hide(self, *_):
+   507                                                   self.sub2.hide()
+   508                                                   return True
+
+Total time: 0 s
+File: ./benchmark_hbud.py
+Function: ed_cur at line 510
+
+Line #      Hits         Time  Per Hit   % Time  Line Contents
+==============================================================
+   510                                               @profile
+   511                                               def ed_cur(self, *_):
+   512                                                   self.editingFile = self.playlist[self.ednum]["uri"].replace("file://", "")
+   513                                                   self.yrEnt.set_value(self.playlist[self.ednum]["year"])
+   514                                                   self.arEnt.set_text(self.playlist[self.ednum]["artist"])
+   515                                                   self.alEnt.set_text(self.playlist[self.ednum]["album"])
+   516                                                   self.tiEnt.set_text(self.playlist[self.ednum]["title"])
+   517                                                   self.sub2.set_title(f"Edit metadata for {self.editingFile.split('/')[-1]}")
+   518                                                   self.sub2.show_all()
+
+Total time: 0.001169 s
+File: ./benchmark_hbud.py
+Function: mouse_click0 at line 520
+
+Line #      Hits         Time  Per Hit   % Time  Line Contents
+==============================================================
+   520                                               @profile
+   521                                               def mouse_click0(self, _, event):
+   522         1         42.0     42.0      3.6          if event.type == Gdk.EventType._2BUTTON_PRESS: 
+   523                                                       if self.useMode == "video": self.on_karaoke_activate(0)
+   524         1       1127.0   1127.0     96.4          elif event.type == Gdk.EventType.BUTTON_PRESS: self.on_playBut_clicked(0)
+
+Total time: 0 s
+File: ./benchmark_hbud.py
+Function: del_cur at line 526
+
+Line #      Hits         Time  Per Hit   % Time  Line Contents
+==============================================================
+   526                                               @profile
+   527                                               def del_cur(self, *_):
+   528                                                   self.playlist.remove(self.playlist[self.ednum])
+   529                                                   self.neo_playlist_gen()
+   530                                                   if self.tnum == self.ednum: self.play()
+
+Total time: 0.037746 s
+File: ./benchmark_hbud.py
+Function: on_next at line 532
+
+Line #      Hits         Time  Per Hit   % Time  Line Contents
+==============================================================
+   532                                               @profile
+   533                                               def on_next(self, button):
+   534         4         17.0      4.2      0.0          if self.nowIn == self.useMode or button == "clickMode":
+   535         4          8.0      2.0      0.0              if self.nowIn == "audio" or button == "clickMode":
+   536         4         10.0      2.5      0.0                  if button != "clickMode":
+   537         1          3.0      3.0      0.0                      self.tnum += 1
+   538         1          3.0      3.0      0.0                      if self.tnum >= len(self.playlist): self.tnum = 0
+   539         4          5.0      1.2      0.0                  try:
+   540         4      13092.0   3273.0     34.7                      self.stop()
+   541         1         16.0     16.0      0.0                  except: print("No playbin yet to stop.")
+   542         4      24534.0   6133.5     65.0                  self.play()
+   543         4         58.0     14.5      0.2                  if self.sub.get_visible(): self.on_karaoke_activate("xy")
+   544                                                       elif self.nowIn == "video":
+   545                                                           seek_time_secs = self.player.query_position(Gst.Format.TIME)[1] + 10 * Gst.SECOND
+   546                                                           self.player.seek_simple(Gst.Format.TIME,  Gst.SeekFlags.FLUSH | Gst.SeekFlags.KEY_UNIT, seek_time_secs)
+
+Total time: 0 s
+File: ./benchmark_hbud.py
+Function: load_cover at line 548
+
+Line #      Hits         Time  Per Hit   % Time  Line Contents
+==============================================================
+   548                                               @profile
+   549                                               def load_cover(self):
+   550                                                   binary = MediaFile(self.url.replace('file://', '')).art
+   551                                                   if not binary: tmpLoc = "icons/track.png"
+   552                                                   else:
+   553                                                       tmpLoc = "/tmp/cacheCover.jpg"
+   554                                                       f = open(tmpLoc, "wb")
+   555                                                       f.write(binary)
+   556                                                       f.close()
+   557                                                   coverBuf = GdkPixbuf.Pixbuf.new_from_file_at_scale(tmpLoc, 80, 80, True)
+   558                                                   GLib.idle_add(self.trackCover.set_from_pixbuf, coverBuf)
+
+Total time: 0.009643 s
+File: ./benchmark_hbud.py
+Function: on_prev at line 560
+
+Line #      Hits         Time  Per Hit   % Time  Line Contents
+==============================================================
+   560                                               @profile
+   561                                               def on_prev(self, *_):
+   562         1          4.0      4.0      0.0          if self.nowIn == self.useMode:
+   563         1          2.0      2.0      0.0              if self.nowIn == "audio":
+   564         1          3.0      3.0      0.0                  self.tnum -= 1
+   565         1          1.0      1.0      0.0                  if self.tnum < 0: self.tnum = len(self.playlist)-1
+   566         1          1.0      1.0      0.0                  try:
+   567         1        751.0    751.0      7.8                      self.pause()
+   568         1       3224.0   3224.0     33.4                      self.stop()
+   569                                                           except: print("No playbin yet to stop.")
+   570         1       5657.0   5657.0     58.7                  self.play()
+   571                                                       elif self.nowIn == "video":
+   572                                                           seek_time_secs = self.player.query_position(Gst.Format.TIME)[1] - 10 * Gst.SECOND
+   573                                                           self.player.seek_simple(Gst.Format.TIME,  Gst.SeekFlags.FLUSH | Gst.SeekFlags.KEY_UNIT, seek_time_secs)
+
+Total time: 0.016133 s
+File: ./benchmark_hbud.py
+Function: stop at line 575
+
+Line #      Hits         Time  Per Hit   % Time  Line Contents
+==============================================================
+   575                                               @profile
+   576                                               def stop(self):
+   577         5        165.0     33.0      1.0          print("Stop")
+   578         5       2115.0    423.0     13.1          self.player.set_state(Gst.State.PAUSED)
+   579         4         15.0      3.8      0.1          if self.nowIn == "audio": self.audioPipe = self.player
+   580         1          6.0      6.0      0.0          elif self.nowIn == "video": self.videoPipe = self.player
+   581         4          6.0      1.5      0.0          self.res = False
+   582         4          6.0      1.5      0.0          self.playing = False
+   583         4        173.0     43.2      1.1          self.label.set_text("0:00")
+   584         4         56.0     14.0      0.3          self.label_end.set_text("0:00")
+   585         4        164.0     41.0      1.0          GLib.idle_add(self.plaicon.set_from_icon_name, "media-playback-start", Gtk.IconSize.BUTTON)
+   586         4         74.0     18.5      0.5          self.slider.handler_block(self.slider_handler_id)
+   587         4        838.0    209.5      5.2          self.slider.set_value(0)
+   588         4         48.0     12.0      0.3          self.slider.handler_unblock(self.slider_handler_id)
+   589         4      12467.0   3116.8     77.3          self.player.set_state(Gst.State.NULL)
+
+Total time: 0.004435 s
+File: ./benchmark_hbud.py
+Function: pause at line 591
+
+Line #      Hits         Time  Per Hit   % Time  Line Contents
+==============================================================
+   591                                               @profile
+   592                                               def pause(self, *_): 
+   593         4        252.0     63.0      5.7          print("Pause")
+   594         4         10.0      2.5      0.2          self.playing = False
+   595         4          3.0      0.8      0.1          try:
+   596         4        254.0     63.5      5.7              GLib.idle_add(self.plaicon.set_from_icon_name, "media-playback-start", Gtk.IconSize.BUTTON)
+   597         4       3916.0    979.0     88.3              self.player.set_state(Gst.State.PAUSED)
+   598                                                   except: print("Pause exception")
+
+Total time: 0 s
+File: ./benchmark_hbud.py
+Function: resume at line 600
+
+Line #      Hits         Time  Per Hit   % Time  Line Contents
+==============================================================
+   600                                               @profile
+   601                                               def resume(self):
+   602                                                   print("Resume")
+   603                                                   self.playing = True
+   604                                                   self.player.set_state(Gst.State.PLAYING)
+   605                                                   GLib.idle_add(self.plaicon.set_from_icon_name, "media-playback-pause", Gtk.IconSize.BUTTON)
+   606                                                   GLib.timeout_add(50, self.updateSlider)
+
+Total time: 0.006658 s
+File: ./benchmark_hbud.py
+Function: on_slider_seek at line 608
+
+Line #      Hits         Time  Per Hit   % Time  Line Contents
+==============================================================
+   608                                               @profile
+   609                                               def on_slider_seek(self, *_):
+   610         2         15.0      7.5      0.2          if self.useMode == self.nowIn:
+   611         2        131.0     65.5      2.0              seek_time_secs = self.slider.get_value()
+   612         2          6.0      3.0      0.1              if seek_time_secs < self.position:
+   613                                                           self.seekBack = True
+   614                                                           print('back')
+   615         2       6506.0   3253.0     97.7              self.player.seek_simple(Gst.Format.TIME,  Gst.SeekFlags.FLUSH | Gst.SeekFlags.KEY_UNIT, seek_time_secs * Gst.SECOND)
+
+Total time: 0.361015 s
+File: ./benchmark_hbud.py
+Function: updateSlider at line 617
+
+Line #      Hits         Time  Per Hit   % Time  Line Contents
+==============================================================
+   617                                               @profile
+   618                                               def updateSlider(self):
+   619       991       4761.0      4.8      1.3          if(self.playing == False): return False # cancel timeout
+   620       985       2023.0      2.1      0.6          try:
+   621       985     135225.0    137.3     37.5              duration_nanosecs = self.player.query_duration(Gst.Format.TIME)[1]
+   622       985      43998.0     44.7     12.2              position_nanosecs = self.player.query_position(Gst.Format.TIME)[1]
+   623       985       2121.0      2.2      0.6              if duration_nanosecs == -1: return True
+   624                                                       # block seek handler so we don't seek when we set_value()
+   625       961      21597.0     22.5      6.0              self.slider.handler_block(self.slider_handler_id)
+   626       961       5210.0      5.4      1.4              duration = float(duration_nanosecs) / Gst.SECOND
+   627       961       2614.0      2.7      0.7              self.position = float(position_nanosecs) / Gst.SECOND
+   628       961       2967.0      3.1      0.8              remaining = float(duration_nanosecs - position_nanosecs) / Gst.SECOND
+   629       961      50810.0     52.9     14.1              self.slider.set_range(0, duration)
+   630       961      15255.0     15.9      4.2              self.slider.set_value(self.position)
+   631       961      25524.0     26.6      7.1              fvalue, svalue = str(timedelta(seconds=round(self.position))), str(timedelta(seconds=int(remaining)))
+   632       961      24457.0     25.4      6.8              self.label.set_text(fvalue)
+   633       961      11630.0     12.1      3.2              self.label_end.set_text(svalue)
+   634       961      11368.0     11.8      3.1              self.slider.handler_unblock(self.slider_handler_id)
+   635                                                   except Exception as e:
+   636                                                       print (f'W: {e}')
+   637                                                       pass
+   638       961       1455.0      1.5      0.4          return True
+
+Total time: 0.048639 s
+File: ./benchmark_hbud.py
+Function: on_shuffBut_clicked at line 640
+
+Line #      Hits         Time  Per Hit   % Time  Line Contents
+==============================================================
+   640                                               @profile
+   641         1      48639.0  48639.0    100.0      def on_shuffBut_clicked(self, *_): self.neo_playlist_gen(name='shuffle')
+
+Total time: 0 s
+File: ./benchmark_hbud.py
+Function: nosub_hide at line 643
+
+Line #      Hits         Time  Per Hit   % Time  Line Contents
+==============================================================
+   643                                               @profile
+   644                                               def nosub_hide(self, *_):
+   645                                                   self.nosub.hide()
+   646                                                   return True
+
+Total time: 0.001004 s
+File: ./benchmark_hbud.py
+Function: on_act_sub at line 648
+
+Line #      Hits         Time  Per Hit   % Time  Line Contents
+==============================================================
+   648                                               @profile
+   649                                               def on_act_sub(self, _, state):
+   650         2          8.0      4.0      0.8          if state == True and self.nowIn == "video":
+   651         1          6.0      6.0      0.6              filename = self.url.replace("file://", "").split("/")[-1]
+   652         1         38.0     38.0      3.8              tmpdbnow = os.listdir(self.url.replace("file://", "").replace(filename, ""))
+   653         1         23.0     23.0      2.3              if os.path.splitext(filename)[0]+".srt" in tmpdbnow:
+   654         1         17.0     17.0      1.7                  print("Subtitle found!")
+   655         1         16.0     16.0      1.6                  srfile = os.path.splitext(self.url.replace("file://", ""))[0]+".srt"
+   656         1          4.0      4.0      0.4                  print(srfile)
+   657         1         61.0     61.0      6.1                  with open (srfile, 'r') as subfile:
+   658         1         28.0     28.0      2.8                      presub = subfile.read()
+   659         1          6.0      6.0      0.6                  subtitle_gen = srt.parse(presub)
+   660         1        518.0    518.0     51.6                  subtitle = list(subtitle_gen)
+   661         1          1.0      1.0      0.1                  self.needSub = True
+   662         1         30.0     30.0      3.0                  subs = futures.ThreadPoolExecutor(max_workers=2)
+   663         1        245.0    245.0     24.4                  subs.submit(self.subShow, subtitle)
+   664                                                       else:
+   665                                                           self.nosub.set_title("Subtitle file not found")
+   666                                                           self.nosub.show_all()
+   667                                                           GLib.idle_add(self.subcheck.set_state, False)
+   668                                                           self.pause()
+   669         1          3.0      3.0      0.3          else: self.needSub = False
+
+Total time: 0.03102 s
+File: ./benchmark_hbud.py
+Function: play at line 671
+
+Line #      Hits         Time  Per Hit   % Time  Line Contents
+==============================================================
+   671                                               @profile
+   672                                               def play(self, misc=""):
+   673         6         17.0      2.8      0.1          if self.clickedE:
+   674                                                       self.url, self.nowIn = "file://"+self.clickedE, self.useMode
+   675                                                       if self.useMode == "audio": self.player = self.audioPipe
+   676                                                       else: self.player = self.videoPipe
+   677         6         12.0      2.0      0.0          elif "/" in misc:
+   678         1          5.0      5.0      0.0              self.url, self.nowIn, self.player = "file://"+misc, "video", self.videoPipe
+   679         1         27.0     27.0      0.1              GLib.idle_add(self.subcheck.set_state, False)
+   680         5          7.0      1.4      0.0          elif misc == "continue":
+   681                                                       if self.useMode == "audio":
+   682                                                           if self.audioPipe.get_state(1)[1] == Gst.State.NULL: return
+   683                                                           self.player, self.nowIn = self.audioPipe, "audio"
+   684                                                       else:
+   685                                                           if self.videoPipe.get_state(1)[1] == Gst.State.NULL: return
+   686                                                           self.player, self.nowIn = self.videoPipe, "video"
+   687                                                   else:
+   688         5         27.0      5.4      0.1              try: self.url, self.nowIn, self.player = "file://"+self.playlist[self.tnum]["uri"], "audio", self.audioPipe
+   689                                                       except: return
+   690         6        106.0     17.7      0.3          print("Play")
+   691         6         26.0      4.3      0.1          self.res, self.playing, self.position = True, True, 0
+   692         6      12577.0   2096.2     40.5          if self.useMode == "audio": self.themer(self.roundSpin.get_value(), self.tnum)
+   693         6         15.0      2.5      0.0          if misc != "continue":
+   694         6       2551.0    425.2      8.2              self.player.set_state(Gst.State.NULL)
+   695         6        110.0     18.3      0.4              self.player.set_property("uri", self.url)
+   696         6      12557.0   2092.8     40.5          self.player.set_state(Gst.State.PLAYING)
+   697         6        179.0     29.8      0.6          GLib.idle_add(self.header.set_subtitle, self.url.replace("file://", "").split("/")[-1])
+   698         6        214.0     35.7      0.7          GLib.idle_add(self.plaicon.set_from_icon_name, "media-playback-pause", Gtk.IconSize.BUTTON)
+   699         6        272.0     45.3      0.9          GLib.timeout_add(50, self.updateSlider)
+   700         6         10.0      1.7      0.0          if self.useMode == "audio" and misc != "continue":
+   701         5        180.0     36.0      0.6              ld_cov = futures.ThreadPoolExecutor(max_workers=1)
+   702         5       2128.0    425.6      6.9              ld_cov.submit(self.load_cover)
+
+Total time: 0 s
+File: ./benchmark_hbud.py
+Function: diabuilder at line 704
+
+Line #      Hits         Time  Per Hit   % Time  Line Contents
+==============================================================
+   704                                               @profile
+   705                                               def diabuilder (self, text, title, mtype, buts):
+   706                                                   x, y = self.window.get_position()
+   707                                                   sx, sy = self.window.get_size()
+   708                                                   dialogWindow = Gtk.MessageDialog(parent=self.window, modal=True, destroy_with_parent=True, message_type=mtype, buttons=buts, text=text, title=title)
+   709                                                   dsx, dsy = dialogWindow.get_size()
+   710                                                   dialogWindow.move(x+((sx-dsx)/2), y+((sy-dsy)/2))
+   711                                                   dialogWindow.show_all()
+   712                                                   dialogWindow.run()
+   713                                                   dialogWindow.destroy()
+
+Total time: 0.004873 s
+File: ./benchmark_hbud.py
+Function: on_playBut_clicked at line 715
+
+Line #      Hits         Time  Per Hit   % Time  Line Contents
+==============================================================
+   715                                               @profile
+   716                                               def on_playBut_clicked(self, button):
+   717         4         23.0      5.8      0.5          if self.nowIn == self.useMode or self.nowIn == "" or "/" in button:
+   718         4          4.0      1.0      0.1              if not self.playing:
+   719         1       1081.0   1081.0     22.2                  if not self.res or "/" in str(button): self.play(button)
+   720                                                           else: self.resume()
+   721         3       3765.0   1255.0     77.3              else: self.pause()
+   722                                                   else: self.play("continue")
+
+Total time: 9.1e-05 s
+File: ./benchmark_hbud.py
+Function: on_main_delete_event at line 724
+
+Line #      Hits         Time  Per Hit   % Time  Line Contents
+==============================================================
+   724                                               @profile
+   725                                               def on_main_delete_event(self, window, e):
+   726         1         78.0     78.0     85.7          try: self.mainloop.quit()
+   727                                                   except: pass
+   728         1          7.0      7.0      7.7          self.force, self.stopKar, self.needSub, self.hardReset = True, True, False, True
+   729         1          6.0      6.0      6.6          raise SystemExit
+
+Total time: 0.002439 s
+File: ./benchmark_hbud.py
+Function: listener at line 731
+
+Line #      Hits         Time  Per Hit   % Time  Line Contents
+==============================================================
+   731                                               @profile
+   732                                               def listener(self):
+   733         1          1.0      1.0      0.0          try:
+   734         1          1.0      1.0      0.0              APP_ID = "hbud"
+   735         1         14.0     14.0      0.6              dbus.mainloop.glib.DBusGMainLoop(set_as_default=True)
+   736         1        791.0    791.0     32.4              bus = dbus.Bus(dbus.Bus.TYPE_SESSION)
+   737         1        257.0    257.0     10.5              bus_object = bus.get_object('org.gnome.SettingsDaemon', '/org/gnome/SettingsDaemon/MediaKeys')
+   738         1          1.0      1.0      0.0              dbus_interface='org.gnome.SettingsDaemon.MediaKeys'
+   739         1        870.0    870.0     35.7              bus_object.GrabMediaPlayerKeys(APP_ID, 0, dbus_interface=dbus_interface)
+   740         1        460.0    460.0     18.9              bus_object.connect_to_signal('MediaPlayerKeyPressed', self.on_media)
+   741         1         44.0     44.0      1.8              self.mainloop = GLib.MainLoop()
+   742                                                       self.mainloop.run()
+   743                                                   except:
+   744                                                       print("I: Not compatible with Gnome MediaKeys daemon")
+
+Total time: 0 s
+File: ./benchmark_hbud.py
+Function: on_media at line 746
+
+Line #      Hits         Time  Per Hit   % Time  Line Contents
+==============================================================
+   746                                               @profile
+   747                                               def on_media(self, app, action):
+   748                                                   print(app, action)
+   749                                                   if app == "hbud" and self.url:
+   750                                                       if action == "Next": self.on_next("xy")
+   751                                                       elif action == "Previous": self.on_prev("xy")
+   752                                                       elif not self.playing: self.resume()
+   753                                                       elif self.playing: self.pause()
+
+Total time: 0 s
+File: ./benchmark_hbud.py
+Function: _sig_drag_drop at line 755
+
+Line #      Hits         Time  Per Hit   % Time  Line Contents
+==============================================================
+   755                                               @profile
+   756                                               def _sig_drag_drop(self, widget, *_): self.dst = int(widget.get_name().replace("trackbox_", ""))
+
+Total time: 0 s
+File: ./benchmark_hbud.py
+Function: _sig_drag_end at line 758
+
+Line #      Hits         Time  Per Hit   % Time  Line Contents
+==============================================================
+   758                                               @profile
+   759                                               def _sig_drag_end(self, widget, _): self.reorderer(int(widget.get_name().replace("trackbox_", "")), self.dst)
+
+Total time: 0 s
+File: ./benchmark_hbud.py
+Function: reorderer at line 761
+
+Line #      Hits         Time  Per Hit   % Time  Line Contents
+==============================================================
+   761                                               @profile
+   762                                               def reorderer(self, src, dst):
+   763                                                   playlistLoc, cutList = self.playlist, []
+   764                                                   if dst < src:
+   765                                                       [cutList.append(playlistLoc[i]) for i in range(dst, src+1)]
+   766                                                       rby, corrector = 1, dst
+   767                                                   elif dst > src:
+   768                                                       [cutList.append(playlistLoc[i]) for i in range(src, dst+1)]
+   769                                                       rby, corrector = -1, src
+   770                                                   cutList = deque(cutList)
+   771                                                   cutList.rotate(rby)
+   772                                                   cutList = list(cutList)
+   773                                                   for i in range(len(cutList)):
+   774                                                       self.playlist[i+corrector] = cutList[i]
+   775                                                   GLib.idle_add(self.neo_playlist_gen, "rename", src, dst)
+
+Total time: 0.000512 s
+File: ./benchmark_hbud.py
+Function: on_key at line 777
+
+Line #      Hits         Time  Per Hit   % Time  Line Contents
+==============================================================
+   777                                               @profile
+   778                                               def on_key(self, _, key):
+   779                                                   # Add on_key as key_press signal to the ui file - main window preferably
+   780                                                   # print(key.keyval)
+   781         6         35.0      5.8      6.8          try:
+   782         6        125.0     20.8     24.4              if key.keyval == 32 and self.url: self.on_playBut_clicked(0) # Space
+   783         6         99.0     16.5     19.3              elif key.keyval == 65307 or key.keyval == 65480:
+   784                                                           if self.useMode == "video": self.on_karaoke_activate(0) # ESC and F11
+   785         6         51.0      8.5     10.0              elif key.keyval == 65363: self.on_next("") # Right
+   786         6         48.0      8.0      9.4              elif key.keyval == 65361: self.on_prev("") # Left
+   787         6         49.0      8.2      9.6              elif key.keyval == 65535 and self.useMode == "audio": # Delete
+   788                                                           self.ednum = self.tnum
+   789                                                           self.del_cur()
+   790         6         49.0      8.2      9.6              elif key.keyval == 65362 and self.useMode == "audio": # Up
+   791                                                           self.reorderer(self.tnum, self.tnum-1)
+   792         6         56.0      9.3     10.9              elif key.keyval == 65364 and self.useMode == "audio": # Down
+   793                                                           self.reorderer(self.tnum, self.tnum+1)
+   794                                                   except: pass
+
+Total time: 0.017793 s
+File: ./benchmark_hbud.py
+Function: on_message at line 796
+
+Line #      Hits         Time  Per Hit   % Time  Line Contents
+==============================================================
+   796                                               @profile
+   797                                               def on_message(self, _, message):
+   798      1358      12790.0      9.4     71.9          t = message.type
+   799      1358       3461.0      2.5     19.5          if t == Gst.MessageType.EOS and self.nowIn == "audio": self.on_next("xy")
+   800      1358       1542.0      1.1      8.7          elif t == Gst.MessageType.ERROR:
+   801                                                       self.player.set_state(Gst.State.NULL)
+   802                                                       err, debug = message.parse_error()
+   803                                                       print (f"Error: {err}", debug)
+
+Total time: 0.670001 s
+File: ./benchmark_hbud.py
+Function: _on_size_allocated at line 805
+
+Line #      Hits         Time  Per Hit   % Time  Line Contents
+==============================================================
+   805                                               @profile
+   806                                               def _on_size_allocated(self, *_):
+   807        66     667071.0  10107.1     99.6          sleep(0.01)
+   808        66       2677.0     40.6      0.4          x, y = self.sub.get_size()
+   809        66        253.0      3.8      0.0          self.size, self.size2 = 50*x, 21.4285714*x
+
+Total time: 8.49864 s
+File: ./benchmark_hbud.py
+Function: _on_size_allocated0 at line 811
+
+Line #      Hits         Time  Per Hit   % Time  Line Contents
+==============================================================
+   811                                               @profile
+   812                                               def _on_size_allocated0(self, *_):
+   813       839    8486251.0  10114.7     99.9          sleep(0.01)
+   814       839       4304.0      5.1      0.1          if self.needSub == True:
+   815       179       5796.0     32.4      0.1              x, y = self.window.get_size()
+   816       179       2290.0     12.8      0.0              self.size3, self.size4 = self.sSize*y, float(f"0.0{self.sMarg}")*y
+
+Total time: 0 s
+File: ./benchmark_hbud.py
+Function: get_lyrics at line 818
+
+Line #      Hits         Time  Per Hit   % Time  Line Contents
+==============================================================
+   818                                               @profile
+   819                                               def get_lyrics(self, title, artist):
+   820                                                   self.DAPI.title, self.DAPI.artist = title, artist
+   821                                                   try: result = self.DAPI.getLyrics()
+   822                                                   except: result = 0
+   823                                                   return result
+
+Total time: 0.075327 s
+File: ./benchmark_hbud.py
+Function: on_karaoke_activate at line 825
+
+Line #      Hits         Time  Per Hit   % Time  Line Contents
+==============================================================
+   825                                               @profile
+   826                                               def on_karaoke_activate(self, *_):
+   827         1          6.0      6.0      0.0          if self.nowIn == "audio":
+   828         1          3.0      3.0      0.0              if self.playing == True or self.res == True:
+   829         1         30.0     30.0      0.0                  print('Karaoke')
+   830         1          4.0      4.0      0.0                  self.stopKar = False
+   831         1          4.0      4.0      0.0                  track = self.playlist[self.tnum]["title"]
+   832         1          2.0      2.0      0.0                  try:
+   833         1          5.0      5.0      0.0                      artist = self.playlist[self.tnum]["artist"].split("/")[0]
+   834         1          2.0      2.0      0.0                      if artist == "AC": artist = self.playlist[self.tnum]["artist"]
+   835                                                           except: artist = self.playlist[self.tnum]["artist"]
+   836         1          2.0      2.0      0.0                  dbnow = []
+   837         1          2.0      2.0      0.0                  if self.clickedE:
+   838                                                               folPathClick = self.clickedE.replace(self.clickedE.split("/")[-1], "")
+   839                                                               tmpdbnow = os.listdir(folPathClick)
+   840         1        140.0    140.0      0.2                  else: tmpdbnow = os.listdir(self.folderPath)
+   841        95        157.0      1.7      0.2                  for i in tmpdbnow:
+   842        94        182.0      1.9      0.2                      if ".srt" in i or ".txt" in i:
+   843        20         35.0      1.8      0.0                          x = i
+   844        20         32.0      1.6      0.0                          if self.clickedE: dbnow.append(f"{folPathClick}{x}")
+   845        20         45.0      2.2      0.1                          else: dbnow.append(f"{self.folderPath}/{x}")
+   846         1         30.0     30.0      0.0                  self.sub.set_title(f'{track} - {artist}')
+   847         1         23.0     23.0      0.0                  tmp = os.path.splitext(self.playlist[self.tnum]["uri"])[0]
+   848         1          3.0      3.0      0.0                  if f"{tmp}.srt" not in dbnow:
+   849                                                               if f"{tmp}.txt" in dbnow:
+   850                                                                   f = open(f"{tmp}.txt", "r")
+   851                                                                   lyric = f.read()
+   852                                                                   f.close()
+   853                                                                   self.lyrLab.set_label(lyric)
+   854                                                                   self.subStack.set_visible_child(self.lyrmode)
+   855                                                                   self.sub.show_all()
+   856                                                               else:
+   857                                                                   lyric = self.get_lyrics(track, artist)
+   858                                                                   if lyric == 0:
+   859                                                                       self.diabuilder('Can not get lyrics for the current track. Please place the synced .srt file  or the raw .txt file alongside the audio file, with the same name as the audio file.', "Information", Gtk.MessageType.INFO, Gtk.ButtonsType.OK)
+   860                                                                   else:
+   861                                                                       f = open(f"{tmp}.txt", "w+")
+   862                                                                       f.write(lyric)
+   863                                                                       f.close()
+   864                                                                       self.lyrLab.set_label(lyric)
+   865                                                                       self.subStack.set_visible_child(self.lyrmode)
+   866                                                                       self.sub.show_all()
+   867                                                           else:
+   868         1         15.0     15.0      0.0                      print("FOUND")
+   869         1       6961.0   6961.0      9.2                      self.start_karaoke(f"{tmp}.srt")
+   870         1         17.0     17.0      0.0                      self.subStack.set_visible_child(self.karmode)
+   871         1      67627.0  67627.0     89.8                      self.sub.show_all()
+   872                                                   elif self.useMode == "video":
+   873                                                       if self.fulle == False:
+   874                                                           GLib.idle_add(self.karaokeBut.set_from_icon_name, "view-restore", Gtk.IconSize.BUTTON)
+   875                                                           self.window.fullscreen()
+   876                                                           ld_clock = futures.ThreadPoolExecutor(max_workers=1)
+   877                                                           ld_clock.submit(self.clock)
+   878                                                       else:
+   879                                                           GLib.idle_add(self.karaokeBut.set_from_icon_name, "view-fullscreen", Gtk.IconSize.BUTTON)
+   880                                                           self.resete, self.keepReset = False, False
+   881                                                           self.window.unfullscreen()
+   882                                                           self.mage()
+
+Total time: 0.000163 s
+File: ./benchmark_hbud.py
+Function: mouse_enter at line 884
+
+Line #      Hits         Time  Per Hit   % Time  Line Contents
+==============================================================
+   884                                               @profile
+   885                                               def mouse_enter(self, *_):
+   886        64        163.0      2.5    100.0          if self.fulle == True: self.keepReset = True
+
+Total time: 0.000183 s
+File: ./benchmark_hbud.py
+Function: mouse_leave at line 888
+
+Line #      Hits         Time  Per Hit   % Time  Line Contents
+==============================================================
+   888                                               @profile
+   889                                               def mouse_leave(self, *_):
+   890        64        183.0      2.9    100.0          if self.fulle == True: self.keepReset = False
+
+Total time: 0 s
+File: ./benchmark_hbud.py
+Function: mage at line 892
+
+Line #      Hits         Time  Per Hit   % Time  Line Contents
+==============================================================
+   892                                               @profile
+   893                                               def mage(self):
+   894                                                   GLib.idle_add(self.exBot.show)
+   895                                                   cursor = Gdk.Cursor.new_from_name(self.window.get_display(), 'default')
+   896                                                   self.window.get_window().set_cursor(cursor)
+
+Total time: 0.033857 s
+File: ./benchmark_hbud.py
+Function: mouse_moving at line 898
+
+Line #      Hits         Time  Per Hit   % Time  Line Contents
+==============================================================
+   898                                               @profile
+   899                                               def mouse_moving(self, *_):
+   900      7384      33857.0      4.6    100.0          if self.fulle == True:
+   901                                                       self.resete = True
+   902                                                       if self.exBot.get_visible() == False:
+   903                                                           self.mage()
+   904                                                           ld_clock = futures.ThreadPoolExecutor(max_workers=1)
+   905                                                           ld_clock.submit(self.clock)
+
+Total time: 0 s
+File: ./benchmark_hbud.py
+Function: clock at line 907
+
+Line #      Hits         Time  Per Hit   % Time  Line Contents
+==============================================================
+   907                                               @profile
+   908                                               def clock(self):
+   909                                                   start = time()
+   910                                                   while time() - start < 2:
+   911                                                       sleep(0.00001)
+   912                                                       if self.hardReset == True: return
+   913                                                       if self.keepReset == True: start = time()
+   914                                                       elif self.resete == True: start, self.resete = time(), False    
+   915                                                   if self.fulle == True:
+   916                                                       GLib.idle_add(self.exBot.hide)
+   917                                                       cursor = Gdk.Cursor.new_for_display(self.window.get_display(), Gdk.CursorType.BLANK_CURSOR)
+   918                                                       self.window.get_window().set_cursor(cursor)
+
+Total time: 0.000663 s
+File: ./benchmark_hbud.py
+Function: on_state_change at line 920
+
+Line #      Hits         Time  Per Hit   % Time  Line Contents
+==============================================================
+   920                                               @profile
+   921                                               def on_state_change(self, _, event):
+   922        10        663.0     66.3    100.0          if event.changed_mask & Gdk.WindowState.FULLSCREEN:
+   923                                                       self.fulle = bool(event.new_window_state & Gdk.WindowState.FULLSCREEN)
+   924                                                       print(self.fulle)
+
+Total time: 0 s
+File: ./benchmark_hbud.py
+Function: subShow at line 926
+
+Line #      Hits         Time  Per Hit   % Time  Line Contents
+==============================================================
+   926                                               @profile
+   927                                               def subShow(self, subtitle):
+   928                                                   while self.needSub == True:
+   929                                                       sleep(0.001)
+   930                                                       for line in subtitle:
+   931                                                           if self.position >= line.start.total_seconds() and self.position <= line.end.total_seconds():
+   932                                                               if self.bge == True: GLib.idle_add(self.theTitle.set_markup, f"<span size='{int(self.size3)}' color='white' background='black'>{line.content}</span>")
+   933                                                               else: GLib.idle_add(self.theTitle.set_markup, f"<span size='{int(self.size3)}' color='white'>{line.content}</span>")
+   934                                                               self.theTitle.set_margin_bottom(self.size4)
+   935                                                               GLib.idle_add(self.theTitle.show)
+   936                                                               while self.needSub == True and self.position <= line.end.total_seconds() and self.position >= line.start.total_seconds():
+   937                                                                   sleep(0.001)
+   938                                                                   pass
+   939                                                               GLib.idle_add(self.theTitle.hide)
+   940                                                               GLib.idle_add(self.theTitle.set_label, "")
+
+Total time: 0.006931 s
+File: ./benchmark_hbud.py
+Function: start_karaoke at line 942
+
+Line #      Hits         Time  Per Hit   % Time  Line Contents
+==============================================================
+   942                                               @profile
+   943                                               def start_karaoke(self, sfile):
+   944         1        328.0    328.0      4.7          with open (sfile, "r") as subfile: presub = subfile.read()
+   945         1          4.0      4.0      0.1          subtitle_gen = srt.parse(presub)
+   946         1       6225.0   6225.0     89.8          subtitle, lyrs = list(subtitle_gen), futures.ThreadPoolExecutor(max_workers=2)
+   947         1        374.0    374.0      5.4          lyrs.submit(self.slideShow, subtitle)
+
+Total time: 0 s
+File: ./benchmark_hbud.py
+Function: slideShow at line 949
+
+Line #      Hits         Time  Per Hit   % Time  Line Contents
+==============================================================
+   949                                               @profile
+   950                                               def slideShow(self, subtitle):
+   951                                                   self.lenlist = len(subtitle)-1
+   952                                                   while not self.stopKar:
+   953                                                       self.line1, self.line2, self.line3, self.buffer = [], [], [], []
+   954                                                       self.hav1, self.hav2, self.hav3, self.where = False, False, False, -1
+   955                                                       for word in subtitle:
+   956                                                           if '#' in word.content:
+   957                                                               self.buffer.append(word)
+   958                                                               if not self.hav1: self.to1()
+   959                                                               elif not self.hav2: self.to2()
+   960                                                               else: self.to3()
+   961                                                           else: self.buffer.append(word)
+   962                                                           if self.stopKar or self.seekBack: break
+   963                                                           self.where += 1
+   964                                                       if not self.seekBack:
+   965                                                           self.to2()
+   966                                                           self.to1()
+   967                                                           self.line2 = []
+   968                                                           self.sync()
+   969                                                           self.stopKar = True
+   970                                                       else: self.seekBack = False
+
+Total time: 0 s
+File: ./benchmark_hbud.py
+Function: to1 at line 972
+
+Line #      Hits         Time  Per Hit   % Time  Line Contents
+==============================================================
+   972                                               @profile
+   973                                               def to1(self):
+   974                                                   if self.hav2: self.line1 = self.line2
+   975                                                   else:
+   976                                                       self.line1 = self.buffer
+   977                                                       self.buffer = []
+   978                                                   self.hav1 = True
+
+Total time: 0 s
+File: ./benchmark_hbud.py
+Function: to2 at line 980
+
+Line #      Hits         Time  Per Hit   % Time  Line Contents
+==============================================================
+   980                                               @profile
+   981                                               def to2(self):
+   982                                                   if self.where+1 <= self.lenlist:
+   983                                                       if self.hav3: self.line2 = self.line3
+   984                                                       else:
+   985                                                           self.line2 = self.buffer
+   986                                                           self.buffer = []
+   987                                                       self.hav2 = True
+   988                                                   else:
+   989                                                       if self.hav1 and not self.hav3: self.to1()
+   990                                                       self.line2 = self.line3
+   991                                                       self.line3 = []
+   992                                                       self.sync()
+
+Total time: 0 s
+File: ./benchmark_hbud.py
+Function: to3 at line 994
+
+Line #      Hits         Time  Per Hit   % Time  Line Contents
+==============================================================
+   994                                               @profile
+   995                                               def to3(self):
+   996                                                   if self.where+2 <= self.lenlist:
+   997                                                       if self.hav1 and self.hav3: self.to1()
+   998                                                       if self.hav2 and self.hav3: self.to2()
+   999                                                       self.line3 = self.buffer
+  1000                                                       self.buffer, self.hav3 = [], True
+  1001                                                   else:
+  1002                                                       if self.hav1: self.to1()
+  1003                                                       if self.hav2: self.to2()
+  1004                                                       self.line3 = self.buffer
+  1005                                                       self.buffer, self.hav3 = [], False
+  1006                                                   self.sync()
+
+Total time: 0 s
+File: ./benchmark_hbud.py
+Function: sync at line 1008
+
+Line #      Hits         Time  Per Hit   % Time  Line Contents
+==============================================================
+  1008                                               @profile
+  1009                                               def sync(self):
+  1010                                                   simpl2, simpl3 = "", ""
+  1011                                                   if self.line2 != []:
+  1012                                                       for z in self.line2:
+  1013                                                           if self.stopKar or self.seekBack: break
+  1014                                                           simpl2 += f"{z.content.replace('#', '')} "
+  1015                                                   else: simpl2 = ""
+  1016                                                   if self.line3 != []:
+  1017                                                       for z in self.line3:
+  1018                                                           if self.stopKar or self.seekBack: break
+  1019                                                           simpl3 += f"{z.content.replace('#', '')} "
+  1020                                                   else: simpl3 = ""
+  1021                                                   GLib.idle_add(self.label2.set_markup, f"<span size='{int(self.size2)}'>{simpl2}</span>")
+  1022                                                   GLib.idle_add(self.label3.set_markup, f"<span size='{int(self.size2)}'>{simpl3}</span>")
+  1023                                                   done, tmpline, first, tl1, it = "", self.line1[:], True, self.line1, 1
+  1024                                                   tl1.insert(0, "")
+  1025                                                   maxit = len(tl1)-1
+  1026                                                   for xy in tl1:
+  1027                                                       if self.stopKar or self.seekBack: break
+  1028                                                       if first: first = False
+  1029                                                       else: tmpline = tmpline[1:]
+  1030                                                       leftover = ""
+  1031                                                       for y in tmpline:
+  1032                                                           if self.stopKar or self.seekBack: break
+  1033                                                           leftover += f"{y.content.replace('#', '')} "
+  1034                                                       try: GLib.idle_add(self.label1.set_markup, f"<span size='{self.size}' color='green'>{done}</span> <span size='{self.size}' color='green'> {xy.content.replace('#', '')}</span> <span size='{self.size}'> {leftover}</span>")
+  1035                                                       except: GLib.idle_add(self.label1.set_markup, f"<span size='{self.size}' color='green'>{done}</span> <span size='{self.size}' color='green'> {xy}</span> <span size='{self.size}'> {leftover}</span>")
+  1036                                                       while not self.stopKar:
+  1037                                                           sleep(0.01)
+  1038                                                           if it > maxit:
+  1039                                                               if self.position >= xy.end.total_seconds()-0.05 and self.position >= 0.5: break
+  1040                                                           else:
+  1041                                                               xz = tl1[it]
+  1042                                                               if self.position >= xz.start.total_seconds()-0.1 and self.position >= 0.5: break
+  1043                                                           if self.seekBack: break
+  1044                                                       it += 1
+  1045                                                       try:
+  1046                                                           if done == "": done += f"{xy.content.replace('#', '')}"
+  1047                                                           else: done += f" {xy.content.replace('#', '')}"
+  1048                                                       except: pass
+
+Total time: 0 s
+File: ./benchmark_hbud.py
+Function: config_write at line 1050
+
+Line #      Hits         Time  Per Hit   % Time  Line Contents
+==============================================================
+  1050                                               @profile
+  1051                                               def config_write(self, *_):
+  1052                                                   self.darke, self.bge, self.color = self.dark_switch.get_state(), self.bg_switch.get_state(), self.colorer.get_rgba().to_string()
+  1053                                                   tmp1, tmp2, tmp3 = int(self.subSpin.get_value()), int(self.subMarSpin.get_value()), int(self.roundSpin.get_value())
+  1054                                                   parser.set('subtitles', 'margin', str(tmp2))
+  1055                                                   parser.set('subtitles', 'size', str(tmp1))
+  1056                                                   parser.set('subtitles', 'bg', str(self.bge))
+  1057                                                   parser.set('gui', 'rounded', str(tmp3))
+  1058                                                   parser.set('gui', 'dark', str(self.darke))
+  1059                                                   parser.set('gui', 'color', self.color)
+  1060                                                   file = open(confP, "w+")
+  1061                                                   parser.write(file)
+  1062                                                   file.close()
+  1063                                                   self.settings.set_property("gtk-application-prefer-dark-theme", self.darke)
+  1064                                                   self.themer(str(tmp3), self.tnum)
+  1065                                                   self.sSize, self.sMarg = tmp1, tmp2
+
+Total time: 0.000149 s
+File: ./benchmark_hbud.py
+Function: on_hide at line 1067
+
+Line #      Hits         Time  Per Hit   % Time  Line Contents
+==============================================================
+  1067                                               @profile
+  1068                                               def on_hide(self, *_):
+  1069         1          3.0      3.0      2.0          self.stopKar = True
+  1070         1        145.0    145.0     97.3          self.sub.hide()
+  1071         1          1.0      1.0      0.7          return True
+
+

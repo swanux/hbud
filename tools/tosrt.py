@@ -21,14 +21,14 @@ class Main:
         for this in prettyLyrics:
             tnummer = 0
             thhisLen = len(this.split(' '))-1
-            print(thhisLen)
-            print(prettyLyrics)
-            print(this)
+            # print(thhisLen)
+            # print(prettyLyrics)
+            # print(this)
             wordNum = -1
             for self.line in contento:
                 if lasttime+1 == tnummer:
                     wordNum += 1
-                    print(self.line)
+                    # print(self.line)
                     linelist = self.line.split(' ')
 
                     prebegin = str(datetime.timedelta(seconds=float(linelist[0])))
@@ -45,7 +45,7 @@ class Main:
                     begin = '%s,%s' % (t[0], prebegin)
 
                     lasttime = tnummer
-                    print(wordNum)
+                    # print(wordNum)
                     if wordNum == thhisLen:
                         self.cWord = '%s#' % this.split(' ')[wordNum]
                     else:
@@ -67,6 +67,7 @@ class Main:
                     ncontent = ncontent+'%s --> %s\n' % (begin, end)
                     ncontent = ncontent+'%s\n\n' % self.cWord
                     self.nummer += 1
+                    # print(self.cWord)
                     if "#" in self.cWord:
                         break
                 else:
@@ -92,6 +93,6 @@ for i in lyr:
     else:
         lyrics = lyrics+'%s' % i
     cnummer +=1
-lyrics = lyrics.replace("  ", " ").replace("\n\n", "\n").replace(" \n", "\n")
+lyrics = lyrics.replace("  ", " ").replace("\n\n", "\n").replace(" \n", "\n").replace("-", " ")
 
 Main().converter(iFile, oFile, lyrics)
