@@ -11,7 +11,7 @@ class Main:
         sfile = open(inputFile, "r")
         contento = sfile.read()
         sfile.close()
-        contento = contento.replace('BREATH*', 'BREATH *')
+        # contento = contento.replace('BREATH*', 'BREATH *')
         contento = contento.split('\n')
         del contento[-1]
         prettyLyrics = prettyLyrics.replace('\n\n', '\n')

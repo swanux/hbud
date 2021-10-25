@@ -63,11 +63,11 @@ class TrackBox(Gtk.EventBox):
 
 class GUI:
     def __init__(self):
-        UI_FILE, version = "hbud.glade", "HBud 0.2.3 Yennefer"
+        UI_FILE, version = "hbud.glade", "HBud 0.2.4 Yennefer"
         self.useMode = "audio"
         self.supportedList = ['.3gp', '.aa', '.aac', '.aax', '.aiff', '.flac', '.m4a', '.mp3', '.ogg', '.wav', '.wma', '.wv']
         try:
-            self.clickedE = argv[1]
+            self.clickedE = argv[1].replace("file://", "")
             if os.path.splitext(self.clickedE)[-1] not in self.supportedList and os.path.splitext(self.clickedE)[-1] != "":
                 self.useMode = "video" 
                 print("video, now", self.clickedE)
@@ -79,14 +79,10 @@ class GUI:
         whview = self.builder.get_object("whView")
         buffer = Gtk.TextBuffer()
         buffer.set_text("""
- v0.2.3 - Oct 03 2021 :
+ v0.2.4 - Oct ?? 2021 :
 
-        * Modernized and revamped the settings menu
-        * Added option to change accent color
-        * Fixed packaging issues
-        * Fixed some bugs
-        * Added some shortcuts (double click to fullscreen, etc.)
-        * Added release notes to about section""")
+        * Fixed several bugs
+        * Polished the GUI""")
         whview.set_buffer(buffer)
         self.playlistPlayer, self.needSub, self.nowIn = False, False, ""
         self.DAPI = azapi.AZlyrics('duckduckgo', accuracy=0.65)
@@ -178,6 +174,7 @@ class GUI:
         self.settings.set_property("gtk-application-prefer-dark-theme", self.darke)
         # Display the program
         self.window.set_title(version)
+        self.window.set_wmclass ("hbud", "HBud")
         self.window.show_all()
         self.createPipeline("local")
         self.topBox.hide()
@@ -214,6 +211,7 @@ class GUI:
 
     def on_search(self, widget):
         term = widget.get_text().lower()
+        GLib.idle_add(self.supBox.show_all)
         if term != "":
             results = []
             for i, item in enumerate(self.playlist):
@@ -221,8 +219,6 @@ class GUI:
                     results.append(i)
             for i, item in enumerate(self.supBox.get_children()):
                 if i not in results: GLib.idle_add(item.hide)
-        else:
-            GLib.idle_add(self.supBox.show_all)
 
     def on_sort_change(self, widget):
         aid = int(widget.get_active_id())
@@ -240,6 +236,13 @@ class GUI:
         elif aid == 7: self.playlist = sorted(self.archive, key=itemgetter('length'),reverse=False)
         elif aid == 8: self.playlist = sorted(self.archive, key=itemgetter('length'),reverse=True)
         self.neo_playlist_gen()
+        old = self.archive[self.tnum]["title"]
+        num = 0
+        for item in self.playlist:
+            if item["title"] == old: break
+            else: num += 1
+        self.tnum = num
+        self.themer(self.roundSpin.get_value(), self.tnum)
 
     def on_clear_order(self, _): os.system(f"rm {self.folderPath}/.saved.order")
 
@@ -258,14 +261,14 @@ class GUI:
         menu, .popup {
             border-radius: %spx;
         }
-        decoration, headerbar {
+        decoration, headerbar{
             border-radius: %spx;
         }
         button, menuitem, entry {
             border-radius: %spx;
             margin: 5px;
         }
-        .titlebar, tab {
+        .titlebar {
             border-top-left-radius: %spx;
             border-top-right-radius: %spx;
             border-bottom-left-radius: 0px;
@@ -280,7 +283,7 @@ class GUI:
             border-image: none;
             box-shadow: none;
         }
-        switch:checked {
+        switch:checked, highlight, selection, menuitem:hover {
             background-color: %s;
         }
         #trackbox_%s{
@@ -329,7 +332,6 @@ class GUI:
         btn = Gtk.Buildable.get_name(button)
         if self.mainStack.get_visible_child() != self.switchDict[btn][0] and button.get_active() == True:
             self.mainStack.set_visible_child(self.switchDict[btn][0])
-            if self.playing == True: self.on_playBut_clicked("xy")
             if btn != "infBut":
                 GLib.idle_add(self.exBot.show)
                 if btn == "locBut":
@@ -343,6 +345,7 @@ class GUI:
                     GLib.idle_add(self.drop_but.hide)
                     GLib.idle_add(self.subcheck.show)
                 GLib.idle_add(self.karaokeBut.set_from_icon_name, self.switchDict[btn][1], Gtk.IconSize.BUTTON)
+                if self.playing == True and self.switchDict[btn][2] == "video": self.on_playBut_clicked("xy")
                 self.useMode = self.switchDict[btn][2]
             else:
                 GLib.idle_add(self.exBot.hide)
@@ -371,9 +374,13 @@ class GUI:
             tmpList = self.supBox.get_children()
             for i in range(len(self.playlist)):
                 tmpList[i].set_name(f"trackbox_{i}")
-            if self.tnum == src: self.tnum = dst
-            elif src > dst: self.tnum += 1
-            elif src < dst: self.tnum -= 1
+            if self.tnum == src or self.tnum == dst:
+                if self.tnum == src: self.tnum = dst
+                elif src > dst: self.tnum += 1
+                elif src < dst: self.tnum -= 1
+            else:
+                if src > self.tnum and dst < self.tnum: self.tnum += 1
+                elif src < self.tnum and dst > self.tnum: self.tnum -= 1
             self.themer(self.roundSpin.get_value(), self.tnum)
         else:
             self.cleaner(self.playlistBox.get_children())
@@ -537,6 +544,7 @@ class GUI:
                     self.stop()
                 except: print("No playbin yet to stop.")
                 self.play()
+                if self.sub.get_visible(): self.on_karaoke_activate("xy")
             elif self.nowIn == "video":
                 seek_time_secs = self.player.query_position(Gst.Format.TIME)[1] - 10 * Gst.SECOND
                 self.player.seek_simple(Gst.Format.TIME,  Gst.SeekFlags.FLUSH | Gst.SeekFlags.KEY_UNIT, seek_time_secs)
@@ -1023,3 +1031,6 @@ if __name__ == "__main__":
     Gst.init(None)
     app = GUI()
     Gtk.main()
+
+    # GTK_DEBUG=interactive
+    # to debug
