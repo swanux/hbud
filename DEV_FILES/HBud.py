@@ -83,6 +83,7 @@ class GUI:
 
         * Added focus on currently playing track
         * Added Ctrl+F to search
+        * Added option to load lyric / subtitle from 'misc' subfolder - to keep things orderly
         * Fixed several bugs
         * Polished the GUI""")
         whview.set_buffer(buffer)
@@ -515,6 +516,7 @@ class GUI:
         if self.tnum == self.ednum: self.play()
 
     def on_next(self, button):
+        self.stopKar = True
         if self.nowIn == self.useMode or button == "clickMode":
             if self.nowIn == "audio" or button == "clickMode":
                 if button != "clickMode":
@@ -541,6 +543,7 @@ class GUI:
         GLib.idle_add(self.trackCover.set_from_pixbuf, coverBuf)
 
     def on_prev(self, *_):
+        self.stopKar = True
         if self.nowIn == self.useMode:
             if self.nowIn == "audio":
                 self.tnum -= 1
@@ -624,13 +627,17 @@ class GUI:
     def on_act_sub(self, _, state):
         if state == True and self.nowIn == "video":
             filename = self.url.replace("file://", "").split("/")[-1]
+            neo_tmpdbnow = os.listdir(self.url.replace("file://", "").replace(filename, "")+"misc/")
             tmpdbnow = os.listdir(self.url.replace("file://", "").replace(filename, ""))
-            if os.path.splitext(filename)[0]+".srt" in tmpdbnow:
+            if os.path.splitext(filename)[0]+".srt" in tmpdbnow or os.path.splitext(filename)[0]+".srt" in neo_tmpdbnow:
                 print("Subtitle found!")
                 srfile = os.path.splitext(self.url.replace("file://", ""))[0]+".srt"
-                print(srfile)
-                with open (srfile, 'r') as subfile:
-                    presub = subfile.read()
+                neo_srfile = self.url.replace("file://", "").replace(filename, "")+"misc/"+os.path.splitext(filename)[0]+".srt"
+                print(srfile, neo_srfile)
+                try:
+                    with open (srfile, 'r') as subfile: presub = subfile.read()
+                except:
+                    with open (neo_srfile, 'r') as subfile: presub = subfile.read()
                 subtitle_gen = srt.parse(presub)
                 subtitle = list(subtitle_gen)
                 self.needSub = True
@@ -797,21 +804,29 @@ class GUI:
                     artist = self.playlist[self.tnum]["artist"].split("/")[0]
                     if artist == "AC": artist = self.playlist[self.tnum]["artist"]
                 except: artist = self.playlist[self.tnum]["artist"]
-                dbnow = []
+                dbnow, neo_dbnow = [], []
                 if self.clickedE:
                     folPathClick = self.clickedE.replace(self.clickedE.split("/")[-1], "")
                     tmpdbnow = os.listdir(folPathClick)
-                else: tmpdbnow = os.listdir(self.folderPath)
+                else:
+                    tmpdbnow = os.listdir(self.folderPath)
+                    neo_tmpdbnow = os.listdir(self.folderPath+"/misc/")
                 for i in tmpdbnow:
                     if ".srt" in i or ".txt" in i:
                         x = i
                         if self.clickedE: dbnow.append(f"{folPathClick}{x}")
                         else: dbnow.append(f"{self.folderPath}/{x}")
+                for i in neo_tmpdbnow:
+                    if ".srt" in i or ".txt" in i:
+                        x = i
+                        neo_dbnow.append(f"{self.folderPath}/misc/{x}")
                 self.sub.set_title(f'{track} - {artist}')
                 tmp = os.path.splitext(self.playlist[self.tnum]["uri"])[0]
-                if f"{tmp}.srt" not in dbnow:
-                    if f"{tmp}.txt" in dbnow:
-                        f = open(f"{tmp}.txt", "r")
+                neo_tmp = os.path.splitext(self.playlist[self.tnum]["uri"].split("/")[-1])[0]
+                if f"{tmp}.srt" not in dbnow and f"{self.folderPath}/misc/{neo_tmp}.srt" not in neo_dbnow:
+                    if f"{tmp}.txt" in dbnow or f"{self.folderPath}/misc/{neo_tmp}.txt" in neo_dbnow:
+                        try: f = open(f"{tmp}.txt", "r")
+                        except: f = open(f"{self.folderPath}/misc/{neo_tmp}.txt", "r")
                         lyric = f.read()
                         f.close()
                         self.lyrLab.set_label(lyric)
@@ -830,7 +845,13 @@ class GUI:
                             self.sub.show_all()
                 else:
                     print("FOUND")
-                    self.start_karaoke(f"{tmp}.srt")
+                    try:
+                        with open (f"{tmp}.srt", "r") as subfile: presub = subfile.read()
+                    except:
+                        with open (f"{self.folderPath}/misc/{neo_tmp}.srt", "r") as subfile: presub = subfile.read()
+                    subtitle_gen = srt.parse(presub)
+                    subtitle, lyrs = list(subtitle_gen), futures.ThreadPoolExecutor(max_workers=2)
+                    lyrs.submit(self.slideShow, subtitle)
                     self.subStack.set_visible_child(self.karmode)
                     self.sub.show_all()
         elif self.useMode == "video":
