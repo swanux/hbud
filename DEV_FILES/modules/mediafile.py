@@ -58,7 +58,7 @@ import struct
 import traceback
 
 
-__version__ = '0.8.0'
+__version__ = '0.8.1'
 __all__ = ['UnreadableFileError', 'FileTypeError', 'MediaFile']
 
 log = logging.getLogger(__name__)
@@ -949,7 +949,7 @@ class MP3ListDescStorageStyle(MP3DescStorageStyle, ListStorageStyle):
         for frame in mutagen_file.tags.getall(self.key):
             if frame.desc.lower() == self.description.lower():
                 if mutagen_file.tags.version == (2, 3, 0) and self.split_v23:
-                    return sum([el.split('/') for el in frame.text], start=[])
+                    return sum((el.split('/') for el in frame.text), [])
                 else:
                     return frame.text
         return []

@@ -81,6 +81,8 @@ class GUI:
         buffer.set_text("""
  v0.2.4 - Oct ?? 2021 :
 
+        * Added focus on currently playing track
+        * Added Ctrl+F to search
         * Fixed several bugs
         * Polished the GUI""")
         whview.set_buffer(buffer)
@@ -164,6 +166,7 @@ class GUI:
         self.lyrLab = self.builder.get_object("lyrLab")
         self.karmode = self.builder.get_object("req_scroll")
         self.lyrmode = self.builder.get_object("req_scroll2")
+        self.search_play = self.builder.get_object("search_play")
         self.subMarSpin.set_value(self.sMarg)
         self.window = self.builder.get_object('main')
         self.sub.connect('size-allocate', self._on_size_allocated)
@@ -321,12 +324,14 @@ class GUI:
             # self.player = Gst.parse_launch(f"souphttpsrc is-live=false location={self.url} ! decodebin ! audioconvert ! autoaudiosink")
 
     def on_dropped(self, _):
-        if self.topBox.get_visible() == True:
-            GLib.idle_add(self.drop_but.get_image().set_from_icon_name, "gtk-go-down", Gtk.IconSize.BUTTON)
-            GLib.idle_add(self.topBox.hide)
-        else:
-            GLib.idle_add(self.drop_but.get_image().set_from_icon_name, "gtk-go-up", Gtk.IconSize.BUTTON)
-            GLib.idle_add(self.topBox.show)
+        if self.drop_but.get_visible() == True:
+            if self.topBox.get_visible() == True:
+                GLib.idle_add(self.drop_but.get_image().set_from_icon_name, "gtk-go-down", Gtk.IconSize.BUTTON)
+                GLib.idle_add(self.topBox.hide)
+            else:
+                GLib.idle_add(self.drop_but.get_image().set_from_icon_name, "gtk-go-up", Gtk.IconSize.BUTTON)
+                GLib.idle_add(self.topBox.show)
+                self.search_play.grab_focus()
 
     def allToggle(self, button):
         btn = Gtk.Buildable.get_name(button)
@@ -401,6 +406,7 @@ class GUI:
             yetScroll.add(self.supBox)
             self.playlistBox.pack_end(yetScroll, True, True, 0)
             yetScroll.show_all()
+            self.adj = yetScroll.get_vadjustment()
             self.playlistPlayer = True
             GLib.idle_add(self.drop_but.show)
 
@@ -657,7 +663,8 @@ class GUI:
             except: return
         print("Play")
         self.res, self.playing, self.position = True, True, 0
-        if self.useMode == "audio": self.themer(self.roundSpin.get_value(), self.tnum)
+        if self.useMode == "audio":
+            self.themer(self.roundSpin.get_value(), self.tnum)
         if misc != "continue":
             self.player.set_state(Gst.State.NULL)
             self.player.set_property("uri", self.url)
@@ -680,6 +687,7 @@ class GUI:
         dialogWindow.destroy()
 
     def on_playBut_clicked(self, button):
+        if self.useMode == "audio" and self.nowIn != "video": self.adj.set_value(self.tnum*70-140)
         if self.nowIn == self.useMode or self.nowIn == "" or "/" in button:
             if not self.playing:
                 if not self.res or "/" in str(button): self.play(button)
@@ -738,7 +746,9 @@ class GUI:
         # Add on_key as key_press signal to the ui file - main window preferably
         # print(key.keyval)
         try:
-            if key.keyval == 32 and self.url: self.on_playBut_clicked(0) # Space
+            if Gdk.ModifierType.CONTROL_MASK & key.state: # Ctrl combo
+                if key.keyval == 102: self.on_dropped(None)
+            elif key.keyval == 32 and self.url: self.on_playBut_clicked(0) # Space
             elif key.keyval == 65307 or key.keyval == 65480:
                 if self.useMode == "video": self.on_karaoke_activate(0) # ESC and F11
             elif key.keyval == 65363: self.on_next("") # Right

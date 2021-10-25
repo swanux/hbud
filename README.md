@@ -34,6 +34,10 @@ Here I'll show you how to generate synced lyrics for yourslef
 5. Run [tosrt.py](https://github.com/swanux/hbud/blob/master/tools/) from this repo like this: `python3 tosrt.py aligned.txt lyrics.txt output.srt`
 7. Move and rename the resulted output file alongside your audio file
 
+### Other methods
+
+You can try to generate a word by word .lrc file ([here](https://lrcgenerator.com) for example), and you can try my experimental enhanced-lrc converter like this: `python3 lrc2srt.py lyric.lrc output.srt`
+
 # Downloading music
 
 I recommend using [spotDL](https://github.com/spotDL/spotify-downloader)
