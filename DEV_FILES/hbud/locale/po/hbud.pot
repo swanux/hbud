@@ -1,0 +1,317 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2021-10-26 18:05+0000\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=CHARSET\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/HBud.py:81
+msgid ""
+"\n"
+" v0.2.4 - Oct ?? 2021 :\n"
+"\n"
+"        * Added translation support\n"
+"        * Added focus on currently playing track\n"
+"        * Added Ctrl+F to search\n"
+"        * Added option to load lyric / subtitle from 'misc' subfolder - to "
+"keep things orderly\n"
+"        * Fixed several bugs\n"
+"        * Polished the GUI"
+msgstr ""
+
+#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/hbud.glade:893
+msgid "About & FAQ"
+msgstr ""
+
+#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/hbud.glade:485
+msgid "Accent color :"
+msgstr ""
+
+#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/hbud.glade:1530
+msgid "Album :"
+msgstr ""
+
+#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/hbud.glade:519
+msgid "Appearance"
+msgstr ""
+
+#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/hbud.glade:701
+msgid "Apply"
+msgstr ""
+
+#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/hbud.glade:1512
+msgid "Artist :"
+msgstr ""
+
+#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/hbud.glade:127
+msgid "Audio"
+msgstr ""
+
+#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/hbud.glade:1042
+msgid "Browse"
+msgstr ""
+
+#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/HBud.py:842
+msgid ""
+"Can not get lyrics for the current track. Please place the synced .srt file  "
+"or the raw .txt file alongside the audio file, with the same name as the "
+"audio file."
+msgstr ""
+
+#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/hbud.glade:1241
+msgid ""
+"Can't load subtitle. Please place the subtitle (.srt) file alongside the "
+"video file, with the same name as the video file."
+msgstr ""
+
+#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/hbud.glade:1647
+msgid "Cancel"
+msgstr ""
+
+#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/hbud.glade:295
+msgid "Clear"
+msgstr ""
+
+#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/hbud.glade:299
+msgid "Clear saved order"
+msgstr ""
+
+#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/hbud.glade:1666
+msgid "Cover art :"
+msgstr ""
+
+#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/hbud.glade:414
+#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/hbud.glade:448
+msgid "Default: 10"
+msgstr ""
+
+#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/hbud.glade:544
+#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/hbud.glade:561
+msgid "Default: 30"
+msgstr ""
+
+#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/hbud.glade:580
+#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/hbud.glade:597
+msgid "Default: 66"
+msgstr ""
+
+#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/hbud.glade:431
+#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/hbud.glade:467
+#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/hbud.glade:482
+#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/hbud.glade:616
+#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/hbud.glade:633
+msgid "Default: Off"
+msgstr ""
+
+#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/HBud.py:202
+msgid "Delete from current playqueue"
+msgstr ""
+
+#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/hbud.glade:226
+msgid "Do not sort"
+msgstr ""
+
+#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/HBud.py:206
+msgid "Edit metadata"
+msgstr ""
+
+#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/HBud.py:509
+msgid "Edit metadata for"
+msgstr ""
+
+#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/hbud.glade:434
+msgid "Force dark mode :"
+msgstr ""
+
+#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/HBud.py:160
+msgid "Image files"
+msgstr ""
+
+#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/HBud.py:842
+msgid "Information"
+msgstr ""
+
+#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/hbud.glade:947
+msgid "License"
+msgstr ""
+
+#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/hbud.glade:284
+msgid "Look for new tracks and append them at the end"
+msgstr ""
+
+#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/hbud.glade:177
+msgid "More options"
+msgstr ""
+
+#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/HBud.py:444
+#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/HBud.py:461
+msgid "Music"
+msgstr ""
+
+#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/hbud.glade:685
+msgid ""
+"Note:\n"
+"- These values are relative values, they automatically adjust to the current "
+"window size\n"
+"- New settings take effect immediately after applying"
+msgstr ""
+
+#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/HBud.py:444
+msgid "Please choose a folder"
+msgstr ""
+
+#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/HBud.py:446
+msgid "Please choose a video file"
+msgstr ""
+
+#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/hbud.glade:160
+msgid "Preferences"
+msgstr ""
+
+#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/hbud.glade:280
+msgid "Rescan"
+msgstr ""
+
+#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/hbud.glade:417
+msgid "Rounded corners :"
+msgstr ""
+
+#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/hbud.glade:265
+#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/hbud.glade:1630
+msgid "Save"
+msgstr ""
+
+#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/hbud.glade:269
+msgid "Save current order"
+msgstr ""
+
+#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/hbud.glade:254
+msgid "Search by title, artist and album"
+msgstr ""
+
+#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/hbud.glade:739
+msgid "Settings"
+msgstr ""
+
+#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/hbud.glade:1123
+msgid "Shuffle"
+msgstr ""
+
+#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/hbud.glade:227
+msgid "Sort by Artist (a-z)"
+msgstr ""
+
+#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/hbud.glade:228
+msgid "Sort by Artist (z-a)"
+msgstr ""
+
+#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/hbud.glade:233
+msgid "Sort by Length (0-9)"
+msgstr ""
+
+#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/hbud.glade:234
+msgid "Sort by Length (9-0)"
+msgstr ""
+
+#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/hbud.glade:229
+msgid "Sort by Title (a-z)"
+msgstr ""
+
+#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/hbud.glade:230
+msgid "Sort by Title (z-a)"
+msgstr ""
+
+#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/hbud.glade:231
+msgid "Sort by Year (0-9)"
+msgstr ""
+
+#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/hbud.glade:232
+msgid "Sort by Year (9-0)"
+msgstr ""
+
+#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/hbud.glade:619
+msgid "Subtitle background :"
+msgstr ""
+
+#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/hbud.glade:583
+msgid "Subtitle bottom margin :"
+msgstr ""
+
+#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/HBud.py:651
+msgid "Subtitle file not found"
+msgstr ""
+
+#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/hbud.glade:547
+msgid "Subtitle size :"
+msgstr ""
+
+#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/hbud.glade:655
+#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/hbud.glade:1160
+msgid "Subtitles"
+msgstr ""
+
+#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/hbud.glade:1548
+msgid "Title :"
+msgstr ""
+
+#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/HBud.py:419
+#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/HBud.py:420
+msgid "Unknown"
+msgstr ""
+
+#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/hbud.glade:142
+msgid "Video"
+msgstr ""
+
+#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/HBud.py:452
+msgid "Video files"
+msgstr ""
+
+#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/HBud.py:446
+#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/HBud.py:450
+msgid "Videos"
+msgstr ""
+
+#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/HBud.py:164
+msgid "Visit OpenSubtitles"
+msgstr ""
+
+#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/HBud.py:165
+msgid "Visit Subscene"
+msgstr ""
+
+#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/hbud.glade:1494
+msgid "Year :"
+msgstr ""
+
+#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/HBud.py:455
+msgid "_Cancel"
+msgstr ""
+
+#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/HBud.py:456
+msgid "_Open"
+msgstr ""
+
+#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/hbud.glade:804
+msgid ""
+"v0.2.4\n"
+"Codename: Yennefer\n"
+"\n"
+"FAQ :\n"
+"\n"
+"- How can I load subtitles / lyrics?\n"
+"+ Place the .srt / .txt file alongside the audio / video file with the same "
+"name"
+msgstr ""

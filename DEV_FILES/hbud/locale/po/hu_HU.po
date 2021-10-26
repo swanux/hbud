@@ -1,0 +1,342 @@
+# Hungarian translations for PACKAGE package.
+# Copyright (C) 2021 THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# Dániel Kolozsi <dani@kolozsi.net>, 2021.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2021-10-26 18:05+0000\n"
+"PO-Revision-Date: 2021-10-26 17:38+0000\n"
+"Last-Translator: Dniel Kolozsi <dani@kolozsi.net>\n"
+"Language-Team: Hungarian\n"
+"Language: hu\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/HBud.py:81
+msgid ""
+"\n"
+" v0.2.4 - Oct ?? 2021 :\n"
+"\n"
+"        * Added translation support\n"
+"        * Added focus on currently playing track\n"
+"        * Added Ctrl+F to search\n"
+"        * Added option to load lyric / subtitle from 'misc' subfolder - to "
+"keep things orderly\n"
+"        * Fixed several bugs\n"
+"        * Polished the GUI"
+msgstr ""
+"\n"
+" v0.2.4 - Oct ?? 2021 :\n"
+"\n"
+"        * Fordítás támogatása\n"
+"        * Jelenlegi zeneszám fókuszban tartása\n"
+"        * Ctrl+F a kereséshez\n"
+"        * Lehetőség a feliratok / dalszövegek betöltésére a 'misc' almappából "
+"hogy átláthatóbb legyen a zene mappa\n"
+"        * Több hibajavítás\n"
+"        * GUI javítások"
+
+#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/hbud.glade:893
+msgid "About & FAQ"
+msgstr "Infó & GYIK"
+
+#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/hbud.glade:485
+msgid "Accent color :"
+msgstr "Alkalmazás színe :"
+
+#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/hbud.glade:1530
+msgid "Album :"
+msgstr "Album :"
+
+#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/hbud.glade:519
+msgid "Appearance"
+msgstr "Megjelenés"
+
+#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/hbud.glade:701
+msgid "Apply"
+msgstr "Alkalmazás"
+
+#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/hbud.glade:1512
+msgid "Artist :"
+msgstr "Előadó :"
+
+#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/hbud.glade:127
+msgid "Audio"
+msgstr "Audió"
+
+#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/hbud.glade:1042
+msgid "Browse"
+msgstr "Böngészés"
+
+#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/HBud.py:842
+msgid ""
+"Can not get lyrics for the current track. Please place the synced .srt file  "
+"or the raw .txt file alongside the audio file, with the same name as the "
+"audio file."
+msgstr ""
+"Szöveg betöltése sikertelen. Kérem helyezze a szinkronizált .srt fájlt  "
+"vagy a nyers .txt fájlt az audió fájl mellé, ugyanazzal a névvel mint az audió fájl."
+
+#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/hbud.glade:1241
+msgid ""
+"Can't load subtitle. Please place the subtitle (.srt) file alongside the "
+"video file, with the same name as the video file."
+msgstr ""
+"Felirat betöltése sikertelen. Kérem helyezze a feliratot (.srt fájl) a videó fájl mellé, "
+"azzal megegyező néven."
+
+#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/hbud.glade:1647
+msgid "Cancel"
+msgstr "Mégse"
+
+#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/hbud.glade:295
+msgid "Clear"
+msgstr "Visszaállítás"
+
+#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/hbud.glade:299
+msgid "Clear saved order"
+msgstr "Mentett sorrend törlése"
+
+#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/hbud.glade:1666
+msgid "Cover art :"
+msgstr "Borítókép :"
+
+#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/hbud.glade:414
+#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/hbud.glade:448
+msgid "Default: 10"
+msgstr "Alapértelmezett: 10"
+
+#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/hbud.glade:544
+#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/hbud.glade:561
+msgid "Default: 30"
+msgstr "Alapértelmezett: 30"
+
+#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/hbud.glade:580
+#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/hbud.glade:597
+msgid "Default: 66"
+msgstr "Alapértelmezett: 66"
+
+#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/hbud.glade:431
+#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/hbud.glade:467
+#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/hbud.glade:482
+#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/hbud.glade:616
+#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/hbud.glade:633
+msgid "Default: Off"
+msgstr "Alapértelmezett: Ki"
+
+#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/HBud.py:202
+msgid "Delete from current playqueue"
+msgstr "Eltávolítás a jelenlegi lejátszási listából"
+
+#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/hbud.glade:226
+msgid "Do not sort"
+msgstr "Ne rendezze"
+
+#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/HBud.py:206
+msgid "Edit metadata"
+msgstr "Metaadatok szerkesztése"
+
+#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/HBud.py:509
+msgid "Edit metadata for"
+msgstr "Metaadatok szerkesztése: "
+
+#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/hbud.glade:434
+msgid "Force dark mode :"
+msgstr "Sötét téma eröltetése :"
+
+#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/HBud.py:160
+msgid "Image files"
+msgstr "Képek"
+
+#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/HBud.py:842
+msgid "Information"
+msgstr "Információ"
+
+#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/hbud.glade:947
+msgid "License"
+msgstr "Liszensz"
+
+#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/hbud.glade:284
+msgid "Look for new tracks and append them at the end"
+msgstr "Új számok keresése és beszúrása a lista végére"
+
+#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/hbud.glade:177
+msgid "More options"
+msgstr "További lehetőségek"
+
+#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/HBud.py:444
+#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/HBud.py:461
+msgid "Music"
+msgstr "Zenék"
+
+#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/hbud.glade:685
+msgid ""
+"Note:\n"
+"- These values are relative values, they automatically adjust to the current "
+"window size\n"
+"- New settings take effect immediately after applying"
+msgstr ""
+"Megjegyzés:\n"
+"- Ezek az értékek relatív értékek. automatikusan igazodnak az ablakmérethez\n"
+"- Az új beállítások az alkalmazásuk után rögtön életbe lépnek"
+
+#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/HBud.py:444
+msgid "Please choose a folder"
+msgstr "Válasszon egy mappát"
+
+#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/HBud.py:446
+msgid "Please choose a video file"
+msgstr "Válasszon egy videó fájlt"
+
+#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/hbud.glade:160
+msgid "Preferences"
+msgstr "Opciók"
+
+#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/hbud.glade:280
+msgid "Rescan"
+msgstr "Keresés újra"
+
+#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/hbud.glade:417
+msgid "Rounded corners :"
+msgstr "Lekerekített sarkok :"
+
+#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/hbud.glade:265
+#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/hbud.glade:1630
+msgid "Save"
+msgstr "Mentés"
+
+#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/hbud.glade:269
+msgid "Save current order"
+msgstr "Jelenlegi sorrend mentése"
+
+#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/hbud.glade:254
+msgid "Search by title, artist and album"
+msgstr "Keresés cím, előadó és album szerint"
+
+#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/hbud.glade:739
+msgid "Settings"
+msgstr "Beállítások"
+
+#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/hbud.glade:1123
+msgid "Shuffle"
+msgstr "Keverés"
+
+#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/hbud.glade:227
+msgid "Sort by Artist (a-z)"
+msgstr "Rendezés előadó szerint (a-z)"
+
+#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/hbud.glade:228
+msgid "Sort by Artist (z-a)"
+msgstr "Rendezés előadó szerint (z-a)"
+
+#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/hbud.glade:233
+msgid "Sort by Length (0-9)"
+msgstr "Rendezés időtartam szerint (0-9)"
+
+#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/hbud.glade:234
+msgid "Sort by Length (9-0)"
+msgstr "Rendezés időtartam szerint (9-0)"
+
+#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/hbud.glade:229
+msgid "Sort by Title (a-z)"
+msgstr "Rendezés cím szerint (a-z)"
+
+#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/hbud.glade:230
+msgid "Sort by Title (z-a)"
+msgstr "Rendezés cím szerint (z-a)"
+
+#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/hbud.glade:231
+msgid "Sort by Year (0-9)"
+msgstr "Rendezés dátum szerint (0-9)"
+
+#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/hbud.glade:232
+msgid "Sort by Year (9-0)"
+msgstr "Rendezés dátum szerint (9-0)"
+
+#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/hbud.glade:619
+msgid "Subtitle background :"
+msgstr "Feliratok háttere :"
+
+#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/hbud.glade:583
+msgid "Subtitle bottom margin :"
+msgstr "Feliratok alsó margója :"
+
+#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/HBud.py:651
+msgid "Subtitle file not found"
+msgstr "Felirat nem található"
+
+#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/hbud.glade:547
+msgid "Subtitle size :"
+msgstr "Feliratok mérete :"
+
+#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/hbud.glade:655
+#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/hbud.glade:1160
+msgid "Subtitles"
+msgstr "Feliratok"
+
+#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/hbud.glade:1548
+msgid "Title :"
+msgstr "Cím :"
+
+#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/HBud.py:419
+#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/HBud.py:420
+msgid "Unknown"
+msgstr "Ismeretlen"
+
+#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/hbud.glade:142
+msgid "Video"
+msgstr "Videó"
+
+#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/HBud.py:452
+msgid "Video files"
+msgstr "Videó fájlok"
+
+#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/HBud.py:446
+#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/HBud.py:450
+msgid "Videos"
+msgstr "Videók"
+
+#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/HBud.py:164
+msgid "Visit OpenSubtitles"
+msgstr "OpenSubtitles meglátogatása"
+
+#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/HBud.py:165
+msgid "Visit Subscene"
+msgstr "Subscene meglátogatása"
+
+#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/hbud.glade:1494
+msgid "Year :"
+msgstr "Év :"
+
+#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/HBud.py:455
+msgid "_Cancel"
+msgstr "_Mégse"
+
+#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/HBud.py:456
+msgid "_Open"
+msgstr "_Megnyitás"
+
+#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/hbud.glade:804
+msgid ""
+"v0.2.4\n"
+"Codename: Yennefer\n"
+"\n"
+"FAQ :\n"
+"\n"
+"- How can I load subtitles / lyrics?\n"
+"+ Place the .srt / .txt file alongside the audio / video file with the same "
+"name"
+msgstr ""
+"v0.2.4\n"
+"Kódnév: Yennefer\n"
+"\n"
+"GYIK :\n"
+"\n"
+"- Hogyan tudok betölteni feliratot / dalszöveget?\n"
+"+ Helyezze a(z) .srt / .txt fájlt a(z) audió / videó fájl mellé ugyanazzal a névvel"
