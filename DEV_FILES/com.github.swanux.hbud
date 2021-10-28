@@ -10,7 +10,7 @@ if "DEV_FILES" in dname:
     os.chdir(dname)
 else:
     print("Running in production mode")
-    os.chdir("/usr/share/com.github.swanux.hbud/")
+    os.chdir("/usr/share/hbud/")
 sys.path.append("modules")
 
 from hbud import HBud

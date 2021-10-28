@@ -7,7 +7,7 @@ Simple music / video player and karaoke app written in Python and GTK - Because 
 - Video and audio playback (for supported formats, refer to GStreamer docs)
 - Subtitle support
 - Karaoke mode (synced lyrics needed in own srt format, see below for instructions)
-- Static lyric (for nearly every music)
+- Static lyric (most of the time works automatically)
 - Metadata editor (for audio files)
 - Playlists (from folder structure)
 - Seamlessly switch back and forth between video and audio playback (remembers where to continue)
@@ -60,3 +60,18 @@ A manual alternative is the GTK program [Gnome Subtitles](https://gnomesubtitles
 * [mediafile](https://pypi.org/project/mediafile/) - For the wrapper around mutagen
 * [mutagen](https://pypi.org/project/mutagen/) - For this extensive module
 * [azapi](https://github.com/elmoiv/azapi) - For the AZLyrics API
+* [pyacoustid](https://github.com/beetbox/pyacoustid) - For the AcoustID API
+* [MusicBrainz](https://beta.musicbrainz.org/) and [AcoustID](https://acoustid.org/) - For the open databases
+
+### Translation
+
+First you have to clone this repo to `/home/$USER/GitRepos/hbud` - hbud is the root of this repository
+
+You can then use the provided `translate.sh`:
+
+- Add new translation: `./translate.sh new en_GB en`
+- Generate `.mo` files: `./translate.sh add en_GB en`
+- Update `.po` files: `./translate.sh update en_GB en`
+- Update `.mo` files: `./translate.sh upgrade en_GB en`
+
+It's important to use UTF-8 charset when needed (instead of ASCII).

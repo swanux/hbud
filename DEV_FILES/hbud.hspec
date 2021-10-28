@@ -15,6 +15,7 @@ section = 18
 priority = 0
 depends = gstreamer1.0-libav
 	libavcodec-extra
+	libchromaprint-tools
 	gstreamer1.0-plugins-good
 	gstreamer1.0-plugins-bad
 	gstreamer1.0-plugins-ugly
@@ -38,25 +39,18 @@ longue = Simple music / video player and karaoke app written in Python and GTK -
 [misc]
 rules = 0
 min_pyver = 3.8
-postinst = ln -s /usr/share/hbud/com.github.swanux.hbud /usr/bin/com.swanux.hbud || echo "No need for it"
+postinst = ln -s /usr/share/hbud/com.github.swanux.hbud /usr/bin/com.github.swanux.hbud || echo "No need for it"
 postrm = 
 
 [changelog]
 target = focal
 urgency = 1
-changes = Modernized and revamped the settings menu
-	Added option to change accent color
-	Fixed packaging issues
-	Fixed some bugs
-	Added some shortcuts (double click to fullscreen, etc.)
-	Added release notes to about section
+changes = Testing
 
 [data]
 root = /home/daniel/GitRepos/hbud/DEV_FILES
 program = icons/
-	hbud.glade
 	com.github.swanux.hbud
-	locale/
 	hbud/
 	modules/
 entry = com.github.swanux.hbud.desktop

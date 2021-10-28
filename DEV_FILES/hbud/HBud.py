@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-import gi, dbus, srt, azapi, dbus.mainloop.glib, json, os, sys, gettext, locale
+import gi, dbus, srt, azapi, dbus.mainloop.glib, json, os, sys, gettext, locale, acoustid, musicbrainzngs
 from concurrent import futures
 from time import sleep, time
-from operator import itemgetter
+from operator import itemgetter, mod
 from collections import deque
 from datetime import timedelta
 from random import sample
@@ -14,6 +14,7 @@ gi.require_version('Gtk', '3.0')
 gi.require_version('Gst', '1.0')
 from gi.repository import Gtk, Gst, GLib, GdkPixbuf, Gdk, Gio
 from hbud import constants as cn
+from hbud import letrasapi, musixapi
 
 class TrackBox(Gtk.EventBox):
     def __init__(self, title, artist, id, year, length, album):
@@ -61,8 +62,9 @@ class GUI(Gtk.Application):
         gettext.bindtextdomain(APP, LOCALE_DIR)
         gettext.textdomain(APP)
         self._ = gettext.gettext
-
-        UI_FILE, version = "hbud/hbud.glade", "HBud 0.2.4 Yennefer"
+        self.API_KEY = "tnqJHZRTQL"
+        musicbrainzngs.set_useragent("hbud", "0.2.5", "https://github.com/swanux/hbud")
+        UI_FILE, version = "hbud/hbud.glade", "HBud 0.2.5 Yennefer"
         self.useMode = "audio"
         self.supportedList = ['.3gp', '.aa', '.aac', '.aax', '.aiff', '.flac', '.m4a', '.mp3', '.ogg', '.wav', '.wma', '.wv']
         try:
@@ -79,8 +81,11 @@ class GUI(Gtk.Application):
         whview = self.builder.get_object("whView")
         buffer = Gtk.TextBuffer()
         buffer.set_text(self._("""
- v0.2.4 - Oct ?? 2021 :
+ v0.2.5 - Oct ?? 2021 :
 
+        * Greatly improved lyric fetching
+        * New helper scripts (translate, musixapi and letrasapi)
+        * New high quality artwork by @Seh
         * Added translation support
         * Added focus on currently playing track
         * Added Ctrl+F to search
@@ -98,6 +103,12 @@ class GUI(Gtk.Application):
         else: self.darke = True
         if bg == "False": self.bge = False
         else: self.bge = True
+        if musix == "False": self.musixe = False
+        else: self.musixe = True
+        if azlyr == "False": self.azlyre = False
+        else: self.azlyre = True
+        if letras == "False": self.letrase = False
+        else: self.letrase = True
         self.slider = Gtk.HScale()
         self.slider.set_can_focus(False)
         self.slider.set_margin_start(6)
@@ -117,6 +128,7 @@ class GUI(Gtk.Application):
         self.box.pack_start(self.label_end, False, False, 0)
         self.trackCover = self.builder.get_object("cover_img")
         self.trackCover.set_name("cover_img")
+        self.metaCover = self.builder.get_object("metaCover")
         self.plaicon = self.builder.get_object("play")
         self.slider.connect("enter-notify-event", self.mouse_enter)
         self.slider.connect("leave-notify-event", self.mouse_leave)
@@ -142,6 +154,7 @@ class GUI(Gtk.Application):
         self.subSpin = self.builder.get_object("subSpin")
         self.subMarSpin = self.builder.get_object("subSpin1")
         self.subcheck = self.builder.get_object("sub_check")
+        self.lyrSpin = self.builder.get_object("lyrSpin")
         self.nosub = self.builder.get_object("nosub")
         self.iChoser = self.builder.get_object("iChoser")
         self.roundSpin = self.builder.get_object("round_spin")
@@ -154,6 +167,10 @@ class GUI(Gtk.Application):
         self.dark_switch, self.bg_switch = self.builder.get_object("dark_switch"), self.builder.get_object("bg_switch")
         self.dark_switch.set_state(self.darke)
         self.bg_switch.set_state(self.bge)
+        self.mus_switch, self.az_switch, self.letr_switch = self.builder.get_object("mus_switch"), self.builder.get_object("az_switch"), self.builder.get_object("letr_switch")
+        self.mus_switch.set_state(self.musixe)
+        self.az_switch.set_state(self.azlyre)
+        self.letr_switch.set_state(self.letrase)
         self.topBox = self.builder.get_object("topBox")
         self.drop_but = self.builder.get_object("drop_but")
         image_filter = Gtk.FileFilter()
@@ -161,6 +178,7 @@ class GUI(Gtk.Application):
         image_filter.add_mime_type("image/*")
         self.iChoser.add_filter(image_filter)
         GLib.idle_add(self.subcheck.hide)
+        GLib.idle_add(self.lyrSpin.hide)
         GLib.idle_add(self.builder.get_object("oplink").set_label, self._("Visit OpenSubtitles"))
         GLib.idle_add(self.builder.get_object("sublink").set_label, self._("Visit Subscene"))
         self.subSpin.set_value(self.sSize)
@@ -506,8 +524,50 @@ class GUI(Gtk.Application):
         self.arEnt.set_text(self.playlist[self.ednum]["artist"])
         self.alEnt.set_text(self.playlist[self.ednum]["album"])
         self.tiEnt.set_text(self.playlist[self.ednum]["title"])
-        self.sub2.set_title(self._("Edit metadata for")+{self.editingFile.split('/')[-1]})
+        self.load_cover(mode="meta")
+        self.sub2.set_title(self._("Edit metadata for")+str({self.editingFile.split('/')[-1]}))
         self.sub2.show_all()
+
+    def on_magiBut_clicked(self, _):
+        data = self.fetch_cur(1)
+        if data == None: GLib.idle_add(self.diabuilder, self._('Did not find any match online.'), self._("Information"), Gtk.MessageType.INFO, Gtk.ButtonsType.OK)
+        else:
+            GLib.idle_add(self.fetch_cur, data)
+
+    def fetch_cur(self, data=1):
+        if data == 1:
+            path = self.playlist[self.ednum]["uri"].replace("file://", "")
+            try:
+                results = acoustid.match(self.API_KEY, path, force_fpcalc=True)
+            except acoustid.NoBackendError:
+                print("chromaprint library/tool not found", file=sys.stderr)
+                sys.exit(1)
+            except acoustid.FingerprintGenerationError:
+                print("fingerprint could not be calculated", file=sys.stderr)
+                sys.exit(1)
+            except acoustid.WebServiceError as exc:
+                print("web service request failed:", exc.message, file=sys.stderr)
+            i = 0
+            for score, rid, title, artist in results:
+                if artist != None and title != None: break
+                i += 1
+            print(artist, title, score, rid)
+            if artist == None or title == None: return False
+            else: return [artist, title, rid]
+        else:
+            bigData = musicbrainzngs.get_recording_by_id(data[2], includes=["releases"])
+            for i in range(10):
+                print("Trying to get cover: "+str(i))
+                sleep(1.2)
+                try:
+                    release = musicbrainzngs.get_image_front(bigData["recording"]["release-list"][i]["id"], 500)
+                    break
+                except: release = None
+            self.yrEnt.set_value(int(bigData["recording"]["release-list"][0]["date"]))
+            self.arEnt.set_text(data[0])
+            self.alEnt.set_text(bigData["recording"]["release-list"][0]["title"])
+            self.tiEnt.set_text(data[1])
+            if release != None: GLib.idle_add(self.load_cover, "brainz", release)
 
     def mouse_click0(self, _, event):
         if event.type == Gdk.EventType._2BUTTON_PRESS: 
@@ -535,8 +595,10 @@ class GUI(Gtk.Application):
                 seek_time_secs = self.player.query_position(Gst.Format.TIME)[1] + 10 * Gst.SECOND
                 self.player.seek_simple(Gst.Format.TIME,  Gst.SeekFlags.FLUSH | Gst.SeekFlags.KEY_UNIT, seek_time_secs)
 
-    def load_cover(self):
-        binary = MediaFile(self.url.replace('file://', '')).art
+    def load_cover(self, mode="", bitMage=""):
+        if mode == "meta": binary = MediaFile(self.editingFile).art
+        elif mode == "brainz": binary = bitMage
+        else: binary = MediaFile(self.url.replace('file://', '')).art
         if not binary: tmpLoc = "icons/track.png"
         else:
             tmpLoc = "/tmp/cacheCover.jpg"
@@ -544,7 +606,8 @@ class GUI(Gtk.Application):
             f.write(binary)
             f.close()
         coverBuf = GdkPixbuf.Pixbuf.new_from_file_at_scale(tmpLoc, 80, 80, True)
-        GLib.idle_add(self.trackCover.set_from_pixbuf, coverBuf)
+        if mode == "meta": GLib.idle_add(self.metaCover.set_from_pixbuf, coverBuf)
+        else: GLib.idle_add(self.trackCover.set_from_pixbuf, coverBuf)
 
     def on_prev(self, *_):
         self.stopKar = True
@@ -792,7 +855,7 @@ class GUI(Gtk.Application):
             x, y = self.window.get_size()
             self.size3, self.size4 = self.sSize*y, float(f"0.0{self.sMarg}")*y
 
-    def get_lyrics(self, title, artist):
+    def get_lyric(self, title, artist):
         self.DAPI.title, self.DAPI.artist = title, artist
         try: result = self.DAPI.getLyrics()
         except: result = 0
@@ -837,16 +900,8 @@ class GUI(Gtk.Application):
                         self.subStack.set_visible_child(self.lyrmode)
                         self.sub.show_all()
                     else:
-                        lyric = self.get_lyrics(track, artist)
-                        if lyric == 0:
-                            self.diabuilder(self._('Can not get lyrics for the current track. Please place the synced .srt file  or the raw .txt file alongside the audio file, with the same name as the audio file.'), self._("Information"), Gtk.MessageType.INFO, Gtk.ButtonsType.OK)
-                        else:
-                            f = open(f"{tmp}.txt", "w+")
-                            f.write(lyric)
-                            f.close()
-                            self.lyrLab.set_label(lyric)
-                            self.subStack.set_visible_child(self.lyrmode)
-                            self.sub.show_all()
+                        thread = futures.ThreadPoolExecutor(max_workers=2)
+                        thread.submit(self.lyr_fetcher, artist, track, tmp)
                 else:
                     print("FOUND")
                     try:
@@ -869,6 +924,24 @@ class GUI(Gtk.Application):
                 self.resete, self.keepReset = False, False
                 self.window.unfullscreen()
                 self.mage()
+
+    def lyr_fetcher(self, artist, track, tmp):
+        GLib.idle_add(self.karaokeBut.hide)
+        GLib.idle_add(self.lyrSpin.show)
+        if self.musixe == True: lyric = musixapi.get_lyric(artist, track)
+        if self.letrase == True and lyric == None: lyric = letrasapi.get_lyric(artist, track)
+        if self.azlyre == True and lyric == None: lyric = self.get_lyric(track, artist)
+        GLib.idle_add(self.lyrSpin.hide)
+        GLib.idle_add(self.karaokeBut.show)
+        if lyric == 0:
+            GLib.idle_add(self.diabuilder, self._('Can not get lyrics for the current track. Please place the synced .srt file  or the raw .txt file alongside the audio file, with the same name as the audio file.'), self._("Information"), Gtk.MessageType.INFO, Gtk.ButtonsType.OK)
+        else:
+            f = open(f"{tmp}.txt", "w+")
+            f.write(lyric)
+            f.close()
+            GLib.idle_add(self.lyrLab.set_label, lyric)
+            GLib.idle_add(self.subStack.set_visible_child, self.lyrmode)
+            GLib.idle_add(self.sub.show_all)
 
     def mouse_enter(self, *_):
         if self.fulle == True: self.keepReset = True
@@ -1025,6 +1098,7 @@ class GUI(Gtk.Application):
 
     def config_write(self, *_):
         self.darke, self.bge, self.color = self.dark_switch.get_state(), self.bg_switch.get_state(), self.colorer.get_rgba().to_string()
+        self.musixe, self.azlyre, self.letrase = self.mus_switch.get_state(), self.az_switch.get_state(), self.letr_switch.get_state()
         tmp1, tmp2, tmp3 = int(self.subSpin.get_value()), int(self.subMarSpin.get_value()), int(self.roundSpin.get_value())
         parser.set('subtitles', 'margin', str(tmp2))
         parser.set('subtitles', 'size', str(tmp1))
@@ -1032,6 +1106,9 @@ class GUI(Gtk.Application):
         parser.set('gui', 'rounded', str(tmp3))
         parser.set('gui', 'dark', str(self.darke))
         parser.set('gui', 'color', self.color)
+        parser.set('services', 'MusixMatch', str(self.musixe))
+        parser.set('services', 'AZLyrics', str(self.azlyre))
+        parser.set('services', 'Letras.br', str(self.letrase))
         file = open(confP, "w+")
         parser.write(file)
         file.close()
@@ -1046,8 +1123,9 @@ class GUI(Gtk.Application):
 
 user = os.popen("who|awk '{print $1}'r").read().rstrip().split('\n')[0]
 parser, confP = ConfigParser(), f"/home/{user}/.config/hbud.ini"
-if os.path.isfile(confP): parser.read(confP)
-else:
+try: parser.read(confP)
+except: print("No config file yet")
+if not os.path.isfile(confP):
     os.system(f"touch {confP}")
     parser.add_section('subtitles')
     parser.set('subtitles', 'margin', str(66))
@@ -1057,11 +1135,25 @@ else:
     parser.set('gui', 'rounded', "10")
     parser.set('gui', 'dark', "False")
     parser.set('gui', 'color', "rgb(17, 148, 156)")
+    parser.add_section('services')
+    parser.set('services', 'MusixMatch', "True")
+    parser.set('services', 'AZLyrics', "True")
+    parser.set('services', 'Letras.br', "True")
     file = open(confP, "w+")
     parser.write(file)
     file.close()
 sSize, sMarg, bg = parser.get('subtitles', 'size'), parser.get('subtitles', 'margin'), parser.get('subtitles', 'bg')
 rounded, dark, color = parser.get('gui', 'rounded'), parser.get('gui', 'dark'), parser.get('gui', 'color')
+try: musix, azlyr, letras = parser.get('services', 'MusixMatch'), parser.get('services', 'AZLyrics'), parser.get('services', 'Letras.br')
+except:
+    parser.add_section('services')
+    parser.set('services', 'MusixMatch', "True")
+    parser.set('services', 'AZLyrics', "True")
+    parser.set('services', 'Letras.br', "True")
+    file = open(confP, "w+")
+    parser.write(file)
+    file.close()
+    musix, azlyr, letras = parser.get('services', 'MusixMatch'), parser.get('services', 'AZLyrics'), parser.get('services', 'Letras.br')
 Gst.init(None)
 app = GUI()
 app.application_id = cn.App.application_id
