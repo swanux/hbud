@@ -4,7 +4,7 @@
 import gi, dbus, srt, azapi, dbus.mainloop.glib, json, os, sys, gettext, locale, acoustid, musicbrainzngs
 from concurrent import futures
 from time import sleep, time
-from operator import itemgetter, mod
+from operator import itemgetter
 from collections import deque
 from datetime import timedelta
 from random import sample
@@ -12,46 +12,11 @@ from configparser import ConfigParser
 from mediafile import MediaFile
 gi.require_version('Gtk', '3.0')
 gi.require_version('Gst', '1.0')
-from gi.repository import Gtk, Gst, GLib, GdkPixbuf, Gdk, Gio
-from hbud import constants as cn
+from gi.repository import Gtk, Gst, GLib, GdkPixbuf, Gdk
 from hbud import letrasapi, musixapi
+from hbud import helper, tools
 
-class TrackBox(Gtk.EventBox):
-    def __init__(self, title, artist, id, year, length, album):
-        super(TrackBox, self).__init__()
-        self.set_can_focus(False)
-        self.set_name(f"trackbox_{id}")
-        self.set_size_request(-1, 60)
-        subBox = Gtk.Box.new(0, 5)
-        comboBox = Gtk.Box.new(1, 5)
-        tiLab = Gtk.Label.new()
-        alLab = Gtk.Label.new(album)
-        arLab = Gtk.Label.new(artist)
-        yeLab = Gtk.Label.new(str(year))
-        leLab = Gtk.Label.new()
-        leLab.set_markup(f'<b>{length}</b>')
-        tiLab.set_ellipsize(3)
-        tiLab.set_halign(Gtk.Align(1))
-        tiLab.set_margin_top(15)
-        tiLab.set_markup(f"<b><span size='12000'>{title}</span></b>")
-        alLab.set_ellipsize(3)
-        alLab.set_halign(Gtk.Align(1))
-        alLab.set_margin_bottom(15)
-        arLab.set_ellipsize(3)
-        arLab.set_halign(Gtk.Align(1))
-        comboBox.pack_start(tiLab, False, False, 0)
-        comboBox.pack_start(alLab, False, False, 0)
-        subBox.pack_start(comboBox, True, True, 15)
-        subBox.pack_end(leLab, False, False, 10)
-        subBox.pack_end(yeLab, False, False, 20)
-        subBox.pack_end(arLab, False, False, 20)
-        self.add(subBox)
-        self.set_margin_end(15)
-        targs = [Gtk.TargetEntry.new("dummy", Gtk.TargetFlags.SAME_APP, 1)]
-        self.drag_source_set(Gdk.ModifierType.BUTTON1_MASK, targs, Gdk.DragAction.MOVE)
-        self.drag_dest_set(Gtk.DestDefaults.HIGHLIGHT | Gtk.DestDefaults.DROP | Gtk.DestDefaults.MOTION, targs, Gdk.DragAction.MOVE)
-
-class GUI(Gtk.Application):
+class GUI(helper.Widgets):
     def __init__(self):
         APP = "com.github.swanux.hbud"
         WHERE_AM_I = os.path.abspath(os.path.dirname(__file__))
@@ -64,9 +29,7 @@ class GUI(Gtk.Application):
         self._ = gettext.gettext
         self.API_KEY = "tnqJHZRTQL"
         musicbrainzngs.set_useragent("hbud", "0.2.5", "https://github.com/swanux/hbud")
-        UI_FILE, version = "hbud/hbud.glade", "HBud 0.2.5 Yennefer"
-        self.useMode = "audio"
-        self.supportedList = ['.3gp', '.aa', '.aac', '.aax', '.aiff', '.flac', '.m4a', '.mp3', '.ogg', '.wav', '.wma', '.wv']
+        version = "HBud 0.2.5 Yennefer"
         try:
             self.clickedE = sys.argv[1].replace("file://", "")
             if os.path.splitext(self.clickedE)[-1] not in self.supportedList and os.path.splitext(self.clickedE)[-1] != "":
@@ -74,14 +37,10 @@ class GUI(Gtk.Application):
                 print("video, now", self.clickedE)
         except:
             self.clickedE = False
-        self.builder = Gtk.Builder()
-        self.builder.set_translation_domain(APP)
-        self.builder.add_from_file(UI_FILE)
         self.builder.connect_signals(self)
-        whview = self.builder.get_object("whView")
         buffer = Gtk.TextBuffer()
         buffer.set_text(self._("""
- v0.2.5 - Oct ?? 2021 :
+    v0.2.5 - Oct ?? 2021 :
 
         * Greatly improved lyric fetching
         * New helper scripts (translate, musixapi and letrasapi)
@@ -92,112 +51,43 @@ class GUI(Gtk.Application):
         * Added option to load lyric / subtitle from 'misc' subfolder - to keep things orderly
         * Fixed several bugs
         * Polished the GUI"""))
-        whview.set_buffer(buffer)
-        self.playlistPlayer, self.needSub, self.nowIn = False, False, ""
-        self.DAPI = azapi.AZlyrics('duckduckgo', accuracy=0.65)
-        self.fulle, self.resete, self.keepReset, self.hardReset, self.tnum, self.sorted = False, False, False, False, 0, False
-        self.sSize, self.sMarg = int(float(sSize)), int(float(sMarg))
-        self.size, self.size2, self.size3, self.size4 = 35000, 15000, self.sSize*450, float(f"0.0{self.sMarg}")*450
-        self.sub, self.seekBack, self.playing, self.res = self.builder.get_object('sub'), False, False, False
-        if dark == "False": self.darke = False
-        else: self.darke = True
-        if bg == "False": self.bge = False
-        else: self.bge = True
-        if musix == "False": self.musixe = False
-        else: self.musixe = True
-        if azlyr == "False": self.azlyre = False
-        else: self.azlyre = True
-        if letras == "False": self.letrase = False
-        else: self.letrase = True
-        self.slider = Gtk.HScale()
-        self.slider.set_can_focus(False)
-        self.slider.set_margin_start(6)
-        self.slider.set_margin_end(6)
-        self.slider.set_draw_value(False)
-        self.slider.set_increments(1, 10)
-        self.slider_handler_id = self.slider.connect("value-changed", self.on_slider_seek)
-        self.box = self.builder.get_object("slidBox")
-        self.label = Gtk.Label(label='0:00')
-        self.label.set_margin_start(6)
-        self.label.set_margin_end(6)
-        self.label_end = Gtk.Label(label='0:00')
-        self.label_end.set_margin_start(6)
-        self.label_end.set_margin_end(6)
-        self.box.pack_start(self.label, False, False, 0)
-        self.box.pack_start(self.slider, True, True, 0)
-        self.box.pack_start(self.label_end, False, False, 0)
-        self.trackCover = self.builder.get_object("cover_img")
-        self.trackCover.set_name("cover_img")
-        self.metaCover = self.builder.get_object("metaCover")
-        self.plaicon = self.builder.get_object("play")
-        self.slider.connect("enter-notify-event", self.mouse_enter)
-        self.slider.connect("leave-notify-event", self.mouse_leave)
-        self.playlistBox = self.builder.get_object("expanded")
-        self.exBot = self.builder.get_object("extendedBottom")
-        self.header = self.builder.get_object("header")
-        self.label1 = self.builder.get_object('label1')
-        self.label2 = self.builder.get_object('label2')
-        self.label3 = self.builder.get_object('label3')
-        self.yrEnt = self.builder.get_object("yrEnt")
-        self.tiEnt = self.builder.get_object("tiEnt")
-        self.infBut = self.builder.get_object("infBut")
-        self.alEnt = self.builder.get_object("alEnt")
-        self.arEnt = self.builder.get_object("arEnt")
-        self.karaokeBut = self.builder.get_object("kar")
-        self.sub2 = self.builder.get_object("sub2")
-        self.shuffBut = self.builder.get_object("shuffBut")
-        self.locBut = self.builder.get_object("locBut")
-        self.strBut = self.builder.get_object("strBut")
-        self.mainStack = self.builder.get_object("mainStack")
-        self.strOverlay = self.builder.get_object("strOverlay")
-        self.theTitle = self.builder.get_object("theTitle")
-        self.subSpin = self.builder.get_object("subSpin")
-        self.subMarSpin = self.builder.get_object("subSpin1")
-        self.subcheck = self.builder.get_object("sub_check")
-        self.lyrSpin = self.builder.get_object("lyrSpin")
-        self.nosub = self.builder.get_object("nosub")
-        self.iChoser = self.builder.get_object("iChoser")
-        self.roundSpin = self.builder.get_object("round_spin")
-        self.colorer = self.builder.get_object("colorer")
-        self.color = color
-        coco = Gdk.RGBA()
-        coco.parse(self.color)
-        self.colorer.set_rgba(coco)
-        self.roundSpin.set_value(int(rounded))
-        self.dark_switch, self.bg_switch = self.builder.get_object("dark_switch"), self.builder.get_object("bg_switch")
-        self.dark_switch.set_state(self.darke)
-        self.bg_switch.set_state(self.bge)
-        self.mus_switch, self.az_switch, self.letr_switch = self.builder.get_object("mus_switch"), self.builder.get_object("az_switch"), self.builder.get_object("letr_switch")
-        self.mus_switch.set_state(self.musixe)
-        self.az_switch.set_state(self.azlyre)
-        self.letr_switch.set_state(self.letrase)
-        self.topBox = self.builder.get_object("topBox")
-        self.drop_but = self.builder.get_object("drop_but")
+        self.builder.get_object("whView").set_buffer(buffer)
         image_filter = Gtk.FileFilter()
         image_filter.set_name(self._("Image files"))
         image_filter.add_mime_type("image/*")
         self.iChoser.add_filter(image_filter)
+        self.DAPI = azapi.AZlyrics('duckduckgo', accuracy=0.65)
+        self.sSize, self.sMarg = int(float(sSize)), int(float(sMarg))
+        self.size, self.size2, self.size3, self.size4 = 35000, 15000, self.sSize*450, float(f"0.0{self.sMarg}")*450
+        self.darke = dark == "True"
+        self.bge = bg == "True"
+        self.musixe = musix == "True"
+        self.azlyre = azlyr == "True"
+        self.letrase = letras == "True"
+        self.slider_handler_id = self.slider.connect("value-changed", self.on_slider_seek)
+        self.slider.connect("enter-notify-event", self.mouse_enter)
+        self.slider.connect("leave-notify-event", self.mouse_leave)
+        self.color, self.rounded = color, rounded
+        coco = Gdk.RGBA()
+        coco.parse(self.color)
+        self.colorer.set_rgba(coco)
+        self.roundSpin.set_value(float(self.rounded))
+        self.dark_switch.set_state(self.darke)
+        self.bg_switch.set_state(self.bge)
+        self.mus_switch.set_state(self.musixe)
+        self.az_switch.set_state(self.azlyre)
+        self.letr_switch.set_state(self.letrase)
         GLib.idle_add(self.subcheck.hide)
-        GLib.idle_add(self.lyrSpin.hide)
         GLib.idle_add(self.builder.get_object("oplink").set_label, self._("Visit OpenSubtitles"))
         GLib.idle_add(self.builder.get_object("sublink").set_label, self._("Visit Subscene"))
         self.subSpin.set_value(self.sSize)
-        self.subStack = self.builder.get_object("subStack")
-        self.lyrLab = self.builder.get_object("lyrLab")
-        self.karmode = self.builder.get_object("req_scroll")
-        self.lyrmode = self.builder.get_object("req_scroll2")
-        self.search_play = self.builder.get_object("search_play")
         self.subMarSpin.set_value(self.sMarg)
-        self.window = self.builder.get_object('main')
         self.sub.connect('size-allocate', self._on_size_allocated)
         self.window.connect('size-allocate', self._on_size_allocated0)
-        self.switchDict = {"locBut" : [self.builder.get_object("placeholder"), "audio-input-microphone", "audio", self.strBut, self.infBut], "strBut" : [self.builder.get_object("strBox"), "view-fullscreen", "video", self.locBut, self.infBut], "infBut" : [self.builder.get_object("infBook"), "", "", self.locBut, self.strBut]}
-        self.provider, self.settings = Gtk.CssProvider(), Gtk.Settings.get_default()
-        self.themer(str(rounded))
+        tools.themer(self.provider, self.window, self.rounded, self.color)
         self.settings.set_property("gtk-application-prefer-dark-theme", self.darke)
         # Display the program
         self.window.set_title(version)
-        self.window.set_wmclass ("hbud", "HBud")
         self.window.show_all()
         self.createPipeline("local")
         self.topBox.hide()
@@ -229,7 +119,7 @@ class GUI(Gtk.Application):
             menu.popup_at_pointer()
         else:
             self.tnum = int(widget.get_name().replace("trackbox_", ""))
-            self.themer(self.roundSpin.get_value(), self.tnum)
+            tools.themer(self.provider, self.window, self.rounded, self.color, self.tnum)
             self.on_next("clickMode")
 
     def on_search(self, widget):
@@ -250,14 +140,7 @@ class GUI(Gtk.Application):
         if aid == 0 and self.sorted == True:
             self.playlist = self.archive
             self.sorted = False
-        elif aid == 1: self.playlist = sorted(self.archive, key=itemgetter('artist'),reverse=False)
-        elif aid == 2: self.playlist = sorted(self.archive, key=itemgetter('artist'),reverse=True)
-        elif aid == 3: self.playlist = sorted(self.archive, key=itemgetter('title'),reverse=False)
-        elif aid == 4: self.playlist = sorted(self.archive, key=itemgetter('title'),reverse=True)
-        elif aid == 5: self.playlist = sorted(self.archive, key=itemgetter('year'),reverse=False)
-        elif aid == 6: self.playlist = sorted(self.archive, key=itemgetter('year'),reverse=True)
-        elif aid == 7: self.playlist = sorted(self.archive, key=itemgetter('length'),reverse=False)
-        elif aid == 8: self.playlist = sorted(self.archive, key=itemgetter('length'),reverse=True)
+        else: self.playlist = sorted(self.archive, key=itemgetter(self.searchDict[str(aid)][0]),reverse=self.searchDict[str(aid)][1])
         self.neo_playlist_gen()
         old = self.archive[self.tnum]["title"]
         num = 0
@@ -265,7 +148,7 @@ class GUI(Gtk.Application):
             if item["title"] == old: break
             else: num += 1
         self.tnum = num
-        self.themer(self.roundSpin.get_value(), self.tnum)
+        tools.themer(self.provider, self.window, self.rounded, self.color, self.tnum)
 
     def on_clear_order(self, _): os.system(f"rm {self.folderPath}/.saved.order")
 
@@ -276,50 +159,6 @@ class GUI(Gtk.Application):
         f = open(f"{self.folderPath}/.saved.order", "w+")
         f.write(json.dumps(self.playlist))
         f.close()
-
-    def themer(self, v, w=""):
-        css = """#cover_img {
-            padding-bottom: %spx;
-        }
-        menu, .popup {
-            border-radius: %spx;
-        }
-        decoration, headerbar{
-            border-radius: %spx;
-        }
-        button, menuitem, entry {
-            border-radius: %spx;
-            margin: 5px;
-        }
-        .titlebar {
-            border-top-left-radius: %spx;
-            border-top-right-radius: %spx;
-            border-bottom-left-radius: 0px;
-            border-bottom-right-radius: 0px;
-        }
-        window, notebook, stack, box, scrolledwindow, viewport {
-            border-top-left-radius: 0px;
-            border-top-right-radius: 0px;
-            border-bottom-left-radius: %spx;
-            border-bottom-right-radius: %spx;
-            border-width: 0px;
-            border-image: none;
-            box-shadow: none;
-        }
-        switch:checked, highlight, selection, menuitem:hover {
-            background-color: %s;
-        }
-        #trackbox_%s{
-            background: %s;
-            color: #000;
-            border-radius: %spx;
-        }
-        .maximized, .fullscreen, .maximized .titlebar {
-            border-radius: 0px;
-        }""" % (int(v)/2.6,int(v)/1.5,v,v,v,v,v,v,self.color,w,self.color,v) # decoration, window, window.background, window.titlebar, .titlebar
-        css = str.encode(css)
-        self.provider.load_from_data(css)
-        self.window.get_style_context().add_provider_for_screen(Gdk.Screen.get_default(), self.provider, Gtk.STYLE_PROVIDER_PRIORITY_APPLICATION)
 
     def createPipeline(self, mode):
         if mode == "local":
@@ -369,7 +208,7 @@ class GUI(Gtk.Application):
                     GLib.idle_add(self.shuffBut.hide)
                     GLib.idle_add(self.drop_but.hide)
                     GLib.idle_add(self.subcheck.show)
-                GLib.idle_add(self.karaokeBut.set_from_icon_name, self.switchDict[btn][1], Gtk.IconSize.BUTTON)
+                GLib.idle_add(self.karaokeIcon.set_from_icon_name, self.switchDict[btn][1], Gtk.IconSize.BUTTON)
                 if self.playing == True and self.switchDict[btn][2] == "video": self.on_playBut_clicked("xy")
                 self.useMode = self.switchDict[btn][2]
             else:
@@ -406,13 +245,13 @@ class GUI(Gtk.Application):
             else:
                 if src > self.tnum and dst < self.tnum: self.tnum += 1
                 elif src < self.tnum and dst > self.tnum: self.tnum -= 1
-            self.themer(self.roundSpin.get_value(), self.tnum)
+            tools.themer(self.provider, self.window, self.rounded, self.color, self.tnum)
         else:
             self.cleaner(self.playlistBox.get_children())
             self.supBox = Gtk.Box.new(1, 0)
             self.supBox.set_can_focus(False)
             for i, item in enumerate(self.playlist):
-                trBox = TrackBox(item["title"].replace("&", "&amp;"), item["artist"], i, item["year"], item["length"], item["album"])
+                trBox = helper.TrackBox(item["title"].replace("&", "&amp;"), item["artist"], i, item["year"], item["length"], item["album"])
                 trBox.connect("button_release_event", self.highlight)
                 trBox.connect('drag-begin', self.pause)
                 trBox.connect('drag-drop', self._sig_drag_drop)
@@ -496,16 +335,16 @@ class GUI(Gtk.Application):
         elif response == Gtk.ResponseType.CANCEL: print("Cancel clicked")
         filechooserdialog.destroy()
 
+    def on_iChoser_file_set(self, *_):
+        path = self.iChoser.get_filename()
+        tf = open(path, "rb")
+        tmBin = tf.read()
+        tf.close()
+        GLib.idle_add(self.load_cover, "brainz", tmBin)
+
     def on_save(self, *_):
         f = MediaFile(self.editingFile)
-        f.year, f.artist, f.album, f.title, newCover = self.yrEnt.get_value_as_int(), self.arEnt.get_text(), self.alEnt.get_text(), self.tiEnt.get_text(), self.iChoser.get_filename()
-        try:
-            if os.path.isfile(newCover):
-                tf = open(newCover, "rb")
-                binary = tf.read()
-                tf.close()
-                f.art = binary
-        except: pass
+        f.year, f.artist, f.album, f.title, f.art = self.yrEnt.get_value_as_int(), self.arEnt.get_text(), self.alEnt.get_text(), self.tiEnt.get_text(), self.binary
         f.save()
         self.playlist[self.ednum]["year"] = self.yrEnt.get_value_as_int()
         self.playlist[self.ednum]["artist"] = self.arEnt.get_text()
@@ -529,31 +368,30 @@ class GUI(Gtk.Application):
         self.sub2.show_all()
 
     def on_magiBut_clicked(self, _):
-        data = self.fetch_cur(1)
-        if data == None: GLib.idle_add(self.diabuilder, self._('Did not find any match online.'), self._("Information"), Gtk.MessageType.INFO, Gtk.ButtonsType.OK)
-        else:
-            GLib.idle_add(self.fetch_cur, data)
+        GLib.idle_add(self.magiStack.set_visible_child, self.magiSpin)
+        thread = futures.ThreadPoolExecutor(max_workers=2)
+        thread.submit(self.fetch_cur)
 
-    def fetch_cur(self, data=1):
-        if data == 1:
-            path = self.playlist[self.ednum]["uri"].replace("file://", "")
-            try:
-                results = acoustid.match(self.API_KEY, path, force_fpcalc=True)
-            except acoustid.NoBackendError:
-                print("chromaprint library/tool not found", file=sys.stderr)
-                sys.exit(1)
-            except acoustid.FingerprintGenerationError:
-                print("fingerprint could not be calculated", file=sys.stderr)
-                sys.exit(1)
-            except acoustid.WebServiceError as exc:
-                print("web service request failed:", exc.message, file=sys.stderr)
-            i = 0
+    def fetch_cur(self):
+        path = self.playlist[self.ednum]["uri"].replace("file://", "")
+        try:
+            results = acoustid.match(self.API_KEY, path, force_fpcalc=True)
+        except acoustid.NoBackendError:
+            print("chromaprint library/tool not found", file=sys.stderr)
+        except acoustid.FingerprintGenerationError:
+            print("fingerprint could not be calculated", file=sys.stderr)
+        except acoustid.WebServiceError as exc:
+            print("web service request failed:", exc.message, file=sys.stderr)
+        i = 0
+        try:
             for score, rid, title, artist in results:
                 if artist != None and title != None: break
                 i += 1
             print(artist, title, score, rid)
-            if artist == None or title == None: return False
-            else: return [artist, title, rid]
+        except: artist = None
+        if artist == None or title == None: data = None
+        else: data = [artist, title, rid]
+        if data == None: GLib.idle_add(tools.diabuilder, self._('Did not find any match online.'), self._("Information"), Gtk.MessageType.INFO, Gtk.ButtonsType.OK, self.window)
         else:
             bigData = musicbrainzngs.get_recording_by_id(data[2], includes=["releases"])
             for i in range(10):
@@ -568,6 +406,7 @@ class GUI(Gtk.Application):
             self.alEnt.set_text(bigData["recording"]["release-list"][0]["title"])
             self.tiEnt.set_text(data[1])
             if release != None: GLib.idle_add(self.load_cover, "brainz", release)
+        GLib.idle_add(self.magiStack.set_visible_child, self.magiBut)
 
     def mouse_click0(self, _, event):
         if event.type == Gdk.EventType._2BUTTON_PRESS: 
@@ -596,17 +435,18 @@ class GUI(Gtk.Application):
                 self.player.seek_simple(Gst.Format.TIME,  Gst.SeekFlags.FLUSH | Gst.SeekFlags.KEY_UNIT, seek_time_secs)
 
     def load_cover(self, mode="", bitMage=""):
-        if mode == "meta": binary = MediaFile(self.editingFile).art
-        elif mode == "brainz": binary = bitMage
-        else: binary = MediaFile(self.url.replace('file://', '')).art
-        if not binary: tmpLoc = "icons/track.png"
+        if mode == "meta": self.binary = MediaFile(self.editingFile).art
+        elif mode == "brainz": self.binary = bitMage
+        else: self.binary = MediaFile(self.url.replace('file://', '')).art
+        if not self.binary: tmpLoc = "hbud/icons/track.png"
         else:
             tmpLoc = "/tmp/cacheCover.jpg"
             f = open(tmpLoc, "wb")
-            f.write(binary)
+            f.write(self.binary)
             f.close()
         coverBuf = GdkPixbuf.Pixbuf.new_from_file_at_scale(tmpLoc, 80, 80, True)
         if mode == "meta": GLib.idle_add(self.metaCover.set_from_pixbuf, coverBuf)
+        elif mode == "brainz": GLib.idle_add(self.metaCover.set_from_pixbuf, coverBuf)
         else: GLib.idle_add(self.trackCover.set_from_pixbuf, coverBuf)
 
     def on_prev(self, *_):
@@ -694,7 +534,8 @@ class GUI(Gtk.Application):
     def on_act_sub(self, _, state):
         if state == True and self.nowIn == "video":
             filename = self.url.replace("file://", "").split("/")[-1]
-            neo_tmpdbnow = os.listdir(self.url.replace("file://", "").replace(filename, "")+"misc/")
+            try: neo_tmpdbnow = os.listdir(self.url.replace("file://", "").replace(filename, "")+"misc/")
+            except: neo_tmpdbnow = []
             tmpdbnow = os.listdir(self.url.replace("file://", "").replace(filename, ""))
             if os.path.splitext(filename)[0]+".srt" in tmpdbnow or os.path.splitext(filename)[0]+".srt" in neo_tmpdbnow:
                 print("Subtitle found!")
@@ -738,7 +579,7 @@ class GUI(Gtk.Application):
         print("Play")
         self.res, self.playing, self.position = True, True, 0
         if self.useMode == "audio":
-            self.themer(self.roundSpin.get_value(), self.tnum)
+            tools.themer(self.provider, self.window, self.rounded, self.color, self.tnum)
         if misc != "continue":
             self.player.set_state(Gst.State.NULL)
             self.player.set_property("uri", self.url)
@@ -750,16 +591,6 @@ class GUI(Gtk.Application):
             ld_cov = futures.ThreadPoolExecutor(max_workers=1)
             ld_cov.submit(self.load_cover)
 
-    def diabuilder (self, text, title, mtype, buts):
-        x, y = self.window.get_position()
-        sx, sy = self.window.get_size()
-        dialogWindow = Gtk.MessageDialog(parent=self.window, modal=True, destroy_with_parent=True, message_type=mtype, buttons=buts, text=text, title=title)
-        dsx, dsy = dialogWindow.get_size()
-        dialogWindow.move(x+((sx-dsx)/2), y+((sy-dsy)/2))
-        dialogWindow.show_all()
-        dialogWindow.run()
-        dialogWindow.destroy()
-
     def on_playBut_clicked(self, button):
         if self.useMode == "audio" and self.nowIn != "video": self.adj.set_value(self.tnum*70-140)
         if self.nowIn == self.useMode or self.nowIn == "" or "/" in button:
@@ -769,7 +600,7 @@ class GUI(Gtk.Application):
             else: self.pause()
         else: self.play("continue")
 
-    def on_main_delete_event(self, window, e):
+    def on_main_delete_event(self, *_):
         try: self.mainloop.quit()
         except: pass
         self.force, self.stopKar, self.needSub, self.hardReset = True, True, False, True
@@ -777,12 +608,11 @@ class GUI(Gtk.Application):
 
     def listener(self):
         try:
-            APP_ID = "hbud"
             dbus.mainloop.glib.DBusGMainLoop(set_as_default=True)
             bus = dbus.Bus(dbus.Bus.TYPE_SESSION)
             bus_object = bus.get_object('org.gnome.SettingsDaemon', '/org/gnome/SettingsDaemon/MediaKeys')
             dbus_interface='org.gnome.SettingsDaemon.MediaKeys'
-            bus_object.GrabMediaPlayerKeys(APP_ID, 0, dbus_interface=dbus_interface)
+            bus_object.GrabMediaPlayerKeys("com.github.swanux.hbud", 0, dbus_interface=dbus_interface)
             bus_object.connect_to_signal('MediaPlayerKeyPressed', self.on_media)
             self.mainloop = GLib.MainLoop()
             self.mainloop.run()
@@ -791,7 +621,7 @@ class GUI(Gtk.Application):
     
     def on_media(self, app, action):
         print(app, action)
-        if app == "hbud" and self.url:
+        if app == "com.github.swanux.hbud" and self.url:
             if action == "Next": self.on_next("xy")
             elif action == "Previous": self.on_prev("xy")
             elif not self.playing: self.resume()
@@ -855,12 +685,6 @@ class GUI(Gtk.Application):
             x, y = self.window.get_size()
             self.size3, self.size4 = self.sSize*y, float(f"0.0{self.sMarg}")*y
 
-    def get_lyric(self, title, artist):
-        self.DAPI.title, self.DAPI.artist = title, artist
-        try: result = self.DAPI.getLyrics()
-        except: result = 0
-        return result
-
     def on_karaoke_activate(self, *_):
         if self.nowIn == "audio":
             if self.playing == True or self.res == True:
@@ -877,7 +701,8 @@ class GUI(Gtk.Application):
                     tmpdbnow = os.listdir(folPathClick)
                 else:
                     tmpdbnow = os.listdir(self.folderPath)
-                    neo_tmpdbnow = os.listdir(self.folderPath+"/misc/")
+                    try: neo_tmpdbnow = os.listdir(self.folderPath+"/misc/")
+                    except: neo_tmpdbnow = []
                 for i in tmpdbnow:
                     if ".srt" in i or ".txt" in i:
                         x = i
@@ -915,26 +740,25 @@ class GUI(Gtk.Application):
                     self.sub.show_all()
         elif self.useMode == "video":
             if self.fulle == False:
-                GLib.idle_add(self.karaokeBut.set_from_icon_name, "view-restore", Gtk.IconSize.BUTTON)
+                GLib.idle_add(self.karaokeIcon.set_from_icon_name, "view-restore", Gtk.IconSize.BUTTON)
                 self.window.fullscreen()
                 ld_clock = futures.ThreadPoolExecutor(max_workers=1)
                 ld_clock.submit(self.clock)
             else:
-                GLib.idle_add(self.karaokeBut.set_from_icon_name, "view-fullscreen", Gtk.IconSize.BUTTON)
+                GLib.idle_add(self.karaokeIcon.set_from_icon_name, "view-fullscreen", Gtk.IconSize.BUTTON)
                 self.resete, self.keepReset = False, False
                 self.window.unfullscreen()
                 self.mage()
 
     def lyr_fetcher(self, artist, track, tmp):
-        GLib.idle_add(self.karaokeBut.hide)
-        GLib.idle_add(self.lyrSpin.show)
+        GLib.idle_add(self.lyrStack.set_visible_child, self.lyrSpin)
+        lyric = None
         if self.musixe == True: lyric = musixapi.get_lyric(artist, track)
         if self.letrase == True and lyric == None: lyric = letrasapi.get_lyric(artist, track)
-        if self.azlyre == True and lyric == None: lyric = self.get_lyric(track, artist)
-        GLib.idle_add(self.lyrSpin.hide)
-        GLib.idle_add(self.karaokeBut.show)
+        if self.azlyre == True and lyric == None: lyric = tools.get_lyric(track, artist, self.DAPI)
+        GLib.idle_add(self.lyrStack.set_visible_child, self.karaokeBut)
         if lyric == 0:
-            GLib.idle_add(self.diabuilder, self._('Can not get lyrics for the current track. Please place the synced .srt file  or the raw .txt file alongside the audio file, with the same name as the audio file.'), self._("Information"), Gtk.MessageType.INFO, Gtk.ButtonsType.OK)
+            GLib.idle_add(tools.diabuilder, self._('Can not get lyrics for the current track. Please place the synced .srt file  or the raw .txt file alongside the audio file, with the same name as the audio file.'), self._("Information"), Gtk.MessageType.INFO, Gtk.ButtonsType.OK, self.window)
         else:
             f = open(f"{tmp}.txt", "w+")
             f.write(lyric)
@@ -993,12 +817,6 @@ class GUI(Gtk.Application):
                         pass
                     GLib.idle_add(self.theTitle.hide)
                     GLib.idle_add(self.theTitle.set_label, "")
-
-    def start_karaoke(self, sfile):
-        with open (sfile, "r") as subfile: presub = subfile.read()
-        subtitle_gen = srt.parse(presub)
-        subtitle, lyrs = list(subtitle_gen), futures.ThreadPoolExecutor(max_workers=2)
-        lyrs.submit(self.slideShow, subtitle)
 
     def slideShow(self, subtitle):
         self.lenlist = len(subtitle)-1
@@ -1099,11 +917,11 @@ class GUI(Gtk.Application):
     def config_write(self, *_):
         self.darke, self.bge, self.color = self.dark_switch.get_state(), self.bg_switch.get_state(), self.colorer.get_rgba().to_string()
         self.musixe, self.azlyre, self.letrase = self.mus_switch.get_state(), self.az_switch.get_state(), self.letr_switch.get_state()
-        tmp1, tmp2, tmp3 = int(self.subSpin.get_value()), int(self.subMarSpin.get_value()), int(self.roundSpin.get_value())
-        parser.set('subtitles', 'margin', str(tmp2))
-        parser.set('subtitles', 'size', str(tmp1))
+        self.sSize, self.sMarg, self.rounded = self.subSpin.get_value(), self.subMarSpin.get_value(), self.roundSpin.get_value()
+        parser.set('subtitles', 'margin', str(self.sMarg))
+        parser.set('subtitles', 'size', str(self.sSize))
         parser.set('subtitles', 'bg', str(self.bge))
-        parser.set('gui', 'rounded', str(tmp3))
+        parser.set('gui', 'rounded', str(self.rounded))
         parser.set('gui', 'dark', str(self.darke))
         parser.set('gui', 'color', self.color)
         parser.set('services', 'MusixMatch', str(self.musixe))
@@ -1113,60 +931,16 @@ class GUI(Gtk.Application):
         parser.write(file)
         file.close()
         self.settings.set_property("gtk-application-prefer-dark-theme", self.darke)
-        self.themer(str(tmp3), self.tnum)
-        self.sSize, self.sMarg = tmp1, tmp2
+        tools.themer(self.provider, self.window, self.rounded, self.color, self.tnum)
 
     def on_hide(self, *_):
         self.stopKar = True
         self.sub.hide()
         return True
 
-user = os.popen("who|awk '{print $1}'r").read().rstrip().split('\n')[0]
-parser, confP = ConfigParser(), f"/home/{user}/.config/hbud.ini"
-try: parser.read(confP)
-except: print("No config file yet")
-if not os.path.isfile(confP):
-    os.system(f"touch {confP}")
-    parser.add_section('subtitles')
-    parser.set('subtitles', 'margin', str(66))
-    parser.set('subtitles', 'size', str(30))
-    parser.set('subtitles', 'bg', "False")
-    parser.add_section('gui')
-    parser.set('gui', 'rounded', "10")
-    parser.set('gui', 'dark', "False")
-    parser.set('gui', 'color', "rgb(17, 148, 156)")
-    parser.add_section('services')
-    parser.set('services', 'MusixMatch', "True")
-    parser.set('services', 'AZLyrics', "True")
-    parser.set('services', 'Letras.br', "True")
-    file = open(confP, "w+")
-    parser.write(file)
-    file.close()
-sSize, sMarg, bg = parser.get('subtitles', 'size'), parser.get('subtitles', 'margin'), parser.get('subtitles', 'bg')
-rounded, dark, color = parser.get('gui', 'rounded'), parser.get('gui', 'dark'), parser.get('gui', 'color')
-try: musix, azlyr, letras = parser.get('services', 'MusixMatch'), parser.get('services', 'AZLyrics'), parser.get('services', 'Letras.br')
-except:
-    parser.add_section('services')
-    parser.set('services', 'MusixMatch', "True")
-    parser.set('services', 'AZLyrics', "True")
-    parser.set('services', 'Letras.br', "True")
-    file = open(confP, "w+")
-    parser.write(file)
-    file.close()
-    musix, azlyr, letras = parser.get('services', 'MusixMatch'), parser.get('services', 'AZLyrics'), parser.get('services', 'Letras.br')
+user, parser, confP, sSize, sMarg, bg, rounded, dark, color, musix, azlyr, letras = tools.real_init()
 Gst.init(None)
 app = GUI()
-app.application_id = cn.App.application_id
-app.flags = Gio.ApplicationFlags.FLAGS_NONE
-app.program_name = cn.App.application_name
-app.build_version = cn.App.application_version
-app.about_comments = cn.App.about_comments
-app.app_years = cn.App.app_years
-app.build_version = cn.App.application_version
-app.app_icon = cn.App.application_id
-app.main_url = cn.App.main_url
-app.bug_url = cn.App.bug_url
-app.help_url = cn.App.help_url
 app.run()
 
 # GTK_DEBUG=interactive

@@ -1272,18 +1272,44 @@ Suite 330, Boston, MA  02111-1307  USA</property>
                           </packing>
                         </child>
                         <child>
-                          <object class="GtkButton" id="karaokeBut">
+                          <object class="GtkStack" id="lyrStack">
                             <property name="visible">True</property>
                             <property name="can_focus">False</property>
-                            <property name="receives_default">True</property>
-                            <property name="margin_top">7</property>
-                            <property name="hexpand">True</property>
-                            <property name="vexpand">False</property>
-                            <property name="image">kar</property>
-                            <property name="relief">none</property>
-                            <signal name="clicked" handler="on_karaoke_activate" swapped="no"/>
-                            <signal name="enter-notify-event" handler="mouse_enter" swapped="no"/>
-                            <signal name="leave-notify-event" handler="mouse_leave" swapped="no"/>
+                            <child>
+                              <object class="GtkButton" id="karaokeBut">
+                                <property name="visible">True</property>
+                                <property name="can_focus">True</property>
+                                <property name="receives_default">True</property>
+                                <property name="margin_top">7</property>
+                                <property name="hexpand">True</property>
+                                <property name="vexpand">False</property>
+                                <property name="image">kar</property>
+                                <property name="relief">none</property>
+                                <signal name="clicked" handler="on_karaoke_activate" swapped="no"/>
+                                <signal name="enter-notify-event" handler="mouse_enter" swapped="no"/>
+                                <signal name="leave-notify-event" handler="mouse_leave" swapped="no"/>
+                              </object>
+                              <packing>
+                                <property name="name">page0</property>
+                                <property name="title" translatable="yes">page0</property>
+                              </packing>
+                            </child>
+                            <child>
+                              <object class="GtkSpinner" id="lyrSpin">
+                                <property name="height_request">32</property>
+                                <property name="visible">True</property>
+                                <property name="can_focus">False</property>
+                                <property name="valign">center</property>
+                                <property name="hexpand">False</property>
+                                <property name="vexpand">False</property>
+                                <property name="active">True</property>
+                              </object>
+                              <packing>
+                                <property name="name">page1</property>
+                                <property name="title" translatable="yes">page1</property>
+                                <property name="position">1</property>
+                              </packing>
+                            </child>
                           </object>
                           <packing>
                             <property name="expand">False</property>
@@ -1308,22 +1334,6 @@ Suite 330, Boston, MA  02111-1307  USA</property>
                             <property name="expand">False</property>
                             <property name="fill">True</property>
                             <property name="position">6</property>
-                          </packing>
-                        </child>
-                        <child>
-                          <object class="GtkSpinner" id="lyrSpin">
-                            <property name="height_request">32</property>
-                            <property name="can_focus">False</property>
-                            <property name="valign">center</property>
-                            <property name="margin_right">10</property>
-                            <property name="hexpand">False</property>
-                            <property name="vexpand">False</property>
-                            <property name="active">True</property>
-                          </object>
-                          <packing>
-                            <property name="expand">False</property>
-                            <property name="fill">True</property>
-                            <property name="position">7</property>
                           </packing>
                         </child>
                       </object>
@@ -1612,6 +1622,7 @@ Suite 330, Boston, MA  02111-1307  USA</property>
     <property name="destroy_with_parent">True</property>
     <property name="skip_taskbar_hint">True</property>
     <property name="urgency_hint">True</property>
+    <property name="transient_for">main</property>
     <property name="attached_to">main</property>
     <signal name="delete-event" handler="sub2_hide" swapped="no"/>
     <child type="titlebar">
@@ -1810,6 +1821,7 @@ Suite 330, Boston, MA  02111-1307  USA</property>
                         <property name="vexpand">False</property>
                         <property name="create_folders">False</property>
                         <property name="title" translatable="yes"/>
+                        <signal name="file-set" handler="on_iChoser_file_set" swapped="no"/>
                       </object>
                       <packing>
                         <property name="expand">False</property>
@@ -1878,21 +1890,6 @@ Suite 330, Boston, MA  02111-1307  USA</property>
                   </packing>
                 </child>
                 <child>
-                  <object class="GtkButton" id="magiBut">
-                    <property name="visible">True</property>
-                    <property name="can_focus">False</property>
-                    <property name="receives_default">True</property>
-                    <property name="hexpand">False</property>
-                    <property name="vexpand">False</property>
-                    <property name="image">magImage</property>
-                    <signal name="clicked" handler="on_magiBut_clicked" swapped="no"/>
-                  </object>
-                  <packing>
-                    <property name="left_attach">1</property>
-                    <property name="top_attach">5</property>
-                  </packing>
-                </child>
-                <child>
                   <object class="GtkLabel" id="magLab">
                     <property name="visible">True</property>
                     <property name="can_focus">False</property>
@@ -1903,6 +1900,43 @@ Suite 330, Boston, MA  02111-1307  USA</property>
                   </object>
                   <packing>
                     <property name="left_attach">0</property>
+                    <property name="top_attach">5</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkStack" id="magiStack">
+                    <property name="visible">True</property>
+                    <property name="can_focus">False</property>
+                    <child>
+                      <object class="GtkButton" id="magiBut">
+                        <property name="visible">True</property>
+                        <property name="can_focus">True</property>
+                        <property name="receives_default">True</property>
+                        <property name="hexpand">False</property>
+                        <property name="vexpand">False</property>
+                        <property name="image">magImage</property>
+                        <signal name="clicked" handler="on_magiBut_clicked" swapped="no"/>
+                      </object>
+                      <packing>
+                        <property name="name">page0</property>
+                        <property name="title" translatable="yes">page0</property>
+                      </packing>
+                    </child>
+                    <child>
+                      <object class="GtkSpinner" id="magiSpin">
+                        <property name="visible">True</property>
+                        <property name="can_focus">False</property>
+                        <property name="active">True</property>
+                      </object>
+                      <packing>
+                        <property name="name">page1</property>
+                        <property name="title" translatable="yes">page1</property>
+                        <property name="position">1</property>
+                      </packing>
+                    </child>
+                  </object>
+                  <packing>
+                    <property name="left_attach">1</property>
                     <property name="top_attach">5</property>
                   </packing>
                 </child>

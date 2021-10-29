@@ -60,7 +60,7 @@ A manual alternative is the GTK program [Gnome Subtitles](https://gnomesubtitles
 * [mediafile](https://pypi.org/project/mediafile/) - For the wrapper around mutagen
 * [mutagen](https://pypi.org/project/mutagen/) - For this extensive module
 * [azapi](https://github.com/elmoiv/azapi) - For the AZLyrics API
-* [pyacoustid](https://github.com/beetbox/pyacoustid) - For the AcoustID API
+* [pyacoustid](https://github.com/beetbox/pyacoustid) and [musicbrainzngs](https://github.com/alastair/python-musicbrainzngs) - For the AcoustID and MusicBrainz APIs
 * [MusicBrainz](https://beta.musicbrainz.org/) and [AcoustID](https://acoustid.org/) - For the open databases
 
 ### Translation
