@@ -937,7 +937,7 @@ Author: Swanux
                                 <property name="hexpand">False</property>
                                 <property name="vexpand">False</property>
                                 <property name="label" translatable="yes">v0.2.5
-Codename: Yennefer
+Codename: Kristin (Ortega)
 
 FAQ :
 
@@ -958,12 +958,16 @@ FAQ :
                             </child>
                             <child>
                               <object class="GtkScrolledWindow" id="scroll4">
+                                <property name="height_request">100</property>
                                 <property name="visible">True</property>
                                 <property name="can_focus">True</property>
                                 <property name="margin_top">15</property>
                                 <property name="hexpand">True</property>
                                 <property name="vexpand">True</property>
+                                <property name="hscrollbar_policy">never</property>
+                                <property name="vscrollbar_policy">never</property>
                                 <property name="shadow_type">in</property>
+                                <property name="min_content_height">100</property>
                                 <child>
                                   <object class="GtkViewport" id="view4">
                                     <property name="visible">True</property>
@@ -973,6 +977,7 @@ FAQ :
                                         <property name="visible">True</property>
                                         <property name="sensitive">False</property>
                                         <property name="can_focus">True</property>
+                                        <property name="valign">start</property>
                                         <property name="margin_left">20</property>
                                         <property name="margin_right">20</property>
                                         <property name="hexpand">False</property>
@@ -1291,7 +1296,7 @@ Suite 330, Boston, MA  02111-1307  USA</property>
                               </object>
                               <packing>
                                 <property name="name">page0</property>
-                                <property name="title" translatable="yes">page0</property>
+                                <property name="title" translatable="no">page0</property>
                               </packing>
                             </child>
                             <child>
@@ -1306,7 +1311,7 @@ Suite 330, Boston, MA  02111-1307  USA</property>
                               </object>
                               <packing>
                                 <property name="name">page1</property>
-                                <property name="title" translatable="yes">page1</property>
+                                <property name="title" translatable="no">page1</property>
                                 <property name="position">1</property>
                               </packing>
                             </child>
@@ -1919,7 +1924,7 @@ Suite 330, Boston, MA  02111-1307  USA</property>
                       </object>
                       <packing>
                         <property name="name">page0</property>
-                        <property name="title" translatable="yes">page0</property>
+                        <property name="title" translatable="no">page0</property>
                       </packing>
                     </child>
                     <child>
@@ -1930,7 +1935,7 @@ Suite 330, Boston, MA  02111-1307  USA</property>
                       </object>
                       <packing>
                         <property name="name">page1</property>
-                        <property name="title" translatable="yes">page1</property>
+                        <property name="title" translatable="no">page1</property>
                         <property name="position">1</property>
                       </packing>
                     </child>

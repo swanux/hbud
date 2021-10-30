@@ -29,7 +29,7 @@ class GUI(helper.Widgets):
         self._ = gettext.gettext
         self.API_KEY = "tnqJHZRTQL"
         musicbrainzngs.set_useragent("hbud", "0.2.5", "https://github.com/swanux/hbud")
-        version = "HBud 0.2.5 Yennefer"
+        version = "HBud 0.2.5 Kristin"
         try:
             self.clickedE = sys.argv[1].replace("file://", "")
             if os.path.splitext(self.clickedE)[-1] not in self.supportedList and os.path.splitext(self.clickedE)[-1] != "":
@@ -40,8 +40,9 @@ class GUI(helper.Widgets):
         self.builder.connect_signals(self)
         buffer = Gtk.TextBuffer()
         buffer.set_text(self._("""
-    v0.2.5 - Oct ?? 2021 :
+ v0.2.5 - Nov 01 2021 :
 
+        * AcoustID and MusicBrainz integration - automatic metadata fetching
         * Greatly improved lyric fetching
         * New helper scripts (translate, musixapi and letrasapi)
         * New high quality artwork by @Seh
@@ -50,7 +51,8 @@ class GUI(helper.Widgets):
         * Added Ctrl+F to search
         * Added option to load lyric / subtitle from 'misc' subfolder - to keep things orderly
         * Fixed several bugs
-        * Polished the GUI"""))
+        * Polished the GUI
+"""))
         self.builder.get_object("whView").set_buffer(buffer)
         image_filter = Gtk.FileFilter()
         image_filter.set_name(self._("Image files"))
