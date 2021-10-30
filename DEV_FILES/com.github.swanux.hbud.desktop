@@ -2,7 +2,7 @@
 Name=HBud
 GenericName=HBud
 Comment= Simple music and video player
-Comment[hu]= Egyszerű zene és vide lejátszó
+Comment[hu]= Egyszerű zene és videó lejátszó
 Categories=Music;Player;Player;Audio;AudioVideo;Video;
 Exec=com.github.swanux.hbud %U
 Icon=/usr/share/hbud/hbud/icons/com.github.swanux.hbud.svg
