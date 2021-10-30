@@ -8,7 +8,6 @@ from operator import itemgetter
 from collections import deque
 from datetime import timedelta
 from random import sample
-from configparser import ConfigParser
 from mediafile import MediaFile
 gi.require_version('Gtk', '3.0')
 gi.require_version('Gst', '1.0')
