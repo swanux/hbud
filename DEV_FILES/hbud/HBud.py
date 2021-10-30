@@ -42,6 +42,7 @@ class GUI(helper.Widgets):
  v0.2.5 - Nov 01 2021 :
 
         * AcoustID and MusicBrainz integration - automatic metadata fetching
+        * Added option to set preferred album cover size
         * Greatly improved lyric fetching
         * New helper scripts (translate, musixapi and letrasapi)
         * New high quality artwork by @Seh
@@ -65,6 +66,7 @@ class GUI(helper.Widgets):
         self.musixe = musix == "True"
         self.azlyre = azlyr == "True"
         self.letrase = letras == "True"
+        self.cover_size = coverSize
         self.slider_handler_id = self.slider.connect("value-changed", self.on_slider_seek)
         self.slider.connect("enter-notify-event", self.mouse_enter)
         self.slider.connect("leave-notify-event", self.mouse_leave)
@@ -77,6 +79,7 @@ class GUI(helper.Widgets):
         self.bg_switch.set_state(self.bge)
         self.mus_switch.set_state(self.musixe)
         self.az_switch.set_state(self.azlyre)
+        self.comboSize.set_active_id(str(self.cover_size))
         self.letr_switch.set_state(self.letrase)
         GLib.idle_add(self.subcheck.hide)
         GLib.idle_add(self.builder.get_object("oplink").set_label, self._("Visit OpenSubtitles"))
@@ -143,10 +146,9 @@ class GUI(helper.Widgets):
             self.sorted = False
         else: self.playlist = sorted(self.archive, key=itemgetter(self.searchDict[str(aid)][0]),reverse=self.searchDict[str(aid)][1])
         self.neo_playlist_gen()
-        old = self.archive[self.tnum]["title"]
         num = 0
         for item in self.playlist:
-            if item["title"] == old: break
+            if item["title"] == self.title: break
             else: num += 1
         self.tnum = num
         tools.themer(self.provider, self.window, self.rounded, self.color, self.tnum)
@@ -268,6 +270,13 @@ class GUI(helper.Widgets):
             yetScroll.show_all()
             self.adj = yetScroll.get_vadjustment()
             self.playlistPlayer = True
+            if self.title != None:
+                num = 0
+                for item in self.playlist:
+                    if item["title"] == self.title: break
+                    else: num += 1
+                self.tnum = num
+                tools.themer(self.provider, self.window, self.rounded, self.color, self.tnum)
             GLib.idle_add(self.drop_but.show)
 
     def metas(self, location, extrapath, misc=False):
@@ -399,10 +408,11 @@ class GUI(helper.Widgets):
                 print("Trying to get cover: "+str(i))
                 sleep(1.2)
                 try:
-                    release = musicbrainzngs.get_image_front(bigData["recording"]["release-list"][i]["id"], 500)
+                    release = musicbrainzngs.get_image_front(bigData["recording"]["release-list"][i]["id"], self.cover_size)
+                    print("Cover found")
                     break
                 except: release = None
-            self.yrEnt.set_value(int(bigData["recording"]["release-list"][0]["date"]))
+            self.yrEnt.set_value(int(bigData["recording"]["release-list"][0]["date"].split("-")[0]))
             self.arEnt.set_text(data[0])
             self.alEnt.set_text(bigData["recording"]["release-list"][0]["title"])
             self.tiEnt.set_text(data[1])
@@ -446,8 +456,7 @@ class GUI(helper.Widgets):
             f.write(self.binary)
             f.close()
         coverBuf = GdkPixbuf.Pixbuf.new_from_file_at_scale(tmpLoc, 80, 80, True)
-        if mode == "meta": GLib.idle_add(self.metaCover.set_from_pixbuf, coverBuf)
-        elif mode == "brainz": GLib.idle_add(self.metaCover.set_from_pixbuf, coverBuf)
+        if mode == "meta" or mode == "brainz": GLib.idle_add(self.metaCover.set_from_pixbuf, coverBuf)
         else: GLib.idle_add(self.trackCover.set_from_pixbuf, coverBuf)
 
     def on_prev(self, *_):
@@ -580,6 +589,7 @@ class GUI(helper.Widgets):
         print("Play")
         self.res, self.playing, self.position = True, True, 0
         if self.useMode == "audio":
+            self.title = self.playlist[self.tnum]["title"]
             tools.themer(self.provider, self.window, self.rounded, self.color, self.tnum)
         if misc != "continue":
             self.player.set_state(Gst.State.NULL)
@@ -687,7 +697,7 @@ class GUI(helper.Widgets):
             self.size3, self.size4 = self.sSize*y, float(f"0.0{self.sMarg}")*y
 
     def on_karaoke_activate(self, *_):
-        if self.nowIn == "audio":
+        if self.useMode == "audio" and self.nowIn == "audio":
             if self.playing == True or self.res == True:
                 print('Karaoke')
                 self.stopKar = False
@@ -917,7 +927,7 @@ class GUI(helper.Widgets):
 
     def config_write(self, *_):
         self.darke, self.bge, self.color = self.dark_switch.get_state(), self.bg_switch.get_state(), self.colorer.get_rgba().to_string()
-        self.musixe, self.azlyre, self.letrase = self.mus_switch.get_state(), self.az_switch.get_state(), self.letr_switch.get_state()
+        self.musixe, self.azlyre, self.letrase, self.cover_size = self.mus_switch.get_state(), self.az_switch.get_state(), self.letr_switch.get_state(), int(self.comboSize.get_active_id())
         self.sSize, self.sMarg, self.rounded = self.subSpin.get_value(), self.subMarSpin.get_value(), self.roundSpin.get_value()
         parser.set('subtitles', 'margin', str(self.sMarg))
         parser.set('subtitles', 'size', str(self.sSize))
@@ -928,6 +938,7 @@ class GUI(helper.Widgets):
         parser.set('services', 'MusixMatch', str(self.musixe))
         parser.set('services', 'AZLyrics', str(self.azlyre))
         parser.set('services', 'Letras.br', str(self.letrase))
+        parser.set('services', 'CoverSize', str(self.cover_size))
         file = open(confP, "w+")
         parser.write(file)
         file.close()
@@ -939,7 +950,7 @@ class GUI(helper.Widgets):
         self.sub.hide()
         return True
 
-user, parser, confP, sSize, sMarg, bg, rounded, dark, color, musix, azlyr, letras = tools.real_init()
+user, parser, confP, sSize, sMarg, bg, rounded, dark, color, musix, azlyr, letras, coverSize = tools.real_init()
 Gst.init(None)
 app = GUI()
 app.run()

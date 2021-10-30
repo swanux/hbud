@@ -64,7 +64,8 @@ class Widgets(Gtk.Application):
     builder.add_from_file(UI_FILE)
     playlistPlayer, needSub, nowIn = False, False, ""
     fulle, resete, keepReset, hardReset, tnum, sorted = False, False, False, False, 0, False
-    sub, seekBack, playing, res = builder.get_object('sub'), False, False, False
+    sub, seekBack, playing, res, title = builder.get_object('sub'), False, False, False, None
+    comboSize = builder.get_object("comboSize")
     slider = Gtk.HScale()
     slider.set_can_focus(False)
     slider.set_margin_start(6)

@@ -783,7 +783,7 @@ Author: Swanux
                                         <property name="tooltip_text" translatable="yes">Default: High</property>
                                         <property name="halign">start</property>
                                         <property name="hexpand">False</property>
-                                        <property name="label" translatable="yes">Preferred album cover quality :</property>
+                                        <property name="label" translatable="yes">Fetched album cover quality :</property>
                                         <attributes>
                                           <attribute name="weight" value="bold"/>
                                         </attributes>

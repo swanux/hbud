@@ -8,7 +8,7 @@ class App:
     application_id = "com.github.swanux.hbud"
     application_name = "HBud"
     application_description = 'Simple music and video player'
-    application_version ="0.2.4"
+    application_version ="0.2.5"
     app_years = "2021"
     main_url = "https://github.com/swanux/hbud"
     bug_url = "https://github.com/swanux/hbud/issues/labels/bug"
