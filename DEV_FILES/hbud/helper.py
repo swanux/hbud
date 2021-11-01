@@ -66,6 +66,10 @@ class Widgets(Gtk.Application):
     fulle, resete, keepReset, hardReset, tnum, sorted = False, False, False, False, 0, False
     sub, seekBack, playing, res, title = builder.get_object('sub'), False, False, False, None
     comboSize = builder.get_object("comboSize")
+    off_but = builder.get_object("off_but")
+    off_spin = builder.get_object("off_spin")
+    off_lab = builder.get_object("off_lab")
+    offset = 0
     slider = Gtk.HScale()
     slider.set_can_focus(False)
     slider.set_margin_start(6)

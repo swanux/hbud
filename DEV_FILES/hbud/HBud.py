@@ -8,7 +8,7 @@ from operator import itemgetter
 from collections import deque
 from datetime import timedelta
 from random import sample
-from mediafile import MediaFile
+from mediafile import MediaFile, MediaField, MP3DescStorageStyle, StorageStyle
 gi.require_version('Gtk', '3.0')
 gi.require_version('Gst', '1.0')
 from gi.repository import Gtk, Gst, GLib, GdkPixbuf, Gdk
@@ -39,8 +39,10 @@ class GUI(helper.Widgets):
         self.builder.connect_signals(self)
         buffer = Gtk.TextBuffer()
         buffer.set_text(self._("""
- v0.2.5 - Nov 01 2021 :
+ v0.2.5 - ?? ?? 2021 :
 
+        * Added offset support in karaoke
+        * Added Ctrl+O to open file / folder
         * AcoustID and MusicBrainz integration - automatic metadata fetching
         * Added option to set preferred album cover size
         * Greatly improved lyric fetching
@@ -663,6 +665,7 @@ class GUI(helper.Widgets):
         try:
             if Gdk.ModifierType.CONTROL_MASK & key.state: # Ctrl combo
                 if key.keyval == 102: self.on_dropped(None)
+                elif key.keyval == 111: self.on_openFolderBut_clicked(None)
             elif key.keyval == 32 and self.url: self.on_playBut_clicked(0) # Space
             elif key.keyval == 65307 or key.keyval == 65480:
                 if self.useMode == "video": self.on_karaoke_activate(0) # ESC and F11
@@ -696,6 +699,13 @@ class GUI(helper.Widgets):
             x, y = self.window.get_size()
             self.size3, self.size4 = self.sSize*y, float(f"0.0{self.sMarg}")*y
 
+    def on_off_but_clicked(self, _):
+        self.offset = int(self.off_spin.get_value())
+        f = MediaFile(self.playlist[self.tnum]["uri"])
+        f.offset = self.offset
+        f.save()
+        self.sub.set_focus(None)
+
     def on_karaoke_activate(self, *_):
         if self.useMode == "audio" and self.nowIn == "audio":
             if self.playing == True or self.res == True:
@@ -727,6 +737,9 @@ class GUI(helper.Widgets):
                 tmp = os.path.splitext(self.playlist[self.tnum]["uri"])[0]
                 neo_tmp = os.path.splitext(self.playlist[self.tnum]["uri"].split("/")[-1])[0]
                 if f"{tmp}.srt" not in dbnow and f"{self.folderPath}/misc/{neo_tmp}.srt" not in neo_dbnow:
+                    GLib.idle_add(self.off_but.hide)
+                    GLib.idle_add(self.off_lab.hide)
+                    GLib.idle_add(self.off_spin.hide)
                     if f"{tmp}.txt" in dbnow or f"{self.folderPath}/misc/{neo_tmp}.txt" in neo_dbnow:
                         try: f = open(f"{tmp}.txt", "r")
                         except: f = open(f"{self.folderPath}/misc/{neo_tmp}.txt", "r")
@@ -739,6 +752,18 @@ class GUI(helper.Widgets):
                         thread = futures.ThreadPoolExecutor(max_workers=2)
                         thread.submit(self.lyr_fetcher, artist, track, tmp)
                 else:
+                    GLib.idle_add(self.off_but.show)
+                    GLib.idle_add(self.off_lab.show)
+                    GLib.idle_add(self.off_spin.show)
+                    f = MediaFile(self.playlist[self.tnum]["uri"])
+                    try:
+                        field = MediaField(MP3DescStorageStyle(u'offset'), StorageStyle(u'offset'))
+                        f.add_field(u'offset', field)
+                    except: pass
+                    if f.offset == None: f.offset = 0
+                    self.offset = int(f.offset)
+                    GLib.idle_add(self.off_spin.set_value, self.offset)
+                    f.save()
                     print("FOUND")
                     try:
                         with open (f"{tmp}.srt", "r") as subfile: presub = subfile.read()
@@ -914,10 +939,10 @@ class GUI(helper.Widgets):
             while not self.stopKar:
                 sleep(0.01)
                 if it > maxit:
-                    if self.position >= xy.end.total_seconds()-0.05 and self.position >= 0.5: break
+                    if self.position >= xy.end.total_seconds()+self.offset/1000 and self.position >= 0.5: break
                 else:
                     xz = tl1[it]
-                    if self.position >= xz.start.total_seconds()-0.1 and self.position >= 0.5: break
+                    if self.position >= xz.start.total_seconds()+self.offset/1000 and self.position >= 0.5: break
                 if self.seekBack: break
             it += 1
             try:

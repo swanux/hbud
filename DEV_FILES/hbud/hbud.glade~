@@ -1542,7 +1542,7 @@ Suite 330, Boston, MA  02111-1307  USA</property>
         <child>
           <object class="GtkSpinButton" id="off_spin">
             <property name="visible">True</property>
-            <property name="can_focus">True</property>
+            <property name="can_focus">False</property>
             <property name="max_length">5</property>
             <property name="width_chars">5</property>
             <property name="shadow_type">none</property>
