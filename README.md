@@ -57,9 +57,9 @@ A manual alternative is the GTK program [Gnome Subtitles](https://gnomesubtitles
 * [Lazka](https://lazka.github.io/pgi-docs/) - For the documentation
 * [AutoLyrixAlign](https://github.com/chitralekha18/AutoLyrixAlign) - For the neural network to align text to lyrics
 * [srt](https://pypi.org/project/srt/) - For the Python srt module
-* [mediafile](https://pypi.org/project/mediafile/) - For the wrapper around mutagen
-* [mutagen](https://pypi.org/project/mutagen/) - For this extensive module
+* [mediafile](https://pypi.org/project/mediafile/) - For the handy wrapper around mutagen
 * [azapi](https://github.com/elmoiv/azapi) - For the AZLyrics API
+* [ElementaryPython](https://github.com/mirkobrombin/ElementaryPython) - For a useful template
 * [pyacoustid](https://github.com/beetbox/pyacoustid) and [musicbrainzngs](https://github.com/alastair/python-musicbrainzngs) - For the AcoustID and MusicBrainz APIs
 * [MusicBrainz](https://beta.musicbrainz.org/) and [AcoustID](https://acoustid.org/) - For the open databases
 

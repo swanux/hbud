@@ -12,8 +12,7 @@ from mediafile import MediaFile, MediaField, MP3DescStorageStyle, StorageStyle
 gi.require_version('Gtk', '3.0')
 gi.require_version('Gst', '1.0')
 from gi.repository import Gtk, Gst, GLib, GdkPixbuf, Gdk
-from hbud import letrasapi, musixapi
-from hbud import helper, tools
+from hbud import letrasapi, musixapi, helper, tools
 
 class GUI(helper.Widgets):
     def __init__(self):
@@ -226,7 +225,8 @@ class GUI(helper.Widgets):
             GLib.idle_add(self.switchDict[btn][4].set_active, False)
         elif self.mainStack.get_visible_child() == self.switchDict[btn][0]: GLib.idle_add(button.set_active, True) 
 
-    def cleaner(self, lis):
+    def cleaner(self, widget):
+        lis = widget.get_children()
         if lis == []: pass
         else: [i.destroy() for i in lis]
     
@@ -252,13 +252,12 @@ class GUI(helper.Widgets):
                 elif src < self.tnum and dst > self.tnum: self.tnum -= 1
             tools.themer(self.provider, self.window, self.rounded, self.color, self.tnum)
         else:
-            self.cleaner(self.playlistBox.get_children())
+            self.cleaner(self.playlistBox)
             self.supBox = Gtk.Box.new(1, 0)
             self.supBox.set_can_focus(False)
             for i, item in enumerate(self.playlist):
                 trBox = helper.TrackBox(item["title"].replace("&", "&amp;"), item["artist"], i, item["year"], item["length"], item["album"])
                 trBox.connect("button_release_event", self.highlight)
-                trBox.connect('drag-begin', self.pause)
                 trBox.connect('drag-drop', self._sig_drag_drop)
                 trBox.connect('drag-end', self._sig_drag_end)
                 self.supBox.pack_start(trBox, False, False, 0)
@@ -355,6 +354,7 @@ class GUI(helper.Widgets):
         GLib.idle_add(self.load_cover, "brainz", tmBin)
 
     def on_save(self, *_):
+        self.yrEnt.update()
         f = MediaFile(self.editingFile)
         f.year, f.artist, f.album, f.title, f.art = self.yrEnt.get_value_as_int(), self.arEnt.get_text(), self.alEnt.get_text(), self.tiEnt.get_text(), self.binary
         f.save()
@@ -384,6 +384,39 @@ class GUI(helper.Widgets):
         thread = futures.ThreadPoolExecutor(max_workers=2)
         thread.submit(self.fetch_cur)
 
+    def chose_one(self):
+        liststore = Gtk.ListStore(str, str, str, int)
+        for item in self.chosefrom:
+            liststore.append([item["title"], item["artist"], item["album"], item["year"]])
+        liststore.append([self._("None of the above"), "", "", 0])
+        treeview = Gtk.TreeView(model=liststore)
+        treeview.set_headers_visible(True)
+        treeview.connect("row-activated", self.on_tree_row_activated)
+        rendererText = Gtk.CellRendererText()
+        column = Gtk.TreeViewColumn("Title", rendererText, text=0)
+        treeview.append_column(column)
+        column = Gtk.TreeViewColumn("Artist", rendererText, text=1)
+        treeview.append_column(column)
+        column = Gtk.TreeViewColumn("Album", rendererText, text=2)
+        treeview.append_column(column)
+        column = Gtk.TreeViewColumn("Year", rendererText, text=3)
+        treeview.append_column(column)
+        self.choser_window.add(treeview)
+        self.choser_window.set_position(Gtk.WindowPosition.CENTER_ON_PARENT)
+        self.choser_window.set_titlebar(self.headerbar)
+        self.choser_window.set_title(self._("Which one is correct?"))
+        GLib.idle_add(self.choser_window.show_all)
+    
+    def on_tree_row_activated(self, widget, row, _):
+        row = row.get_indices()[0]
+        if row != len(self.chosefrom):
+            data = [self.chosefrom[row]["artist"], self.chosefrom[row]["title"], self.chosefrom[row]["rid"], self.chosefrom[row]["year"], self.chosefrom[row]["album"], self.chosefrom[row]["album_ids"]]
+            thread = futures.ThreadPoolExecutor(max_workers=2)
+            thread.submit(self.next_fetch, data)
+        else: GLib.idle_add(self.magiStack.set_visible_child, self.magiBut)
+        GLib.idle_add(self.choser_window.hide)
+        GLib.idle_add(self.cleaner, self.choser_window)
+
     def fetch_cur(self):
         path = self.playlist[self.ednum]["uri"].replace("file://", "")
         try:
@@ -394,31 +427,42 @@ class GUI(helper.Widgets):
             print("fingerprint could not be calculated", file=sys.stderr)
         except acoustid.WebServiceError as exc:
             print("web service request failed:", exc.message, file=sys.stderr)
-        i = 0
+        self.chosefrom, i = [], 0
         try:
             for score, rid, title, artist in results:
-                if artist != None and title != None: break
-                i += 1
-            print(artist, title, score, rid)
-        except: artist = None
-        if artist == None or title == None: data = None
-        else: data = [artist, title, rid]
-        if data == None: GLib.idle_add(tools.diabuilder, self._('Did not find any match online.'), self._("Information"), Gtk.MessageType.INFO, Gtk.ButtonsType.OK, self.window)
-        else:
-            bigData = musicbrainzngs.get_recording_by_id(data[2], includes=["releases"])
-            for i in range(10):
-                print("Trying to get cover: "+str(i))
+                if artist != None and title != None and i <= 10:
+                    tmpData = musicbrainzngs.get_recording_by_id(rid, includes=["releases"])["recording"]["release-list"]
+                    sleep(1.1)
+                    i += 1
+                    if len(tmpData) > 2:
+                        tmpDir = {"score": score, "rid": rid, "title": title, "artist": artist, 'year' : int(tmpData[0]["date"].split("-")[0]), "album" : tmpData[0]["title"], "album_ids" : [d['id'] for d in tmpData if 'id' in d]}
+                        for item in self.chosefrom:
+                            if item["title"] == tmpDir["title"] and item["artist"] == tmpDir["artist"] and item["year"] == tmpDir["year"]: break
+                        else: self.chosefrom.append(tmpDir)
+        except: print("Something bad happened...")
+        if len(self.chosefrom) == 0:
+            GLib.idle_add(tools.diabuilder, self._('Did not find any match online.'), self._("Information"), Gtk.MessageType.INFO, Gtk.ButtonsType.OK, self.window)
+            GLib.idle_add(self.magiStack.set_visible_child, self.magiBut)
+        elif len(self.chosefrom) == 1:
+            data = [self.chosefrom[0]["artist"], self.chosefrom[0]["title"], self.chosefrom[0]["rid"], self.chosefrom[0]["year"], self.chosefrom[0]["album"], self.chosefrom[0]["album_ids"]]
+            thread = futures.ThreadPoolExecutor(max_workers=2)
+            thread.submit(self.next_fetch, data)
+        else: self.chose_one()
+            
+    def next_fetch(self, data):
+        for i in range(10):
+            print("Trying to get cover: "+str(i))
+            try:
+                release = musicbrainzngs.get_image_front(data[5][i], self.cover_size)
                 sleep(1.2)
-                try:
-                    release = musicbrainzngs.get_image_front(bigData["recording"]["release-list"][i]["id"], self.cover_size)
-                    print("Cover found")
-                    break
-                except: release = None
-            self.yrEnt.set_value(int(bigData["recording"]["release-list"][0]["date"].split("-")[0]))
-            self.arEnt.set_text(data[0])
-            self.alEnt.set_text(bigData["recording"]["release-list"][0]["title"])
-            self.tiEnt.set_text(data[1])
-            if release != None: GLib.idle_add(self.load_cover, "brainz", release)
+                print("Cover found")
+                break
+            except: release = None
+        GLib.idle_add(self.yrEnt.set_value, data[3])
+        GLib.idle_add(self.arEnt.set_text, data[0])
+        GLib.idle_add(self.alEnt.set_text, data[4])
+        GLib.idle_add(self.tiEnt.set_text, data[1])
+        if release != None: GLib.idle_add(self.load_cover, "brainz", release)
         GLib.idle_add(self.magiStack.set_visible_child, self.magiBut)
 
     def mouse_click0(self, _, event):
@@ -700,6 +744,7 @@ class GUI(helper.Widgets):
             self.size3, self.size4 = self.sSize*y, float(f"0.0{self.sMarg}")*y
 
     def on_off_but_clicked(self, _):
+        self.off_spin.update()
         self.offset = int(self.off_spin.get_value())
         f = MediaFile(self.playlist[self.tnum]["uri"])
         f.offset = self.offset
@@ -951,6 +996,9 @@ class GUI(helper.Widgets):
             except: pass
 
     def config_write(self, *_):
+        self.roundSpin.update()
+        self.subSpin.update()
+        self.subMarSpin.update()
         self.darke, self.bge, self.color = self.dark_switch.get_state(), self.bg_switch.get_state(), self.colorer.get_rgba().to_string()
         self.musixe, self.azlyre, self.letrase, self.cover_size = self.mus_switch.get_state(), self.az_switch.get_state(), self.letr_switch.get_state(), int(self.comboSize.get_active_id())
         self.sSize, self.sMarg, self.rounded = self.subSpin.get_value(), self.subMarSpin.get_value(), self.roundSpin.get_value()

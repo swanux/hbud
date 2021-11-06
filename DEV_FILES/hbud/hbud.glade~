@@ -80,7 +80,7 @@ Author: Swanux
     <property name="can_focus">False</property>
     <property name="icon_name">sync-synchronizing</property>
     <property name="use_fallback">True</property>
-    <property name="icon_size">3</property>
+    <property name="icon_size">6</property>
   </object>
   <object class="GtkImage" id="next">
     <property name="visible">True</property>
@@ -1542,7 +1542,7 @@ Suite 330, Boston, MA  02111-1307  USA</property>
         <child>
           <object class="GtkSpinButton" id="off_spin">
             <property name="visible">True</property>
-            <property name="can_focus">False</property>
+            <property name="can_focus">True</property>
             <property name="max_length">5</property>
             <property name="width_chars">5</property>
             <property name="shadow_type">none</property>
@@ -1867,7 +1867,6 @@ Suite 330, Boston, MA  02111-1307  USA</property>
                     <property name="input_purpose">number</property>
                     <property name="adjustment">adjustment1</property>
                     <property name="numeric">True</property>
-                    <property name="update_policy">if-valid</property>
                   </object>
                   <packing>
                     <property name="left_attach">1</property>
@@ -1980,9 +1979,10 @@ Suite 330, Boston, MA  02111-1307  USA</property>
                     <property name="visible">True</property>
                     <property name="can_focus">False</property>
                     <property name="label" translatable="yes">Fetch metadata automatically
-- Powered by MusicBrainz &amp; AcousticID -</property>
+- Powered by MusicBrainz &amp; AcousticID -
+
+(May take up to 30 seconds)</property>
                     <property name="justify">center</property>
-                    <property name="wrap">True</property>
                   </object>
                   <packing>
                     <property name="left_attach">0</property>
@@ -1998,6 +1998,7 @@ Suite 330, Boston, MA  02111-1307  USA</property>
                         <property name="visible">True</property>
                         <property name="can_focus">True</property>
                         <property name="receives_default">True</property>
+                        <property name="halign">center</property>
                         <property name="hexpand">False</property>
                         <property name="vexpand">False</property>
                         <property name="image">magImage</property>
