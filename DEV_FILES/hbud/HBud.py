@@ -14,8 +14,11 @@ gi.require_version('Gst', '1.0')
 from gi.repository import Gtk, Gst, GLib, GdkPixbuf, Gdk
 from hbud import letrasapi, musixapi, helper, tools
 
-class GUI(helper.Widgets):
+class Main(helper.Widgets):
     def __init__(self):
+        super(Main, self).__init__()
+    
+    def on_activate(self, app):
         APP = "com.github.swanux.hbud"
         WHERE_AM_I = os.path.abspath(os.path.dirname(__file__))
         LOCALE_DIR = os.path.join(WHERE_AM_I, 'locale/mo')
@@ -93,6 +96,7 @@ class GUI(helper.Widgets):
         self.settings.set_property("gtk-application-prefer-dark-theme", self.darke)
         # Display the program
         self.window.set_title(version)
+        self.window.set_application(app)
         self.window.show_all()
         self.createPipeline("local")
         self.topBox.hide()
@@ -186,15 +190,15 @@ class GUI(helper.Widgets):
         # elif mode == "stream":
             # self.player = Gst.parse_launch(f"souphttpsrc is-live=false location={self.url} ! decodebin ! audioconvert ! autoaudiosink")
 
-    def on_dropped(self, _):
+    def on_dropped(self, *_):
         if self.drop_but.get_visible() == True:
-            if self.topBox.get_visible() == True:
-                GLib.idle_add(self.drop_but.get_image().set_from_icon_name, "gtk-go-down", Gtk.IconSize.BUTTON)
-                GLib.idle_add(self.topBox.hide)
-            else:
+            if self.topBox.get_visible() == False:
                 GLib.idle_add(self.drop_but.get_image().set_from_icon_name, "gtk-go-up", Gtk.IconSize.BUTTON)
                 GLib.idle_add(self.topBox.show)
                 self.search_play.grab_focus()
+            else:
+                GLib.idle_add(self.drop_but.get_image().set_from_icon_name, "gtk-go-down", Gtk.IconSize.BUTTON)
+                GLib.idle_add(self.topBox.hide)
 
     def allToggle(self, button):
         btn = Gtk.Buildable.get_name(button)
@@ -281,7 +285,7 @@ class GUI(helper.Widgets):
             GLib.idle_add(self.drop_but.show)
 
     def metas(self, location, extrapath, misc=False):
-        f = MediaFile(location)
+        f = MediaFile(f"{location}")
         title, artist, album, year, length = f.title, f.artist, f.album, f.year, str(timedelta(seconds=round(f.length))).replace("0:", "")
         if not title: title = os.path.splitext(extrapath)[0]
         if not artist: artist = self._("Unknown")
@@ -362,11 +366,16 @@ class GUI(helper.Widgets):
         self.playlist[self.ednum]["artist"] = self.arEnt.get_text()
         self.playlist[self.ednum]["album"] = self.alEnt.get_text()
         self.playlist[self.ednum]["title"] = self.tiEnt.get_text()
+        if os.path.isfile(f"{self.folderPath}/.saved.order"):
+            self.on_order_save()
         self.sub2_hide("xy")
         self.neo_playlist_gen()
 
     def sub2_hide(self, *_):
         self.sub2.hide()
+        if self.magiStack.get_visible_child() == self.magiSpin:
+            self.aborte = True
+        GLib.idle_add(self.magiStack.set_visible_child, self.magiBut)
         return True
 
     def ed_cur(self, *_):
@@ -430,6 +439,9 @@ class GUI(helper.Widgets):
         self.chosefrom, i = [], 0
         try:
             for score, rid, title, artist in results:
+                if self.aborte == True:
+                    print("Aborted")
+                    break
                 if artist != None and title != None and i <= 10:
                     tmpData = musicbrainzngs.get_recording_by_id(rid, includes=["releases"])["recording"]["release-list"]
                     sleep(1.1)
@@ -440,6 +452,10 @@ class GUI(helper.Widgets):
                             if item["title"] == tmpDir["title"] and item["artist"] == tmpDir["artist"] and item["year"] == tmpDir["year"]: break
                         else: self.chosefrom.append(tmpDir)
         except: print("Something bad happened...")
+        if self.aborte == True:
+            print("Aborted")
+            self.aborte = False
+            return
         if len(self.chosefrom) == 0:
             GLib.idle_add(tools.diabuilder, self._('Did not find any match online.'), self._("Information"), Gtk.MessageType.INFO, Gtk.ButtonsType.OK, self.window)
             GLib.idle_add(self.magiStack.set_visible_child, self.magiBut)
@@ -451,6 +467,10 @@ class GUI(helper.Widgets):
             
     def next_fetch(self, data):
         for i in range(10):
+            if self.aborte == True:
+                print("Aborted")
+                self.aborte = False
+                break
             print("Trying to get cover: "+str(i))
             try:
                 release = musicbrainzngs.get_image_front(data[5][i], self.cover_size)
@@ -841,7 +861,8 @@ class GUI(helper.Widgets):
         if lyric == 0:
             GLib.idle_add(tools.diabuilder, self._('Can not get lyrics for the current track. Please place the synced .srt file  or the raw .txt file alongside the audio file, with the same name as the audio file.'), self._("Information"), Gtk.MessageType.INFO, Gtk.ButtonsType.OK, self.window)
         else:
-            f = open(f"{tmp}.txt", "w+")
+            if not os.path.isdir(f"{self.folderPath}/misc"): os.system(f"mkdir {self.folderPath}/misc")
+            f = open(f"{self.folderPath}/misc/{tmp}.txt", "w+")
             f.write(lyric)
             f.close()
             GLib.idle_add(self.lyrLab.set_label, lyric)
@@ -1025,8 +1046,9 @@ class GUI(helper.Widgets):
 
 user, parser, confP, sSize, sMarg, bg, rounded, dark, color, musix, azlyr, letras, coverSize = tools.real_init()
 Gst.init(None)
-app = GUI()
-app.run()
+app = Main()
+app.connect('activate', app.on_activate)
+app.run(None)
 
 # GTK_DEBUG=interactive
 # to debug

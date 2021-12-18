@@ -63,7 +63,7 @@ class Widgets(Gtk.Application):
     builder.set_translation_domain(APP)
     builder.add_from_file(UI_FILE)
     playlistPlayer, needSub, nowIn = False, False, ""
-    fulle, resete, keepReset, hardReset, tnum, sorted = False, False, False, False, 0, False
+    fulle, resete, keepReset, hardReset, tnum, sorted, aborte, locked = False, False, False, False, 0, False, False, False
     sub, seekBack, playing, res, title = builder.get_object('sub'), False, False, False, None
     comboSize = builder.get_object("comboSize")
     off_but = builder.get_object("off_but")
@@ -75,7 +75,7 @@ class Widgets(Gtk.Application):
     choser_window.set_transient_for(sub2)
     choser_window.set_modal(True)
     headerbar = Gtk.HeaderBar()
-    headerbar.set_show_close_button(True)
+    headerbar.set_show_close_button(False)
     headerbar.set_has_subtitle(False)
     slider = Gtk.HScale()
     slider.set_can_focus(False)
