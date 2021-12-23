@@ -21,6 +21,7 @@ def get_lyric(artist, track):
         song_url_tag = search_soup.select_one("a[href^='/lyrics/']")
 
         song_url = "https://www.musixmatch.com" + str(song_url_tag.get("href", ""))
+        if song_url.split("/")[-1] == "add": return None
         lyrics_resp = get(song_url, headers=user_agent)
         if not lyrics_resp.ok: return None
 

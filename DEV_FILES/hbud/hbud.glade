@@ -120,7 +120,7 @@ Author: Dániel Kolozsi
     <property name="default-height">450</property>
     <property name="icon">icons/com.github.swanux.hbud.svg</property>
     <signal name="delete-event" handler="on_main_delete_event" swapped="no"/>
-    <signal name="key-press-event" handler="on_key" swapped="no"/>
+    <signal name="key-press-event" handler="on_key_local" swapped="no"/>
     <signal name="motion-notify-event" handler="mouse_moving" swapped="no"/>
     <signal name="window-state-event" handler="on_state_change" swapped="no"/>
     <child>
@@ -935,7 +935,7 @@ Author: Dániel Kolozsi
                                 <property name="hexpand">False</property>
                                 <property name="vexpand">False</property>
                                 <property name="label" translatable="yes">v0.2.5
-Codename: Kristin (Ortega)
+Codename: Vereena
 
 FAQ :
 
@@ -1559,7 +1559,7 @@ Suite 330, Boston, MA  02111-1307  USA</property>
     <property name="urgency-hint">True</property>
     <property name="attached-to">main</property>
     <signal name="delete-event" handler="on_hide" swapped="no"/>
-    <signal name="key-press-event" handler="on_key" swapped="no"/>
+    <signal name="key-press-event" handler="on_key_local" swapped="no"/>
     <child>
       <object class="GtkStack" id="subStack">
         <property name="visible">True</property>
@@ -1692,40 +1692,127 @@ Suite 330, Boston, MA  02111-1307  USA</property>
         <property name="can-focus">False</property>
         <property name="show-close-button">True</property>
         <child>
-          <object class="GtkLabel" id="off_lab">
+          <object class="GtkStack" id="substackhead">
             <property name="visible">True</property>
             <property name="can-focus">False</property>
-            <property name="label" translatable="yes">Offset (ms):</property>
+            <property name="hexpand">False</property>
+            <property name="vexpand">False</property>
+            <child>
+              <object class="GtkBox" id="subbox">
+                <property name="visible">True</property>
+                <property name="can-focus">False</property>
+                <property name="margin-left">6</property>
+                <property name="margin-right">6</property>
+                <property name="margin-start">6</property>
+                <property name="margin-end">6</property>
+                <property name="spacing">6</property>
+                <child>
+                  <object class="GtkLabel" id="off_lab">
+                    <property name="visible">True</property>
+                    <property name="can-focus">False</property>
+                    <property name="label" translatable="yes">Offset (ms):</property>
+                  </object>
+                  <packing>
+                    <property name="expand">False</property>
+                    <property name="fill">True</property>
+                    <property name="position">0</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkSpinButton" id="off_spin">
+                    <property name="visible">True</property>
+                    <property name="can-focus">True</property>
+                    <property name="max-length">5</property>
+                    <property name="width-chars">5</property>
+                    <property name="text" translatable="yes">0</property>
+                    <property name="shadow-type">none</property>
+                    <property name="caps-lock-warning">False</property>
+                    <property name="input-purpose">number</property>
+                    <property name="adjustment">adjustment5</property>
+                    <property name="numeric">True</property>
+                    <property name="update-policy">if-valid</property>
+                  </object>
+                  <packing>
+                    <property name="expand">False</property>
+                    <property name="fill">True</property>
+                    <property name="position">1</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkButton" id="off_but">
+                    <property name="label" translatable="yes">Apply</property>
+                    <property name="visible">True</property>
+                    <property name="can-focus">True</property>
+                    <property name="receives-default">True</property>
+                    <signal name="clicked" handler="on_off_but_clicked" swapped="no"/>
+                  </object>
+                  <packing>
+                    <property name="expand">False</property>
+                    <property name="fill">True</property>
+                    <property name="position">2</property>
+                  </packing>
+                </child>
+              </object>
+              <packing>
+                <property name="name">page0</property>
+                <property name="title" translatable="yes">page0</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkBox" id="subbox2">
+                <property name="visible">True</property>
+                <property name="can-focus">False</property>
+                <property name="margin-start">6</property>
+                <property name="margin-end">6</property>
+                <property name="spacing">6</property>
+                <child>
+                  <object class="GtkLabel" id="conf_lab1">
+                    <property name="visible">True</property>
+                    <property name="can-focus">False</property>
+                    <property name="label" translatable="yes">Is this lyrics correct?</property>
+                  </object>
+                  <packing>
+                    <property name="expand">False</property>
+                    <property name="fill">True</property>
+                    <property name="position">0</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkButton" id="ye_but">
+                    <property name="label" translatable="yes">Yes</property>
+                    <property name="visible">True</property>
+                    <property name="can-focus">True</property>
+                    <property name="receives-default">True</property>
+                    <signal name="clicked" handler="on_correct_lyr" swapped="no"/>
+                  </object>
+                  <packing>
+                    <property name="expand">False</property>
+                    <property name="fill">True</property>
+                    <property name="position">1</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkButton" id="na_but">
+                    <property name="label" translatable="yes">No</property>
+                    <property name="visible">True</property>
+                    <property name="can-focus">True</property>
+                    <property name="receives-default">True</property>
+                    <signal name="clicked" handler="on_wrong_lyr" swapped="no"/>
+                  </object>
+                  <packing>
+                    <property name="expand">False</property>
+                    <property name="fill">True</property>
+                    <property name="position">2</property>
+                  </packing>
+                </child>
+              </object>
+              <packing>
+                <property name="name">page1</property>
+                <property name="title" translatable="yes">page1</property>
+                <property name="position">1</property>
+              </packing>
+            </child>
           </object>
-        </child>
-        <child>
-          <object class="GtkSpinButton" id="off_spin">
-            <property name="visible">True</property>
-            <property name="can-focus">True</property>
-            <property name="max-length">5</property>
-            <property name="width-chars">5</property>
-            <property name="shadow-type">none</property>
-            <property name="caps-lock-warning">False</property>
-            <property name="input-purpose">number</property>
-            <property name="adjustment">adjustment5</property>
-            <property name="numeric">True</property>
-            <property name="update-policy">if-valid</property>
-          </object>
-          <packing>
-            <property name="position">1</property>
-          </packing>
-        </child>
-        <child>
-          <object class="GtkButton" id="off_but">
-            <property name="label" translatable="yes">Apply</property>
-            <property name="visible">True</property>
-            <property name="can-focus">False</property>
-            <property name="receives-default">True</property>
-            <signal name="clicked" handler="on_off_but_clicked" swapped="no"/>
-          </object>
-          <packing>
-            <property name="position">2</property>
-          </packing>
         </child>
       </object>
     </child>

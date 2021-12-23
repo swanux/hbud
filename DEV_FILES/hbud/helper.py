@@ -70,6 +70,7 @@ class Widgets(Gtk.Application):
     off_spin = builder.get_object("off_spin")
     off_lab = builder.get_object("off_lab")
     offset = 0
+    lyr_states = [True, True, True]
     sub2 = builder.get_object("sub2")
     choser_window = Gtk.Window()
     choser_window.set_transient_for(sub2)
@@ -108,6 +109,9 @@ class Widgets(Gtk.Application):
     infBut = builder.get_object("infBut")
     alEnt = builder.get_object("alEnt")
     arEnt = builder.get_object("arEnt")
+    substackhead = builder.get_object("substackhead")
+    subbox = builder.get_object("subbox")
+    subbox2 = builder.get_object("subbox2")
     karaokeIcon = builder.get_object("kar")
     karaokeBut = builder.get_object("karaokeBut")
     shuffBut = builder.get_object("shuffBut")
@@ -137,6 +141,7 @@ class Widgets(Gtk.Application):
     karmode = builder.get_object("req_scroll")
     lyrmode = builder.get_object("req_scroll2")
     search_play = builder.get_object("search_play")
+    search_play.set_name("search_play")
     window = builder.get_object('main')
     switchDict = {"locBut" : [builder.get_object("placeholder"), "audio-input-microphone", "audio", strBut, infBut], "strBut" : [builder.get_object("strBox"), "view-fullscreen", "video", locBut, infBut], "infBut" : [builder.get_object("infBook"), "", "", locBut, strBut]}
     provider, settings = Gtk.CssProvider(), Gtk.Settings.get_default()

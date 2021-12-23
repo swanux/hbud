@@ -38,6 +38,12 @@ def themer(provider, window, v, c, w=""):
         switch:checked, highlight, selection, menuitem:hover {
             background-color: %s;
         }
+        tab:checked {
+            box-shadow: 0 -4px %s inset;
+        }
+        #search_play:focus, spinbutton:focus {
+            box-shadow: 0 0 0 1px %s;
+        }
         #trackbox_%s{
             background: %s;
             color: #000;
@@ -45,7 +51,7 @@ def themer(provider, window, v, c, w=""):
         }
         .maximized, .fullscreen, .maximized .titlebar {
             border-radius: 0px;
-        }""" % (float(v)/2.6,float(v)/1.5,v,v,v,v,v,v,c,w,c,v)
+        }""" % (float(v)/2.6,float(v)/1.5,v,v,v,v,v,v,c,c,c,w,c,v)
         css = str.encode(css)
         provider.load_from_data(css)
         window.get_style_context().add_provider_for_screen(Gdk.Screen.get_default(), provider, Gtk.STYLE_PROVIDER_PRIORITY_APPLICATION)

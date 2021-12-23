@@ -11,7 +11,8 @@ from random import sample
 from mediafile import MediaFile, MediaField, MP3DescStorageStyle, StorageStyle
 gi.require_version('Gtk', '3.0')
 gi.require_version('Gst', '1.0')
-from gi.repository import Gtk, Gst, GLib, GdkPixbuf, Gdk
+gi.require_version('Keybinder', '3.0')
+from gi.repository import Gtk, Gst, GLib, GdkPixbuf, Gdk, Keybinder
 from hbud import letrasapi, musixapi, helper, tools
 
 class Main(helper.Widgets):
@@ -30,7 +31,7 @@ class Main(helper.Widgets):
         self._ = gettext.gettext
         self.API_KEY = "tnqJHZRTQL"
         musicbrainzngs.set_useragent("hbud", "0.2.5", "https://github.com/swanux/hbud")
-        version = "HBud 0.2.5 Kristin"
+        version = "HBud 0.2.5 Vereena"
         try:
             self.clickedE = sys.argv[1].replace("file://", "")
             if os.path.splitext(self.clickedE)[-1] not in self.supportedList and os.path.splitext(self.clickedE)[-1] != "":
@@ -44,17 +45,19 @@ class Main(helper.Widgets):
  v0.2.5 - ?? ?? 2021 :
 
         * Added offset support in karaoke
-        * Added Ctrl+O to open file / folder
-        * AcoustID and MusicBrainz integration - automatic metadata fetching
+        * Added new keyboard shortcuts (Ctrl+O, Ctrl+F, Ctrl+Space)
+        * AcoustID and MusicBrainz integration for automatic metadata fetching
         * Added option to set preferred album cover size
         * Greatly improved lyric fetching
         * New helper scripts (translate, musixapi and letrasapi)
-        * New high quality artwork by @Seh
-        * Added translation support
+        * New high quality artwork by Seh
+        * Added translation support (Hungarian and English for now)
         * Added focus on currently playing track
-        * Added Ctrl+F to search
-        * Added option to load lyric / subtitle from 'misc' subfolder - to keep things orderly
+        * Added option to load lyric / subtitle from 'misc' subfolder (it is now the default location)
+        * Added option to set offset for synced lyrics
+        * Added option to confirm whether lyric is correct or not
         * Fixed several bugs
+        * Improved theming
         * Polished the GUI
 """))
         self.builder.get_object("whView").set_buffer(buffer)
@@ -109,6 +112,7 @@ class Main(helper.Widgets):
             else:
                 self.strBut.set_active(True)
                 self.on_playBut_clicked("xy")
+        self.on_key() # Init keybindings
         self.listener() # Do not write anything after this in init
 
     def highlight(self, widget, event):
@@ -723,7 +727,7 @@ class Main(helper.Widgets):
             self.playlist[i+corrector] = cutList[i]
         GLib.idle_add(self.neo_playlist_gen, "rename", src, dst)
 
-    def on_key(self, _, key):
+    def on_key_local(self, _, key):
         # Add on_key as key_press signal to the ui file - main window preferably
         # print(key.keyval)
         try:
@@ -771,6 +775,18 @@ class Main(helper.Widgets):
         f.save()
         self.sub.set_focus(None)
 
+    def on_correct_lyr(self, _):
+        if not os.path.isdir(f"{self.folderPath}/misc"):
+            print("init")
+            os.system(f"mkdir {self.folderPath}/misc")
+        print(f"{self.folderPath}/misc/{self.tmp_tmp}.txt")
+        f = open(f"{self.folderPath}/misc/{self.tmp_tmp}.txt", "w+")
+        f.write(self.tmp_lyric)
+        f.close()
+        GLib.idle_add(self.substackhead.hide)
+    
+    def on_wrong_lyr(self, _): self.on_karaoke_activate()
+
     def on_karaoke_activate(self, *_):
         if self.useMode == "audio" and self.nowIn == "audio":
             if self.playing == True or self.res == True:
@@ -813,9 +829,11 @@ class Main(helper.Widgets):
                         self.lyrLab.set_label(lyric)
                         self.subStack.set_visible_child(self.lyrmode)
                         self.sub.show_all()
+                        GLib.idle_add(self.substackhead.hide)
                     else:
+                        self.substackhead.set_visible_child(self.subbox2)
                         thread = futures.ThreadPoolExecutor(max_workers=2)
-                        thread.submit(self.lyr_fetcher, artist, track, tmp)
+                        thread.submit(self.lyr_fetcher, artist, track, neo_tmp)
                 else:
                     GLib.idle_add(self.off_but.show)
                     GLib.idle_add(self.off_lab.show)
@@ -838,6 +856,7 @@ class Main(helper.Widgets):
                     subtitle, lyrs = list(subtitle_gen), futures.ThreadPoolExecutor(max_workers=2)
                     lyrs.submit(self.slideShow, subtitle)
                     self.subStack.set_visible_child(self.karmode)
+                    self.substackhead.set_visible_child(self.subbox)
                     self.sub.show_all()
         elif self.useMode == "video":
             if self.fulle == False:
@@ -854,17 +873,19 @@ class Main(helper.Widgets):
     def lyr_fetcher(self, artist, track, tmp):
         GLib.idle_add(self.lyrStack.set_visible_child, self.lyrSpin)
         lyric = None
-        if self.musixe == True: lyric = musixapi.get_lyric(artist, track)
-        if self.letrase == True and lyric == None: lyric = letrasapi.get_lyric(artist, track)
-        if self.azlyre == True and lyric == None: lyric = tools.get_lyric(track, artist, self.DAPI)
+        if self.musixe == True and self.lyr_states[0] == True:
+            lyric, self.lyr_states = musixapi.get_lyric(artist, track), [False, True, True]
+        if self.letrase == True and lyric == None and self.lyr_states[1] == True:
+            lyric, self.lyr_states = letrasapi.get_lyric(artist, track), [False, False, True]
+        if self.azlyre == True and lyric == None and self.lyr_states[2] == True:
+            lyric, self.lyr_states = tools.get_lyric(track, artist, self.DAPI), [False, False, False]
         GLib.idle_add(self.lyrStack.set_visible_child, self.karaokeBut)
         if lyric == 0:
-            GLib.idle_add(tools.diabuilder, self._('Can not get lyrics for the current track. Please place the synced .srt file  or the raw .txt file alongside the audio file, with the same name as the audio file.'), self._("Information"), Gtk.MessageType.INFO, Gtk.ButtonsType.OK, self.window)
+            GLib.idle_add(tools.diabuilder, self._('Can not get correct lyrics for the current track. Please place the synced .srt file  or the raw .txt file alongside the audio file, with the same name as the audio file.'), self._("Information"), Gtk.MessageType.INFO, Gtk.ButtonsType.OK, self.window)
+            ld_hide = futures.ThreadPoolExecutor(max_workers=1)
+            ld_hide.submit(self.on_hide)
         else:
-            if not os.path.isdir(f"{self.folderPath}/misc"): os.system(f"mkdir {self.folderPath}/misc")
-            f = open(f"{self.folderPath}/misc/{tmp}.txt", "w+")
-            f.write(lyric)
-            f.close()
+            self.tmp_lyric, self.tmp_tmp = lyric, tmp
             GLib.idle_add(self.lyrLab.set_label, lyric)
             GLib.idle_add(self.subStack.set_visible_child, self.lyrmode)
             GLib.idle_add(self.sub.show_all)
@@ -1041,8 +1062,13 @@ class Main(helper.Widgets):
 
     def on_hide(self, *_):
         self.stopKar = True
+        self.lyr_states = [True, True, True]
         self.sub.hide()
         return True
+    
+    def on_key(self):
+        Keybinder.init()
+        Keybinder.bind("<Ctrl>space", self.on_playBut_clicked)
 
 user, parser, confP, sSize, sMarg, bg, rounded, dark, color, musix, azlyr, letras, coverSize = tools.real_init()
 Gst.init(None)
