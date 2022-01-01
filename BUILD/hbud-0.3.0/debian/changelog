@@ -1,0 +1,19 @@
+hbud (0.3.0-1) impish; urgency=medium
+
+  * Added new keyboard shortcuts (Ctrl+O, Ctrl+F, Ctrl+Space)
+  * AcoustID and MusicBrainz integration for automatic metadata fetching
+  * Added option to set preferred album cover size
+  * Greatly improved lyric fetching
+  * New helper scripts (translate, musixapi and letrasapi)
+  * New high quality artwork by Seh
+  * Added translation support (Hungarian and English for now)
+  * Added focus on currently playing track
+  * Added option to load lyric / subtitle from 'misc' subfolder (it is now the default location)
+  * Added option to set offset for synced lyrics
+  * Added option to confirm whether lyric is correct or not
+  * Fixed several bugs
+  * Improved theming
+  * Polished the GUI
+  * Optimized video playback
+
+ -- Dániel Kolozsi <dani@kolozsi.net>  Sat, 01 Jan 2022 02:35:47 +0100
