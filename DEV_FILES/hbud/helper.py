@@ -89,6 +89,8 @@ class Widgets(Gtk.Application):
     slider.set_margin_end(6)
     slider.set_draw_value(False)
     slider.set_increments(1, 10)
+    slider.set_has_tooltip(True)
+    seeking = False
     box = builder.get_object("slidBox")
     label = Gtk.Label(label='0:00:00')
     label.set_margin_start(6)

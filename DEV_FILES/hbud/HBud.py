@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-import gi, dbus, srt, azapi, dbus.mainloop.glib, json, os, sys, gettext, locale, acoustid, musicbrainzngs
+import gi, dbus, srt, azapi, dbus.mainloop.glib, json, os, sys, gettext, locale, acoustid, musicbrainzngs, vlc#, ctypes
 from concurrent import futures
 from time import sleep, time
 from operator import itemgetter
@@ -10,9 +10,8 @@ from datetime import timedelta
 from random import sample
 from mediafile import MediaFile, MediaField, MP3DescStorageStyle, StorageStyle
 gi.require_version('Gtk', '3.0')
-gi.require_version('Gst', '1.0')
 gi.require_version('Keybinder', '3.0')
-from gi.repository import Gtk, Gst, GLib, GdkPixbuf, Gdk, Keybinder
+from gi.repository import Gtk, GLib, GdkPixbuf, Gdk, Keybinder
 from hbud import letrasapi, musixapi, helper, tools
 
 class Main(helper.Widgets):
@@ -30,8 +29,8 @@ class Main(helper.Widgets):
         gettext.textdomain(APP)
         self._ = gettext.gettext
         self.API_KEY = "tnqJHZRTQL"
-        musicbrainzngs.set_useragent("hbud", "0.3.0", "https://github.com/swanux/hbud")
-        version = "HBud 0.3.0 Vereena"
+        musicbrainzngs.set_useragent("hbud", "0.3.1", "https://github.com/swanux/hbud")
+        version = "HBud 0.3.1 Morenn"
         try:
             self.clickedE = sys.argv[1].replace("file://", "")
             if os.path.splitext(self.clickedE)[-1] not in self.supportedList and os.path.splitext(self.clickedE)[-1] != "":
@@ -42,23 +41,11 @@ class Main(helper.Widgets):
         self.builder.connect_signals(self)
         buffer = Gtk.TextBuffer()
         buffer.set_text(self._("""
- v0.3.0 - Jan 01 2022 :
+ v0.3.1 - ??? ?? 2022 :
 
-        * Added new keyboard shortcuts (Ctrl+O, Ctrl+F, Ctrl+Space)
-        * AcoustID and MusicBrainz integration for automatic metadata fetching
-        * Added option to set preferred album cover size
-        * Greatly improved lyric fetching
-        * New helper scripts (translate, musixapi and letrasapi)
-        * New high quality artwork by Seh
-        * Added translation support (Hungarian and English for now)
-        * Added focus on currently playing track
-        * Added option to load lyric / subtitle from 'misc' subfolder (it is now the default location)
-        * Added option to set offset for synced lyrics
-        * Added option to confirm whether lyric is correct or not
-        * Fixed several bugs
-        * Improved theming
-        * Polished the GUI
-        * Optimized video playback
+        * Complete rebase on libVLC (instead of GStreamer)
+        * Show current time when dragging slider
+        * Numerous bugfixes and optimizations (video playback 6-12x faster)
 """))
         self.builder.get_object("whView").set_buffer(buffer)
         image_filter = Gtk.FileFilter()
@@ -74,7 +61,9 @@ class Main(helper.Widgets):
         self.azlyre = azlyr == "True"
         self.letrase = letras == "True"
         self.cover_size = coverSize
-        self.slider_handler_id = self.slider.connect("value-changed", self.on_slider_seek)
+        self.slider.connect("button-release-event", self.on_slider_seek)
+        self.slider.connect("value-changed", self.on_slider_grabbed)
+        self.slider.connect("button-press-event", self.on_slider_grab)
         self.slider.connect("enter-notify-event", self.mouse_enter)
         self.slider.connect("leave-notify-event", self.mouse_leave)
         self.color, self.rounded = color, rounded
@@ -172,27 +161,32 @@ class Main(helper.Widgets):
         f.write(json.dumps(self.playlist))
         f.close()
 
+    def _realized(self, widget, _=None):
+        # x11 = ctypes.cdll.LoadLibrary('libX11.so')
+        # x11.XInitThreads()
+        self.videoPipe = self.vlcInstance.media_player_new()
+        win_id = widget.get_window().get_xid()
+        self.videoPipe.set_xwindow(win_id)
+        self.videoPipe.event_manager().event_attach(vlc.EventType.MediaPlayerEndReached, self.media_end_reached)
+        self.videoPipe.event_manager().event_attach(vlc.EventType.MediaPlayerTimeChanged, self.media_time_changed)
+
+    def draw_event(self, _, cairo_ctx):
+        cairo_ctx.set_source_rgb(0, 0, 0)
+        cairo_ctx.paint()
+
     def createPipeline(self, mode):
         if mode == "local":
-            self.videoPipe, self.audioPipe = Gst.ElementFactory.make("playbin3"), Gst.ElementFactory.make("playbin3")
-            # self.audioPipe = Gst.parse_launch('filesrc  ! decodebin ! audioconvert ! rgvolume ! audioconvert ! audioresample ! alsasink')
-            playerFactory = self.videoPipe.get_factory()
-            gtksink = playerFactory.make('gtksink')
-            self.videoPipe.set_property("video-sink", gtksink)
-            gtksink.props.widget.set_valign(Gtk.Align.FILL)
-            gtksink.props.widget.set_halign(Gtk.Align.FILL)
-            gtksink.props.widget.connect("button_press_event", self.mouse_click0)
-            self.strOverlay.add(gtksink.props.widget)
-            gtksink.props.widget.show()
+            self.vlcInstance = vlc.Instance("--no-xlib")
+            self.audioPipe = self.vlcInstance.media_player_new()
+            self.audioPipe.event_manager().event_attach(vlc.EventType.MediaPlayerEndReached, self.media_end_reached)
+            self.audioPipe.event_manager().event_attach(vlc.EventType.MediaPlayerTimeChanged, self.media_time_changed)
+            drawer = self.builder.get_object("drawer")
+            drawer.set_events(256)
+            drawer.connect("button_press_event", self.mouse_click0)
+            drawer.connect("realize",self._realized)
+            drawer.connect("draw", self.draw_event)
+            drawer.show()
             self.strOverlay.add_overlay(self.theTitle)
-            bus = self.videoPipe.get_bus()
-            bus.add_signal_watch()
-            bus.connect("message", self.on_message)
-            bus = self.audioPipe.get_bus()
-            bus.add_signal_watch()
-            bus.connect("message", self.on_message)
-        # elif mode == "stream":
-            # self.player = Gst.parse_launch(f"souphttpsrc is-live=false location={self.url} ! decodebin ! audioconvert ! autoaudiosink")
 
     def on_dropped(self, button):
         if self.drop_but.get_visible() == True:
@@ -221,12 +215,14 @@ class Main(helper.Widgets):
                     GLib.idle_add(self.drop_but.hide)
                     GLib.idle_add(self.subcheck.show)
                 GLib.idle_add(self.karaokeIcon.set_from_icon_name, self.switchDict[btn][1], Gtk.IconSize.BUTTON)
-                if self.playing == True and self.switchDict[btn][2] == "video": self.on_playBut_clicked("xy")
+                if self.playing == True:
+                    if self.switchDict[btn][2] == "video" and self.nowIn == "audio": self.on_playBut_clicked("xy")
                 self.useMode = self.switchDict[btn][2]
             else:
                 GLib.idle_add(self.exBot.hide)
                 GLib.idle_add(self.subcheck.hide)
                 GLib.idle_add(self.drop_but.hide)
+                if self.nowIn == "video" and self.switchDict[btn][2] != "video": self.on_playBut_clicked("xy")
             self.needSub = False
             GLib.idle_add(self.subcheck.set_state, False)
             GLib.idle_add(self.switchDict[btn][3].set_active, False)
@@ -383,7 +379,7 @@ class Main(helper.Widgets):
         return True
 
     def ed_cur(self, *_):
-        self.editingFile = self.playlist[self.ednum]["uri"].replace("file://", "")
+        self.editingFile = self.playlist[self.ednum]["uri"]
         self.yrEnt.set_value(self.playlist[self.ednum]["year"])
         self.arEnt.set_text(self.playlist[self.ednum]["artist"])
         self.alEnt.set_text(self.playlist[self.ednum]["album"])
@@ -431,7 +427,7 @@ class Main(helper.Widgets):
         GLib.idle_add(self.cleaner, self.choser_window)
 
     def fetch_cur(self):
-        path = self.playlist[self.ednum]["uri"].replace("file://", "")
+        path = self.playlist[self.ednum]["uri"]
         try:
             results = acoustid.match(self.API_KEY, path, force_fpcalc=True)
         except acoustid.NoBackendError:
@@ -507,20 +503,18 @@ class Main(helper.Widgets):
                     self.tnum += 1
                     if self.tnum >= len(self.playlist): self.tnum = 0
                 elif button == "clickMode0": self.tnum = 0
-                try:
-                    self.stop()
+                try: self.pause()
                 except: print("No playbin yet to stop.")
                 self.play()
                 if self.sub.get_visible(): self.on_karaoke_activate("xy")
                 if self.useMode == "audio" and button != "clickMode": self.adj.set_value(self.tnum*72-140)
             elif self.nowIn == "video":
-                self.slider.set_value(self.position + 10)
-                self.position += 10
+                self.player.set_time(int(self.player.get_time() + 10*1000))
 
     def load_cover(self, mode="", bitMage=""):
         if mode == "meta": self.binary = MediaFile(self.editingFile).art
         elif mode == "brainz": self.binary = bitMage
-        else: self.binary = MediaFile(self.url.replace('file://', '')).art
+        else: self.binary = MediaFile(self.url).art
         if not self.binary: tmpLoc = "hbud/icons/track.png"
         else:
             tmpLoc = "/tmp/cacheCover.jpg"
@@ -539,74 +533,66 @@ class Main(helper.Widgets):
                 if self.tnum < 0: self.tnum = len(self.playlist)-1
                 try:
                     self.pause()
-                    self.stop()
                 except: print("No playbin yet to stop.")
                 self.play()
                 if self.sub.get_visible(): self.on_karaoke_activate("xy")
                 if self.useMode == "audio": self.adj.set_value(self.tnum*72-140)
             elif self.nowIn == "video":
-                self.slider.set_value(self.position - 10)
-                self.position -= 10
+                self.player.set_time(int(self.player.get_time() - 10*1000))
 
     def stop(self, arg=False):
         print("Stop")
-        self.player.set_state(Gst.State.PAUSED)
+        GLib.idle_add(self.player.stop)
         if self.nowIn == "audio": self.audioPipe = self.player
         elif self.nowIn == "video": self.videoPipe = self.player
         self.playing = False
         self.label.set_text("0:00:00")
         GLib.idle_add(self.plaicon.set_from_icon_name, "media-playback-start", Gtk.IconSize.BUTTON)
-        if arg == False:
-            self.slider.handler_block(self.slider_handler_id)
-            self.slider.set_value(0)
-            self.slider.handler_unblock(self.slider_handler_id)
-            self.res = False
-            self.player.set_state(Gst.State.NULL)
-        else: self.slider.set_value(0)
+        self.slider.set_value(0)
+        self.res = arg
 
     def pause(self, *_): 
         print("Pause")
         self.playing = False
         try:
             GLib.idle_add(self.plaicon.set_from_icon_name, "media-playback-start", Gtk.IconSize.BUTTON)
-            self.player.set_state(Gst.State.PAUSED)
+            self.player.pause()
         except: print("Pause exception")
     
     def resume(self):
         print("Resume")
         self.playing = True
-        self.player.set_state(Gst.State.PLAYING)
+        self.player.play()
         GLib.idle_add(self.plaicon.set_from_icon_name, "media-playback-pause", Gtk.IconSize.BUTTON)
-        GLib.idle_add(self.updateSlider)
+
+    def on_slider_grab(self, *_):
+        self.seeking = True
+    
+    def on_slider_grabbed(self, *_):
+        current_time = str(timedelta(seconds=round(self.slider.get_value())))
+        GLib.idle_add(self.slider.set_tooltip_text, f"{current_time}")
 
     def on_slider_seek(self, *_):
         if self.useMode == self.nowIn:
             seek_time_secs = self.slider.get_value()
+            final_seek = int(seek_time_secs * 1000)
             if seek_time_secs < self.position:
                 self.seekBack = True
-            self.player.seek(1.00, Gst.Format.TIME, (Gst.SeekFlags.FLUSH | Gst.SeekFlags.ACCURATE), Gst.SeekType.SET, seek_time_secs * Gst.SECOND, Gst.SeekType.NONE, -1)
+            self.player.set_time(final_seek)
+            self.seeking = False
 
-    def updateSlider(self):
-        if(self.playing == False): return False # cancel timeout
-        try:
-            duration_nanosecs = self.player.query_duration(Gst.Format.TIME)[1]
-            position_nanosecs = self.player.query_position(Gst.Format.TIME)[1]
-            if duration_nanosecs == -1: return True
-            # block seek handler so we don't seek when we set_value()
-            self.slider.handler_block(self.slider_handler_id)
-            duration = float(duration_nanosecs) / Gst.SECOND
-            self.position = float(position_nanosecs) / Gst.SECOND
-            remaining = float(duration_nanosecs - position_nanosecs) / Gst.SECOND
-            self.slider.set_range(0, duration)
-            self.slider.set_value(self.position)
-            fvalue, svalue = str(timedelta(seconds=round(self.position))), str(timedelta(seconds=int(remaining)))
-            self.label.set_text(fvalue)
-            self.label_end.set_text(svalue)
-            self.slider.handler_unblock(self.slider_handler_id)
-        except Exception as e:
-            print (f'W: {e}')
-            pass
-        return True
+    def media_time_changed(self, _):
+        length_milisec = self.player.get_length()
+        time_milisec = self.player.get_time()
+        self.position = time_milisec/1000
+        remaining = (length_milisec - time_milisec)/1000
+        duration = length_milisec/1000
+        if self.seeking == False:
+            GLib.idle_add(self.slider.set_range, 0, duration)
+            GLib.idle_add(self.slider.set_value, self.position)
+        fvalue, svalue = str(timedelta(seconds=round(self.position))), str(timedelta(seconds=int(remaining)))
+        GLib.idle_add(self.label.set_text, fvalue)
+        GLib.idle_add(self.label_end.set_text, svalue)
 
     def on_shuffBut_clicked(self, *_): self.neo_playlist_gen(name='shuffle')
 
@@ -616,14 +602,14 @@ class Main(helper.Widgets):
 
     def on_act_sub(self, _, state):
         if state == True and self.nowIn == "video":
-            filename = self.url.replace("file://", "").split("/")[-1]
-            try: neo_tmpdbnow = os.listdir(self.url.replace("file://", "").replace(filename, "")+"misc/")
+            filename = self.url.split("/")[-1]
+            try: neo_tmpdbnow = os.listdir(self.url.replace(filename, "")+"misc/")
             except: neo_tmpdbnow = []
-            tmpdbnow = os.listdir(self.url.replace("file://", "").replace(filename, ""))
+            tmpdbnow = os.listdir(self.url.replace(filename, ""))
             if os.path.splitext(filename)[0]+".srt" in tmpdbnow or os.path.splitext(filename)[0]+".srt" in neo_tmpdbnow:
                 print("Subtitle found!")
-                srfile = os.path.splitext(self.url.replace("file://", ""))[0]+".srt"
-                neo_srfile = self.url.replace("file://", "").replace(filename, "")+"misc/"+os.path.splitext(filename)[0]+".srt"
+                srfile = os.path.splitext(self.url)[0]+".srt"
+                neo_srfile = self.url.replace(filename, "")+"misc/"+os.path.splitext(filename)[0]+".srt"
                 print(srfile, neo_srfile)
                 try:
                     with open (srfile, 'r') as subfile: presub = subfile.read()
@@ -643,21 +629,21 @@ class Main(helper.Widgets):
 
     def play(self, misc=""):
         if self.clickedE:
-            self.url, self.nowIn = "file://"+self.clickedE, self.useMode
+            self.url, self.nowIn = self.clickedE, self.useMode
             if self.useMode == "audio": self.player = self.audioPipe
             else: self.player = self.videoPipe
         elif "/" in misc:
-            self.url, self.nowIn, self.player = "file://"+misc, "video", self.videoPipe
+            self.url, self.nowIn, self.player = misc, "video", self.videoPipe
             GLib.idle_add(self.subcheck.set_state, False)
         elif misc == "continue":
             if self.useMode == "audio":
-                if self.audioPipe.get_state(1)[1] == Gst.State.NULL: return
+                if self.audioPipe.get_state() == vlc.State.NothingSpecial or self.audioPipe.get_state() == vlc.State.Stopped: return
                 self.player, self.nowIn = self.audioPipe, "audio"
             else:
-                if self.videoPipe.get_state(1)[1] == Gst.State.NULL: return
+                if self.videoPipe.get_state() == vlc.State.NothingSpecial or self.videoPipe.get_state() == vlc.State.Stopped: return
                 self.player, self.nowIn = self.videoPipe, "video"
         else:
-            try: self.url, self.nowIn, self.player = "file://"+self.playlist[self.tnum]["uri"], "audio", self.audioPipe
+            try: self.url, self.nowIn, self.player = self.playlist[self.tnum]["uri"], "audio", self.audioPipe
             except: return
         print("Play")
         self.res, self.playing, self.position = True, True, 0
@@ -665,12 +651,11 @@ class Main(helper.Widgets):
             self.title = self.playlist[self.tnum]["title"]
             tools.themer(self.provider, self.window, self.rounded, self.color, self.tnum)
         if misc != "continue":
-            self.player.set_state(Gst.State.NULL)
-            self.player.set_property("uri", self.url)
-        self.player.set_state(Gst.State.PLAYING)
-        GLib.idle_add(self.header.set_subtitle, self.url.replace("file://", "").split("/")[-1])
+            self.player.set_mrl(self.url)
+            print("set mrl")
+        self.player.play()
+        GLib.idle_add(self.header.set_subtitle, self.url.split("/")[-1])
         GLib.idle_add(self.plaicon.set_from_icon_name, "media-playback-pause", Gtk.IconSize.BUTTON)
-        GLib.idle_add(self.updateSlider)
         if self.useMode == "audio" and misc != "continue":
             ld_cov = futures.ThreadPoolExecutor(max_workers=1)
             ld_cov.submit(self.load_cover)
@@ -753,14 +738,9 @@ class Main(helper.Widgets):
                     self.reorderer(self.tnum, self.tnum+1)
             except: pass
 
-    def on_message(self, _, message):
-        t = message.type
-        if t == Gst.MessageType.EOS and self.nowIn == "audio": self.on_next("xy")
-        elif t == Gst.MessageType.EOS and self.nowIn == "video": self.stop(arg=True)
-        elif t == Gst.MessageType.ERROR:
-            self.player.set_state(Gst.State.NULL)
-            err, debug = message.parse_error()
-            print (f"Error: {err}", debug)
+    def media_end_reached(self, _):
+        if self.nowIn == "audio": self.on_next("xy")
+        elif self.nowIn == "video": self.stop(True)
 
     def _on_size_allocated(self, *_):
         sleep(0.01)
@@ -1077,7 +1057,6 @@ class Main(helper.Widgets):
         Keybinder.bind("<Ctrl>space", self.on_playBut_clicked)
 
 user, parser, confP, sSize, sMarg, bg, rounded, dark, color, musix, azlyr, letras, coverSize = tools.real_init()
-Gst.init(None)
 app = Main()
 app.connect('activate', app.on_activate)
 app.run(None)

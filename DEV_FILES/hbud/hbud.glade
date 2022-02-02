@@ -135,7 +135,6 @@ Author: Dániel Kolozsi
             <property name="can-focus">False</property>
             <property name="hexpand">True</property>
             <property name="vexpand">True</property>
-            <property name="transition-type">slide-left-right</property>
             <child>
               <object class="GtkBox" id="placeholder">
                 <property name="visible">True</property>
@@ -283,7 +282,15 @@ Author: Dániel Kolozsi
                     <property name="hexpand">True</property>
                     <property name="vexpand">True</property>
                     <child>
-                      <placeholder/>
+                      <object class="GtkDrawingArea" id="drawer">
+                        <property name="visible">True</property>
+                        <property name="can-focus">False</property>
+                        <property name="hexpand">True</property>
+                        <property name="vexpand">True</property>
+                      </object>
+                      <packing>
+                        <property name="index">-1</property>
+                      </packing>
                     </child>
                   </object>
                   <packing>
@@ -1448,8 +1455,8 @@ Suite 330, Boston, MA  02111-1307  USA</property>
     </child>
   </object>
   <object class="GtkWindow" id="nosub">
-    <property name="width-request">500</property>
-    <property name="height-request">350</property>
+    <property name="width-request">400</property>
+    <property name="height-request">200</property>
     <property name="can-focus">False</property>
     <property name="window-position">center-on-parent</property>
     <property name="skip-taskbar-hint">True</property>

@@ -283,7 +283,15 @@ Author: Dániel Kolozsi
                     <property name="hexpand">True</property>
                     <property name="vexpand">True</property>
                     <child>
-                      <placeholder/>
+                      <object class="GtkDrawingArea" id="drawer">
+                        <property name="visible">True</property>
+                        <property name="can-focus">False</property>
+                        <property name="hexpand">True</property>
+                        <property name="vexpand">True</property>
+                      </object>
+                      <packing>
+                        <property name="index">-1</property>
+                      </packing>
                     </child>
                   </object>
                   <packing>
