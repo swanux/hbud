@@ -203,7 +203,7 @@ class Main(helper.Widgets):
         btn = Gtk.Buildable.get_name(button)
         if self.mainStack.get_visible_child() != self.switchDict[btn][0] and button.get_active() == True:
             self.mainStack.set_visible_child(self.switchDict[btn][0])
-            if btn != "infBut":
+            if btn != "infBut" or self.nowIn == "video":
                 GLib.idle_add(self.exBot.show)
                 if btn == "locBut":
                     GLib.idle_add(self.trackCover.show)
@@ -218,13 +218,12 @@ class Main(helper.Widgets):
                 GLib.idle_add(self.karaokeIcon.set_from_icon_name, self.switchDict[btn][1], Gtk.IconSize.BUTTON)
                 if self.playing == True:
                     if self.switchDict[btn][2] == "video" and self.nowIn == "audio": self.on_playBut_clicked("xy")
+                    elif self.nowIn == "video" and self.switchDict[btn][2] != "video": self.on_playBut_clicked("xy")
                 self.useMode = self.switchDict[btn][2]
-            else:
+            if btn == "infBut":
                 GLib.idle_add(self.exBot.hide)
                 GLib.idle_add(self.subcheck.hide)
                 GLib.idle_add(self.drop_but.hide)
-                if self.nowIn == "video" and self.switchDict[btn][2] != "video": self.on_playBut_clicked("xy")
-            # self.needSub = False
             GLib.idle_add(self.subcheck.set_state, False)
             GLib.idle_add(self.switchDict[btn][3].set_active, False)
             GLib.idle_add(self.switchDict[btn][4].set_active, False)
@@ -658,6 +657,7 @@ class Main(helper.Widgets):
             ld_cov.submit(self.load_cover)
 
     def on_playBut_clicked(self, button):
+        if self.plaicon.is_visible() == False: return
         if self.useMode == "audio" and self.nowIn != "video": self.adj.set_value(self.tnum*72-140)
         if self.nowIn == self.useMode or self.nowIn == "" or "/" in button:
             if not self.playing:
