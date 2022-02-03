@@ -107,6 +107,129 @@ Author: Dániel Kolozsi
     <property name="icon-name">media-skip-backward</property>
     <property name="use-fallback">True</property>
   </object>
+  <!-- n-columns=3 n-rows=3 -->
+  <object class="GtkGrid" id="setGrid1">
+    <property name="visible">True</property>
+    <property name="can-focus">False</property>
+    <property name="margin-top">5</property>
+    <property name="margin-bottom">5</property>
+    <property name="hexpand">True</property>
+    <property name="vexpand">True</property>
+    <property name="row-spacing">20</property>
+    <property name="column-spacing">5</property>
+    <child>
+      <object class="GtkLabel" id="subLab6">
+        <property name="visible">True</property>
+        <property name="can-focus">False</property>
+        <property name="tooltip-text" translatable="yes">Default: 30</property>
+        <property name="halign">start</property>
+        <property name="hexpand">False</property>
+        <property name="label" translatable="yes">Subtitle size :</property>
+        <attributes>
+          <attribute name="weight" value="bold"/>
+        </attributes>
+      </object>
+      <packing>
+        <property name="left-attach">0</property>
+        <property name="top-attach">0</property>
+      </packing>
+    </child>
+    <child>
+      <object class="GtkSpinButton" id="subSpin">
+        <property name="visible">True</property>
+        <property name="can-focus">True</property>
+        <property name="tooltip-text" translatable="yes">Default: 30</property>
+        <property name="halign">end</property>
+        <property name="hexpand">True</property>
+        <property name="max-length">2</property>
+        <property name="text">30</property>
+        <property name="shadow-type">none</property>
+        <property name="adjustment">adjustment2</property>
+        <property name="numeric">True</property>
+        <property name="value">30</property>
+      </object>
+      <packing>
+        <property name="left-attach">1</property>
+        <property name="top-attach">0</property>
+      </packing>
+    </child>
+    <child>
+      <object class="GtkLabel" id="subLab7">
+        <property name="visible">True</property>
+        <property name="can-focus">False</property>
+        <property name="tooltip-text" translatable="yes">Default: 66</property>
+        <property name="halign">start</property>
+        <property name="hexpand">False</property>
+        <property name="label" translatable="yes">Subtitle bottom margin :</property>
+        <attributes>
+          <attribute name="weight" value="bold"/>
+        </attributes>
+      </object>
+      <packing>
+        <property name="left-attach">0</property>
+        <property name="top-attach">1</property>
+      </packing>
+    </child>
+    <child>
+      <object class="GtkSpinButton" id="subSpin1">
+        <property name="visible">True</property>
+        <property name="can-focus">True</property>
+        <property name="tooltip-text" translatable="yes">Default: 66</property>
+        <property name="halign">end</property>
+        <property name="hexpand">True</property>
+        <property name="max-length">2</property>
+        <property name="text">30</property>
+        <property name="shadow-type">none</property>
+        <property name="adjustment">adjustment3</property>
+        <property name="numeric">True</property>
+        <property name="value">30</property>
+      </object>
+      <packing>
+        <property name="left-attach">1</property>
+        <property name="top-attach">1</property>
+      </packing>
+    </child>
+    <child>
+      <object class="GtkLabel" id="subLab10">
+        <property name="visible">True</property>
+        <property name="can-focus">False</property>
+        <property name="tooltip-text" translatable="yes">Default: Off</property>
+        <property name="halign">start</property>
+        <property name="hexpand">False</property>
+        <property name="label" translatable="yes">Subtitle background :</property>
+        <attributes>
+          <attribute name="weight" value="bold"/>
+        </attributes>
+      </object>
+      <packing>
+        <property name="left-attach">0</property>
+        <property name="top-attach">2</property>
+      </packing>
+    </child>
+    <child>
+      <object class="GtkSwitch" id="bg_switch">
+        <property name="visible">True</property>
+        <property name="can-focus">True</property>
+        <property name="tooltip-text" translatable="yes">Default: Off</property>
+        <property name="halign">end</property>
+        <property name="valign">center</property>
+        <property name="hexpand">True</property>
+      </object>
+      <packing>
+        <property name="left-attach">1</property>
+        <property name="top-attach">2</property>
+      </packing>
+    </child>
+    <child>
+      <placeholder/>
+    </child>
+    <child>
+      <placeholder/>
+    </child>
+    <child>
+      <placeholder/>
+    </child>
+  </object>
   <object class="GtkImage" id="shuff">
     <property name="visible">True</property>
     <property name="can-focus">False</property>
@@ -476,151 +599,10 @@ Author: Dániel Kolozsi
                                   </packing>
                                 </child>
                                 <child>
-                                  <!-- n-columns=3 n-rows=3 -->
-                                  <object class="GtkGrid" id="setGrid1">
-                                    <property name="visible">True</property>
-                                    <property name="can-focus">False</property>
-                                    <property name="margin-left">5</property>
-                                    <property name="margin-right">5</property>
-                                    <property name="margin-top">5</property>
-                                    <property name="margin-bottom">5</property>
-                                    <property name="hexpand">True</property>
-                                    <property name="vexpand">True</property>
-                                    <property name="row-spacing">20</property>
-                                    <property name="column-spacing">5</property>
-                                    <child>
-                                      <object class="GtkLabel" id="subLab6">
-                                        <property name="visible">True</property>
-                                        <property name="can-focus">False</property>
-                                        <property name="tooltip-text" translatable="yes">Default: 30</property>
-                                        <property name="halign">start</property>
-                                        <property name="hexpand">False</property>
-                                        <property name="label" translatable="yes">Subtitle size :</property>
-                                        <attributes>
-                                          <attribute name="weight" value="bold"/>
-                                        </attributes>
-                                      </object>
-                                      <packing>
-                                        <property name="left-attach">0</property>
-                                        <property name="top-attach">0</property>
-                                      </packing>
-                                    </child>
-                                    <child>
-                                      <object class="GtkSpinButton" id="subSpin">
-                                        <property name="visible">True</property>
-                                        <property name="can-focus">True</property>
-                                        <property name="tooltip-text" translatable="yes">Default: 30</property>
-                                        <property name="halign">end</property>
-                                        <property name="hexpand">True</property>
-                                        <property name="max-length">2</property>
-                                        <property name="text">30</property>
-                                        <property name="shadow-type">none</property>
-                                        <property name="adjustment">adjustment2</property>
-                                        <property name="numeric">True</property>
-                                        <property name="value">30</property>
-                                      </object>
-                                      <packing>
-                                        <property name="left-attach">1</property>
-                                        <property name="top-attach">0</property>
-                                      </packing>
-                                    </child>
-                                    <child>
-                                      <object class="GtkLabel" id="subLab7">
-                                        <property name="visible">True</property>
-                                        <property name="can-focus">False</property>
-                                        <property name="tooltip-text" translatable="yes">Default: 66</property>
-                                        <property name="halign">start</property>
-                                        <property name="hexpand">False</property>
-                                        <property name="label" translatable="yes">Subtitle bottom margin :</property>
-                                        <attributes>
-                                          <attribute name="weight" value="bold"/>
-                                        </attributes>
-                                      </object>
-                                      <packing>
-                                        <property name="left-attach">0</property>
-                                        <property name="top-attach">1</property>
-                                      </packing>
-                                    </child>
-                                    <child>
-                                      <object class="GtkSpinButton" id="subSpin1">
-                                        <property name="visible">True</property>
-                                        <property name="can-focus">True</property>
-                                        <property name="tooltip-text" translatable="yes">Default: 66</property>
-                                        <property name="halign">end</property>
-                                        <property name="hexpand">True</property>
-                                        <property name="max-length">2</property>
-                                        <property name="text">30</property>
-                                        <property name="shadow-type">none</property>
-                                        <property name="adjustment">adjustment3</property>
-                                        <property name="numeric">True</property>
-                                        <property name="value">30</property>
-                                      </object>
-                                      <packing>
-                                        <property name="left-attach">1</property>
-                                        <property name="top-attach">1</property>
-                                      </packing>
-                                    </child>
-                                    <child>
-                                      <object class="GtkLabel" id="subLab10">
-                                        <property name="visible">True</property>
-                                        <property name="can-focus">False</property>
-                                        <property name="tooltip-text" translatable="yes">Default: Off</property>
-                                        <property name="halign">start</property>
-                                        <property name="hexpand">False</property>
-                                        <property name="label" translatable="yes">Subtitle background :</property>
-                                        <attributes>
-                                          <attribute name="weight" value="bold"/>
-                                        </attributes>
-                                      </object>
-                                      <packing>
-                                        <property name="left-attach">0</property>
-                                        <property name="top-attach">2</property>
-                                      </packing>
-                                    </child>
-                                    <child>
-                                      <object class="GtkSwitch" id="bg_switch">
-                                        <property name="visible">True</property>
-                                        <property name="can-focus">True</property>
-                                        <property name="tooltip-text" translatable="yes">Default: Off</property>
-                                        <property name="halign">end</property>
-                                        <property name="valign">center</property>
-                                        <property name="margin-right">20</property>
-                                        <property name="hexpand">True</property>
-                                      </object>
-                                      <packing>
-                                        <property name="left-attach">1</property>
-                                        <property name="top-attach">2</property>
-                                      </packing>
-                                    </child>
-                                    <child>
-                                      <placeholder/>
-                                    </child>
-                                    <child>
-                                      <placeholder/>
-                                    </child>
-                                    <child>
-                                      <placeholder/>
-                                    </child>
-                                  </object>
-                                  <packing>
-                                    <property name="position">1</property>
-                                  </packing>
+                                  <placeholder/>
                                 </child>
                                 <child type="tab">
-                                  <object class="GtkLabel" id="subTab">
-                                    <property name="visible">True</property>
-                                    <property name="can-focus">False</property>
-                                    <property name="margin-top">10</property>
-                                    <property name="margin-bottom">10</property>
-                                    <property name="label" translatable="yes">Subtitles</property>
-                                    <attributes>
-                                      <attribute name="weight" value="semibold"/>
-                                    </attributes>
-                                  </object>
-                                  <packing>
-                                    <property name="position">1</property>
-                                    <property name="tab-fill">False</property>
-                                  </packing>
+                                  <placeholder/>
                                 </child>
                                 <child>
                                   <!-- n-columns=3 n-rows=4 -->
@@ -2140,13 +2122,14 @@ Suite 330, Boston, MA  02111-1307  USA</property>
       </object>
     </child>
   </object>
-  <object class="GtkLabel" id="theTitle">
+  <object class="GtkLabel" id="subTab">
+    <property name="visible">True</property>
     <property name="can-focus">False</property>
-    <property name="valign">end</property>
-    <property name="vexpand">False</property>
-    <property name="label">label</property>
+    <property name="margin-top">10</property>
+    <property name="margin-bottom">10</property>
+    <property name="label" translatable="yes">Subtitles</property>
     <attributes>
-      <attribute name="weight" value="ultraheavy"/>
+      <attribute name="weight" value="semibold"/>
     </attributes>
   </object>
 </interface>

@@ -53,10 +53,14 @@ class Main(helper.Widgets):
         image_filter.add_mime_type("image/*")
         self.iChoser.add_filter(image_filter)
         self.DAPI = azapi.AZlyrics('duckduckgo', accuracy=0.65)
-        self.sSize, self.sMarg = int(float(sSize)), int(float(sMarg))
-        self.size, self.size2, self.size3, self.size4 = 35000, 15000, self.sSize*450, float(f"0.0{self.sMarg}")*450
+        # self.sSize, self.sMarg = int(float(sSize)), int(float(sMarg))
+        # self.bge = bg == "True"
+        # self.bg_switch.set_state(self.bge)
+        # self.size3, self.size4 = self.sSize*450, float(f"0.0{self.sMarg}")*450
+        # self.subSpin.set_value(self.sSize)
+        # self.subMarSpin.set_value(self.sMarg)
+        self.size, self.size2 = 35000, 15000
         self.darke = dark == "True"
-        self.bge = bg == "True"
         self.musixe = musix == "True"
         self.azlyre = azlyr == "True"
         self.letrase = letras == "True"
@@ -72,7 +76,6 @@ class Main(helper.Widgets):
         self.colorer.set_rgba(coco)
         self.roundSpin.set_value(float(self.rounded))
         self.dark_switch.set_state(self.darke)
-        self.bg_switch.set_state(self.bge)
         self.mus_switch.set_state(self.musixe)
         self.az_switch.set_state(self.azlyre)
         self.comboSize.set_active_id(str(self.cover_size))
@@ -80,10 +83,8 @@ class Main(helper.Widgets):
         GLib.idle_add(self.subcheck.hide)
         GLib.idle_add(self.builder.get_object("oplink").set_label, self._("Visit OpenSubtitles"))
         GLib.idle_add(self.builder.get_object("sublink").set_label, self._("Visit Subscene"))
-        self.subSpin.set_value(self.sSize)
-        self.subMarSpin.set_value(self.sMarg)
         self.sub.connect('size-allocate', self._on_size_allocated)
-        self.window.connect('size-allocate', self._on_size_allocated0)
+        # self.window.connect('size-allocate', self._on_size_allocated0)
         tools.themer(self.provider, self.window, self.rounded, self.color)
         self.settings.set_property("gtk-application-prefer-dark-theme", self.darke)
         # Display the program
@@ -186,7 +187,7 @@ class Main(helper.Widgets):
             drawer.connect("realize",self._realized)
             drawer.connect("draw", self.draw_event)
             drawer.show()
-            self.strOverlay.add_overlay(self.theTitle)
+            # self.strOverlay.add_overlay(self.theTitle)
 
     def on_dropped(self, button):
         if self.drop_but.get_visible() == True:
@@ -223,7 +224,7 @@ class Main(helper.Widgets):
                 GLib.idle_add(self.subcheck.hide)
                 GLib.idle_add(self.drop_but.hide)
                 if self.nowIn == "video" and self.switchDict[btn][2] != "video": self.on_playBut_clicked("xy")
-            self.needSub = False
+            # self.needSub = False
             GLib.idle_add(self.subcheck.set_state, False)
             GLib.idle_add(self.switchDict[btn][3].set_active, False)
             GLib.idle_add(self.switchDict[btn][4].set_active, False)
@@ -611,21 +612,14 @@ class Main(helper.Widgets):
                 srfile = os.path.splitext(self.url)[0]+".srt"
                 neo_srfile = self.url.replace(filename, "")+"misc/"+os.path.splitext(filename)[0]+".srt"
                 print(srfile, neo_srfile)
-                try:
-                    with open (srfile, 'r') as subfile: presub = subfile.read()
-                except:
-                    with open (neo_srfile, 'r') as subfile: presub = subfile.read()
-                subtitle_gen = srt.parse(presub)
-                subtitle = list(subtitle_gen)
-                self.needSub = True
-                subs = futures.ThreadPoolExecutor(max_workers=2)
-                subs.submit(self.subShow, subtitle)
+                if os.path.isfile(neo_srfile): self.player.video_set_subtitle_file(neo_srfile)
+                else: self.player.video_set_subtitle_file(srfile)
             else:
                 self.nosub.set_title(self._("Subtitle file not found"))
                 self.nosub.show_all()
                 GLib.idle_add(self.subcheck.set_state, False)
                 self.pause()
-        else: self.needSub = False
+        else: self.player.video_set_spu(-1)
 
     def play(self, misc=""):
         if self.clickedE:
@@ -651,8 +645,11 @@ class Main(helper.Widgets):
             self.title = self.playlist[self.tnum]["title"]
             tools.themer(self.provider, self.window, self.rounded, self.color, self.tnum)
         if misc != "continue":
-            self.player.set_mrl(self.url)
-            print("set mrl")
+            # self.player.set_mrl(self.url)
+            Media = self.vlcInstance.media_new(self.url)
+            Media.add_options("no-sub-autodetect-file")
+            # self.Media.add_options("freetype-rel-fontsize=500")
+            self.player.set_media(Media)
         self.player.play()
         GLib.idle_add(self.header.set_subtitle, self.url.split("/")[-1])
         GLib.idle_add(self.plaicon.set_from_icon_name, "media-playback-pause", Gtk.IconSize.BUTTON)
@@ -672,7 +669,7 @@ class Main(helper.Widgets):
     def on_main_delete_event(self, *_):
         try: self.mainloop.quit()
         except: pass
-        self.force, self.stopKar, self.needSub, self.hardReset = True, True, False, True
+        self.force, self.stopKar, self.hardReset = True, True, True
         raise SystemExit
 
     def listener(self):
@@ -747,11 +744,11 @@ class Main(helper.Widgets):
         x, y = self.sub.get_size()
         self.size, self.size2 = 50*x, 21.4285714*x
     
-    def _on_size_allocated0(self, *_):
-        sleep(0.01)
-        if self.needSub == True:
-            x, y = self.window.get_size()
-            self.size3, self.size4 = self.sSize*y, float(f"0.0{self.sMarg}")*y
+    # def _on_size_allocated0(self, *_):
+    #     sleep(0.01)
+    #     if self.needSub == True:
+    #         x, y = self.window.get_size()
+    #         self.size3, self.size4 = self.sSize*y, float(f"0.0{self.sMarg}")*y
 
     def on_off_but_clicked(self, _):
         self.off_spin.update()
@@ -912,21 +909,6 @@ class Main(helper.Widgets):
             self.fulle = bool(event.new_window_state & Gdk.WindowState.FULLSCREEN)
             print(self.fulle)
 
-    def subShow(self, subtitle):
-        while self.needSub == True:
-            sleep(0.001)
-            for line in subtitle:
-                if self.position >= line.start.total_seconds() and self.position <= line.end.total_seconds():
-                    if self.bge == True: GLib.idle_add(self.theTitle.set_markup, f"<span size='{int(self.size3)}' color='white' background='black'>{line.content}</span>")
-                    else: GLib.idle_add(self.theTitle.set_markup, f"<span size='{int(self.size3)}' color='white'>{line.content}</span>")
-                    self.theTitle.set_margin_bottom(self.size4)
-                    GLib.idle_add(self.theTitle.show)
-                    while self.needSub == True and self.position <= line.end.total_seconds() and self.position >= line.start.total_seconds():
-                        sleep(0.001)
-                        pass
-                    GLib.idle_add(self.theTitle.hide)
-                    GLib.idle_add(self.theTitle.set_label, "")
-
     def slideShow(self, subtitle):
         self.lenlist = len(subtitle)-1
         while not self.stopKar:
@@ -1025,14 +1007,15 @@ class Main(helper.Widgets):
 
     def config_write(self, *_):
         self.roundSpin.update()
-        self.subSpin.update()
-        self.subMarSpin.update()
-        self.darke, self.bge, self.color = self.dark_switch.get_state(), self.bg_switch.get_state(), self.colorer.get_rgba().to_string()
+        # self.subSpin.update()
+        # self.subMarSpin.update()
+        self.darke, self.color = self.dark_switch.get_state(), self.colorer.get_rgba().to_string()
         self.musixe, self.azlyre, self.letrase, self.cover_size = self.mus_switch.get_state(), self.az_switch.get_state(), self.letr_switch.get_state(), int(self.comboSize.get_active_id())
-        self.sSize, self.sMarg, self.rounded = self.subSpin.get_value(), self.subMarSpin.get_value(), self.roundSpin.get_value()
-        parser.set('subtitles', 'margin', str(self.sMarg))
-        parser.set('subtitles', 'size', str(self.sSize))
-        parser.set('subtitles', 'bg', str(self.bge))
+        self.rounded = self.roundSpin.get_value()
+        # self.bge, self.sSize, self.sMarg = self.bg_switch.get_state(), self.subSpin.get_value(), self.subMarSpin.get_value()
+        # parser.set('subtitles', 'margin', str(self.sMarg))
+        # parser.set('subtitles', 'size', str(self.sSize))
+        # parser.set('subtitles', 'bg', str(self.bge))
         parser.set('gui', 'rounded', str(self.rounded))
         parser.set('gui', 'dark', str(self.darke))
         parser.set('gui', 'color', self.color)
@@ -1056,7 +1039,8 @@ class Main(helper.Widgets):
         Keybinder.init()
         Keybinder.bind("<Ctrl>space", self.on_playBut_clicked)
 
-user, parser, confP, sSize, sMarg, bg, rounded, dark, color, musix, azlyr, letras, coverSize = tools.real_init()
+user, parser, confP, rounded, dark, color, musix, azlyr, letras, coverSize = tools.real_init()
+# sSize, sMarg, bg,
 app = Main()
 app.connect('activate', app.on_activate)
 app.run(None)
