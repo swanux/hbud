@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-import gi, dbus, srt, azapi, dbus.mainloop.glib, json, os, sys, gettext, locale, acoustid, musicbrainzngs, vlc#, ctypes
+import gi, dbus, srt, azapi, dbus.mainloop.glib, json, os, sys, gettext, locale, acoustid, musicbrainzngs#, ctypes
 from concurrent import futures
 from time import sleep, time
 from operator import itemgetter
@@ -12,7 +12,7 @@ from mediafile import MediaFile, MediaField, MP3DescStorageStyle, StorageStyle
 gi.require_version('Gtk', '3.0')
 gi.require_version('Keybinder', '3.0')
 from gi.repository import Gtk, GLib, GdkPixbuf, Gdk, Keybinder
-from hbud import letrasapi, musixapi, helper, tools
+from hbud import letrasapi, musixapi, helper, tools, vlc
 
 class Main(helper.Widgets):
     def __init__(self):
