@@ -187,7 +187,6 @@ class Main(helper.Widgets):
             drawer.connect("realize",self._realized)
             drawer.connect("draw", self.draw_event)
             drawer.show()
-            # self.strOverlay.add_overlay(self.theTitle)
 
     def on_dropped(self, button):
         if self.drop_but.get_visible() == True:

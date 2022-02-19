@@ -4,7 +4,7 @@ Simple music / video player and karaoke app written in Python and GTK - Because 
 # [Website](https://swanux.github.io/hbud.html) | [Feedback](https://swanux.github.io/feedbacks.html)
 
 # Features
-- Video and audio playback (for supported formats, refer to GStreamer docs)
+- Video and audio playback (for supported formats, refer to libVLC docs)
 - Subtitle support
 - Karaoke mode (synced lyrics needed in own srt format, see below for instructions)
 - Static lyric (most of the time works automatically)
@@ -52,15 +52,14 @@ A manual alternative is the GTK program [Gnome Subtitles](https://gnomesubtitles
 
 # Credits
 * [GTK3](https://www.gtk.org) - For the GUI framework
-* [GStreamer](https://gstreamer.freedesktop.org) - For the multimedia framework
-* [PyGObject](https://pygobject.readthedocs.io/en/latest/) - For the Python bindings
-* [Lazka](https://lazka.github.io/pgi-docs/) - For the documentation
-* [AutoLyrixAlign](https://github.com/chitralekha18/AutoLyrixAlign) - For the neural network to align text to lyrics
-* [srt](https://pypi.org/project/srt/) - For the Python srt module
-* [mediafile](https://pypi.org/project/mediafile/) - For the handy wrapper around mutagen
+* [libVLC](https://wiki.videolan.org/Python_bindings/) - For the multimedia backend
+* [Lazka](https://lazka.github.io/pgi-docs/) - For the PyGObject documentation
+* [AutoLyrixAlign](https://github.com/chitralekha18/AutoLyrixAlign) - For the neural network to align lyrics to music
+* [srt](https://github.com/cdown/srt) - For the Python srt module
+* [mediafile](https://github.com/beetbox/mediafile) - For the handy wrapper around mutagen
 * [azapi](https://github.com/elmoiv/azapi) - For the AZLyrics API
 * [ElementaryPython](https://github.com/mirkobrombin/ElementaryPython) - For a useful template
-* [pyacoustid](https://github.com/beetbox/pyacoustid) and [musicbrainzngs](https://github.com/alastair/python-musicbrainzngs) - For the AcoustID and MusicBrainz APIs
+* [pyacoustid](https://github.com/beetbox/pyacoustid) and [musicbrainzngs](https://github.com/alastair/python-musicbrainzngs) - For the AcoustID and MusicBrainz bindings
 * [MusicBrainz](https://beta.musicbrainz.org/) and [AcoustID](https://acoustid.org/) - For the open databases
 
 ### Translation
