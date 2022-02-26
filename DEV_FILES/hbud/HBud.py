@@ -13,6 +13,8 @@ gi.require_version('Gtk', '3.0')
 gi.require_version('Keybinder', '3.0')
 from gi.repository import Gtk, GLib, GdkPixbuf, Gdk, Keybinder
 from hbud import letrasapi, musixapi, helper, tools, vlc
+from hbud.stopwatch import Stopwatch
+stopwatch = Stopwatch()
 
 class Main(helper.Widgets):
     def __init__(self):
@@ -487,12 +489,18 @@ class Main(helper.Widgets):
     def mouse_click0(self, _, event):
         if event.type == Gdk.EventType._2BUTTON_PRESS: 
             if self.useMode == "video": self.on_karaoke_activate(0)
-        elif event.type == Gdk.EventType.BUTTON_PRESS: self.on_playBut_clicked(0)
+        elif event.type == Gdk.EventType.BUTTON_PRESS: self.on_playBut_clicked("")
 
     def del_cur(self, *_):
         self.playlist.remove(self.playlist[self.ednum])
         self.neo_playlist_gen()
         if self.tnum == self.ednum: self.play()
+
+    def failsafe(self):
+        try:
+            if self.player.get_state() == vlc.State.Paused or self.player.get_state() == vlc.State.NothingSpecial or self.player.get_state() == vlc.State.Stopped: print("No playbin yet to pause")
+            else: self.pause()
+        except: print("No playbin yet to pause")
 
     def on_next(self, button):
         self.stopKar = True
@@ -502,8 +510,7 @@ class Main(helper.Widgets):
                     self.tnum += 1
                     if self.tnum >= len(self.playlist): self.tnum = 0
                 elif button == "clickMode0": self.tnum = 0
-                try: self.pause()
-                except: print("No playbin yet to stop.")
+                self.failsafe()
                 self.play()
                 if self.sub.get_visible(): self.on_karaoke_activate("xy")
                 if self.useMode == "audio" and button != "clickMode": self.adj.set_value(self.tnum*72-140)
@@ -530,9 +537,7 @@ class Main(helper.Widgets):
             if self.nowIn == "audio":
                 self.tnum -= 1
                 if self.tnum < 0: self.tnum = len(self.playlist)-1
-                try:
-                    self.pause()
-                except: print("No playbin yet to stop.")
+                self.failsafe()
                 self.play()
                 if self.sub.get_visible(): self.on_karaoke_activate("xy")
                 if self.useMode == "audio": self.adj.set_value(self.tnum*72-140)
@@ -540,6 +545,9 @@ class Main(helper.Widgets):
                 self.player.set_time(int(self.player.get_time() - 10*1000))
 
     def stop(self, arg=False):
+        if self.nowIn == "audio":
+            stopwatch.stop()
+            stopwatch.reset()
         print("Stop")
         GLib.idle_add(self.player.stop)
         if self.nowIn == "audio": self.audioPipe = self.player
@@ -552,6 +560,7 @@ class Main(helper.Widgets):
 
     def pause(self, *_): 
         print("Pause")
+        if self.nowIn == "audio": stopwatch.stop()
         self.playing = False
         try:
             GLib.idle_add(self.plaicon.set_from_icon_name, "media-playback-start", Gtk.IconSize.BUTTON)
@@ -560,6 +569,7 @@ class Main(helper.Widgets):
     
     def resume(self):
         print("Resume")
+        if self.nowIn == "audio": stopwatch.start()
         self.playing = True
         self.player.play()
         GLib.idle_add(self.plaicon.set_from_icon_name, "media-playback-pause", Gtk.IconSize.BUTTON)
@@ -578,6 +588,7 @@ class Main(helper.Widgets):
             if seek_time_secs < self.position:
                 self.seekBack = True
             self.player.set_time(final_seek)
+            if self.nowIn == "audio": stopwatch.restart_at(seek_time_secs)
             self.seeking = False
 
     def media_time_changed(self, _):
@@ -635,6 +646,8 @@ class Main(helper.Widgets):
                 if self.videoPipe.get_state() == vlc.State.NothingSpecial or self.videoPipe.get_state() == vlc.State.Stopped: return
                 self.player, self.nowIn = self.videoPipe, "video"
         else:
+            stopwatch.stop()
+            stopwatch.reset()
             try: self.url, self.nowIn, self.player = self.playlist[self.tnum]["uri"], "audio", self.audioPipe
             except: return
         print("Play")
@@ -649,6 +662,7 @@ class Main(helper.Widgets):
             # self.Media.add_options("freetype-rel-fontsize=500")
             self.player.set_media(Media)
         self.player.play()
+        if self.nowIn == "audio": stopwatch.start()
         GLib.idle_add(self.header.set_subtitle, self.url.split("/")[-1])
         GLib.idle_add(self.plaicon.set_from_icon_name, "media-playback-pause", Gtk.IconSize.BUTTON)
         if self.useMode == "audio" and misc != "continue":
@@ -993,10 +1007,10 @@ class Main(helper.Widgets):
             while not self.stopKar:
                 sleep(0.01)
                 if it > maxit:
-                    if self.position >= xy.end.total_seconds()+self.offset/1000 and self.position >= 0.5: break
+                    if stopwatch.duration >= xy.end.total_seconds()+self.offset/1000 and stopwatch.duration >= 0.5: break
                 else:
                     xz = tl1[it]
-                    if self.position >= xz.start.total_seconds()+self.offset/1000 and self.position >= 0.5: break
+                    if stopwatch.duration >= xz.start.total_seconds()+self.offset/1000 and stopwatch.duration >= 0.5: break
                 if self.seekBack: break
             it += 1
             try:
