@@ -1,5 +1,0 @@
-[hrepo_rpm]
-name=Hrepo RPM
-baseurl=https://gitlab.com/swanux/hrepo_rpm/raw/master/packages
-gpgcheck=1
-gpgkey=https://gitlab.com/swanux/hrepo_rpm/raw/master/pub_key.asc

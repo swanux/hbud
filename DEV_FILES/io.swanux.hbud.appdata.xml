@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component type="desktop-application">
+    <id>io.swanux.hbud</id>
+    <name>HBud</name>
+    <summary>Simple music / video player and karaoke app written in Python and GTK - Because why not</summary>
+    <metadata_license>MIT</metadata_license>
+    <project_license>GPL-3.0</project_license>
+    <content_rating type="oars-1.1"/>
+    <description>
+        <p>
+            Simple music / video player and karaoke app written in Python and GTK - Because why not
+        </p>
+    </description>
+    <categories>
+        <category>Video</category>
+        <category>AudioVideo</category>
+        <category>Player</category>
+        <category>Audio</category>
+    </categories>
+    <url type="homepage">https://github.com/swanux/hbud</url>
+    <releases>
+        <release version="0.3.0" date="2022-01-01"/>
+        <release version="0.2.3" date="2021-10-03"/>
+        <release version="0.2.2" date="2021-09-05"/>
+        <release version="0.2.1" date="2021-08-22"/>
+        <release version="0.1.6" date="2021-07-23"/>
+        <release version="0.1.0" date="2021-07-16"/>
+    </releases>
+    <provides>
+        <id>io.swanux.hbud</id>
+        <library>libvlc.so.5</library>
+    </provides>
+    <developer_name>Dániel Kolozsi</developer_name>
+    <update_contact>swanux_at_protonmail.com</update_contact>
+    <screenshots>
+        <screenshot type="default"><image type="source">https://github.com/swanux/hbud/blob/master/Screenshots/0.3%20-%20Vereena/more_opts.png</image></screenshot>
+        <screenshot><image type="source">https://github.com/swanux/hbud/blob/master/Screenshots/0.3%20-%20Vereena/met_ed.png</image></screenshot>
+        <screenshot><image type="source">https://github.com/swanux/hbud/blob/master/Screenshots/0.3%20-%20Vereena/about.png</image></screenshot>
+        <screenshot><image type="source">https://github.com/swanux/hbud/blob/master/Screenshots/0.3%20-%20Vereena/set_0.png</image></screenshot>
+        <screenshot><image type="source">https://github.com/swanux/hbud/blob/master/Screenshots/0.3%20-%20Vereena/stat_lyr.png</image></screenshot>
+        <screenshot><image type="source">https://github.com/swanux/hbud/blob/master/Screenshots/0.3%20-%20Vereena/set_2.png</image></screenshot>
+        <screenshot><image type="source">https://github.com/swanux/hbud/blob/master/Screenshots/0.3%20-%20Vereena/syn_lyr.png</image></screenshot>
+        <screenshot><image type="source">https://github.com/swanux/hbud/blob/master/Screenshots/0.3%20-%20Vereena/vid_with_sub.png</image></screenshot>
+    </screenshots>
+
+    <launchable type="desktop-id">io.swanux.hbud.desktop</launchable>
+</component>

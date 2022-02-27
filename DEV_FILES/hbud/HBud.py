@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-import gi, dbus, srt, azapi, dbus.mainloop.glib, json, os, sys, gettext, locale, acoustid, musicbrainzngs#, ctypes
+import gi, srt, azapi, json, os, sys, gettext, locale, acoustid, musicbrainzngs#, ctypes
 from concurrent import futures
 from time import sleep, time
 from operator import itemgetter
@@ -21,7 +21,7 @@ class Main(helper.Widgets):
         super(Main, self).__init__()
     
     def on_activate(self, app):
-        APP = "com.github.swanux.hbud"
+        APP = "io.swanux.hbud"
         WHERE_AM_I = os.path.abspath(os.path.dirname(__file__))
         LOCALE_DIR = os.path.join(WHERE_AM_I, 'locale/mo')
         print(LOCALE_DIR, locale.getlocale())
@@ -45,9 +45,10 @@ class Main(helper.Widgets):
         buffer.set_text(self._("""
  v0.3.1 - ??? ?? 2022 :
 
-        * Complete rebase on libVLC (instead of GStreamer)
+        * Complete rebase on libVLC v3 (instead of GStreamer)
         * Show current time when dragging slider
-        * Numerous bugfixes and optimizations (video playback 6-12x faster)
+        * Numerous bugfixes
+        * Performance optimizations (video playback 6-12x less CPU usage)
 """))
         self.builder.get_object("whView").set_buffer(buffer)
         image_filter = Gtk.FileFilter()
@@ -105,7 +106,6 @@ class Main(helper.Widgets):
                 self.strBut.set_active(True)
                 self.on_playBut_clicked("xy")
         self.on_key() # Init keybindings
-        self.listener() # Do not write anything after this in init
 
     def highlight(self, widget, event):
         if event.button == 3:
@@ -684,23 +684,10 @@ class Main(helper.Widgets):
         except: pass
         self.force, self.stopKar, self.hardReset = True, True, True
         raise SystemExit
-
-    def listener(self):
-        try:
-            dbus.mainloop.glib.DBusGMainLoop(set_as_default=True)
-            bus = dbus.Bus(dbus.Bus.TYPE_SESSION)
-            bus_object = bus.get_object('org.gnome.SettingsDaemon', '/org/gnome/SettingsDaemon/MediaKeys')
-            dbus_interface='org.gnome.SettingsDaemon.MediaKeys'
-            bus_object.GrabMediaPlayerKeys("com.github.swanux.hbud", 0, dbus_interface=dbus_interface)
-            bus_object.connect_to_signal('MediaPlayerKeyPressed', self.on_media)
-            self.mainloop = GLib.MainLoop()
-            self.mainloop.run()
-        except:
-            print("I: Not compatible with Gnome MediaKeys daemon")
     
     def on_media(self, app, action):
         print(app, action)
-        if app == "com.github.swanux.hbud" and self.url:
+        if app == "io.swanux.hbud" and self.url:
             if action == "Next": self.on_next("xy")
             elif action == "Previous": self.on_prev("xy")
             elif not self.playing: self.resume()

@@ -3,7 +3,7 @@
 
 import gi, os
 gi.require_version('Gtk', '3.0')
-from gi.repository import Gtk, Gdk
+from gi.repository import Gtk, Gdk, GLib
 from configparser import ConfigParser
 
 def themer(provider, window, v, c, w=""):
@@ -73,7 +73,7 @@ def get_lyric(title, artist, DAPI):
     return result
 
 def real_init():
-    user = os.popen("who|awk '{print $1}'r").read().rstrip().split('\n')[0]
+    user = GLib.get_user_name()
     parser, confP = ConfigParser(), f"/home/{user}/.config/hbud.ini"
     try: parser.read(confP)
     except: print("No config file yet")

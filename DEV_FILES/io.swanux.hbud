@@ -1,0 +1,19 @@
+#!/usr/bin/python3
+import os, sys
+
+# Update sys.path to include modules
+abspath = os.path.abspath(__file__)
+dname = os.path.dirname(abspath)
+print(dname)
+if "DEV_FILES" in dname:
+    print("Running in development mode")
+    os.chdir(dname)
+elif "/app/" in dname:
+    print("Running in sandboxed mode")
+    os.chdir("/app/share/hbud/")
+else:
+    print("Running in production mode")
+    os.chdir("/usr/share/hbud/")
+sys.path.append("modules")
+
+from hbud import HBud

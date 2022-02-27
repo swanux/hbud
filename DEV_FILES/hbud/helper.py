@@ -6,7 +6,7 @@ gi.require_version('Gtk', '3.0')
 from gi.repository import Gtk, Gdk, Gio
 from hbud import constants as cn
 
-APP = "com.github.swanux.hbud"
+APP = "io.swanux.hbud"
 UI_FILE = "hbud/hbud.glade"
 
 class TrackBox(Gtk.EventBox):
@@ -152,4 +152,4 @@ class Widgets(Gtk.Application):
     window = builder.get_object('main')
     switchDict = {"locBut" : [builder.get_object("placeholder"), "audio-input-microphone", "audio", strBut, infBut], "strBut" : [builder.get_object("strBox"), "view-fullscreen", "video", locBut, infBut], "infBut" : [builder.get_object("infBook"), "", "", locBut, strBut]}
     provider, settings = Gtk.CssProvider(), Gtk.Settings.get_default()
-    window.set_wmclass ("com.github.swanux.hbud", "HBud")
+    window.set_wmclass ("io.swanux.hbud", "HBud")

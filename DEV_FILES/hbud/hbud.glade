@@ -242,7 +242,7 @@ Author: Dániel Kolozsi
     <property name="can-focus">False</property>
     <property name="default-width">700</property>
     <property name="default-height">450</property>
-    <property name="icon">icons/com.github.swanux.hbud.svg</property>
+    <property name="icon">icons/io.swanux.hbud.svg</property>
     <signal name="delete-event" handler="on_main_delete_event" swapped="no"/>
     <signal name="key-press-event" handler="on_key_local" swapped="no"/>
     <signal name="motion-notify-event" handler="mouse_moving" swapped="no"/>
@@ -890,7 +890,7 @@ Author: Dániel Kolozsi
                                 <property name="margin-bottom">5</property>
                                 <property name="hexpand">False</property>
                                 <property name="vexpand">False</property>
-                                <property name="pixbuf">icons/com.github.swanux.hbud.svg</property>
+                                <property name="pixbuf">icons/io.swanux.hbud.svg</property>
                               </object>
                               <packing>
                                 <property name="expand">False</property>
