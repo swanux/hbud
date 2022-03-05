@@ -6,7 +6,7 @@ gi.require_version('Gtk', '3.0')
 from gi.repository import Gtk, Gdk, Gio
 from hbud import constants as cn
 
-APP = "io.swanux.hbud"
+APP = "io.github.swanux.hbud"
 UI_FILE = "hbud/hbud.glade"
 
 class TrackBox(Gtk.EventBox):
@@ -91,6 +91,7 @@ class Widgets(Gtk.Application):
     slider.set_increments(1, 10)
     slider.set_has_tooltip(True)
     seeking = False
+    theTitle = builder.get_object("theTitle")
     box = builder.get_object("slidBox")
     label = Gtk.Label(label='0:00:00')
     label.set_margin_start(6)
@@ -126,9 +127,8 @@ class Widgets(Gtk.Application):
     strBut = builder.get_object("strBut")
     mainStack = builder.get_object("mainStack")
     strOverlay = builder.get_object("strOverlay")
-    # subSpin = builder.get_object("subSpin")
-    # subMarSpin = builder.get_object("subSpin1")
-    # bg_switch = builder.get_object("bg_switch")
+    subSpin = builder.get_object("subSpin")
+    subMarSpin = builder.get_object("subSpin1")
     subcheck = builder.get_object("sub_check")
     lyrSpin = builder.get_object("lyrSpin")
     nosub = builder.get_object("nosub")
@@ -152,4 +152,4 @@ class Widgets(Gtk.Application):
     window = builder.get_object('main')
     switchDict = {"locBut" : [builder.get_object("placeholder"), "audio-input-microphone", "audio", strBut, infBut], "strBut" : [builder.get_object("strBox"), "view-fullscreen", "video", locBut, infBut], "infBut" : [builder.get_object("infBook"), "", "", locBut, strBut]}
     provider, settings = Gtk.CssProvider(), Gtk.Settings.get_default()
-    window.set_wmclass ("io.swanux.hbud", "HBud")
+    window.set_wmclass ("io.github.swanux.hbud", "HBud")

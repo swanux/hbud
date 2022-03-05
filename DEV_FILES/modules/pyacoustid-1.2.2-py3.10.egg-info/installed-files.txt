@@ -1,0 +1,10 @@
+../__pycache__/acoustid.cpython-310.pyc
+../__pycache__/chromaprint.cpython-310.pyc
+../acoustid.py
+../chromaprint.py
+PKG-INFO
+SOURCES.txt
+dependency_links.txt
+pbr.json
+requires.txt
+top_level.txt

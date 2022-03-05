@@ -5,10 +5,10 @@ from gi.repository import Gtk
 
 class App:
     application_shortname = "hbud"
-    application_id = "com.github.swanux.hbud"
+    application_id = "io.github.swanux.hbud"
     application_name = "HBud"
     application_description = 'Simple music and video player'
-    application_version ="0.3.0"
+    application_version ="0.3.5"
     app_years = "2021-2022"
     main_url = "https://github.com/swanux/hbud"
     bug_url = "https://github.com/swanux/hbud/issues/labels/bug"

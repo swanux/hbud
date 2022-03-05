@@ -1,0 +1,15 @@
+LICENSE
+MANIFEST.in
+README.rst
+acoustid.py
+aidmatch.py
+chromaprint.py
+fpcalc.py
+setup.cfg
+setup.py
+pyacoustid.egg-info/PKG-INFO
+pyacoustid.egg-info/SOURCES.txt
+pyacoustid.egg-info/dependency_links.txt
+pyacoustid.egg-info/pbr.json
+pyacoustid.egg-info/requires.txt
+pyacoustid.egg-info/top_level.txt

@@ -79,10 +79,9 @@ def real_init():
     except: print("No config file yet")
     if not os.path.isfile(confP):
         os.system(f"touch {confP}")
-        # parser.add_section('subtitles')
-        # parser.set('subtitles', 'margin', str(66))
-        # parser.set('subtitles', 'size', str(30))
-        # parser.set('subtitles', 'bg', "False")
+        parser.add_section('subtitles')
+        parser.set('subtitles', 'margin', str(66))
+        parser.set('subtitles', 'size', str(30))
         parser.add_section('gui')
         parser.set('gui', 'rounded', "10")
         parser.set('gui', 'dark', "False")
@@ -95,8 +94,7 @@ def real_init():
         file = open(confP, "w+")
         parser.write(file)
         file.close()
-    # sSize, sMarg, bg = parser.get('subtitles', 'size'), parser.get('subtitles', 'margin'), parser.get('subtitles', 'bg')
+    sSize, sMarg = parser.get('subtitles', 'size'), parser.get('subtitles', 'margin')
     rounded, dark, color = parser.get('gui', 'rounded'), parser.get('gui', 'dark'), parser.get('gui', 'color')
     musix, azlyr, letras, coverSize = parser.get('services', 'MusixMatch'), parser.get('services', 'AZLyrics'), parser.get('services', 'Letras.br'), int(parser.get('services', 'CoverSize'))
-    return user, parser, confP, rounded, dark, color, musix, azlyr, letras, coverSize
-    # sSize, sMarg, bg,
+    return user, parser, confP, rounded, dark, color, musix, azlyr, letras, coverSize, sSize, sMarg
