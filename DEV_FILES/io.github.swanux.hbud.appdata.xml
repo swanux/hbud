@@ -35,14 +35,14 @@
     <developer_name>Dániel Kolozsi</developer_name>
     <update_contact>swanux_at_protonmail.com</update_contact>
     <screenshots>
-        <screenshot type="default"><image type="source">https://github.com/swanux/hbud/blob/master/Screenshots/0.3%20-%20Vereena/0.3.5/more_opts.png</image></screenshot>
-        <screenshot><image type="source">https://github.com/swanux/hbud/blob/master/Screenshots/0.3%20-%20Vereena/0.3.5/met_ed.png</image></screenshot>
-        <screenshot><image type="source">https://github.com/swanux/hbud/blob/master/Screenshots/0.3%20-%20Vereena/0.3.5/about.png</image></screenshot>
-        <screenshot><image type="source">https://github.com/swanux/hbud/blob/master/Screenshots/0.3%20-%20Vereena/0.3.5/set_0.png</image></screenshot>
-        <screenshot><image type="source">https://github.com/swanux/hbud/blob/master/Screenshots/0.3%20-%20Vereena/0.3.5/stat_lyr.png</image></screenshot>
-        <screenshot><image type="source">https://github.com/swanux/hbud/blob/master/Screenshots/0.3%20-%20Vereena/0.3.5/set_2.png</image></screenshot>
-        <screenshot><image type="source">https://github.com/swanux/hbud/blob/master/Screenshots/0.3%20-%20Vereena/0.3.5/syn_lyr.png</image></screenshot>
-        <screenshot><image type="source">https://github.com/swanux/hbud/blob/master/Screenshots/0.3%20-%20Vereena/0.3.5/vid_with_sub.png</image></screenshot>
+        <screenshot type="default"><image type="source">https://github.com/swanux/hbud/raw/master/Screenshots/0.3%20-%20Vereena/0.3.5/more_opts.png</image></screenshot>
+        <screenshot><image type="source">https://github.com/swanux/hbud/raw/master/Screenshots/0.3%20-%20Vereena/0.3.5/met_ed.png</image></screenshot>
+        <screenshot><image type="source">https://github.com/swanux/hbud/raw/master/Screenshots/0.3%20-%20Vereena/0.3.5/about.png</image></screenshot>
+        <screenshot><image type="source">https://github.com/swanux/hbud/raw/master/Screenshots/0.3%20-%20Vereena/0.3.5/set_0.png</image></screenshot>
+        <screenshot><image type="source">https://github.com/swanux/hbud/raw/master/Screenshots/0.3%20-%20Vereena/0.3.5/stat_lyr.png</image></screenshot>
+        <screenshot><image type="source">https://github.com/swanux/hbud/raw/master/Screenshots/0.3%20-%20Vereena/0.3.5/set_2.png</image></screenshot>
+        <screenshot><image type="source">https://github.com/swanux/hbud/raw/master/Screenshots/0.3%20-%20Vereena/0.3.5/syn_lyr.png</image></screenshot>
+        <screenshot><image type="source">https://github.com/swanux/hbud/raw/master/Screenshots/0.3%20-%20Vereena/0.3.5/vid_with_sub.png</image></screenshot>
     </screenshots>
 
     <launchable type="desktop-id">io.github.swanux.hbud.desktop</launchable>
