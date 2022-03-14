@@ -54,7 +54,7 @@ def themer(provider, window, v, c, w=""):
         }""" % (float(v)/2.6,float(v)/1.5,v,v,v,v,v,v,c,c,c,w,c,v)
         css = str.encode(css)
         provider.load_from_data(css)
-        window.get_style_context().add_provider_for_screen(Gdk.Screen.get_default(), provider, Gtk.STYLE_PROVIDER_PRIORITY_APPLICATION)
+        GLib.idle_add(window.get_style_context().add_provider_for_screen, Gdk.Screen.get_default(), provider, Gtk.STYLE_PROVIDER_PRIORITY_APPLICATION)
     
 def diabuilder (text, title, mtype, buts, window):
     x, y = window.get_position()
@@ -74,7 +74,7 @@ def get_lyric(title, artist, DAPI):
 
 def real_init():
     user = GLib.get_user_name()
-    parser, confP = ConfigParser(), f"/home/{user}/.config/hbud.ini"
+    parser, confP = ConfigParser(), f"{GLib.get_user_config_dir()}/hbud.ini"
     try: parser.read(confP)
     except: print("No config file yet")
     if not os.path.isfile(confP):

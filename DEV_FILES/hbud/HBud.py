@@ -10,8 +10,7 @@ from datetime import timedelta
 from random import sample
 from mediafile import MediaFile, MediaField, MP3DescStorageStyle, StorageStyle
 gi.require_version('Gtk', '3.0')
-gi.require_version('Keybinder', '3.0')
-from gi.repository import Gtk, GLib, GdkPixbuf, Gdk, Keybinder
+from gi.repository import Gtk, GLib, GdkPixbuf, Gdk
 from hbud import letrasapi, musixapi, helper, tools, vlc
 from hbud.stopwatch import Stopwatch
 stopwatch = Stopwatch()
@@ -25,6 +24,7 @@ class Main(helper.Widgets):
         WHERE_AM_I = os.path.abspath(os.path.dirname(__file__))
         LOCALE_DIR = os.path.join(WHERE_AM_I, 'locale/mo')
         print(LOCALE_DIR, locale.getlocale())
+        print(self.tmpDir, confP)
         locale.setlocale(locale.LC_ALL, locale.getlocale())
         locale.bindtextdomain(APP, LOCALE_DIR)
         gettext.bindtextdomain(APP, LOCALE_DIR)
@@ -43,12 +43,12 @@ class Main(helper.Widgets):
         self.builder.connect_signals(self)
         buffer = Gtk.TextBuffer()
         buffer.set_text(self._("""
- v0.3.5 - ??? ?? 2022 :
+ v0.3.5 - Mar 14 2022 :
 
         * Complete rebase on libVLC v3 (instead of GStreamer)
         * Show current time when dragging slider
-        * Numerous bugfixes
-        * Performance optimizations (video playback 6-12x less CPU usage)
+        * Numerous bugfixes and improvements
+        * Performance optimizations (video playback 2-3x less CPU usage)
         * Complete migration to flatpak
 """))
         self.builder.get_object("whView").set_buffer(buffer)
@@ -104,7 +104,6 @@ class Main(helper.Widgets):
             else:
                 self.strBut.set_active(True)
                 self.on_playBut_clicked("xy")
-        self.on_key() # Init keybindings
 
     def highlight(self, widget, event):
         if event.button == 3:
@@ -178,7 +177,7 @@ class Main(helper.Widgets):
 
     def createPipeline(self, mode):
         if mode == "local":
-            self.vlcInstance = vlc.Instance("--no-xlib")
+            self.vlcInstance = vlc.Instance(["--no-xlib"])
             self.audioPipe = self.vlcInstance.media_player_new()
             self.audioPipe.event_manager().event_attach(vlc.EventType.MediaPlayerEndReached, self.media_end_reached)
             self.audioPipe.event_manager().event_attach(vlc.EventType.MediaPlayerTimeChanged, self.media_time_changed)
@@ -498,7 +497,7 @@ class Main(helper.Widgets):
 
     def failsafe(self):
         try:
-            if self.player.get_state() == vlc.State.Paused or self.player.get_state() == vlc.State.NothingSpecial or self.player.get_state() == vlc.State.Stopped: print("No playbin yet to pause")
+            if self.player.get_state() == vlc.State.Paused or self.player.get_state() == vlc.State.NothingSpecial or self.player.get_state() == vlc.State.Stopped or self.player.get_state() == vlc.State.Ended: print("No playbin yet to pause")
             else: self.pause()
         except: print("No playbin yet to pause")
 
@@ -515,7 +514,8 @@ class Main(helper.Widgets):
                 if self.sub.get_visible(): self.on_karaoke_activate("xy")
                 if self.useMode == "audio" and button != "clickMode": self.adj.set_value(self.tnum*72-140)
             elif self.nowIn == "video":
-                self.player.set_time(int(self.player.get_time() + 10*1000))
+                self.seeking = True
+                GLib.idle_add(self.slider.set_value, self.slider.get_value() + 10)
 
     def load_cover(self, mode="", bitMage=""):
         if mode == "meta": self.binary = MediaFile(self.editingFile).art
@@ -523,7 +523,7 @@ class Main(helper.Widgets):
         else: self.binary = MediaFile(self.url).art
         if not self.binary: tmpLoc = "hbud/icons/track.png"
         else:
-            tmpLoc = "/tmp/cacheCover.jpg"
+            tmpLoc = f"{self.tmpDir}/cacheCover.jpg"
             f = open(tmpLoc, "wb")
             f.write(self.binary)
             f.close()
@@ -542,7 +542,8 @@ class Main(helper.Widgets):
                 if self.sub.get_visible(): self.on_karaoke_activate("xy")
                 if self.useMode == "audio": self.adj.set_value(self.tnum*72-140)
             elif self.nowIn == "video":
-                self.player.set_time(int(self.player.get_time() - 10*1000))
+                self.seeking = True
+                GLib.idle_add(self.slider.set_value, self.slider.get_value() - 10)
 
     def stop(self, arg=False):
         if self.nowIn == "audio":
@@ -574,8 +575,7 @@ class Main(helper.Widgets):
         self.player.play()
         GLib.idle_add(self.plaicon.set_from_icon_name, "media-playback-pause", Gtk.IconSize.BUTTON)
 
-    def on_slider_grab(self, *_):
-        self.seeking = True
+    def on_slider_grab(self, *_): self.seeking = True
     
     def on_slider_grabbed(self, *_):
         current_time = str(timedelta(seconds=round(self.slider.get_value())))
@@ -681,14 +681,18 @@ class Main(helper.Widgets):
             self.title = self.playlist[self.tnum]["title"]
             tools.themer(self.provider, self.window, self.rounded, self.color, self.tnum)
         if misc != "continue":
-            # self.player.set_mrl(self.url)
+            if self.player.get_state() == vlc.State.Ended:
+                print("Pipe reset needed")
+                del self.audioPipe
+                self.audioPipe = self.vlcInstance.media_player_new()
+                self.audioPipe.event_manager().event_attach(vlc.EventType.MediaPlayerEndReached, self.media_end_reached)
+                self.audioPipe.event_manager().event_attach(vlc.EventType.MediaPlayerTimeChanged, self.media_time_changed)
+                self.player = self.audioPipe
             Media = self.vlcInstance.media_new(self.url)
             Media.add_options("no-sub-autodetect-file")
-            # self.Media.add_options("freetype-rel-fontsize=500")
             self.player.set_media(Media)
         self.player.play()
         if self.nowIn == "audio": stopwatch.start()
-        GLib.idle_add(self.header.set_subtitle, self.url.split("/")[-1])
         GLib.idle_add(self.plaicon.set_from_icon_name, "media-playback-pause", Gtk.IconSize.BUTTON)
         if self.useMode == "audio" and misc != "continue":
             ld_cov = futures.ThreadPoolExecutor(max_workers=1)
@@ -707,14 +711,6 @@ class Main(helper.Widgets):
     def on_main_delete_event(self, *_):
         self.force, self.stopKar, self.hardReset, self.needSub = True, True, True, False
         raise SystemExit
-    
-    def on_media(self, app, action):
-        print(app, action)
-        if app == "io.github.swanux.hbud" and self.url:
-            if action == "Next": self.on_next("xy")
-            elif action == "Previous": self.on_prev("xy")
-            elif not self.playing: self.resume()
-            elif self.playing: self.pause()
     
     def _sig_drag_drop(self, widget, *_): self.dst = int(widget.get_name().replace("trackbox_", ""))
 
@@ -735,31 +731,40 @@ class Main(helper.Widgets):
             self.playlist[i+corrector] = cutList[i]
         GLib.idle_add(self.neo_playlist_gen, "rename", src, dst)
 
+    def on_key_local_release(self, _, key):
+        if key.keyval == 65363 or key.keyval == 65361:
+            self.seeking = False
+            self.on_slider_seek()
+
     def on_key_local(self, _, key):
         # Add on_key as key_press signal to the ui file - main window preferably
         # print(key.keyval)
-        if time() - self.key_time >= 0.05:
-            self.key_time = time()
-            try:
-                if Gdk.ModifierType.CONTROL_MASK & key.state: # Ctrl combo
-                    if key.keyval == 102: self.on_dropped("key")
-                    elif key.keyval == 111: self.on_openFolderBut_clicked(None)
-                elif key.keyval == 32 and self.url: self.on_playBut_clicked(0) # Space
-                elif key.keyval == 65307 or key.keyval == 65480:
-                    if self.useMode == "video": self.on_karaoke_activate(0) # ESC and F11
-                elif key.keyval == 65363: self.on_next("") # Right
-                elif key.keyval == 65361: self.on_prev("") # Left
-                elif key.keyval == 65535 and self.useMode == "audio": # Delete
-                    self.ednum = self.tnum
-                    self.del_cur()
-                elif key.keyval == 65362 and self.useMode == "audio": # Up
-                    self.reorderer(self.tnum, self.tnum-1)
-                elif key.keyval == 65364 and self.useMode == "audio": # Down
-                    self.reorderer(self.tnum, self.tnum+1)
-            except: pass
+        # if time() - self.key_time >= 0.05:
+        #     self.key_time = time()
+        try:
+            if Gdk.ModifierType.CONTROL_MASK & key.state: # Ctrl combo
+                if key.keyval == 102: self.on_dropped("key")
+                elif key.keyval == 111: self.on_openFolderBut_clicked(None)
+            elif key.keyval == 32 and self.url: self.on_playBut_clicked(0) # Space
+            elif key.keyval == 65307 or key.keyval == 65480:
+                if self.useMode == "video": self.on_karaoke_activate(0) # ESC and F11
+            elif key.keyval == 65363: self.on_next("") # Right
+            elif key.keyval == 65361: self.on_prev("") # Left
+            elif key.keyval == 65535 and self.useMode == "audio": # Delete
+                self.ednum = self.tnum
+                self.del_cur()
+            elif key.keyval == 65362 and self.useMode == "audio": # Up
+                self.reorderer(self.tnum, self.tnum-1)
+            elif key.keyval == 65364 and self.useMode == "audio": # Down
+                self.reorderer(self.tnum, self.tnum+1)
+        except: pass
 
     def media_end_reached(self, _):
-        if self.nowIn == "audio": self.on_next("xy")
+        if self.nowIn == "audio":
+            self.tnum += 1
+            if self.tnum >= len(self.playlist): self.tnum = 0
+            GLib.idle_add(self.slider.set_value, 0)
+            self.play()
         elif self.nowIn == "video": self.stop(True)
 
     def _on_size_allocated(self, *_):
@@ -1056,10 +1061,6 @@ class Main(helper.Widgets):
         self.lyr_states = [True, True, True]
         self.sub.hide()
         return True
-    
-    def on_key(self):
-        Keybinder.init()
-        Keybinder.bind("<Ctrl>space", self.on_playBut_clicked)
 
 user, parser, confP, rounded, dark, color, musix, azlyr, letras, coverSize, sSize, sMarg = tools.real_init()
 app = Main()
@@ -1067,4 +1068,5 @@ app.connect('activate', app.on_activate)
 app.run(None)
 
 # GTK_DEBUG=interactive
+# top | grep xy
 # to debug

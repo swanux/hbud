@@ -119,9 +119,10 @@ Author: Dániel Kolozsi
     <property name="can-focus">False</property>
     <property name="default-width">700</property>
     <property name="default-height">450</property>
-    <property name="icon">icons/io.swanux.hbud.svg</property>
+    <property name="icon">icons/io.github.swanux.hbud.svg</property>
     <signal name="delete-event" handler="on_main_delete_event" swapped="no"/>
     <signal name="key-press-event" handler="on_key_local" swapped="no"/>
+    <signal name="key-release-event" handler="on_key_local_release" swapped="no"/>
     <signal name="motion-notify-event" handler="mouse_moving" swapped="no"/>
     <signal name="window-state-event" handler="on_state_change" swapped="no"/>
     <child>
@@ -880,7 +881,7 @@ Author: Dániel Kolozsi
                                 <property name="margin-bottom">5</property>
                                 <property name="hexpand">False</property>
                                 <property name="vexpand">False</property>
-                                <property name="pixbuf">icons/io.swanux.hbud.svg</property>
+                                <property name="pixbuf">icons/io.github.swanux.hbud.svg</property>
                               </object>
                               <packing>
                                 <property name="expand">False</property>
@@ -914,7 +915,7 @@ Author: Dániel Kolozsi
                                 <property name="valign">center</property>
                                 <property name="hexpand">False</property>
                                 <property name="vexpand">False</property>
-                                <property name="label" translatable="yes">v0.3.0
+                                <property name="label" translatable="yes">v0.3.5
 Codename: Vereena
 
 FAQ :
@@ -1349,6 +1350,7 @@ Suite 330, Boston, MA  02111-1307  USA</property>
       <object class="GtkHeaderBar" id="header">
         <property name="visible">True</property>
         <property name="can-focus">False</property>
+        <property name="has-subtitle">False</property>
         <property name="spacing">0</property>
         <property name="show-close-button">True</property>
         <child>

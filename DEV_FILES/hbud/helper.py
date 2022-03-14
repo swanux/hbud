@@ -3,7 +3,7 @@
 
 import gi, locale, os
 gi.require_version('Gtk', '3.0')
-from gi.repository import Gtk, Gdk, Gio
+from gi.repository import Gtk, Gdk, Gio, GLib
 from hbud import constants as cn
 
 APP = "io.github.swanux.hbud"
@@ -73,8 +73,8 @@ class Widgets(Gtk.Application):
     off_but = builder.get_object("off_but")
     off_spin = builder.get_object("off_spin")
     off_lab = builder.get_object("off_lab")
-    offset = 0
-    key_time = 0
+    offset, key_time = 0, 0
+    tmpDir = GLib.get_tmp_dir()
     lyr_states = [True, True, True]
     sub2 = builder.get_object("sub2")
     choser_window = Gtk.Window()

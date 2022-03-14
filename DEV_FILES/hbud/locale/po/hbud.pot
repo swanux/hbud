@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-01-01 02:05+0100\n"
+"POT-Creation-Date: 2022-03-14 14:50+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,81 +17,69 @@ msgstr ""
 "Content-Type: text/plain; charset=CHARSET\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/HBud.py:44
+#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/HBud.py:45
 msgid ""
 "\n"
-" v0.3.0 - Jan 01 2022 :\n"
+" v0.3.5 - Mar 14 2022 :\n"
 "\n"
-"        * Added new keyboard shortcuts (Ctrl+O, Ctrl+F, Ctrl+Space)\n"
-"        * AcoustID and MusicBrainz integration for automatic metadata "
-"fetching\n"
-"        * Added option to set preferred album cover size\n"
-"        * Greatly improved lyric fetching\n"
-"        * New helper scripts (translate, musixapi and letrasapi)\n"
-"        * New high quality artwork by Seh\n"
-"        * Added translation support (Hungarian and English for now)\n"
-"        * Added focus on currently playing track\n"
-"        * Added option to load lyric / subtitle from 'misc' subfolder (it is "
-"now the default location)\n"
-"        * Added option to set offset for synced lyrics\n"
-"        * Added option to confirm whether lyric is correct or not\n"
-"        * Fixed several bugs\n"
-"        * Improved theming\n"
-"        * Polished the GUI\n"
-"        * Optimized video playback\n"
+"        * Complete rebase on libVLC v3 (instead of GStreamer)\n"
+"        * Show current time when dragging slider\n"
+"        * Numerous bugfixes and improvements\n"
+"        * Performance optimizations (video playback 2-3x less CPU usage)\n"
+"        * Complete migration to flatpak\n"
 msgstr ""
 
-#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/hbud.glade:655
+#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/hbud.glade:635
 msgid "AZLyrics :"
 msgstr ""
 
-#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/hbud.glade:1034
+#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/hbud.glade:1014
 msgid "About & FAQ"
 msgstr ""
 
-#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/hbud.glade:419
+#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/hbud.glade:429
 msgid "Accent color :"
 msgstr ""
 
-#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/hbud.glade:1875
+#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/hbud.glade:1856
 msgid "Album :"
 msgstr ""
 
-#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/hbud.glade:462
+#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/hbud.glade:473
 msgid "Appearance"
 msgstr ""
 
-#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/hbud.glade:835
-#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/hbud.glade:1744
+#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/hbud.glade:815
+#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/hbud.glade:1725
 msgid "Apply"
 msgstr ""
 
-#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/hbud.glade:1859
+#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/hbud.glade:1840
 msgid "Artist :"
 msgstr ""
 
-#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/hbud.glade:1383
+#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/hbud.glade:1364
 msgid "Audio"
 msgstr ""
 
-#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/hbud.glade:1183
+#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/hbud.glade:1163
 msgid "Browse"
 msgstr ""
 
-#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/HBud.py:890
+#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/HBud.py:895
 msgid ""
 "Can not get correct lyrics for the current track. Please place the synced ."
 "srt file  or the raw .txt file alongside the audio file, with the same name "
 "as the audio file."
 msgstr ""
 
-#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/hbud.glade:1480
+#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/hbud.glade:1461
 msgid ""
 "Can't load subtitle. Please place the subtitle (.srt) file alongside the "
 "video file, with the same name as the video file."
 msgstr ""
 
-#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/hbud.glade:2056
+#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/hbud.glade:2037
 msgid "Cancel"
 msgstr ""
 
@@ -103,50 +91,48 @@ msgstr ""
 msgid "Clear saved order"
 msgstr ""
 
-#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/hbud.glade:1976
+#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/hbud.glade:1957
 msgid "Cover art :"
 msgstr ""
 
-#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/hbud.glade:349
-#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/hbud.glade:383
+#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/hbud.glade:357
+#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/hbud.glade:391
 msgid "Default: 10"
 msgstr ""
 
-#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/hbud.glade:488
-#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/hbud.glade:505
+#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/hbud.glade:499
+#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/hbud.glade:516
 msgid "Default: 30"
 msgstr ""
 
-#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/hbud.glade:524
-#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/hbud.glade:541
+#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/hbud.glade:537
+#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/hbud.glade:554
 msgid "Default: 66"
 msgstr ""
 
-#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/hbud.glade:731
+#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/hbud.glade:711
 msgid "Default: High"
 msgstr ""
 
-#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/hbud.glade:366
-#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/hbud.glade:402
-#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/hbud.glade:560
-#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/hbud.glade:577
-#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/hbud.glade:669
-#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/hbud.glade:701
-#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/hbud.glade:716
+#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/hbud.glade:374
+#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/hbud.glade:412
+#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/hbud.glade:649
+#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/hbud.glade:681
+#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/hbud.glade:696
 msgid "Default: Off"
 msgstr ""
 
-#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/hbud.glade:635
-#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/hbud.glade:652
-#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/hbud.glade:684
+#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/hbud.glade:615
+#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/hbud.glade:632
+#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/hbud.glade:664
 msgid "Default: On"
 msgstr ""
 
-#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/HBud.py:123
+#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/HBud.py:113
 msgid "Delete from current playqueue"
 msgstr ""
 
-#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/HBud.py:464
+#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/HBud.py:460
 msgid "Did not find any match online."
 msgstr ""
 
@@ -154,15 +140,15 @@ msgstr ""
 msgid "Do not sort"
 msgstr ""
 
-#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/HBud.py:127
+#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/HBud.py:117
 msgid "Edit metadata"
 msgstr ""
 
-#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/HBud.py:392
+#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/HBud.py:388
 msgid "Edit metadata for"
 msgstr ""
 
-#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/hbud.glade:2077
+#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/hbud.glade:2058
 msgid ""
 "Fetch metadata automatically\n"
 "- Powered by MusicBrainz & AcousticID -\n"
@@ -170,32 +156,32 @@ msgid ""
 "(May take up to 30 seconds)"
 msgstr ""
 
-#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/hbud.glade:369
+#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/hbud.glade:377
 msgid "Force dark mode :"
 msgstr ""
 
-#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/hbud.glade:757
+#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/hbud.glade:737
 msgid "High (500px)"
 msgstr ""
 
-#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/HBud.py:65
+#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/HBud.py:56
 msgid "Image files"
 msgstr ""
 
-#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/HBud.py:464
-#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/HBud.py:890
+#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/HBud.py:460
+#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/HBud.py:895
 msgid "Information"
 msgstr ""
 
-#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/hbud.glade:1773
+#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/hbud.glade:1754
 msgid "Is this lyrics correct?"
 msgstr ""
 
-#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/hbud.glade:687
+#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/hbud.glade:667
 msgid "Letras.mus.br :"
 msgstr ""
 
-#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/hbud.glade:1088
+#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/hbud.glade:1068
 msgid "License"
 msgstr ""
 
@@ -203,32 +189,32 @@ msgstr ""
 msgid "Look for new tracks and append them at the end"
 msgstr ""
 
-#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/hbud.glade:1433
+#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/hbud.glade:1414
 msgid "More options"
 msgstr ""
 
-#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/HBud.py:320
-#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/HBud.py:337
+#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/HBud.py:316
+#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/HBud.py:333
 msgid "Music"
 msgstr ""
 
-#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/hbud.glade:638
+#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/hbud.glade:618
 msgid "MusixMatch :"
 msgstr ""
 
-#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/hbud.glade:1797
+#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/hbud.glade:1778
 msgid "No"
 msgstr ""
 
-#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/HBud.py:404
+#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/HBud.py:400
 msgid "None of the above"
 msgstr ""
 
-#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/hbud.glade:758
+#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/hbud.glade:738
 msgid "Normal (250px)"
 msgstr ""
 
-#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/hbud.glade:819
+#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/hbud.glade:799
 msgid ""
 "Note:\n"
 "- These values are relative values, they automatically adjust to the current "
@@ -236,23 +222,23 @@ msgid ""
 "- New settings take effect immediately after applying"
 msgstr ""
 
-#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/hbud.glade:1714
+#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/hbud.glade:1695
 msgid "Offset (ms):"
 msgstr ""
 
-#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/HBud.py:320
+#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/HBud.py:316
 msgid "Please choose a folder"
 msgstr ""
 
-#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/HBud.py:322
+#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/HBud.py:318
 msgid "Please choose a video file"
 msgstr ""
 
-#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/hbud.glade:1416
+#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/hbud.glade:1397
 msgid "Preferences"
 msgstr ""
 
-#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/hbud.glade:734
+#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/hbud.glade:714
 msgid "Preferred album cover quality :"
 msgstr ""
 
@@ -260,12 +246,12 @@ msgstr ""
 msgid "Rescan"
 msgstr ""
 
-#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/hbud.glade:352
+#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/hbud.glade:360
 msgid "Rounded corners :"
 msgstr ""
 
 #: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/hbud.glade:199
-#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/hbud.glade:2039
+#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/hbud.glade:2020
 msgid "Save"
 msgstr ""
 
@@ -277,15 +263,15 @@ msgstr ""
 msgid "Search by title, artist and album"
 msgstr ""
 
-#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/hbud.glade:789
+#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/hbud.glade:769
 msgid "Services"
 msgstr ""
 
-#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/hbud.glade:873
+#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/hbud.glade:853
 msgid "Settings"
 msgstr ""
 
-#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/hbud.glade:1264
+#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/hbud.glade:1244
 msgid "Shuffle"
 msgstr ""
 
@@ -321,84 +307,84 @@ msgstr ""
 msgid "Sort by Year (9-0)"
 msgstr ""
 
-#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/hbud.glade:563
-msgid "Subtitle background :"
-msgstr ""
-
-#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/hbud.glade:527
+#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/hbud.glade:540
 msgid "Subtitle bottom margin :"
 msgstr ""
 
-#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/HBud.py:638
+#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/HBud.py:636
 msgid "Subtitle file not found"
 msgstr ""
 
-#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/hbud.glade:491
+#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/hbud.glade:502
 msgid "Subtitle size :"
 msgstr ""
 
-#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/hbud.glade:608
-#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/hbud.glade:1327
+#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/hbud.glade:588
+#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/hbud.glade:1307
 msgid "Subtitles"
 msgstr ""
 
-#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/hbud.glade:1891
+#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/hbud.glade:1872
 msgid "Title :"
 msgstr ""
 
-#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/hbud.glade:756
+#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/hbud.glade:736
 msgid "Ultra high (1200px)"
 msgstr ""
 
-#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/HBud.py:295
-#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/HBud.py:296
+#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/HBud.py:291
+#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/HBud.py:292
 msgid "Unknown"
 msgstr ""
 
-#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/hbud.glade:1398
+#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/hbud.glade:1379
 msgid "Video"
 msgstr ""
 
-#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/HBud.py:328
+#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/HBud.py:324
 msgid "Video files"
 msgstr ""
 
+#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/HBud.py:318
 #: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/HBud.py:322
-#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/HBud.py:326
 msgid "Videos"
 msgstr ""
 
-#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/HBud.py:92
+#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/HBud.py:86
 msgid "Visit OpenSubtitles"
 msgstr ""
 
-#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/HBud.py:93
+#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/HBud.py:87
 msgid "Visit Subscene"
 msgstr ""
 
-#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/HBud.py:420
+#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/HBud.py:416
 msgid "Which one is correct?"
 msgstr ""
 
-#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/hbud.glade:1843
+#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/hbud.glade:1824
 msgid "Year :"
 msgstr ""
 
-#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/hbud.glade:1783
+#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/hbud.glade:1764
 msgid "Yes"
 msgstr ""
 
-#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/HBud.py:331
+#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/HBud.py:327
 msgid "_Cancel"
 msgstr ""
 
-#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/HBud.py:332
+#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/HBud.py:328
 msgid "_Open"
 msgstr ""
 
-#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/hbud.glade:938
+#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/hbud.glade:2122
+msgid "label"
+msgstr ""
+
+#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/hbud.glade:918
 msgid ""
-"v0.3.0\n"
+"v0.3.5\n"
 "Codename: Vereena\n"
 "\n"
 "FAQ :\n"

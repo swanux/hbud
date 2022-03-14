@@ -18,11 +18,11 @@ if [[ $act == "add" ]]; then
         exit
     fi
     mkdir -p /home/$USER/GitRepos/hbud/DEV_FILES/hbud/locale/mo/$lang/LC_MESSAGES/
-    msgfmt -o /home/$USER/GitRepos/hbud/DEV_FILES/hbud/locale/mo/$lang/LC_MESSAGES/com.github.swanux.hbud.mo /home/$USER/GitRepos/hbud/DEV_FILES/hbud/locale/po/$lang.po
+    msgfmt -o /home/$USER/GitRepos/hbud/DEV_FILES/hbud/locale/mo/$lang/LC_MESSAGES/io.github.swanux.hbud.mo /home/$USER/GitRepos/hbud/DEV_FILES/hbud/locale/po/$lang.po
     mkdir -p /home/$USER/GitRepos/hbud/DEV_FILES/hbud/locale/mo/$short/LC_MESSAGES/
-    msgfmt -o /home/$USER/GitRepos/hbud/DEV_FILES/hbud/locale/mo/$short/LC_MESSAGES/com.github.swanux.hbud.mo /home/$USER/GitRepos/hbud/DEV_FILES/hbud/locale/po/$lang.po
+    msgfmt -o /home/$USER/GitRepos/hbud/DEV_FILES/hbud/locale/mo/$short/LC_MESSAGES/io.github.swanux.hbud.mo /home/$USER/GitRepos/hbud/DEV_FILES/hbud/locale/po/$lang.po
     echo ""
-    echo "Translation added at /home/$USER/GitRepos/hbud/DEV_FILES/hbud/locale/mo/$lang/LC_MESSAGES/com.github.swanux.hbud.mo"
+    echo "Translation added at /home/$USER/GitRepos/hbud/DEV_FILES/hbud/locale/mo/$lang/LC_MESSAGES/io.github.swanux.hbud.mo"
     echo ""
 
 
@@ -58,10 +58,10 @@ elif [[ $act == "upgrade" ]]; then
         echo ""
         exit
     fi
-    msgfmt -o /home/$USER/GitRepos/hbud/DEV_FILES/hbud/locale/mo/$lang/LC_MESSAGES/com.github.swanux.hbud.mo /home/$USER/GitRepos/hbud/DEV_FILES/hbud/locale/po/$lang.po
-    msgfmt -o /home/$USER/GitRepos/hbud/DEV_FILES/hbud/locale/mo/$short/LC_MESSAGES/com.github.swanux.hbud.mo /home/$USER/GitRepos/hbud/DEV_FILES/hbud/locale/po/$lang.po
+    msgfmt -o /home/$USER/GitRepos/hbud/DEV_FILES/hbud/locale/mo/$lang/LC_MESSAGES/io.github.swanux.hbud.mo /home/$USER/GitRepos/hbud/DEV_FILES/hbud/locale/po/$lang.po
+    msgfmt -o /home/$USER/GitRepos/hbud/DEV_FILES/hbud/locale/mo/$short/LC_MESSAGES/io.github.swanux.hbud.mo /home/$USER/GitRepos/hbud/DEV_FILES/hbud/locale/po/$lang.po
     echo ""
-    echo "Translation upgraded at /home/$USER/GitRepos/hbud/DEV_FILES/hbud/locale/mo/$lang/LC_MESSAGES/com.github.swanux.hbud.mo and $short also"
+    echo "Translation upgraded at /home/$USER/GitRepos/hbud/DEV_FILES/hbud/locale/mo/$lang/LC_MESSAGES/io.github.swanux.hbud.mo and $short also"
     echo ""
 
 
