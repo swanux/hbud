@@ -9,7 +9,7 @@ finish-args:
   - --socket=x11
   - --device=dri
   - --socket=pulseaudio
-  - --filesystem=host
+  - --filesystem=home
   - --share=ipc
   - --device=all
   - --filesystem=xdg-run/gvfs
