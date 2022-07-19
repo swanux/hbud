@@ -1,7 +1,7 @@
 # HBud
 Simple music / video player and karaoke app written in Python and GTK - Because why not
 
-# [Website](https://swanux.github.io/hbud.html) | [Feedback](https://swanux.github.io/feedbacks.html) | [Flathub] (https://flathub.org/apps/details/io.github.swanux.hbud)
+# [Website](https://swanux.github.io/hbud.html) | [Feedback](https://swanux.github.io/feedbacks.html) | [Flathub](https://flathub.org/apps/details/io.github.swanux.hbud)
 
 ## Features
 - Audio and video playback
@@ -14,12 +14,6 @@ Simple music / video player and karaoke app written in Python and GTK - Because 
 - Native, lightweight and simple
 - Minimalistic design
 - Flatpak package for comnpatibility and security
-
-### A note on performance
-
-Currently (v0.3.6+), I beleive I achieved the best I could regarding video playback. It means, that (on my hardware at least) HBud is more efficient than Gnome Videos (aka Totem) - around 60% - but I can't match VLC's stellar performance (not even with libVLC as backend) - which uses around half the resources as my player. I've managed to get on par with [Clapper](https://github.com/Rafostar/clapper) though (which uses GStreamer as well).
-
-Considering my goal wasn't to create the most efficient videoplayer ever, it seems acceptable, not being below or above average.
 
 ## Translation
 
@@ -41,9 +35,9 @@ I recommend using one of these tools:
 * [Freyr](https://github.com/miraclx/freyr-js) - Spotify, Apple Music, Deezer
 
 # Credits
-* [GTK3](https://www.gtk.org) - For the GUI framework
+* [GTK4](https://www.gtk.org) - For the GUI framework
 * [GStreamer](https://gstreamer.freedesktop.org/) - For the multimedia backend
-* [Lazka](https://lazka.github.io/pgi-docs/) - For the PyGObject documentation
+* [Amolenaar](https://amolenaar.github.io/pgi-docgen/) - For the PyGObject documentation
 * [AutoLyrixAlign](https://github.com/chitralekha18/AutoLyrixAlign) - For the neural network to align lyrics to music
 * [srt](https://github.com/cdown/srt) - For the Python srt module
 * [mediafile](https://github.com/beetbox/mediafile) - For the handy wrapper around mutagen
