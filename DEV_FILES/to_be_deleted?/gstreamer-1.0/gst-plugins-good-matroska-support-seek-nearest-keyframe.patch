@@ -1,0 +1,201 @@
+From 434e4a368f9fe85818edbb5c2f2a02d07d05ce38 Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Rafa=C5=82=20Dzi=C4=99giel?= <rafostar.github@gmail.com>
+Date: Fri, 7 May 2021 19:51:30 +0200
+Subject: [PATCH] matroska: Support seeking to nearest keyframe
+
+Add support for KEY_UNIT seeks to nearest keyframe
+
+Right now matroskademux only supported either SNAP_BEFORE or SNAP_AFTER seek flags when doing KEYINT seeks.
+When user requested a SNAP_NEAREST it always used SNAP_BEFORE which is not what user wanted.
+---
+ .../gst-plugins-good/gst/matroska/matroska-demux.c       | 18 +++----------
+ .../gst-plugins-good/gst/matroska/matroska-parse.c       |  8 +-----
+ .../gst-plugins-good/gst/matroska/matroska-read-common.c | 42 +++++++++++++++++++++++++++--
+ .../gst-plugins-good/gst/matroska/matroska-read-common.h |  3 ++-
+ 4 files changed, 46 insertions(+), 25 deletions(-)
+
+diff --git a/subprojects/gst-plugins-good/gst/matroska/matroska-demux.c b/subprojects/gst-plugins-good/gst/matroska/matroska-demux.c
+index 3a49b2f7d..248aac39c 100644
+--- a/subprojects/gst-plugins-good/gst/matroska/matroska-demux.c
++++ b/subprojects/gst-plugins-good/gst/matroska/matroska-demux.c
+@@ -2767,8 +2767,7 @@ gst_matroska_demux_handle_seek_event (GstMatroskaDemux * demux,
+   GstSeekFlags flags;
+   GstSeekType cur_type, stop_type;
+   GstFormat format;
+-  gboolean flush, keyunit, instant_rate_change, before, after, accurate,
+-      snap_next;
++  gboolean flush, keyunit, instant_rate_change, accurate;
+   gdouble rate;
+   gint64 cur, stop;
+   GstMatroskaTrackContext *track = NULL;
+@@ -2777,7 +2776,6 @@ gst_matroska_demux_handle_seek_event (GstMatroskaDemux * demux,
+   gboolean update = TRUE;
+   gboolean pad_locked = FALSE;
+   guint32 seqnum;
+-  GstSearchMode snap_dir;
+ 
+   g_return_val_if_fail (event != NULL, FALSE);
+ 
+@@ -2800,8 +2798,6 @@ gst_matroska_demux_handle_seek_event (GstMatroskaDemux * demux,
+ 
+   flush = ! !(flags & GST_SEEK_FLAG_FLUSH);
+   keyunit = ! !(flags & GST_SEEK_FLAG_KEY_UNIT);
+-  after = ! !(flags & GST_SEEK_FLAG_SNAP_AFTER);
+-  before = ! !(flags & GST_SEEK_FLAG_SNAP_BEFORE);
+   accurate = ! !(flags & GST_SEEK_FLAG_ACCURATE);
+   instant_rate_change = ! !(flags & GST_SEEK_FLAG_INSTANT_RATE_CHANGE);
+ 
+@@ -2879,24 +2875,16 @@ gst_matroska_demux_handle_seek_event (GstMatroskaDemux * demux,
+ 
+   GST_DEBUG_OBJECT (demux, "New segment %" GST_SEGMENT_FORMAT, &seeksegment);
+ 
+-  /* check sanity before we start flushing and all that */
+-  snap_next = after && !before;
+-  if (seeksegment.rate < 0)
+-    snap_dir = snap_next ? GST_SEARCH_MODE_BEFORE : GST_SEARCH_MODE_AFTER;
+-  else
+-    snap_dir = snap_next ? GST_SEARCH_MODE_AFTER : GST_SEARCH_MODE_BEFORE;
+-
+   GST_OBJECT_LOCK (demux);
+ 
+   seekpos = seeksegment.position;
+-  if (accurate) {
++  if (accurate)
+     seekpos -= MIN (seeksegment.position, demux->audio_lead_in_ts);
+-  }
+ 
+   track = gst_matroska_read_common_get_seek_track (&demux->common, track);
+   if ((entry = gst_matroska_read_common_do_index_seek (&demux->common, track,
+               seekpos, &demux->seek_index, &demux->seek_entry,
+-              snap_dir)) == NULL) {
++              flags, seeksegment.rate)) == NULL) {
+     /* pull mode without index can scan later on */
+     if (demux->streaming) {
+       GST_DEBUG_OBJECT (demux, "No matching seek entry in index");
+diff --git a/subprojects/gst-plugins-good/gst/matroska/matroska-parse.c b/subprojects/gst-plugins-good/gst/matroska/matroska-parse.c
+index 3fcb5c55e..a63af1027 100644
+--- a/subprojects/gst-plugins-good/gst/matroska/matroska-parse.c
++++ b/subprojects/gst-plugins-good/gst/matroska/matroska-parse.c
+@@ -1287,7 +1287,6 @@ gst_matroska_parse_handle_seek_event (GstMatroskaParse * parse,
+   GstMatroskaTrackContext *track = NULL;
+   GstSegment seeksegment = { 0, };
+   gboolean update;
+-  GstSearchMode snap_dir;
+ 
+   if (pad)
+     track = gst_pad_get_element_private (pad);
+@@ -1315,16 +1314,11 @@ gst_matroska_parse_handle_seek_event (GstMatroskaParse * parse,
+ 
+   GST_DEBUG_OBJECT (parse, "New segment %" GST_SEGMENT_FORMAT, &seeksegment);
+ 
+-  if (seeksegment.rate < 0)
+-    snap_dir = GST_SEARCH_MODE_AFTER;
+-  else
+-    snap_dir = GST_SEARCH_MODE_BEFORE;
+-
+   /* check sanity before we start flushing and all that */
+   GST_OBJECT_LOCK (parse);
+   if ((entry = gst_matroska_read_common_do_index_seek (&parse->common, track,
+               seeksegment.position, &parse->seek_index, &parse->seek_entry,
+-              snap_dir)) == NULL) {
++              flags, seeksegment.rate)) == NULL) {
+     /* pull mode without index can scan later on */
+     GST_DEBUG_OBJECT (parse, "No matching seek entry in index");
+     GST_OBJECT_UNLOCK (parse);
+diff --git a/subprojects/gst-plugins-good/gst/matroska/matroska-read-common.c b/subprojects/gst-plugins-good/gst/matroska/matroska-read-common.c
+index 062044f64..61eac52f0 100644
+--- a/subprojects/gst-plugins-good/gst/matroska/matroska-read-common.c
++++ b/subprojects/gst-plugins-good/gst/matroska/matroska-read-common.c
+@@ -585,10 +585,13 @@ gst_matroska_index_seek_find (GstMatroskaIndex * i1, GstClockTime * time,
+ GstMatroskaIndex *
+ gst_matroska_read_common_do_index_seek (GstMatroskaReadCommon * common,
+     GstMatroskaTrackContext * track, gint64 seek_pos, GArray ** _index,
+-    gint * _entry_index, GstSearchMode snap_dir)
++    gint * _entry_index, GstSeekFlags flags, gdouble rate)
+ {
+   GstMatroskaIndex *entry = NULL;
+   GArray *index;
++  GstSearchMode snap_dir;
++  gboolean after, before, key_unit, snap_nearest;
++  gint found_index;
+ 
+   /* find entry just before or at the requested position */
+   if (track && track->index_table)
+@@ -599,6 +602,23 @@ gst_matroska_read_common_do_index_seek (GstMatroskaReadCommon * common,
+   if (!index || !index->len)
+     return NULL;
+ 
++  after = ! !(flags & GST_SEEK_FLAG_SNAP_AFTER);
++  before = ! !(flags & GST_SEEK_FLAG_SNAP_BEFORE);
++  key_unit = ! !(flags & GST_SEEK_FLAG_KEY_UNIT);
++  snap_nearest = key_unit && ((!after && !before) || (after && before));
++
++  if (snap_nearest) {
++    /* Find lower array element, we will compare it with next one */
++    snap_dir = GST_SEARCH_MODE_BEFORE;
++  } else {
++    /* check sanity before we start flushing and all that */
++    gboolean snap_next = after && !before;
++    if (rate < 0)
++      snap_dir = snap_next ? GST_SEARCH_MODE_BEFORE : GST_SEARCH_MODE_AFTER;
++    else
++      snap_dir = snap_next ? GST_SEARCH_MODE_AFTER : GST_SEARCH_MODE_BEFORE;
++  }
++
+   entry =
+       gst_util_array_binary_search (index->data, index->len,
+       sizeof (GstMatroskaIndex),
+@@ -606,6 +626,8 @@ gst_matroska_read_common_do_index_seek (GstMatroskaReadCommon * common,
+       NULL);
+ 
+   if (entry == NULL) {
++    /* Do not compare for snap nearest, as entry is not what we wanted */
++    snap_nearest = FALSE;
+     if (snap_dir == GST_SEARCH_MODE_AFTER) {
+       /* Can only happen with a reverse seek past the end */
+       entry = &g_array_index (index, GstMatroskaIndex, index->len - 1);
+@@ -615,10 +637,26 @@ gst_matroska_read_common_do_index_seek (GstMatroskaReadCommon * common,
+     }
+   }
+ 
++  found_index = entry - (GstMatroskaIndex *) index->data;
++
+   if (_index)
+     *_index = index;
+   if (_entry_index)
+-    *_entry_index = entry - (GstMatroskaIndex *) index->data;
++    *_entry_index = found_index;
++
++  /* Use snap nearest only when array has at least 2 elements,
++   * we take next element for compare, so current entry must not be last */
++  if (snap_nearest && index->len >= 2 && found_index < index->len - 1) {
++    GstMatroskaIndex *next_entry = &g_array_index (index, GstMatroskaIndex,
++        found_index + 1);
++
++    if (seek_pos - entry->time > next_entry->time - seek_pos) {
++      if (_entry_index)
++        *_entry_index += 1;
++
++      return next_entry;
++    }
++  }
+ 
+   return entry;
+ }
+diff --git a/subprojects/gst-plugins-good/gst/matroska/matroska-read-common.h b/subprojects/gst-plugins-good/gst/matroska/matroska-read-common.h
+index 98cfc2451..2d0f916db 100644
+--- a/subprojects/gst-plugins-good/gst/matroska/matroska-read-common.h
++++ b/subprojects/gst-plugins-good/gst/matroska/matroska-read-common.h
+@@ -127,7 +127,8 @@ gint gst_matroska_index_seek_find (GstMatroskaIndex * i1, GstClockTime * time,
+     gpointer user_data);
+ GstMatroskaIndex * gst_matroska_read_common_do_index_seek (
+     GstMatroskaReadCommon * common, GstMatroskaTrackContext * track, gint64
+-    seek_pos, GArray ** _index, gint * _entry_index, GstSearchMode snap_dir);
++    seek_pos, GArray ** _index, gint * _entry_index, GstSeekFlags flags,
++    gdouble rate);
+ void gst_matroska_read_common_found_global_tag (GstMatroskaReadCommon * common,
+     GstElement * el, GstTagList * taglist);
+ gint64 gst_matroska_read_common_get_length (GstMatroskaReadCommon * common);
+-- 
+GitLab
+

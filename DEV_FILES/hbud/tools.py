@@ -2,69 +2,86 @@
 # -*- coding: utf-8 -*-
 
 import gi, os
-gi.require_version('Gtk', '3.0')
+gi.require_version('Gtk', '4.0')
 from gi.repository import Gtk, Gdk, GLib
 from configparser import ConfigParser
 
-def themer(provider, window, v, c, w=""):
-        css = """#cover_img {
-            padding-bottom: %spx;
-        }
-        menu, .popup {
-            border-radius: %spx;
-        }
-        decoration, headerbar{
-            border-radius: %spx;
-        }
-        button, menuitem, entry {
-            border-radius: %spx;
-            margin: 5px;
-        }
-        .titlebar {
-            border-top-left-radius: %spx;
-            border-top-right-radius: %spx;
-            border-bottom-left-radius: 0px;
-            border-bottom-right-radius: 0px;
-        }
-        window, notebook, stack, box, scrolledwindow, viewport {
-            border-top-left-radius: 0px;
-            border-top-right-radius: 0px;
-            border-bottom-left-radius: %spx;
-            border-bottom-right-radius: %spx;
-            border-width: 0px;
-            border-image: none;
-            box-shadow: none;
+# def themer(provider, window, v, c, w=""):
+#         css = """#cover_img {
+#             padding-bottom: %spx;
+#         }
+#         menu, .popup {
+#             border-radius: %spx;
+#         }
+#         decoration, headerbar{
+#             border-radius: %spx;
+#         }
+#         button, menuitem, entry {
+#             border-radius: %spx;
+#             margin: 5px;
+#         }
+#         .titlebar {
+#             border-top-left-radius: %spx;
+#             border-top-right-radius: %spx;
+#             border-bottom-left-radius: 0px;
+#             border-bottom-right-radius: 0px;
+#         }
+#         window, notebook, stack, box, scrolledwindow, viewport {
+#             border-top-left-radius: %spx;
+#             border-top-right-radius: %spx;
+#             border-bottom-left-radius: %spx;
+#             border-bottom-right-radius: %spx;
+#             border-width: 0px;
+#             border-image: none;
+#             box-shadow: none;
+#         }
+#         switch:checked, highlight, selection, menuitem:hover {
+#             background-color: %s;
+#         }
+#         tab:checked {
+#             box-shadow: 0 -4px %s inset;
+#         }
+#         #search_play:focus, spinbutton:focus {
+#             box-shadow: 0 0 0 1px %s;
+#         }
+#         #trackbox_%s{
+#             background: %s;
+#             color: #000;
+#             border-radius: %spx;
+#         }
+#         .maximized, .fullscreen, .maximized .titlebar {
+#             border-radius: 0px;
+#         }""" % (float(v)/2.6,float(v)/1.5,v,v,v,v,v,v,v,v,c,c,c,w,c,v)
+#         css = str.encode(css)
+#         provider.load_from_data(css)
+#         GLib.idle_add(window.get_style_context().add_provider_for_display, Gdk.Display.get_default(), provider, Gtk.STYLE_PROVIDER_PRIORITY_APPLICATION)
+
+def themer(provider, window, c, w=""):
+        css = """picture {
+            border-radius: 10px;
         }
         switch:checked, highlight, selection, menuitem:hover {
             background-color: %s;
         }
-        tab:checked {
-            box-shadow: 0 -4px %s inset;
-        }
-        #search_play:focus, spinbutton:focus {
-            box-shadow: 0 0 0 1px %s;
-        }
         #trackbox_%s{
             background: %s;
             color: #000;
-            border-radius: %spx;
-        }
-        .maximized, .fullscreen, .maximized .titlebar {
-            border-radius: 0px;
-        }""" % (float(v)/2.6,float(v)/1.5,v,v,v,v,v,v,c,c,c,w,c,v)
+            border-radius: 10px;
+        }""" % (c,w,c)
         css = str.encode(css)
         provider.load_from_data(css)
-        GLib.idle_add(window.get_style_context().add_provider_for_screen, Gdk.Screen.get_default(), provider, Gtk.STYLE_PROVIDER_PRIORITY_APPLICATION)
+        GLib.idle_add(window.get_style_context().add_provider_for_display, Gdk.Display.get_default(), provider, Gtk.STYLE_PROVIDER_PRIORITY_APPLICATION)
     
-def diabuilder (text, title, mtype, buts, window):
-    x, y = window.get_position()
-    sx, sy = window.get_size()
-    dialogWindow = Gtk.MessageDialog(parent=window, modal=True, destroy_with_parent=True, message_type=mtype, buttons=buts, text=text, title=title)
-    dsx, dsy = dialogWindow.get_size()
-    dialogWindow.move(x+((sx-dsx)/2), y+((sy-dsy)/2))
-    dialogWindow.show_all()
-    dialogWindow.run()
-    dialogWindow.destroy()
+# def diabuilder (text, title, mtype, buts, window):
+    # x, y = window.get_position()
+    # sx, sy = window.get_size()
+    # dialogWindow = Gtk.MessageDialog(parent=window, modal=True, destroy_with_parent=True, message_type=mtype, buttons=buts, text=text, title=title)
+    # dialogWindow.set_transient_for(window)
+    # dsx, dsy = dialogWindow.get_size()
+    # dialogWindow.move(x+((sx-dsx)/2), y+((sy-dsy)/2))
+    # dialogWindow.present()
+    # dialogWindow.run()
+    # dialogWindow.destroy()
 
 def get_lyric(title, artist, DAPI):
     DAPI.title, DAPI.artist = title, artist
@@ -73,28 +90,27 @@ def get_lyric(title, artist, DAPI):
     return result
 
 def real_init():
-    user = GLib.get_user_name()
+    # user = GLib.get_user_name()
     parser, confP = ConfigParser(), f"{GLib.get_user_config_dir()}/hbud.ini"
-    try: parser.read(confP)
-    except: print("No config file yet")
+    needsWrite = False
     if not os.path.isfile(confP):
+        print("No config file yet")
         os.system(f"touch {confP}")
-        parser.add_section('subtitles')
-        parser.set('subtitles', 'margin', str(66))
-        parser.set('subtitles', 'size', str(30))
-        parser.add_section('gui')
-        parser.set('gui', 'rounded', "10")
-        parser.set('gui', 'dark', "False")
-        parser.set('gui', 'color', "rgb(17, 148, 156)")
-        parser.add_section('services')
-        parser.set('services', 'MusixMatch', "True")
-        parser.set('services', 'AZLyrics', "True")
-        parser.set('services', 'Letras.br', "True")
-        parser.set('services', 'CoverSize', "500")
-        file = open(confP, "w+")
-        parser.write(file)
-        file.close()
-    sSize, sMarg = parser.get('subtitles', 'size'), parser.get('subtitles', 'margin')
-    rounded, dark, color = parser.get('gui', 'rounded'), parser.get('gui', 'dark'), parser.get('gui', 'color')
-    musix, azlyr, letras, coverSize = parser.get('services', 'MusixMatch'), parser.get('services', 'AZLyrics'), parser.get('services', 'Letras.br'), int(parser.get('services', 'CoverSize'))
-    return user, parser, confP, rounded, dark, color, musix, azlyr, letras, coverSize, sSize, sMarg
+        needsWrite = True
+    else: parser.read(confP)
+    dataList = {}
+    for (y, x, z) in zip(["subtitles", "gui", "services", "misc"], [["size", "margin", "bg"], ["theme", "color"], ["MusixMatch", "AZLyrics", "Letras.br", "CoverSize"], ["autoscroll", "positioning", "minimal_mode"]], [[str(30), str(66), "False"], [str(0), "rgb(17, 148, 156)"], ["True", "True", "True", str(500)], ["True", "5", "False"]]):
+        if parser.has_section(y) == False:
+            parser.add_section(y)
+            needsWrite = True
+        for (i, d) in zip(x, z):
+            if parser.has_option(y, i): dataList[i] = parser.get(y, i)
+            else:
+                parser.set(y, i, d)
+                dataList[i] = d
+                needsWrite = True
+    if needsWrite:
+        print("Needed to update config")
+        with open(confP, "w+") as f: parser.write(f)
+        needsWrite = False
+    return parser, confP, dataList["theme"], dataList["color"], dataList["MusixMatch"], dataList["AZLyrics"], dataList["Letras.br"], dataList["CoverSize"], dataList["size"], dataList["margin"], dataList["bg"], dataList["autoscroll"], dataList["positioning"], dataList["minimal_mode"]

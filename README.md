@@ -1,18 +1,57 @@
 # HBud
 Simple music / video player and karaoke app written in Python and GTK - Because why not
 
-# [Website](https://swanux.github.io/hbud.html) | [Feedback](https://swanux.github.io/feedbacks.html)
+# [Website](https://swanux.github.io/hbud.html) | [Feedback](https://swanux.github.io/feedbacks.html) | [Flathub] (https://flathub.org/apps/details/io.github.swanux.hbud)
 
-# Features
-- Video and audio playback (for supported formats, refer to libVLC docs)
+## Features
+- Audio and video playback
 - Subtitle support
 - Karaoke mode (synced lyrics needed in own srt format, see below for instructions)
-- Static lyric (most of the time works automatically)
+- Static lyric automatically from online sources
 - Metadata editor (for audio files)
 - Playlists (from folder structure)
 - Seamlessly switch back and forth between video and audio playback (remembers where to continue)
 - Native, lightweight and simple
-- Native .deb package for Debian/Ubuntu based distros (updates through PPA)
+- Minimalistic design
+- Flatpak package for comnpatibility and security
+
+### A note on performance
+
+Currently (v0.3.6+), I beleive I achieved the best I could regarding video playback. It means, that (on my hardware at least) HBud is more efficient than Gnome Videos (aka Totem) - around 60% - but I can't match VLC's stellar performance (not even with libVLC as backend) - which uses around half the resources as my player. I've managed to get on par with [Clapper](https://github.com/Rafostar/clapper) though (which uses GStreamer as well).
+
+Considering my goal wasn't to create the most efficient videoplayer ever, it seems acceptable, not being below or above average.
+
+## Translation
+
+First you have to clone this repo to `/home/$USER/GitRepos/hbud` - hbud is the root of this repository
+
+You can then use the provided `translate.sh`:
+
+- Add new translation: `./translate.sh new en_GB en`
+- Generate `.mo` files: `./translate.sh add en_GB en`
+- Update `.po` files: `./translate.sh update en_GB en`
+- Update `.mo` files: `./translate.sh upgrade en_GB en`
+
+It's important to use UTF-8 charset when needed (instead of ASCII).
+
+## Downloading music
+
+I recommend using one of these tools:
+* [spotDL](https://github.com/spotDL/spotify-downloader) - Spotify
+* [Freyr](https://github.com/miraclx/freyr-js) - Spotify, Apple Music, Deezer
+
+# Credits
+* [GTK3](https://www.gtk.org) - For the GUI framework
+* [GStreamer](https://gstreamer.freedesktop.org/) - For the multimedia backend
+* [Lazka](https://lazka.github.io/pgi-docs/) - For the PyGObject documentation
+* [AutoLyrixAlign](https://github.com/chitralekha18/AutoLyrixAlign) - For the neural network to align lyrics to music
+* [srt](https://github.com/cdown/srt) - For the Python srt module
+* [mediafile](https://github.com/beetbox/mediafile) - For the handy wrapper around mutagen
+* [azapi](https://github.com/elmoiv/azapi) - For the AZLyrics API
+* [ElementaryPython](https://github.com/mirkobrombin/ElementaryPython) - For a useful template
+* [pyacoustid](https://github.com/beetbox/pyacoustid) and [musicbrainzngs](https://github.com/alastair/python-musicbrainzngs) - For the AcoustID and MusicBrainz bindings
+* [MusicBrainz](https://beta.musicbrainz.org/) and [AcoustID](https://acoustid.org/) - For the open databases
+* [Flatpak](https://flatpak.org/) - For this awesome distribution system
 
 # Generate synced lyrics
 
@@ -38,39 +77,10 @@ Here I'll show you how to generate synced lyrics for yourslef
 
 You can try to generate a word by word .lrc file ([here](https://lrcgenerator.com) for example), and you can try my experimental enhanced-lrc converter like this: `python3 lrc2srt.py lyric.lrc output.srt`
 
-# Downloading music
-
-I recommend using [spotDL](https://github.com/spotDL/spotify-downloader)
-
-# Generate subtitles
+## Generate subtitles
 
 You can use [AutoSub](https://github.com/abhirooptalasila/AutoSub) which is a nice tool if you want to generate your own subtitles.
 
 A manual alternative is the GTK program [Gnome Subtitles](https://gnomesubtitles.org)
 
 *Note: You can also use this program, to adjust already generated synced lyrics to different audio files of the same song.*
-
-# Credits
-* [GTK3](https://www.gtk.org) - For the GUI framework
-* [libVLC](https://wiki.videolan.org/Python_bindings/) - For the multimedia backend
-* [Lazka](https://lazka.github.io/pgi-docs/) - For the PyGObject documentation
-* [AutoLyrixAlign](https://github.com/chitralekha18/AutoLyrixAlign) - For the neural network to align lyrics to music
-* [srt](https://github.com/cdown/srt) - For the Python srt module
-* [mediafile](https://github.com/beetbox/mediafile) - For the handy wrapper around mutagen
-* [azapi](https://github.com/elmoiv/azapi) - For the AZLyrics API
-* [ElementaryPython](https://github.com/mirkobrombin/ElementaryPython) - For a useful template
-* [pyacoustid](https://github.com/beetbox/pyacoustid) and [musicbrainzngs](https://github.com/alastair/python-musicbrainzngs) - For the AcoustID and MusicBrainz bindings
-* [MusicBrainz](https://beta.musicbrainz.org/) and [AcoustID](https://acoustid.org/) - For the open databases
-
-### Translation
-
-First you have to clone this repo to `/home/$USER/GitRepos/hbud` - hbud is the root of this repository
-
-You can then use the provided `translate.sh`:
-
-- Add new translation: `./translate.sh new en_GB en`
-- Generate `.mo` files: `./translate.sh add en_GB en`
-- Update `.po` files: `./translate.sh update en_GB en`
-- Update `.mo` files: `./translate.sh upgrade en_GB en`
-
-It's important to use UTF-8 charset when needed (instead of ASCII).

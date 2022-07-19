@@ -12,7 +12,7 @@ elif "/app/" in dname:
     print("Running in sandboxed mode")
     os.chdir("/app/share/hbud/")
 else:
-    print("Running in production mode")
+    print("Running in native mode")
     os.chdir("/usr/share/hbud/")
 sys.path.append("modules")
 

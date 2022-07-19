@@ -1,0 +1,44 @@
+{
+    "name": "gstreamer",
+    "buildsystem": "meson",
+    "config-opts": [
+        "-Dpython=disabled",
+        "-Ddevtools=disabled",
+        "-Dges=disabled",
+        "-Drtsp_server=disabled",
+        "-Domx=disabled",
+        "-Dsharp=disabled",
+        "-Dgst-examples=disabled",
+        "-Dtests=disabled",
+        "-Dexamples=disabled",
+        "-Ddoc=disabled",
+        "-Dgtk_doc=disabled",
+        "-Dgpl=enabled",
+        "-Dlibav=enabled",
+        "-Dbad=enabled",
+        "-Dvaapi=enabled",
+        "-Dgst-plugins-bad:openh264=disabled",
+        "-Dgst-plugins-bad:vulkan=disabled",
+        "-Dugly=enabled",
+        "-Dgst-plugins-ugly:mpeg2dec=enabled"
+    ],
+    "build-options": {
+        "env": {
+            "PKG_CONFIG_PATH": "/app/lib/codecs/lib/pkgconfig/:/app/lib/pkgconfig"
+        }
+    },
+    "cleanup": [ "/bin/*webrtc*", "/bin/crossfade", "/bin/tsparser", "/bin/playout", "/lib/gstreamer-1.0/include/" ],
+    "sources": [
+        {
+            "type": "git",
+            "disable-submodules": true,
+            "url": "https://gitlab.freedesktop.org/gstreamer/gstreamer.git",
+            "tag": "1.20.1",
+            "commit": "4bbb293eacbb795b45152e97796092ebbdee9d28"
+        },
+        {
+            "type": "patch",
+            "path": "gst-libav-stop-caching-codecs.patch"
+        }
+    ]
+}

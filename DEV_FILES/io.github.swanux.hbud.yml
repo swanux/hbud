@@ -4,15 +4,34 @@ runtime-version: '41'
 sdk: org.gnome.Sdk
 command: io.github.swanux.hbud
 
+#add-extensions:
+#  org.freedesktop.Platform.ffmpeg:
+#    directory: lib/codecs
+#    version: "21.08"
+#    add-ld-path: lib
+#  org.freedesktop.Platform.openh264:
+#    directory: lib/codecs
+#    version: "21.08"
+#    add-ld-path: lib
+#  org.freedesktop.Platform.gstreamer-vaapi:
+#    directory: lib/codecs
+#    version: "21.08"
+#    add-ld-path: lib
+
 finish-args:
   - --share=network
-  - --socket=x11
+  - --socket=wayland
+  - --socket=fallback-x11
   - --device=dri
   - --socket=pulseaudio
   - --filesystem=home
   - --share=ipc
-  - --device=all
   - --filesystem=xdg-run/gvfs
+  - --filesystem=xdg-run/gvfsd
+  - --filesystem=/run/media
+  - --talk-name=org.gtk.vfs.*
+  - --env=GST_PLUGIN_SYSTEM_PATH=/app/lib/gstreamer-1.0
+  - --env=GST_VAAPI_ALL_DRIVERS=1
 
 cleanup:
   - "/lib/cmake"
@@ -20,32 +39,134 @@ cleanup:
   - "*.a"
   - "/share/doc"
   - "/share/gtk-doc"
-  - "/share/locale"
-  - "/share/runtime"
-  - "/share/kde4"
-  - "/share/metainfo"
-  - "/share/vlc"
-  - "/share/icons/hicolor/16x16"
-  - "/share/icons/hicolor/32x32"
-  - "/share/icons/hicolor/48x48"
-  - "/share/icons/hicolor/256x256"
-  - "/share/icons/hicolor/128x128/apps/vlc*.png"
-  - "/share/applications/vlc.desktop"
-  - "/bin/pylupdate5"
-  - "/bin/pyrcc5"
-  - "/bin/pyuic5"
   - "/include"
   - "/lib/debug"
   - "/lib/pkgconfig"
   - "/share/man"
+  - "/var"
 
 modules:
+#  - "lib/libsass.json"
+#  - "lib/sassc.json"
+#  - lib/libass.json
+#  - "lib/liba52.json"
+#  - "lib/libmpeg2.json"
+#  - "lib/ffmpeg.json"
+#  - "gstreamer-1.0/gstreamer.json"
+
+
+- name: gtk4sink
+    sources:
+    - deptree.json
+    # - type: git
+    #   url: "https://gitlab.com/9898287/timediff"
+    #   branch: offline_flatpak
+    - type: dir
+      path: "."
+    - type: file
+      path: "resources/com.gitlab.adnan338.Timediff.png"
+    - type: file
+      path: "resources/com.gitlab.adnan338.Timediff.desktop"
+    buildsystem: simple
+    build-options:
+      append-path: /usr/lib/sdk/rust-stable/bin
+      env:
+        CARGO_HOME: /run/build/gtk4sink/cargo
+    build-commands:
+      - cargo --offline fetch --manifest-path Cargo.toml --verbose
+      - cargo --offline build --release --verbose,
+      - install -Dm755 target/release/timediff --target-directory=/app/bin
+      - install -Dm644 com.gitlab.adnan338.Timediff.desktop --target-directory=/app/share/applications
+      - install -Dm644 com.gitlab.adnan338.Timediff.png --target-directory=/app/share/icons/hicolor/scalable/apps
+
+  - "codecs/liba52.json"
+  - "codecs/x264.json"
+  - "codecs/x265.json"
+  - "codecs/libmpeg2.json"
+  - "codecs/libdvdcss.json"
+  - "codecs/libdvdread.json"
+  - "codecs/libdvdnav.json"
+  - "codecs/libass.json"
+  - "codecs/ffmpeg.json"
+#  - "codecs/gstreamer.json"
+  - "DELETE ME??/gstreamer-1.0/gstreamer.json"
+#  - "codecs/pipewire.json"
+
+
+  
+#  - name: gstreamer
+#    buildsystem: meson
+#    builddir: true
+#    config-opts:
+#    - "-Ddoc=disabled"
+#    - "--libdir=lib"
+#    sources:
+#    - type: git
+#      branch: master
+#      url: https://gitlab.freedesktop.org/gstreamer/gstreamer.git
+#  - name: gst-plugins-base
+#    buildsystem: meson
+#    config-opts:
+#    - "-Ddoc=disabled"
+#    - "-Dexamples=disabled"
+#    - "-Dorc=enabled"
+#    - "--libdir=lib"
+#    - "--wrap-mode=nodownload"
+#    builddir: true
+#    sources:
+#    - type: git
+#      branch: master
+#      url: https://gitlab.freedesktop.org/gstreamer/gst-plugins-base.git
+#  - name: gst-plugins-good
+#    buildsystem: meson
+#    builddir: true
+#    config-opts:
+#    - "-Ddoc=disabled"
+#    - "-Dexamples=disabled"
+#    - "--libdir=lib"
+#    sources:
+#    - type: git
+#      branch: master
+#      url: https://gitlab.freedesktop.org/gstreamer/gst-plugins-good.git
+#  - name: gst-plugins-bad
+#    buildsystem: meson
+#    builddir: true
+#    config-opts:
+#    - "-Daom=disabled"
+#    - "-Ddoc=disabled"
+#    - "-Dexamples=disabled"
+#    - "-Dv4l2codecs=enabled"
+#    - "--libdir=lib"
+#    sources:
+#    - type: git
+#      branch: master
+#      url: https://gitlab.freedesktop.org/gstreamer/gst-plugins-bad.git
+#  - name: libsass
+#    buildsystem: meson
+#    sources:
+#    - type: git
+#      url: https://github.com/lazka/libsass.git
+#      branch: meson
+#  - name: sassc
+#    buildsystem: meson
+#    sources:
+#    - type: git
+#      url: https://github.com/lazka/sassc.git
+#      branch: meson
+
+
+
+
+
+
+
+
+
   - name: io.github.swanux.hbud
     buildsystem: simple
     sources:
-      - type: archive
-        url: https://github.com/swanux/hbud/archive/refs/tags/v0.3.5.tar.gz
-        sha256: f98fbc465ddd6acca465ee3a392435d089e77760e53e56bc8ae978849f805ffb
+      - type: dir
+        path: ../.
     build-commands:
       - mkdir -p /app/share/applications
       - mkdir -p /app/share/hbud
@@ -59,78 +180,80 @@ modules:
       - ln -s /app/share/hbud/io.github.swanux.hbud /app/bin/.
       - cp DEV_FILES/io.github.swanux.hbud.appdata.xml /app/share/appdata/.
       - install -Dm644 -t /app/share/icons/hicolor/scalable/apps/ DEV_FILES/hbud/icons/io.github.swanux.hbud.svg 
-      - cp DEV_FILES/fpcalc /app/bin/.
 
   - name: chromaprint
     buildsystem: cmake-ninja
     config-opts:
-      - -DCMAKE_BUILD_TYPE=RelWithDebInfo
+      - -DCMAKE_BUILD_TYPE=Release
       - -DBUILD_SHARED_LIBS=ON
       - -DCMAKE_POSITION_INDEPENDENT_CODE=ON
+      - -DBUILD_TOOLS=ON
     sources:
       - type: archive
         url: https://github.com/acoustid/chromaprint/releases/download/v1.5.1/chromaprint-1.5.1.tar.gz
         sha256: a1aad8fa3b8b18b78d3755b3767faff9abb67242e01b478ec9a64e190f335e1c
 
-  - name: libvlc
-    sources:
-      - type: archive
-        url: https://get.videolan.org/vlc/3.0.17/vlc-3.0.17.tar.xz
-        sha256: 48bd9bf337aa107a1524eba57c52dc4a91e29f5a97fbdee92f6a4dba90383cd0
-      - type: patch
-        path: vlc-ignore-time-for-cache.patch
-    rm-configure: true
-    cleanup:
-      - /share/macosx
-    config-opts:
-      - BUILDCC=/usr/bin/gcc -std=gnu99
-      - --disable-lua
-      - --disable-a52
-      - --disable-qt
-      - --disable-ncurses
-      - --disable-udev
-      - "--disable-archive"
-      - "--disable-live555"
-      - "--disable-dc1394"
-      - "--disable-dv1394"
-      - "--disable-linsys"
-      - "--disable-dvdread"
-      - "--disable-dvdnav"
-      - "--disable-bluray"
-      - "--disable-opencv"
-      - "--disable-smbclient"
-      - "--disable-dsm"
-      - "--disable-sftp"
-      - "--disable-nfs"
-      - "--disable-smb2"
-      - "--disable-v4l2"
-      - "--disable-decklink"
-      - "--disable-vcd"
-      - "--disable-libcddb"
-      - "--disable-screen"
-      - "--disable-vnc"
-      - "--disable-freerdp"
-      - "--disable-realrtsp"
-      - "--disable-asdcp"
-      - "--disable-sdl-image"
-      - "--disable-skins2"
-      - "--disable-alsa"
-      - "--disable-goom"
-      - "--disable-projectm"
-      - "--disable-vsxu"
-      - "--disable-avahi"
-      - "--disable-mtp"
-      - "--disable-upnp"
-      - "--disable-microdns"
-      - "--disable-libgcrypt"
-      - "--disable-secret"
-      - "--disable-kwallet"
-      - "--disable-vlc"
-      - "--disable-sout"
-      - "--disable-vlm"
-      - "--disable-debug"
-      - "--disable-update-check"
-      - "--disable-maintainer-mode"
-      - "--disable-dependency-tracking"
-      - "--enable-flac"
-      - "--enable-ffmpeg"
+#  - libvlc.yml
+
+#  - name: libvlc
+#    sources:
+#      - type: archive
+#        url: https://get.videolan.org/vlc/3.0.17/vlc-3.0.17.tar.xz
+#        sha256: 48bd9bf337aa107a1524eba57c52dc4a91e29f5a97fbdee92f6a4dba90383cd0
+#      - type: patch
+#        path: vlc-ignore-time-for-cache.patch
+#    rm-configure: true
+#    cleanup:
+#      - /share/macosx
+#    config-opts:
+#      - BUILDCC=/usr/bin/gcc -std=gnu99
+#      - --disable-lua
+#      - --disable-a52
+#      - --disable-qt
+#      - --disable-ncurses
+#      - --disable-udev
+#      - "--disable-archive"
+#      - "--disable-live555"
+#      - "--disable-dc1394"
+#      - "--disable-dv1394"
+#      - "--disable-linsys"
+#      - "--disable-dvdread"
+#      - "--disable-dvdnav"
+#      - "--disable-bluray"
+#      - "--disable-opencv"
+#      - "--disable-smbclient"
+#      - "--disable-dsm"
+#      - "--disable-sftp"
+#      - "--disable-nfs"
+#      - "--disable-smb2"
+#      - "--disable-v4l2"
+#      - "--disable-decklink"
+#      - "--disable-vcd"
+#      - "--disable-libcddb"
+#      - "--disable-screen"
+#      - "--disable-vnc"
+#      - "--disable-freerdp"
+#      - "--disable-realrtsp"
+#      - "--disable-asdcp"
+#      - "--disable-sdl-image"
+#      - "--disable-skins2"
+#      - "--disable-alsa"
+#      - "--disable-goom"
+#      - "--disable-projectm"
+#      - "--disable-vsxu"
+#      - "--disable-avahi"
+#      - "--disable-mtp"
+#      - "--disable-upnp"
+#      - "--disable-microdns"
+#      - "--disable-libgcrypt"
+#      - "--disable-secret"
+#      - "--disable-kwallet"
+#      - "--disable-vlc"
+#      - "--disable-sout"
+#      - "--disable-vlm"
+#      - "--disable-debug"
+#      - "--disable-update-check"
+#      - "--disable-maintainer-mode"
+#      - "--disable-dependency-tracking"
+#      - "--enable-flac"
+#      - "--enable-ffmpeg"

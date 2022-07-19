@@ -2,14 +2,24 @@
 <component type="desktop-application">
     <id>io.github.swanux.hbud</id>
     <name>HBud</name>
-    <summary>Simple music / video player and karaoke app written in Python and GTK - Because why not</summary>
+    <summary>Simple music/video player and karaoke app written in Python and GTK</summary>
     <metadata_license>CC0-1.0</metadata_license>
     <project_license>GPL-3.0+</project_license>
     <content_rating type="oars-1.1"/>
     <description>
-        <p>
-            Simple music / video player and karaoke app written in Python and GTK - Because why not
-        </p>
+        <p>Features:</p>
+        <ul>
+            <li>Audio and video playback</li>
+            <li>Subtitle support</li>
+            <li>Karaoke mode (synced lyrics needed in own srt format, see GitHub repo for instructions)</li>
+            <li>Static lyric automatically from online sources</li>
+            <li>Metadata editor (for audio files)</li>
+            <li>Playlists (from folder structure)</li>
+            <li>Seamlessly switch back and forth between video and audio playback (remembers where to continue)</li>
+            <li>Native, lightweight and simple</li>
+            <li>Minimalistic design</li>
+            <li>Flatpak package for comnpatibility and security</li>
+        </ul>
     </description>
     <categories>
         <category>Video</category>
@@ -19,21 +29,129 @@
     </categories>
     <url type="homepage">https://github.com/swanux/hbud</url>
     <url type="bugtracker">https://github.com/swanux/hbud/issues</url>
+
+
     <releases>
-        <release version="0.3.5" date="2022-03-14"/>
-        <release version="0.3.0" date="2022-01-01"/>
-        <release version="0.2.3" date="2021-10-03"/>
-        <release version="0.2.2" date="2021-09-05"/>
-        <release version="0.2.1" date="2021-08-22"/>
-        <release version="0.1.6" date="2021-07-23"/>
-        <release version="0.1.0" date="2021-07-16"/>
+        <release version="0.3.6" date="2022-03-26">
+            <description>
+                <p>Improvements, not new features</p>
+                <ul>
+                    <li>Switching back to GStreamer... (now using glimagesink)</li>
+                    <li>Couple of Flatpak related fixes</li>
+                    <li>Smaller bugfixes</li>
+                    <li>Fixed issues related to videoplayback</li>
+                    <li>Better video decoding performance (for more info, check the project site)</li>
+                    <li>New update-proof config backend</li>
+                </ul>
+            </description>
+        </release>
+        <release version="0.3.5" date="2022-03-14">
+            <description>
+                <p>Short changelog, but quite big changes.</p>
+                <ul>
+                    <li>Complete rebase on libVLC v3 (instead of GStreamer)</li>
+                    <li>Show current time when dragging slider</li>
+                    <li>Numerous bugfixes and improvements</li>
+                    <li>Performance optimizations (video playback 2-3x less CPU usage)</li>
+                    <li>Complete migration to flatpak</li>
+                </ul>
+            </description>
+        </release>
+        <release version="0.3.0" date="2022-01-01">
+             <description>
+                <p>The first version from the 0.3.x branch (codename: Vereena), a milestone release.</p>
+                <ul>
+                    <li>Added new keyboard shortcuts (Ctrl+O, Ctrl+F, Ctrl+Space)</li>
+                    <li>AcoustID and MusicBrainz integration for automatic metadata fetching</li>
+                    <li>Added option to set preferred album cover size</li>
+                    <li>Greatly improved lyric fetching</li>
+                    <li>New helper scripts (translate, musixapi and letrasapi)</li>
+                    <li>New high quality artwork by Seh</li>
+                    <li>Added translation support (Hungarian and English for now)</li>
+                    <li>Added focus on currently playing track</li>
+                    <li>Added option to load lyric / subtitle from 'misc' subfolder (it is now the default location)</li>
+                    <li>Added option to set offset for synced lyrics</li>
+                    <li>Added option to confirm whether lyric is correct or not</li>
+                    <li>Fixed several bugs</li>
+                    <li>Improved theming</li>
+                    <li>Polished the GUI</li>
+                    <li>Optimized video playback</li>
+                </ul>
+            </description>
+        </release>
+        <release version="0.2.3" date="2021-10-03">
+             <description>
+                <p>Another update with bugfixes and small changes.</p>
+                <ul>
+                    <li>Modernized and revamped the settings menu</li>
+                    <li>Added option to change accent color</li>
+                    <li>Fixed packaging issues</li>
+                    <li>Fixed some bugs</li>
+                    <li>Added some shortcuts (double click to fullscreen, etc.)</li>
+                    <li>Added release notes to about section</li>
+                </ul>
+            </description>
+        </release>
+        <release version="0.2.2" date="2021-09-05">
+             <description>
+                <p>Overall improvements and fixes.</p>
+                <ul>
+                    <li>Added option to force dark mode</li>
+                    <li>Fixed some bugs (GUI and dependency related)</li>
+                    <li>Added option to enable background for subtitles</li>
+                    <li>Optimized code</li>
+                    <li>Fixed dependency issues</li>
+                    <li>Dropped AppImage support (it was fun, but it has no real use)</li>
+                    <li>Smaller size (compiled code is nice, but it has not much use again)</li>
+                </ul>
+            </description>
+        </release>
+        <release version="0.2.1" date="2021-08-22">
+             <description>
+                <p>This is the first beta release of HBud (codename Yennefer), which means a lots of new features, improvements and fixes.</p>
+                <ul>
+                    <li>Bugfixes and quality improvements</li>
+                    <li>Optimized stability and performane</li>
+                    <li>Added online lyric support (static lyric)</li>
+                    <li>Added AppImage build</li>
+                    <li>Added a lots of small comfort functions</li>
+                    <li>Now showing both elapsed and remaining time</li>
+                    <li>Added optional rounded corners (why not?)</li>
+                    <li>Own widgets instead of TreeView (improved visuals, stability and performance)</li>
+                    <li>Added new drag and drop support</li>
+                    <li>Added new keyboard controls (Up, Down, Left, Right, Del, F11, ESC)</li>
+                    <li>Added option to save playlist order (speeds up loading time too) - rescan to append new tracks</li>
+                    <li>Added proper sort method (multiple options)</li>
+                    <li>Added search method</li>
+                </ul>
+            </description>
+        </release>
+        <release version="0.1.6" date="2021-07-23">
+             <description>
+                <p>Small updates and experiments.</p>
+                <ul>
+                    <li>Bugfixes</li>
+                    <li>Performance improvements</li>
+                    <li>Using Nuitka as a compiler, including modules in the binary</li>
+                    <li>Added subtitle switch and option to visit OpenSubtitles / Subscenes</li>
+                    <li>Added cover art support for metadata editor</li>
+                </ul>
+            </description>
+        </release>
+        <release version="0.1.0" date="2021-07-16">
+             <description>
+                <p>Initial public release</p>
+            </description>
+        </release>
     </releases>
+
+
     <provides>
         <id>io.github.swanux.hbud</id>
-        <library>libvlc.so.5</library>
     </provides>
     <developer_name>Dániel Kolozsi</developer_name>
     <update_contact>swanux_at_protonmail.com</update_contact>
+
     <screenshots>
         <screenshot type="default"><image type="source">https://github.com/swanux/hbud/raw/master/Screenshots/0.3%20-%20Vereena/0.3.5/more_opts.png</image></screenshot>
         <screenshot><image type="source">https://github.com/swanux/hbud/raw/master/Screenshots/0.3%20-%20Vereena/0.3.5/met_ed.png</image></screenshot>
