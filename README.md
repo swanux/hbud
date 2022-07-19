@@ -1,6 +1,8 @@
 # HBud
 Simple music / video player and karaoke app written in Python and GTK - Because why not
 
+## Note: GTK4/LibAdwaita rewrite in progress
+
 # [Website](https://swanux.github.io/hbud.html) | [Feedback](https://swanux.github.io/feedbacks.html) | [Flathub](https://flathub.org/apps/details/io.github.swanux.hbud)
 
 ## Features
