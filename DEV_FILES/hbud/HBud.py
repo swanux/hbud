@@ -23,13 +23,17 @@ class Main(helper.Widgets):
     def on_activate(self, app):
         self.confDir = GLib.get_user_config_dir()
         # Gtk Scale not yet working
-        # Look into video player
+        # Look into video player: 
+        #    - subtitle should adjust if turned on in fullscreen
+        #    - click to play/pause
+        #    - hide header on fullscreen
+        #    - why is there a shadow-mouse? Gdk.Cursor names?
 
         # Code review, remove unused, rewrite badly written
 
         # TEST, TEST, TEST!
 
-        # fpcalc should be built, not included
+        # fpcalc and gst-rs should be built, not included OR extension
         # look into permissions and appstore data
         # flatpak permissions from totem?
 
@@ -75,6 +79,8 @@ class Main(helper.Widgets):
         * New minimal player mode
         * Removed drag and drop support (reorder is still possible using arrows)
         * Now using audio metadata to store lyrics by default (misc and same folder are still supported)
+        * Seeking with mouse is a bit choppy (bug in GTK4 issue 4939 - had to use workaround)
+        * Video playback is quite power-hungry, but stable (more efficient solution is WIP, see gst-plugins-rs MR 588)
 
         * Cleaned up codebase (?)
         * Better multi-threading management (?)
@@ -127,14 +133,15 @@ class Main(helper.Widgets):
         motion = Gtk.EventControllerMotion.new()
         self.slider.add_controller(motion)
         # self.slider.connect("button-release-event", self.on_slider_seek)
-        click.connect("released", self.on_slider_seek)
+        # click.connect("released", self.on_slider_seek)
         click.connect("pressed", self.on_slider_grab)
         self.slider.connect("value-changed", self.on_slider_grabbed)
         # self.slider.connect("button-press-event", self.on_slider_grab)
         # self.slider.connect("enter-notify-event", self.mouse_enter)
         # self.slider.connect("leave-notify-event", self.mouse_leave)
-        motion.connect("enter", self.mouse_enter)
-        motion.connect("leave", self.mouse_leave)
+        self.bottom_motion.connect("enter", self.mouse_enter)
+        self.bottom_motion.connect("leave", self.mouse_leave)
+        motion.connect("motion", self.sliding)
         self.slider.add_controller(click)
 
         # self.roundSpin.set_value(float(self.rounded))
@@ -222,6 +229,7 @@ class Main(helper.Widgets):
         self.order_but2.connect("clicked", self.on_rescan_order)
         self.ye_but.connect("clicked", self.on_correct_lyr)
         self.no_but.connect("clicked", self.on_wrong_lyr)
+        self.subcheck.connect("state-set", self.on_act_sub)
 
         self.darkew.connect("changed", self.config_write)
         self.colorer.connect("color-set", self.config_write)
@@ -350,18 +358,25 @@ class Main(helper.Widgets):
         if mode == "local":
             self.videoPipe, self.audioPipe = Gst.ElementFactory.make("playbin3"), Gst.ElementFactory.make("playbin3")
             # self.audioPipe = Gst.parse_launch('filesrc  ! decodebin ! audioconvert ! rgvolume ! audioconvert ! audioresample ! alsasink')
-            # playerFactory = self.videoPipe.get_factory()
-            # gtksink = playerFactory.make('gtksink')
-            # self.videosink = gtksink.props.widget
+            playerFactory = self.videoPipe.get_factory()
+            gtksink = playerFactory.make('gtk4paintablesink')
+            videosink = gtksink.props.paintable
             # video_sink = Gst.ElementFactory.make("glsinkbin", None)
             # video_sink.props.sink = gtksink
-            # self.videoPipe.set_property("video-sink", gtksink)
+            self.videoPipe.set_property("video-sink", gtksink)
+
+            self.videosink = Gtk.Picture.new_for_paintable(videosink)
+            self.videosink.set_valign(Gtk.Align.FILL)
+            self.videosink.set_halign(Gtk.Align.FILL)
+            motion = Gtk.EventControllerMotion.new()
+            self.window.add_controller(motion)
+            motion.connect("motion", self.mouse_moving)
             # self.videosink.set_valign(Gtk.Align.FILL)
             # self.videosink.set_halign(Gtk.Align.FILL)
             # self.videosink.connect("button_press_event", self.mouse_click0)
-            # self.strOverlay.add(self.videosink)
-            # self.videosink.show()
-            # self.strOverlay.add_overlay(self.theTitle)
+            self.strOverlay.set_child(self.videosink)
+            self.videosink.show()
+            self.strOverlay.add_overlay(self.theTitle)
             bus = self.videoPipe.get_bus()
             bus.add_signal_watch()
             bus.connect("message", self.on_message)
@@ -940,9 +955,16 @@ class Main(helper.Widgets):
         GLib.timeout_add(400, self.updateSlider)
         GLib.timeout_add(5, self.updatePos)
 
+    def sliding(self, *_): self.resete2 = time()
+
     def on_slider_grab(self, *_):
         print("grabbed")
         self.seeking = True
+        self.resete2 = time()
+        if not self.clocking:
+            self.clocking = True
+            ld_clock = futures.ThreadPoolExecutor(max_workers=1)
+            ld_clock.submit(self.clock, "seek")
     
     def on_slider_grabbed(self, *_):
         current_time = str(timedelta(seconds=round(self.slider.get_value())))
@@ -952,6 +974,7 @@ class Main(helper.Widgets):
         print("seeked")
         if self.useMode == self.nowIn:
             seek_time_secs = self.slider.get_value()
+            print(seek_time_secs)
             if seek_time_secs < self.position:
                 self.seekBack = True
             # self.player.seek(1.00, Gst.Format.TIME, (Gst.SeekFlags.FLUSH | Gst.SeekFlags.ACCURATE), Gst.SeekType.SET, seek_time_secs * Gst.SECOND, Gst.SeekType.NONE, -1)
@@ -1189,6 +1212,8 @@ class Main(helper.Widgets):
             # print(emitter.get_size(Gtk.Orientation.HORIZONTAL), emitter.get_size(Gtk.Orientation.VERTICAL))
         elif param.name == "fullscreened":
             self.fulle = self.window.is_fullscreen()
+            sizThread = futures.ThreadPoolExecutor(max_workers=1)
+            sizThread.submit(self.different_resize, emitter)
 
     def different_resize(self, emitter):
         sleep(0.3)
@@ -1320,12 +1345,12 @@ class Main(helper.Widgets):
                     self.sub.present()
         elif self.useMode == "video":
             if self.fulle == False:
-                GLib.idle_add(self.karaokeIcon.set_from_icon_name, "view-restore", Gtk.IconSize.BUTTON)
+                GLib.idle_add(self.karaokeIcon.set_from_icon_name, "view-restore")
                 self.window.fullscreen()
                 ld_clock = futures.ThreadPoolExecutor(max_workers=1)
                 ld_clock.submit(self.clock, "full")
             else:
-                GLib.idle_add(self.karaokeIcon.set_from_icon_name, "view-fullscreen", Gtk.IconSize.BUTTON)
+                GLib.idle_add(self.karaokeIcon.set_from_icon_name, "view-fullscreen")
                 self.resete, self.keepReset = False, False
                 self.window.unfullscreen()
                 self.mage()
@@ -1366,16 +1391,23 @@ class Main(helper.Widgets):
     
     def mage(self):
         GLib.idle_add(self.bottom.show)
-        cursor = Gdk.Cursor.new_from_name(self.window.get_display(), 'default')
-        self.window.get_window().set_cursor(cursor)
+        GLib.idle_add(self.mainHeader.show)
+        cursor = Gdk.Cursor.new_from_name('default')
+        self.window.set_cursor(cursor)
 
-    def mouse_moving(self, *_):
-        if self.fulle == True:
-            self.resete = True
-            if self.bottom.get_visible() == False:
-                self.mage()
-                ld_clock = futures.ThreadPoolExecutor(max_workers=1)
-                ld_clock.submit(self.clock, "full")
+    def mouse_moving(self, _, x, y):
+        if self.fulle == True: 
+            self.countermove += 1
+            print(self.countermove)
+            if self.countermove >= 2 and self.mx != x and self.my != y:
+                print("move")
+                self.countermove = 0
+                self.resete = True
+                self.mx, self.my = x, y
+                if self.bottom.get_visible() == False:
+                    self.mage()
+                    ld_clock = futures.ThreadPoolExecutor(max_workers=1)
+                    ld_clock.submit(self.clock, "full")
 
     def clock(self, ltype):
         start = time()
@@ -1385,16 +1417,19 @@ class Main(helper.Widgets):
                 if self.keepReset == True: start = time()
                 elif self.resete == True: start, self.resete = time(), False    
                 sleep(0.001)
+            print("clock expired")
             if self.fulle == True:
+                cursor = Gdk.Cursor.new_from_name('none')
+                self.window.set_cursor(cursor)
                 GLib.idle_add(self.bottom.hide)
-                cursor = Gdk.Cursor.new_for_display(self.window.get_display(), Gdk.CursorType.BLANK_CURSOR)
-                self.window.get_window().set_cursor(cursor)
-        else:
+                GLib.idle_add(self.mainHeader.hide)
+                self.countermove = 0
+        elif ltype == "seek":
             while time() - start < 0.5:
                 if self.hardreset2 == True: return
                 start = self.resete2
                 sleep(0.001)
-            self.seeking = False
+            # self.seeking = False
             self.on_slider_seek()
             self.clocking = False
 

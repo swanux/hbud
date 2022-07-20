@@ -355,6 +355,7 @@ class MainWindow(Adw.Window):
         gself.lyrStack.add_named(gself.lyrSpin, "lyrSpin")
         gself.lyrStack.set_margin_start(7)
         gself.subcheck = Gtk.Switch()
+        gself.subcheck.set_can_focus(False)
         gself.subcheck.set_halign(Gtk.Align.CENTER)
         gself.subcheck.set_valign(Gtk.Align.CENTER)
         gself.subcheck.set_margin_start(7)
@@ -621,7 +622,7 @@ class Widgets(Adw.Application):
         self.searchDict = {"1" : ["artist", False], "2" : ["artist", True], "3" : ["title", False], "4" : ["title", True], "5" : ["year", False], "6" : ["year", True], "7" : ["length", False], "8" : ["length", True]}
         self.playlistPlayer, self.needSub, self.nowIn = False, False, ""
         self.fulle, self.resete, self.keepReset, self.hardReset, self.tnum, self.sorted, self.aborte, self.hardreset2, self.resete2, self.clocking, self.searched = False, False, False, False, 0, False, False, False, False, False, False
-        self.sub, self.seekBack, self.playing, self.res, self.title = Sub(self), False, False, False, None
+        self.sub, self.seekBack, self.playing, self.res, self.title, self.countermove, self.mx, self.my = Sub(self), False, False, False, None, 0, 0, 0
         self.comboSize = Gtk.ComboBoxText.new()
         self.comboSize.append("1200", _("Ultra high (1200px)"))
         self.comboSize.append("500", _("High (500px)"))
