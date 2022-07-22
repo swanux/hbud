@@ -34,7 +34,7 @@ elif [[ $act == "update" ]]; then
         echo ""
         exit
     fi
-    xgettext --from-code=UTF-8 --keyword=translatable --keyword=_ --sort-output /home/$USER/GitRepos/hbud/DEV_FILES/hbud/*.{py,glade} -o /home/$USER/GitRepos/hbud/DEV_FILES/hbud/locale/po/hbud.pot
+    xgettext --from-code=UTF-8 --keyword=translatable --keyword=_ --sort-output /home/$USER/GitRepos/hbud/DEV_FILES/hbud/*.py -o /home/$USER/GitRepos/hbud/DEV_FILES/hbud/locale/po/hbud.pot
     msginit --locale=$lang --input=/home/$USER/GitRepos/hbud/DEV_FILES/hbud/locale/po/hbud.pot --output=/home/$USER/GitRepos/hbud/DEV_FILES/hbud/locale/po/$lang"_tmp".po
     msgmerge -o /home/$USER/GitRepos/hbud/DEV_FILES/hbud/locale/po/test.po /home/$USER/GitRepos/hbud/DEV_FILES/hbud/locale/po/$lang.po /home/$USER/GitRepos/hbud/DEV_FILES/hbud/locale/po/$lang"_tmp".po
     rm /home/$USER/GitRepos/hbud/DEV_FILES/hbud/locale/po/$lang"_tmp".po /home/$USER/GitRepos/hbud/DEV_FILES/hbud/locale/po/$lang.po

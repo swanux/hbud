@@ -47,21 +47,6 @@ class TrackBox(Adw.ActionRow):
         self.image = jean(self.image, task="margin", ids=[7, 7, 0, 0])
         self.add_prefix(self.image)
 
-        # self.set_icon_name("my-cover-icon")
-
-        # self = jean(self, [comboBox, arLab, yeLab, leLab])
-        # self.set_spacing(20)
-
-        # targs = [Gtk.TargetEntry.new("dummy", Gtk.TargetFlags.SAME_APP, 1)]
-        # self.dns = Gtk.DragSource.new()
-        # self.dns.set_actions(Gdk.DragAction.MOVE)
-        # self.add_controller(self.dns)
-        # self.drag_source_set(Gdk.ModifierType.BUTTON1_MASK, targs, Gdk.DragAction.MOVE)
-
-        # self.dnd = Gtk.DropTarget.new(Adw.ActionRow(), Gdk.DragAction.MOVE)
-        # self.add_controller(self.dnd)
-        # self.drag_dest_set(Gtk.DestDefaults.HIGHLIGHT | Gtk.DestDefaults.DROP | Gtk.DestDefaults.MOTION, targs, Gdk.DragAction.MOVE)
-
 class About(Gtk.AboutDialog):
     def __init__(self, build_version, window):
         super(About, self).__init__()
@@ -132,7 +117,6 @@ class MainStack(Gtk.Stack):
         gself.rdTitle.add_css_class("title-4")
         gself.rdTitle.set_ellipsize(3)
         gself.rdArtist = Gtk.Label.new()
-        # gself.rdArtist.add_css_class("title-4")
         gself.rdArtist.set_ellipsize(3)
         gself.rdYear = Gtk.Label.new()
         gself.rdYear.set_valign(Gtk.Align.CENTER)
@@ -143,58 +127,10 @@ class MainStack(Gtk.Stack):
         gself.rdBox.set_valign(Gtk.Align.CENTER)
         gself.rdBox = jean(gself.rdBox, [gself.rdTitle, gself.rdArtist, gself.rdYear])
 
-        #######################################################x
-
-        # Page X
-    #     gself.infBook = Gtk.Notebook.new()
-    #     gself.infBook.set_show_tabs(True)
-    #     gself.infBook.set_tab_pos(Gtk.PositionType.TOP)
-
-    #     scroll2 = Gtk.ScrolledWindow.new()
-    #     view2 = Gtk.Viewport.new(None, None)
-    #     mainSetBox = Gtk.Box.new(1, 0)
-    #     mainSetBox.set_vexpand(True)
-    #     mainSetBox.set_hexpand(True)
-    #     setBook = Gtk.Notebook.new()
-    #     setBook.set_show_tabs(True)
-    #     setBook.set_tab_pos(Gtk.PositionType.LEFT)
-    #     setBook.set_vexpand(True)
-    #     gself.roundSpin = Gtk.SpinButton.new_with_range(0, 40, 1)
-    #     gself.roundSpin.set_value(10)
-    #     gself.dark_switch = Gtk.Switch.new()
-    #     gself.colorer = Gtk.ColorButton()
-        
-    #     setGrid = self.gen_set(Gtk.Label.new(_("Rounded corners :")), _("Default: 10"), Gtk.Align.START, 0, Gtk.Grid.new(), 0, 0, False, -1, -1)
-    #     setGrid = self.gen_set(Gtk.Label.new(_("Force dark mode :")), _("Default: Off"), Gtk.Align.START, 0, setGrid, 0, 1, False, -1, -1)
-    #     setGrid = self.gen_set(Gtk.Label.new(_("Accent color :")), "", Gtk.Align.START, 0, setGrid, 0, 2, False, -1, -1)
-    #     setGrid = self.gen_set(gself.roundSpin, _("Default: 10"), Gtk.Align.END, 20, setGrid, 1, 0, True, -1, -1)
-    #     setGrid = self.gen_set(gself.dark_switch, _("Default: Off"), Gtk.Align.END, 20, setGrid, 1, 1, True, -1, -1)
-    #     setGrid = self.gen_set(gself.colorer, "", Gtk.Align.END, 20, setGrid, 1, 2, True, 95, 30)
-    #     setBook.append_page(setGrid, Gtk.Label.new(_("Appearance")))
-
-    #     mainSetBox.append(setBook)
-    #     view2.set_child(mainSetBox)
-    #     scroll2.set_child(view2)
-        # gself.infBook.append_page(scroll2, Gtk.Label.new(_("Settings")))
         # Add pages
         self.add_named(gself.placeholder, "placeholder")
         self.add_named(gself.strBox, "strBox")
         self.add_named(gself.rdBox, "rdBox")
-        # self.add_named(gself.infBook, "infBook")
-    
-    # def gen_set(self, widget, tooltip, align, marg_end, setGrid, column, row, expande, width, height):
-    #     setGrid.set_row_spacing(20)
-    #     setGrid.set_column_spacing(5)
-    #     setGrid.set_hexpand(True)
-    #     setGrid.set_vexpand(True)
-    #     setGrid = jean(setGrid, task="margin", ids=[5, 5, 5, 5])
-    #     widget.set_tooltip_text(tooltip)
-    #     widget.set_halign(align)
-    #     widget.set_margin_end(marg_end)
-    #     widget.set_hexpand(expande)
-    #     widget.set_size_request(width, height)
-    #     setGrid.attach(widget, column, row, 1, 1)
-    #     return setGrid
 
 class PrefWin(Adw.PreferencesWindow):
     def __init__(self, gself):
@@ -370,13 +306,10 @@ class MainWindow(Adw.Window):
         gself.mainToast.set_child(gself.mainStack)
         box = jean(box, [gself.mainToast, gself.bottom])
         mainbox = jean(mainbox, [gself.mainHeader, box])
-        # self.add_css_class("devel")
         self.add_controller(gself.ev_key_main)
         handle = Gtk.WindowHandle.new()
         handle.set_child(mainbox)
         self.set_content(handle)
-        # self.set_content(mainbox)
-
 
 class Sub2(Adw.Window):
     def __init__(self, gself):
@@ -392,9 +325,6 @@ class Sub2(Adw.Window):
         dat_grid = Gtk.Grid.new()
         dat_grid.set_row_spacing(5)
         dat_grid.set_column_spacing(5)
-        # dat_grid.set_hexpand(True)
-        # dat_grid.set_vexpand(True)
-        # dat_grid.set_column_homogeneous(True)
         dat_grid = jean(dat_grid, task="margin", ids=[0, 15, 20, 20])
         
         # Main
@@ -416,11 +346,7 @@ class Sub2(Adw.Window):
         gself.arEnt.set_input_purpose(Gtk.InputPurpose.NAME)
         gself.arEnt.set_placeholder_text(_("John Doe"))
 
-        for item in [gself.yrEnt, gself.tiEnt, gself.alEnt, gself.arEnt]:
-            # item.set_halign(Gtk.Align.START)
-            # item.set_size_request(100, -1)
-            item.set_vexpand(True)
-            # item.set_halign(Gtk.Align.START)
+        for item in [gself.yrEnt, gself.tiEnt, gself.alEnt, gself.arEnt]: item.set_vexpand(True)
 
         for i, item in enumerate([_("Year :"), _("Artist :"), _("Album :"), _("Title :"), _("Cover art :")]):
             label = Gtk.Label.new(item)
@@ -429,7 +355,6 @@ class Sub2(Adw.Window):
             dat_grid.attach(label, 0, i, 1, 1)
         
         covBox = Gtk.Box.new(0, 0)
-        # covBox.set_halign(Gtk.Align.START)
         gself.iChoser = Gtk.Button.new()
         gself.iChoser.set_valign(Gtk.Align.CENTER)
         gself.iChoser.set_halign(Gtk.Align.END)
@@ -444,32 +369,19 @@ class Sub2(Adw.Window):
         gself.metaCover.set_hexpand(True)
         gself.metaCover.set_size_request(100, 100)
         covBox = jean(covBox, [gself.iChoser, gself.metaCover])
-        # covBox.set_hexpand(True)
 
         magBox = Gtk.Box.new(0, 5)
         gself.magiSpin = Gtk.Spinner()
-        # gself.magiStack = Gtk.Stack()
         gself.magiBut = Gtk.Button.new_from_icon_name("sync-synchronizing")
-        # gself.magiBut.set_size_request(-1, 48)
         gself.magiBut.set_valign(Gtk.Align.CENTER)
         gself.magiBut.set_halign(Gtk.Align.CENTER)
         magBox.append(gself.magiSpin)
         magBox.append(Gtk.Label.new(_("Fetch metadata")))
         gself.magiBut.set_child(magBox)
-        # gself.magiSpin.set_valign(Gtk.Align.START)
-        # gself.magiSpin.set_halign(Gtk.Align.START)
-        # gself.magiStack.add_named(gself.magiBut, "magiBut")
-        # gself.magiStack.add_named(gself.magiSpin, "magiSpin")
-        # gself.magiStack.set_margin_bottom(15)
-        # gself.magiStack.set_margin_end(25)
-        # gself.magiStack.set_hexpand(True)
-        # magBox.append(gself.magiStack)
-        # gself.magiStack.set_margin_bottom(15)
         gself.savBut = Gtk.Button.new_with_label(_("Save"))
         gself.savBut.set_valign(Gtk.Align.CENTER)
         gself.savBut.set_halign(Gtk.Align.END)
         gself.savBut.set_hexpand(True)
-        # magBox.append(gself.savBut)
         dat_grid.attach(gself.magiBut, 0, 5, 1, 1)
 
         for i, item in enumerate([gself.yrEnt, gself.arEnt, gself.alEnt, gself.tiEnt, covBox, gself.savBut]):
@@ -483,19 +395,6 @@ class Sub2(Adw.Window):
         self.set_size_request(500, 400)
         self.set_resizable(False)
         self.set_title(_("HBud - Metadata editor"))
-
-    # def gen_grid(self, widget, marg_end, setGrid, column, row, expande, width, height):
-    #     setGrid.set_row_spacing(20)
-    #     setGrid.set_column_spacing(5)
-    #     setGrid.set_hexpand(True)
-    #     setGrid.set_vexpand(True)
-    #     setGrid = jean(setGrid, task="margin", ids=[5, 5, 5, 5])
-
-    #     widget.set_margin_end(marg_end)
-    #     widget.set_hexpand(expande)
-    #     widget.set_size_request(width, height)
-    #     setGrid.attach(widget, column, row, 1, 1)
-    #     return setGrid
 
 
 class Sub(Adw.Window):
@@ -608,13 +507,7 @@ class Widgets(Adw.Application):
         super(Widgets, self).__init__()
         _ = gettext.gettext
         self.application_id = cn.App.application_id
-        # self.flags = Gio.ApplicationFlags.FLAGS_NONE
-        # self.program_name = cn.App.application_name
         self.build_version = cn.App.application_version
-        # self.about_comments = cn.App.about_comments
-        # self.app_years = cn.App.app_years
-        # self.app_icon = cn.App.application_id
-        # self.main_url = cn.App.main_url
         self.bug_url = cn.App.bug_url
         self.help_url = cn.App.help_url
         self.useMode = "audio"
@@ -624,7 +517,7 @@ class Widgets(Adw.Application):
         self.fulle, self.resete, self.keepReset, self.hardReset, self.tnum, self.sorted, self.aborte, self.hardreset2, self.resete2, self.clocking, self.searched = False, False, False, False, 0, False, False, False, False, False, False
         self.sub, self.seekBack, self.playing, self.res, self.title, self.countermove, self.mx, self.my = Sub(self), False, False, False, None, 0, 0, 0
         self.comboSize = Gtk.ComboBoxText.new()
-        self.comboSize.append("1200", _("Ultra high (1200px)"))
+        self.comboSize.append("1200", _("Ultra High (1200px)"))
         self.comboSize.append("500", _("High (500px)"))
         self.comboSize.append("250", _("Normal (250px)"))
         self.comboSize.set_active(1)
@@ -650,33 +543,12 @@ class Widgets(Adw.Application):
         self.theTitle = Gtk.Label.new()
         self.theTitle.set_name("thetitle")
         self.theTitle.set_valign(Gtk.Align.END)
-        # self.metaCover = Gtk.Image.new()
         self.header = Adw.HeaderBar()
         self.header.set_show_end_title_buttons(True)
-        # self.yrEnt = Gtk.SpinButton.new_with_range(0, 2100, 1)
-        # self.yrEnt.set_value(1000)
-        # self.tiEnt = Gtk.Entry()
-        # self.alEnt = Gtk.Entry()
-        # self.arEnt = Gtk.Entry()
-
         self.window = MainWindow(self)
         self.sub2.set_transient_for(self.window)
         self.sub2.set_modal(True)
         self.about = About(self.build_version, self.window)
-
-        # self.subSpin = Gtk.SpinButton.new_with_range(10, 99, 1)
-        # self.subSpin.set_value(30)
-        # self.subMarSpin = Gtk.SpinButton.new_with_range(10, 99, 1)
-        # self.subMarSpin.set_value(66)
-        self.nosub = Gtk.Window()
-        # self.iChoser = Gtk.Button.new_from_icon_name("folder-open")
-        # self.magiSpin = Gtk.Spinner()
-        # self.magiStack = Gtk.Stack()
-        # self.magiBut = Gtk.Button.new_from_icon_name("sync-synchronizing")
-        # self.magiBut.set_size_request(48, 48)
-        # self.bg_switch = Gtk.Switch()
-        # self.mus_switch, self.az_switch, self.letr_switch = Gtk.Switch(), Gtk.Switch(), Gtk.Switch()
-        self.whView = Gtk.TextView()
         self.switchDict = {"locBut" : [self.placeholder, "audio-input-microphone", "audio", self.strBut], "strBut" : [self.strBox, "view-fullscreen", "video", self.locBut]}
         self.provider, self.settings = Gtk.CssProvider(), Adw.StyleManager.get_default()
         # self.window.set_wmclass(APP, "HBud")

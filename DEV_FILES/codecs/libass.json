@@ -1,0 +1,19 @@
+{
+    "name": "libass",
+    "config-opts": [ "--enable-shared", "--disable-static" ],
+    "sources": [
+        {
+            "type": "git",
+            "url": "https://github.com/libass/libass.git",
+            "tag": "0.16.0",
+            "commit": "1af6240c5d1e499326146e0b88c987e626b13c23"
+        },
+        {
+            "type":"script",
+            "commands":[
+                "autoreconf -fiv"
+            ],
+            "dest-filename":"autogen.sh"
+        }
+    ]
+}

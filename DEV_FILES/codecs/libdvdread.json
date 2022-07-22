@@ -1,0 +1,19 @@
+{
+    "name": "libdvdread",
+    "config-opts": [ "--enable-shared", "--disable-static" ],
+    "sources": [
+        {
+            "type": "git",
+            "url": "https://code.videolan.org/videolan/libdvdread.git",
+            "tag": "6.1.3",
+            "commit": "0e020921726ee812e633959d9ad6315ff58b902b"
+        },
+        {
+            "type":"script",
+            "commands":[
+                "autoreconf -fiv"
+            ],
+            "dest-filename":"autogen.sh"
+        }
+    ]
+}

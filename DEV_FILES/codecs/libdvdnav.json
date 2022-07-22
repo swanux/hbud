@@ -1,0 +1,19 @@
+{
+    "name": "libdvdnav",
+    "config-opts": [ "--enable-shared", "--disable-static" ],
+    "sources": [
+        {
+            "type": "git",
+            "url": "https://code.videolan.org/videolan/libdvdnav.git",
+            "tag": "6.1.1",
+            "commit": "49f36c397a31e663d9e59b909379808a08b80b8f"
+        },
+        {
+            "type":"script",
+            "commands":[
+                "autoreconf -fiv"
+            ],
+            "dest-filename":"autogen.sh"
+        }
+    ]
+}

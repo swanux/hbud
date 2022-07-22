@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
+from copy import copy
 import gi, srt, azapi, json, os, sys, gettext, locale, acoustid, musicbrainzngs#, ctypes
 from concurrent import futures
 from time import sleep, time
@@ -12,8 +13,7 @@ from mediafile import MediaFile, MediaField, MP3DescStorageStyle, StorageStyle
 gi.require_version('Gtk', '4.0')
 gi.require_version('Gst', '1.0')
 gi.require_version('Adw', '1')
-# gi.require_version('GstVideo', '1.0')
-from gi.repository import Gtk, GLib, GdkPixbuf, Gdk, Gst, Adw, Gio#, GstVideo
+from gi.repository import Gtk, GLib, GdkPixbuf, Gdk, Gst, Adw, Gio
 from hbud import letrasapi, musixapi, helper, tools
 
 class Main(helper.Widgets):
@@ -22,23 +22,6 @@ class Main(helper.Widgets):
     
     def on_activate(self, app):
         self.confDir = GLib.get_user_config_dir()
-        # Gtk Scale not yet working
-        # Look into video player: 
-        #    - subtitle should adjust if turned on in fullscreen
-        #    - click to play/pause
-        #    - hide header on fullscreen
-        #    - why is there a shadow-mouse? Gdk.Cursor names?
-
-        # Code review, remove unused, rewrite badly written
-
-        # TEST, TEST, TEST!
-
-        # fpcalc and gst-rs should be built, not included OR extension
-        # look into permissions and appstore data
-        # flatpak permissions from totem?
-
-        # TEST AGAIN!!
-
         APP = "io.github.swanux.hbud"
         WHERE_AM_I = os.path.abspath(os.path.dirname(__file__))
         LOCALE_DIR = os.path.join(WHERE_AM_I, 'locale/mo')
@@ -49,8 +32,8 @@ class Main(helper.Widgets):
         gettext.bindtextdomain(APP, LOCALE_DIR)
         gettext.textdomain(APP)
         self._ = gettext.gettext
-        self.API_KEY = "tnqJHZRTQL"
-        musicbrainzngs.set_useragent("hbud", "0.3.5", "https://github.com/swanux/hbud")
+        self.API_KEY = "Erv1I6jCqZ"
+        musicbrainzngs.set_useragent("hbud", "0.4.0", "https://github.com/swanux/hbud")
         try:
             self.clickedE = sys.argv[1].replace("file://", "")
             if os.path.splitext(self.clickedE)[-1] not in self.supportedList and os.path.splitext(self.clickedE)[-1] != "":
@@ -58,41 +41,8 @@ class Main(helper.Widgets):
                 print("video, now", self.clickedE)
         except:
             self.clickedE = False
-        # self.builder.connect_signals(self)
+        self.createPipeline("local")
         self.connect_signals()
-        buffer = Gtk.TextBuffer()
-        buffer.set_text(self._("""
- v0.4.0 - ??? ?? 2022 :
-
-        * Switching back to GStreamer...
-        * Lots of improvements regarding flatpak packaging
-        * Fixed issue related to playing mp4 videos
-        * Complete migration to LibAdwaita and GTK4 (nearly full rewrite)
-        * Lots of bugfixes
-        * Several GUI related performance fixes
-        * Updated custom widgets (TrackBox now based on ActionRow)
-        * Code-based GUI generation instead of Glade
-        * Brand new preferences (frontend and backend)
-        * Fresh look and feel
-        * More attention to GNOME design standards
-        * Album cover now part of the TrackBox widget
-        * New minimal player mode
-        * Removed drag and drop support (reorder is still possible using arrows)
-        * Now using audio metadata to store lyrics by default (misc and same folder are still supported)
-        * Seeking with mouse is a bit choppy (bug in GTK4 issue 4939 - had to use workaround)
-        * Video playback is quite power-hungry, but stable (more efficient solution is WIP, see gst-plugins-rs MR 588)
-
-        * Cleaned up codebase (?)
-        * Better multi-threading management (?)
-
-
-        * 2-3x better performance again, resulting in 4-6x better compared to v0.3.0
-"""))
-        self.whView.set_buffer(buffer)
-        # image_filter = Gtk.FileFilter()
-        # image_filter.set_name(self._("Image files"))
-        # image_filter.add_mime_type("image/*")
-        # self.iChoser.add_filter(image_filter)
         self.DAPI = azapi.AZlyrics('duckduckgo', accuracy=0.65)
 
         self.canwriteconf = False
@@ -102,7 +52,6 @@ class Main(helper.Widgets):
         self.subMarSpin.set_value(self.sMarg)
         self.darkew.set_active(int(theme))
         self.size, self.size2 = 35000, 15000
-        # self.darke = dark == "True"
         if theme == "0": self.theme = 0
         elif theme == "1": self.theme = 4
         elif theme == "2": self.theme = 1
@@ -132,33 +81,17 @@ class Main(helper.Widgets):
         click = Gtk.GestureClick.new()
         motion = Gtk.EventControllerMotion.new()
         self.slider.add_controller(motion)
-        # self.slider.connect("button-release-event", self.on_slider_seek)
-        # click.connect("released", self.on_slider_seek)
         click.connect("pressed", self.on_slider_grab)
         self.slider.connect("value-changed", self.on_slider_grabbed)
-        # self.slider.connect("button-press-event", self.on_slider_grab)
-        # self.slider.connect("enter-notify-event", self.mouse_enter)
-        # self.slider.connect("leave-notify-event", self.mouse_leave)
         self.bottom_motion.connect("enter", self.mouse_enter)
         self.bottom_motion.connect("leave", self.mouse_leave)
         motion.connect("motion", self.sliding)
         self.slider.add_controller(click)
 
-        # self.roundSpin.set_value(float(self.rounded))
-        # self.dark_switch.set_state(self.darke)
         GLib.idle_add(self.subcheck.hide)
-        # GLib.idle_add(self.builder.get_object("oplink").set_label, self._("Visit OpenSubtitles"))
-        # GLib.idle_add(self.builder.get_object("sublink").set_label, self._("Visit Subscene"))
-        # self.sub.connect('size-allocate', self._on_size_allocated)
-        # self.window.connect('size-allocate', self._on_size_allocated0)
         self.window.connect('notify', self._on_notify)
-        # self.window.connect('notify::default-width', self._on_size_allocated)
-        # self.window.connect('notify::maximized', self._on_size_allocated)
         self.sub.connect('notify', self._on_notify)
-        # self.sub.connect('notify::default-width', self._on_size_allocated)
-        # self.sub.connect('notify::maximized', self._on_size_allocated)
         tools.themer(self.provider, self.window, self.color)
-        # self.settings.set_property("gtk-application-prefer-dark-theme", self.darke)
         self.settings.set_color_scheme(self.theme)
         # Display the program
         title = Adw.WindowTitle()
@@ -167,7 +100,6 @@ class Main(helper.Widgets):
         self.mainHeader.set_title_widget(title)
         self.window.set_application(app)
         self.window.present()
-        self.createPipeline("local")
         self.topBox.hide()
         self.drop_but.hide()
         if self.lite == True:
@@ -197,7 +129,6 @@ class Main(helper.Widgets):
         self.ev_key_sub.connect("key-pressed", self.on_key_local)
         self.ev_key_sub.connect("key-released", self.on_key_local_release)
 
-        # self.infBut.connect("activate", self.on_infBut_clicked)
         action = Gio.SimpleAction.new("pref", None)
         action.connect("activate", self.on_infBut_clicked)
         self.add_action(action)
@@ -256,21 +187,6 @@ class Main(helper.Widgets):
         print(widget.get_button())
         if widget.get_button() == 3:
             self.ednum = int(widget.get_widget().get_name().replace("trackbox_", ""))
-            # menu = Gio.Menu()
-            # menu.set_can_focus(False)
-            # menu_item = Gio.MenuItem.new(self._('Delete from current playqueue'), "app.delete")
-            # menu_item.set_can_focus(False)
-            # menu_item.connect("activate", self.del_cur)
-            # menu.append_item(menu_item)
-            # menu_item = Gio.MenuItem.new(self._('Edit metadata'), "app.edit")
-            # menu_item.set_can_focus(False)
-            # menu_item.connect("activate", self.ed_cur)
-            # menu.append_item(menu_item)
-            # menu.freeze()
-            # menu.show_all()
-            # menu.popup_at_pointer()
-            # popover = Gtk.PopoverMenu.new_from_model(menu)
-            # popover.set_autohide(True)
             self.popover = Gtk.PopoverMenu.new_from_model(self.menu)
             self.popover.set_autohide(True)
             self.popover.set_parent(widget.get_widget())
@@ -284,18 +200,12 @@ class Main(helper.Widgets):
         print("Searching...")
         self.searched = True
         term = widget.get_text().lower()
-        # GLib.idle_add(self.supBox.show_all)
-        # self.search_list = []
         for i, item in enumerate(self.playlist): self.playlist[i]["hidden"] = False
         if term != "":
             for i, item in enumerate(self.playlist):
-                if term in item["title"].lower() or term in item["artist"].lower() or term in item["album"].lower():
-                    self.playlist[i]["hidden"] = False
+                if term in item["title"].lower() or term in item["artist"].lower() or term in item["album"].lower(): self.playlist[i]["hidden"] = False
                 else: self.playlist[i]["hidden"] = True
         else: self.searched = False
-        # for i in self.playlist:
-        #     if i["hidden"] == True: GLib.idle_add(item["widget"])
-        #     elif i["hidden"] == False: GLib.idle_add(item["widget"])
         self.neo_playlist_gen("shuff_2nd_stage")
 
     def on_sort_change(self, widget):
@@ -321,38 +231,17 @@ class Main(helper.Widgets):
         os.system(f"rm '{self.confDir}/{tmname}.saved.order'")
         self.mainToast.add_toast(Adw.Toast.new(self._('Cleared saved order successfully!')))
 
-    def on_rescan_order(self, _):
-        GLib.idle_add(self.loader, self.folderPath, True)
+    def on_rescan_order(self, _): GLib.idle_add(self.loader, self.folderPath, True)
 
     def on_order_save(self, _):
         tmname = self.folderPath.replace("/", ">")
         f = open(f"{self.confDir}/{tmname}.saved.order", "w+")
         data = []
         for i in range(len(self.playlist)): data.append(self.playlist[i].copy())
-        # data = self.playlist.copy()
         for i in range(len(data)): data[i]["widget"] = None
-        # print(data)
-        # print("#########################################")
-        # print(self.playlist)
         f.write(json.dumps(data))
         f.close()
         self.mainToast.add_toast(Adw.Toast.new(self._('Saved order successfully!')))
-
-    # def _realized(self, widget, _=None):
-    #     self.videoPipe = Gst.ElementFactory.make("playbin3")
-    #     self.sink = Gst.ElementFactory.make("glimagesink")
-    #     self.sink.handle_events(False)
-    #     self.sink.set_property("force-aspect-ratio", True)
-    #     win_id = widget.get_window().get_xid()
-    #     self.sink.set_window_handle(win_id)
-    #     self.videoPipe.set_property("video-sink", self.sink)
-    #     bus = self.videoPipe.get_bus()
-    #     bus.add_signal_watch()
-    #     bus.connect("message", self.on_message)
-
-    # def draw_event(self, _, cairo_ctx):
-    #     cairo_ctx.set_source_rgb(0, 0, 0)
-    #     cairo_ctx.paint()
 
     def createPipeline(self, mode):
         if mode == "local":
@@ -361,19 +250,17 @@ class Main(helper.Widgets):
             playerFactory = self.videoPipe.get_factory()
             gtksink = playerFactory.make('gtk4paintablesink')
             videosink = gtksink.props.paintable
-            # video_sink = Gst.ElementFactory.make("glsinkbin", None)
-            # video_sink.props.sink = gtksink
             self.videoPipe.set_property("video-sink", gtksink)
-
             self.videosink = Gtk.Picture.new_for_paintable(videosink)
             self.videosink.set_valign(Gtk.Align.FILL)
             self.videosink.set_halign(Gtk.Align.FILL)
+            self.videosink.set_name("videosink")
+            click = Gtk.GestureClick.new()
             motion = Gtk.EventControllerMotion.new()
+            self.videosink.add_controller(click)
             self.window.add_controller(motion)
             motion.connect("motion", self.mouse_moving)
-            # self.videosink.set_valign(Gtk.Align.FILL)
-            # self.videosink.set_halign(Gtk.Align.FILL)
-            # self.videosink.connect("button_press_event", self.mouse_click0)
+            click.connect("pressed", self.on_playBut_clicked)
             self.strOverlay.set_child(self.videosink)
             self.videosink.show()
             self.strOverlay.add_overlay(self.theTitle)
@@ -383,51 +270,27 @@ class Main(helper.Widgets):
             bus = self.audioPipe.get_bus()
             bus.add_signal_watch()
             bus.connect("message", self.on_message)
-        # elif mode == "stream":
-            # self.player = Gst.parse_launch(f"souphttpsrc is-live=false location={self.url} ! decodebin ! audioconvert ! autoaudiosink")
-
-    # def createPipeline(self, mode):
-    #     if mode == "local":
-    #         self.audioPipe = Gst.ElementFactory.make("playbin3")
-    #         self.drawer = self.builder.get_object("strDraw")
-    #         self.drawer.set_events(256)
-    #         self.drawer.connect("button_press_event", self.mouse_click0)
-    #         self.drawer.connect("realize",self._realized)
-    #         # self.drawer.connect("draw", self.draw_event)
-    #         self.drawer.show()
-    #         self.strOverlay.add_overlay(self.theTitle)
-    #         bus = self.audioPipe.get_bus()
-    #         bus.add_signal_watch()
-    #         bus.connect("message", self.on_message)
-        # elif mode == "stream":
-            # self.player = Gst.parse_launch(f"souphttpsrc is-live=false location={self.url} ! decodebin ! audioconvert ! autoaudiosink")
 
     def on_dropped(self, button):
         if self.drop_but.get_visible() == True:
             if self.topBox.get_visible() == False:
-                GLib.idle_add(self.drop_but.set_icon_name, "gtk-go-up")
+                GLib.idle_add(self.drop_but.set_icon_name, "go-up")
                 GLib.idle_add(self.topBox.show)
                 self.search_play.grab_focus()
             elif button != "key":
-                GLib.idle_add(self.drop_but.set_icon_name, "gtk-go-down")
+                GLib.idle_add(self.drop_but.set_icon_name, "go-down")
                 GLib.idle_add(self.topBox.hide)
 
     def allToggle(self, button):
-        # btn = Gtk.Buildable.get_name(button)
         btn = button.get_name()
-        # print(btn)
-        # print(self.mainStack.get_visible_child(), self.switchDict[btn][0])
         if self.mainStack.get_visible_child() != self.switchDict[btn][0] and button.get_active() == True:
             self.mainStack.set_visible_child(self.switchDict[btn][0])
-            # if btn != "infBut" or self.nowIn == "video":
             GLib.idle_add(self.bottom.show)
             if btn == "locBut":
-                # GLib.idle_add(self.trackCover.show)
                 GLib.idle_add(self.shuffBut.show)
                 if self.playlistPlayer == True: GLib.idle_add(self.drop_but.show)
                 GLib.idle_add(self.subcheck.hide)
             else:
-                # GLib.idle_add(self.trackCover.hide)
                 GLib.idle_add(self.shuffBut.hide)
                 GLib.idle_add(self.drop_but.hide)
                 GLib.idle_add(self.subcheck.show)
@@ -436,39 +299,20 @@ class Main(helper.Widgets):
                 if self.switchDict[btn][2] == "video" and self.nowIn == "audio": self.on_playBut_clicked("xy")
                 elif self.nowIn == "video" and self.switchDict[btn][2] != "video": self.on_playBut_clicked("xy")
             self.useMode = self.switchDict[btn][2]
-            # if btn == "infBut":
-            #     GLib.idle_add(self.bottom.hide)
-            #     GLib.idle_add(self.subcheck.hide)
-            #     GLib.idle_add(self.drop_but.hide)
             self.needSub = False
             GLib.idle_add(self.subcheck.set_state, False)
             GLib.idle_add(self.switchDict[btn][3].set_active, False)
-            # GLib.idle_add(self.switchDict[btn][4].set_active, False)
         elif self.mainStack.get_visible_child() == self.switchDict[btn][0]: GLib.idle_add(button.set_active, True) 
-
-    # def cleaner(self, widget):
-    #     lis = widget.get_children()
-    #     if lis == []: pass
-    #     else: [i.destroy() for i in lis]
     
     def neo_playlist_gen(self, name="", srBox=None, dsBox=None, src=0, dst=0):
         print("neo start", time())
-        # print(self.playlist)
-        # if name == 'shuffle':
-        #     # if self.playlistPlayer == True:
-        #     playlistLoc = sample(self.playlist, len(self.playlist))
-        #     self.playlist, self.tnum = playlistLoc, 0
-        #     self.neo_playlist_gen("shuff_2nd_stage")
-        #     self.on_next('clickMode0')
         if self.lite == True:
             self.tnum = 0
             self.on_next("clickMode")
             return
         if self.lite == False:
             if name == "reorder":
-                # srcBox = self.supBox.get_children()[src]
                 self.supBox.reorder_child_after(srBox, dsBox)
-                # tmpList = self.supBox.get_children()
                 for i, item in enumerate(self.playlist):
                     item["widget"].set_name(f"trackbox_{i}")
                 if self.tnum == src or self.tnum == dst:
@@ -480,8 +324,6 @@ class Main(helper.Widgets):
                     elif src < self.tnum and dst > self.tnum: self.tnum -= 1
                 tools.themer(self.provider, self.window, self.color, self.tnum)
             else:
-                # self.cleaner(self.playlistBox)
-                # print(self.playlistBox.get_first_child())
                 if name != "modular" and name != "append":
                     try: self.playlistBox.remove(self.playlistBox.get_first_child())
                     except: print("no child")
@@ -489,9 +331,10 @@ class Main(helper.Widgets):
                     self.supBox.set_can_focus(False)
                 for i, item in enumerate(self.playlist):
                     trBox = None
-                    if name == "shuff_2nd_stage" and item["hidden"] == False:
-                        trBox = item["widget"]
-                        trBox.set_name(f"trackbox_{i}")
+                    if name == "shuff_2nd_stage":
+                        if item["hidden"] == False:
+                            trBox = item["widget"]
+                            trBox.set_name(f"trackbox_{i}")
                     elif name != "modular" or i == self.ednum:
                         if name != "append" or self.playlist[i]["widget"] == None:
                             trBox = helper.TrackBox(item["title"].replace("&", "&amp;"), item["artist"], i, item["year"], item["length"], item["album"])
@@ -503,45 +346,16 @@ class Main(helper.Widgets):
                             right_click.set_button(3)
                             trBox.add_controller(right_click)
                             right_click.connect("pressed", self.highlight)
-                            # GLib.idle_add(self.load_cover, item["uri"], trBox.image)
-                            # ld_cov = futures.ThreadPoolExecutor(max_workers=4)
-                            # ld_cov.submit(self.load_cover, item["uri"], trBox.image)
                             self.load_cover(item["uri"], trBox.image)
-                            # print(self.playlist[i]["widget"])
-                    
-                    # trBox.connect("button_release_event", self.highlight)
-                    # trBox.connect('drag-drop', self._sig_drag_drop)
-                    # trBox.dns.connect("", )
-
-                    # trBox.dns.connect('prepare', self.on_dnd_prepare)
-                    # dns = Gtk.DragSource.new()
-                    # dns.set_actions(Gdk.DragAction.MOVE)
-                    # dnd = Gtk.DropTarget.new(Gio.ActionRow(), Gdk.DragAction.MOVE)
-                    # dns.connect('drag-begin', self._sig_drag_drop)
-                    # dns.connect('drag-end', self._sig_drag_end)
-                    # trBox.add_controller(dns)
-                    # trBox.add_controller(dnd)
-
-                    # trBox.dnd.connect('drop', self._sig_drag_end)
-                    # trBox.dnd.connect('accept', self.on_dnd_accept)
-                    # trBox.dnd.connect('enter', self.on_dnd_enter)
-                    # trBox.dnd.connect('motion', self.on_dnd_motion)
-                    # trBox.dnd.connect('leave', self.on_dnd_leave)
-
-                    # trBox.connect('drag-end', self._sig_drag_end)
-                    # print(trBox, " - ", item["title"])
-                    if item["hidden"] == False:
                         if name == "modular" and i == self.ednum: GLib.idle_add(self.supBox.insert_child_after, trBox, self.playlist[i-1]["widget"])
-                        elif name != "modular" and trBox != None: self.supBox.append(trBox)
+                    if name != "modular" and trBox != None: self.supBox.append(trBox)
                 if name != "modular" and name != "append":
                     yetScroll = Gtk.ScrolledWindow()
                     yetScroll.set_can_focus(False)
                     yetScroll.set_vexpand(True)
                     yetScroll.set_hexpand(True)
-                    # yetScroll.set_margin_end(0)
                     yetScroll.set_child(self.supBox)
                     GLib.idle_add(self.playlistBox.append, yetScroll)
-                    # yetScroll.show_all()
                     self.adj = yetScroll.get_vadjustment()
                     self.playlistPlayer = True
                     if self.title != None:
@@ -552,7 +366,6 @@ class Main(helper.Widgets):
                         self.tnum = num
                         tools.themer(self.provider, self.window, self.color, self.tnum)
                     GLib.idle_add(self.drop_but.show)
-            # print(self.playlist)
         print("neo end", time())
 
     def metas(self, location, extrapath, misc=False):
@@ -583,7 +396,6 @@ class Main(helper.Widgets):
             self.playlist = self.pltmp
             d_pl.submit(self.neo_playlist_gen)
         else:
-            # [self.playlist.append(item) for item in self.pltmp]
             uristmp = []
             for item in self.playlist: uristmp.append(item["uri"])
             i = 0
@@ -593,10 +405,6 @@ class Main(helper.Widgets):
                     i += 1
             d_pl.submit(self.neo_playlist_gen, name="append")
             self.mainToast.add_toast(Adw.Toast.new(self._('Rescan complete. {} tracks added.').format(i)))
-        # GLib.idle_add(self.neo_playlist_gen)
-        # self.shadowList = self.playlist
-        # GLib.idle_add(self.search_play.set_text, "")
-        # GLib.idle_add(self.combo_sort.set_active_id, "0")
         print("loader end", time())
 
     def on_openFolderBut_clicked(self, *_):
@@ -616,14 +424,9 @@ class Main(helper.Widgets):
                     f.close()
                     for item in self.playlist[:]:
                         if os.path.isfile(f"{item['uri']}") == False: self.playlist.remove(item)
-                    # GLib.idle_add(self.neo_playlist_gen)
                     d_pl = futures.ThreadPoolExecutor(max_workers=4)
                     d_pl.submit(self.neo_playlist_gen)
-                    # self.neo_playlist_gen()
-                else:
-                    # d_pl = futures.ThreadPoolExecutor(max_workers=4)
-                    # d_pl.submit(self.loader, self.folderPath)
-                    GLib.idle_add(self.loader, self.folderPath)
+                else: GLib.idle_add(self.loader, self.folderPath)
             elif folder == self._("Pictures"):
                 path = dialog.get_file().get_path()
                 tf = open(path, "rb")
@@ -646,56 +449,18 @@ class Main(helper.Widgets):
             filterr.set_name(self._("Video files"))
             filterr.add_mime_type("video/*")
             filechooserdialog.add_filter(filterr)
-            filechooserdialog.set_current_folder(Gio.File.new_for_path(GLib.get_user_special_dir(GLib.UserDirectory.DIRECTORY_VIDEOS)))
         elif folder == self._("Pictures"):
             filterr = Gtk.FileFilter()
             filterr.set_name(self._("Image files"))
             filterr.add_mime_type("image/*")
             filechooserdialog.add_filter(filterr)
-            filechooserdialog.set_current_folder(Gio.File.new_for_path(GLib.get_user_special_dir(GLib.UserDirectory.DIRECTORY_PICTURES)))
-        else: filechooserdialog.set_current_folder(Gio.File.new_for_path(GLib.get_user_special_dir(GLib.UserDirectory.DIRECTORY_MUSIC)))
-        # filechooserdialog.set_current_folder(Gio.File.new_for_path(f"/home/{user}/{folder}"))
         filechooserdialog.connect("response", self.on_response, filechooserdialog, folder)
         filechooserdialog.set_transient_for(parent)
         filechooserdialog.set_modal(True)
         filechooserdialog.show()
-        # filechooserdialog.add_button(self._("_Cancel"), Gtk.ResponseType.CANCEL)
-        # filechooserdialog.add_button(self._("_Open"), Gtk.ResponseType.OK)
-        # filechooserdialog.set_default_response(Gtk.ResponseType.OK)
-        # response = filechooserdialog.run()
-        # if response == Gtk.ResponseType.OK:
-        #     if folder == self._("Music"):
-        #         self.folderPath = filechooserdialog.get_uri().replace("file://", "")
-        #         print("Folder selected: " + self.folderPath)
-        #         if os.path.isfile(f"{self.folderPath}/.saved.order"):
-        #             f = open(f"{self.folderPath}/.saved.order", "r")
-        #             self.playlist = json.loads(f.read())
-        #             f.close()
-        #             for item in self.playlist[:]:
-        #                 if os.path.isfile(f"{item['uri']}") == False: self.playlist.remove(item)
-        #             GLib.idle_add(self.neo_playlist_gen)
-        #         else:
-        #             d_pl = futures.ThreadPoolExecutor(max_workers=4)
-        #             d_pl.submit(self.loader, self.folderPath)
-        #     else:
-        #         videoPath = filechooserdialog.get_filename()
-        #         print("File selected: " + videoPath)
-        #         self.res = False
-        #         try: self.player.set_state(Gst.State.NULL)
-        #         except: print("Nothing to stop yet")
-        #         self.on_playBut_clicked(videoPath)
-        # elif response == Gtk.ResponseType.CANCEL: print("Cancel clicked")
-        # filechooserdialog.destroy()
 
     def on_iChoser_clicked(self, *_):
         self.fcconstructer(self._("Please choose an image file"), Gtk.FileChooserAction.OPEN, self._("Pictures"), self.sub2)
-
-    # def on_iChoser_file_set(self, *_):
-    #     path = self.iChoser.get_filename()
-    #     tf = open(path, "rb")
-    #     tmBin = tf.read()
-    #     tf.close()
-    #     GLib.idle_add(self.load_cover, "brainz", tmBin)
 
     def on_save(self, *_):
         tmname = self.folderPath.replace("/", ">")
@@ -726,15 +491,12 @@ class Main(helper.Widgets):
         self.alEnt.set_text(self.playlist[self.ednum]["album"])
         self.tiEnt.set_text(self.playlist[self.ednum]["title"])
         self.load_cover(mode="meta")
-        # self.sub2.set_title(self._("Edit metadata for")+str(self.editingFile.split('/')[-1]))
-        # tools.themer(self.provider, self.sub2, self.rounded, self.color)
         self.sub2.present()
 
     def on_magiBut_clicked(self, _):
         GLib.idle_add(self.magiSpin.start)
         thread = futures.ThreadPoolExecutor(max_workers=2)
         thread.submit(self.fetch_cur)
-        # self.fetch_cur()
 
     def chose_one(self):
         print("Chose one")
@@ -754,16 +516,7 @@ class Main(helper.Widgets):
         treeview.append_column(column)
         column = Gtk.TreeViewColumn("Year", rendererText, text=3)
         treeview.append_column(column)
-        # mainBox = Gtk.Box.new(1, 0)
-        # mainBox.append(self.headerbar)
         self.chosBox.append(treeview)
-        # self.choser_window.set_child(treeview)
-        # self.choser_window.set_position(Gtk.WindowPosition.CENTER_ON_PARENT)
-        # self.choser_window.set_titlebar(self.headerbar)
-        # handle = Gtk.WindowHandle.new()
-        # handle.set_child(self.chosBox)
-        # self.choser_window.set_content(handle)
-        # self.choser_window.set_title(self._("Which one is correct?"))
         GLib.idle_add(self.choser_window.present)
     
     def on_tree_row_activated(self, widget, row, _):
@@ -808,7 +561,6 @@ class Main(helper.Widgets):
             self.aborte = False
             return
         if len(self.chosefrom) == 0:
-            # GLib.idle_add(tools.diabuilder, self._('Did not find any match online.'), self._("Information"), Gtk.MessageType.INFO, Gtk.ButtonsType.OK, self.window)
             self.sub2Toast.add_toast(Adw.Toast.new(self._('Did not find any match online.')))
             GLib.idle_add(self.magiSpin.stop)
         elif len(self.chosefrom) == 1:
@@ -838,11 +590,6 @@ class Main(helper.Widgets):
         GLib.idle_add(self.magiSpin.stop)
         self.sub2Toast.add_toast(Adw.Toast.new(self._('Metadata fetched successfully!')))
 
-    def mouse_click0(self, _, event):
-        if event.type == Gdk.EventType._2BUTTON_PRESS: 
-            if self.useMode == "video": self.on_karaoke_activate(0)
-        elif event.type == Gdk.EventType.BUTTON_PRESS: self.on_playBut_clicked("")
-
     def del_cur(self, *_):
         print(self.playlist[self.ednum])
         try: self.popover.unparent()
@@ -855,7 +602,6 @@ class Main(helper.Widgets):
         self.visnum = 0
         for i, item in enumerate(self.playlist):
             if item["hidden"] == False and i<self.tnum: self.visnum += 1
-        # self.neo_playlist_gen()
         if self.tnum == self.ednum: self.play()
 
     def on_next(self, button):
@@ -869,8 +615,7 @@ class Main(helper.Widgets):
                         self.tnum += 1
                         if self.tnum >= len(self.playlist): self.tnum = 0
                 elif button == "clickMode0": self.tnum = 0
-                try:
-                    self.stop()
+                try: self.stop()
                 except: print("No playbin yet to stop.")
                 self.play()
                 if self.sub.get_visible(): self.on_karaoke_activate("xy")
@@ -890,12 +635,9 @@ class Main(helper.Widgets):
             f = open(tmpLoc, "wb")
             f.write(self.binary)
             f.close()
-        # coverBuf = GdkPixbuf.Pixbuf.new_from_file_at_scale(tmpLoc, 80, 80, True)
         if mode == "meta" or mode == "brainz":
             coverBuf = GdkPixbuf.Pixbuf.new_from_file_at_scale(tmpLoc, 100, 100, True)
             GLib.idle_add(self.metaCover.set_pixbuf, coverBuf)
-        # else: GLib.idle_add(self.trackCover.set_from_pixbuf, coverBuf)
-        # else: GLib.idle_add(bitMage.set_from_pixbuf, coverBuf)
         else:
             coverBuf = GdkPixbuf.Pixbuf.new_from_file_at_scale(tmpLoc, 60, 60, True)
             GLib.idle_add(bitMage.set_pixbuf, coverBuf)
@@ -929,15 +671,14 @@ class Main(helper.Widgets):
         self.playing = False
         if self.lite == True: self.label.set_text("00:00")
         else: self.label.set_text("0:00:00")
-        GLib.idle_add(self.plaicon.set_from_icon_name, "media-playback-start", Gtk.IconSize.BUTTON)
+        GLib.idle_add(self.plaicon.set_from_icon_name, "media-playback-start")
         if arg == False:
             self.slider.set_value(0)
             self.res = False
-            self.player.set_state(Gst.State.NULL)
+            del self.player
         else:
             self.slider.set_value(0)
-            # self.player.seek(1.00, Gst.Format.TIME, (Gst.SeekFlags.FLUSH | Gst.SeekFlags.ACCURATE), Gst.SeekType.SET, 0 * Gst.SECOND, Gst.SeekType.NONE, -1)
-            self.player.seek_simple(Gst.Format.TIME,  Gst.SeekFlags.FLUSH | Gst.SeekFlags.ACCURATE, 0 * Gst.SECOND) 
+            self.player.seek_simple(Gst.Format.TIME,  Gst.SeekFlags.FLUSH | Gst.SeekFlags.ACCURATE, 0 * Gst.SECOND)
 
     def pause(self, *_): 
         print("Pause")
@@ -977,7 +718,6 @@ class Main(helper.Widgets):
             print(seek_time_secs)
             if seek_time_secs < self.position:
                 self.seekBack = True
-            # self.player.seek(1.00, Gst.Format.TIME, (Gst.SeekFlags.FLUSH | Gst.SeekFlags.ACCURATE), Gst.SeekType.SET, seek_time_secs * Gst.SECOND, Gst.SeekType.NONE, -1)
             self.player.seek_simple(Gst.Format.TIME,  Gst.SeekFlags.FLUSH | Gst.SeekFlags.ACCURATE, seek_time_secs * Gst.SECOND)
             self.seeking = False
 
@@ -1012,17 +752,12 @@ class Main(helper.Widgets):
         return True
 
     def on_shuffBut_clicked(self, *_):
-        # if self.playlistPlayer == True:
         try:
             playlistLoc = sample(self.playlist, len(self.playlist))
             self.playlist, self.tnum = playlistLoc, 0
             self.neo_playlist_gen("shuff_2nd_stage")
             self.on_next('clickMode0')
         except: print("pass")
-
-    def nosub_hide(self, *_):
-        self.nosub.hide()
-        return True
 
     def on_act_sub(self, _, state):
         if state == True and self.nowIn == "video":
@@ -1045,10 +780,8 @@ class Main(helper.Widgets):
                 subs = futures.ThreadPoolExecutor(max_workers=2)
                 subs.submit(self.subShow, subtitle)
             else:
-                self.nosub.set_title(self._("Subtitle file not found"))
-                self.nosub.show_all()
+                self.mainToast.add_toast(Adw.Toast.new(self._('Could not find subtitle for the current video.\nYou may provide it manually (OpenSubtitles, Subscene).')))
                 GLib.idle_add(self.subcheck.set_state, False)
-                self.pause()
         else: self.needSub = False
 
     def play(self, misc=""):
@@ -1081,7 +814,6 @@ class Main(helper.Widgets):
                 self.rdTitle.set_text(self.playlist[self.tnum]["title"])
                 self.rdArtist.set_text(self.playlist[self.tnum]["artist"])
                 self.rdYear.set_text(str(self.playlist[self.tnum]["year"]))
-                # self.mainStack.set_visible_child(self.rdBox)
             else: tools.themer(self.provider, self.window, self.color, self.tnum)
         if misc != "continue":
             self.player.set_state(Gst.State.NULL)
@@ -1090,18 +822,15 @@ class Main(helper.Widgets):
         GLib.idle_add(self.plaicon.set_from_icon_name, "media-playback-pause")
         GLib.timeout_add(300, self.updateSlider)
         GLib.timeout_add(5, self.updatePos)
-        # if self.useMode == "audio" and misc != "continue":
-        #     ld_cov = futures.ThreadPoolExecutor(max_workers=1)
-        #     ld_cov.submit(self.load_cover)
 
-    def on_playBut_clicked(self, button):
+    def on_playBut_clicked(self, button, *_):
         if self.plaicon.is_visible() == False and self.videosink.is_visible() == False: return
         if self.useMode == "audio" and self.nowIn != "video" and self.autoscroll == True and self.lite == False:
             self.visnum = 0
             for i, item in enumerate(self.playlist):
                 if item["hidden"] == False and i<self.tnum: self.visnum += 1
             self.adj.set_value(self.visnum*79-self.scroll_val)
-        if self.nowIn == self.useMode or self.nowIn == "" or "/" in button:
+        if self.nowIn == self.useMode or self.nowIn == "" or "/" in str(button):
             if not self.playing:
                 if not self.res or "/" in str(button): self.play(button)
                 else: self.resume()
@@ -1110,16 +839,8 @@ class Main(helper.Widgets):
 
     def on_main_delete_event(self, *_):
         print("Quitting...")
-        self.force, self.stopKar, self.hardReset, self.needSub, self.hardreset2 = True, True, True, False, True
+        self.stopKar, self.hardReset, self.needSub, self.hardreset2 = True, True, False, True
         raise SystemExit
-    
-    # def _sig_drag_drop(self, widget, *_):
-    #     print("Start")
-    #     self.dst = int(widget.get_name().replace("trackbox_", ""))
-
-    # def _sig_drag_end(self, widget, _):
-    #     print("End")
-    #     self.reorderer(int(widget.get_name().replace("trackbox_", "")), self.dst)
 
     def reorderer(self, src, dst):
         if self.sorted == True or self.searched == True: return
@@ -1183,51 +904,29 @@ class Main(helper.Widgets):
             self.player.set_state(Gst.State.NULL)
             err, debug = message.parse_error()
             print (f"Error: {err}", debug)
-
-    # def _on_size_allocated(self, *_):
-        # sleep(0.01)
-        # x, y = self.sub.get_size()
-        # self.size, self.size2 = 50*x, 21.4285714*x
     
     def _on_notify(self, emitter, param):
-        # sleep(0.01)
         if param.name in ["default-width", "default-height"]:
             x, y = emitter.get_size(Gtk.Orientation.HORIZONTAL), emitter.get_size(Gtk.Orientation.VERTICAL)
             if emitter == self.window:
-                print("window")
                 if self.needSub == True:
-                    # x, y = self.window.get_default_size()
-                    # x, y = emitter.get_size(Gtk.Orientation.HORIZONTAL), emitter.get_size(Gtk.Orientation.VERTICAL)
                     self.size3, self.size4 = self.sSize*y, float(f"0.0{int(self.sMarg)}")*y
-            else:
-                print("sub")
-                # x, y = self.sub.get_default_size()
-                # x, y = emitter.get_size(Gtk.Orientation.HORIZONTAL), emitter.get_size(Gtk.Orientation.VERTICAL)
-                self.size, self.size2 = 50*x, 21.4285714*x
+            else: self.size, self.size2 = 50*x, 21.4285714*x
         elif param.name == "maximized":
-            print("maximized")
             sizThread = futures.ThreadPoolExecutor(max_workers=1)
             sizThread.submit(self.different_resize, emitter)
-            # sleep(0.1)
-            # print(emitter.get_size(Gtk.Orientation.HORIZONTAL), emitter.get_size(Gtk.Orientation.VERTICAL))
         elif param.name == "fullscreened":
             self.fulle = self.window.is_fullscreen()
+            if self.fulle == True: GLib.idle_add(self.mainHeader.hide)
+            else: GLib.idle_add(self.mainHeader.show)
             sizThread = futures.ThreadPoolExecutor(max_workers=1)
             sizThread.submit(self.different_resize, emitter)
 
     def different_resize(self, emitter):
         sleep(0.3)
-        # print(emitter.get_size(Gtk.Orientation.HORIZONTAL), emitter.get_size(Gtk.Orientation.VERTICAL))
         x, y = emitter.get_size(Gtk.Orientation.HORIZONTAL), emitter.get_size(Gtk.Orientation.VERTICAL)
-        if emitter == self.window:
-            if self.needSub == True:
-                # x, y = self.window.get_default_size()
-                # x, y = emitter.get_size(Gtk.Orientation.HORIZONTAL), emitter.get_size(Gtk.Orientation.VERTICAL)
-                self.size3, self.size4 = self.sSize*y, float(f"0.0{int(self.sMarg)}")*y
-        else:
-            # x, y = self.sub.get_default_size()
-            # x, y = emitter.get_size(Gtk.Orientation.HORIZONTAL), emitter.get_size(Gtk.Orientation.VERTICAL)
-            self.size, self.size2 = 50*x, 21.4285714*x
+        if emitter == self.window: self.size3, self.size4 = self.sSize*y, float(f"0.0{int(self.sMarg)}")*y
+        else: self.size, self.size2 = 50*x, 21.4285714*x
 
     def on_off_but_clicked(self, _):
         self.off_spin.update()
@@ -1238,23 +937,9 @@ class Main(helper.Widgets):
         self.sub.set_focus(None)
 
     def on_correct_lyr(self, _):
-        # if not os.path.isdir(f"{self.folderPath}/misc"):
-        #     print("init")
-        #     os.system(f"mkdir {self.folderPath}/misc")
-        # print(f"{self.folderPath}/misc/{self.tmp_tmp}.txt")
-
-        # f = MediaFile(self.playlist[self.tnum]["uri"])
-        # f.offset = self.offset
-
         f = MediaFile(self.playlist[self.tnum]["uri"])
-        # field = MediaField(MP3DescStorageStyle(u'lyric'), StorageStyle(u'lyric'))
-        # f.add_field(u'lyric', field)
         f.lyrics = self.tmp_lyric
         f.save()
-
-        # f = open(f"{self.folderPath}/misc/{self.tmp_tmp}.txt", "w+")
-        # f.write(self.tmp_lyric)
-        # f.close()
         GLib.idle_add(self.substackhead.hide)
     
     def on_wrong_lyr(self, _): self.on_karaoke_activate()
@@ -1317,7 +1002,6 @@ class Main(helper.Widgets):
                             GLib.idle_add(self.substackhead.show)
                             thread = futures.ThreadPoolExecutor(max_workers=2)
                             thread.submit(self.lyr_fetcher, artist, track)
-                            # self.lyr_fetcher(artist, track)
                 else:
                     GLib.idle_add(self.off_but.show)
                     GLib.idle_add(self.off_lab.show)
@@ -1372,10 +1056,7 @@ class Main(helper.Widgets):
         print("end")
         GLib.idle_add(self.lyrStack.set_visible_child, self.karaokeBut)
         if lyric == 0:
-            # GLib.idle_add(tools.diabuilder, self._('Can not get correct lyrics for the current track. Please place the synced .srt file  or the raw .txt file alongside the audio file, with the same name as the audio file.'), self._("Information"), Gtk.MessageType.INFO, Gtk.ButtonsType.OK, self.window)
             self.mainToast.add_toast(Adw.Toast.new(self._('Could not fetch lyrics for the current track.\nYou may provide it manually.')))
-            # ld_hide = futures.ThreadPoolExecutor(max_workers=1)
-            # ld_hide.submit(self.on_hide)
             self.lyr_states = [True, True, True]
         else:
             self.tmp_lyric = lyric
@@ -1391,16 +1072,13 @@ class Main(helper.Widgets):
     
     def mage(self):
         GLib.idle_add(self.bottom.show)
-        GLib.idle_add(self.mainHeader.show)
         cursor = Gdk.Cursor.new_from_name('default')
         self.window.set_cursor(cursor)
 
     def mouse_moving(self, _, x, y):
         if self.fulle == True: 
             self.countermove += 1
-            print(self.countermove)
             if self.countermove >= 2 and self.mx != x and self.my != y:
-                print("move")
                 self.countermove = 0
                 self.resete = True
                 self.mx, self.my = x, y
@@ -1417,26 +1095,18 @@ class Main(helper.Widgets):
                 if self.keepReset == True: start = time()
                 elif self.resete == True: start, self.resete = time(), False    
                 sleep(0.001)
-            print("clock expired")
             if self.fulle == True:
                 cursor = Gdk.Cursor.new_from_name('none')
                 self.window.set_cursor(cursor)
                 GLib.idle_add(self.bottom.hide)
-                GLib.idle_add(self.mainHeader.hide)
                 self.countermove = 0
         elif ltype == "seek":
-            while time() - start < 0.5:
+            while time() - start < 0.3:
                 if self.hardreset2 == True: return
                 start = self.resete2
                 sleep(0.001)
-            # self.seeking = False
             self.on_slider_seek()
             self.clocking = False
-
-    # def on_state_change(self, _, event):
-    #     if event.changed_mask & Gdk.WindowState.FULLSCREEN:
-    #         self.fulle = bool(event.new_window_state & Gdk.WindowState.FULLSCREEN)
-    #         print(self.fulle)
 
     def subShow(self, subtitle):
         while self.needSub == True:
@@ -1605,41 +1275,25 @@ class Main(helper.Widgets):
                     d_pl.submit(self.neo_playlist_gen)
                 else:
                     GLib.idle_add(self.headBox.set_visible, False)
+                    self.locBut.set_active(True)
                     GLib.idle_add(self.mainStack.set_visible_child, self.rdBox)
                     GLib.idle_add(self.window.set_default_size, 1, 1)
                     GLib.idle_add(self.mainHeader.add_css_class, "flat")
-                    GLib.idle_add(self.rdTitle.set_text, self.playlist[self.tnum]["title"])
-                    GLib.idle_add(self.rdArtist.set_text, self.playlist[self.tnum]["artist"])
-                    GLib.idle_add(self.rdYear.set_text, str(self.playlist[self.tnum]["year"]))
+                    try:
+                        GLib.idle_add(self.rdTitle.set_text, self.playlist[self.tnum]["title"])
+                        GLib.idle_add(self.rdArtist.set_text, self.playlist[self.tnum]["artist"])
+                        GLib.idle_add(self.rdYear.set_text, str(self.playlist[self.tnum]["year"]))
+                    except: pass
                     self.window.set_resizable(False)
                 GLib.idle_add(self.mainHeader.set_title_widget, title)
                 GLib.idle_add(self.on_pref_close)
                 GLib.idle_add(self.window.hide)
                 GLib.idle_add(self.window.present)
 
-        # self.roundSpin.update()
-        # self.subSpin.update()
-        # self.subMarSpin.update()
-        # self.darke, self.bge, self.color = self.dark_switch.get_state(), self.bg_switch.get_state(), self.colorer.get_rgba().to_string()
-        # self.musixe, self.azlyre, self.letrase, self.cover_size = self.mus_switch.get_state(), self.az_switch.get_state(), self.letr_switch.get_state(), int(self.comboSize.get_active_id())
-        # self.sSize, self.sMarg, self.rounded = self.subSpin.get_value(), self.subMarSpin.get_value(), self.roundSpin.get_value()
-        # parser.set('subtitles', 'margin', str(self.sMarg))
-        # parser.set('subtitles', 'size', str(self.sSize))
-        # parser.set('subtitles', 'bg', str(self.bge))
-        # parser.set('gui', 'rounded', str(self.rounded))
-        # parser.set('gui', 'dark', str(self.darke))
-        # parser.set('gui', 'color', self.color)
-        # parser.set('services', 'MusixMatch', str(self.musixe))
-        # parser.set('services', 'AZLyrics', str(self.azlyre))
-        # parser.set('services', 'Letras.br', str(self.letrase))
-        # parser.set('services', 'CoverSize', str(self.cover_size))
             file = open(confP, "w+")
             parser.write(file)
             file.close()
             tools.themer(self.provider, self.window, self.color, self.tnum)
-        # self.settings.set_property("gtk-application-prefer-dark-theme", self.darke)
-        # try: tools.themer(self.provider, self.window, self.color, self.tnum)
-        # except: print("Not applying yet")
 
     def on_hide(self, *_):
         self.stopKar = True
@@ -1651,8 +1305,6 @@ Gst.init(None)
 app = Main()
 app.connect('activate', app.on_activate)
 app.run(None)
-# x11 = ctypes.cdll.LoadLibrary('libX11.so')
-# x11.XInitThreads()
 
 # GTK_DEBUG=interactive
 # top | grep xy

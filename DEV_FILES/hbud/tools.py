@@ -6,61 +6,15 @@ gi.require_version('Gtk', '4.0')
 from gi.repository import Gtk, Gdk, GLib
 from configparser import ConfigParser
 
-# def themer(provider, window, v, c, w=""):
-#         css = """#cover_img {
-#             padding-bottom: %spx;
-#         }
-#         menu, .popup {
-#             border-radius: %spx;
-#         }
-#         decoration, headerbar{
-#             border-radius: %spx;
-#         }
-#         button, menuitem, entry {
-#             border-radius: %spx;
-#             margin: 5px;
-#         }
-#         .titlebar {
-#             border-top-left-radius: %spx;
-#             border-top-right-radius: %spx;
-#             border-bottom-left-radius: 0px;
-#             border-bottom-right-radius: 0px;
-#         }
-#         window, notebook, stack, box, scrolledwindow, viewport {
-#             border-top-left-radius: %spx;
-#             border-top-right-radius: %spx;
-#             border-bottom-left-radius: %spx;
-#             border-bottom-right-radius: %spx;
-#             border-width: 0px;
-#             border-image: none;
-#             box-shadow: none;
-#         }
-#         switch:checked, highlight, selection, menuitem:hover {
-#             background-color: %s;
-#         }
-#         tab:checked {
-#             box-shadow: 0 -4px %s inset;
-#         }
-#         #search_play:focus, spinbutton:focus {
-#             box-shadow: 0 0 0 1px %s;
-#         }
-#         #trackbox_%s{
-#             background: %s;
-#             color: #000;
-#             border-radius: %spx;
-#         }
-#         .maximized, .fullscreen, .maximized .titlebar {
-#             border-radius: 0px;
-#         }""" % (float(v)/2.6,float(v)/1.5,v,v,v,v,v,v,v,v,c,c,c,w,c,v)
-#         css = str.encode(css)
-#         provider.load_from_data(css)
-#         GLib.idle_add(window.get_style_context().add_provider_for_display, Gdk.Display.get_default(), provider, Gtk.STYLE_PROVIDER_PRIORITY_APPLICATION)
-
 def themer(provider, window, c, w=""):
         css = """picture {
             border-radius: 10px;
         }
-        switch:checked, highlight, selection, menuitem:hover {
+        #videosink {
+            border-radius: 0px;
+            background: black;
+        }
+        switch:checked, highlight, menuitem:hover {
             background-color: %s;
         }
         #trackbox_%s{
@@ -71,17 +25,6 @@ def themer(provider, window, c, w=""):
         css = str.encode(css)
         provider.load_from_data(css)
         GLib.idle_add(window.get_style_context().add_provider_for_display, Gdk.Display.get_default(), provider, Gtk.STYLE_PROVIDER_PRIORITY_APPLICATION)
-    
-# def diabuilder (text, title, mtype, buts, window):
-    # x, y = window.get_position()
-    # sx, sy = window.get_size()
-    # dialogWindow = Gtk.MessageDialog(parent=window, modal=True, destroy_with_parent=True, message_type=mtype, buttons=buts, text=text, title=title)
-    # dialogWindow.set_transient_for(window)
-    # dsx, dsy = dialogWindow.get_size()
-    # dialogWindow.move(x+((sx-dsx)/2), y+((sy-dsy)/2))
-    # dialogWindow.present()
-    # dialogWindow.run()
-    # dialogWindow.destroy()
 
 def get_lyric(title, artist, DAPI):
     DAPI.title, DAPI.artist = title, artist
@@ -90,7 +33,6 @@ def get_lyric(title, artist, DAPI):
     return result
 
 def real_init():
-    # user = GLib.get_user_name()
     parser, confP = ConfigParser(), f"{GLib.get_user_config_dir()}/hbud.ini"
     needsWrite = False
     if not os.path.isfile(confP):

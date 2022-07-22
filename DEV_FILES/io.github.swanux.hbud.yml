@@ -1,8 +1,10 @@
 app-id: io.github.swanux.hbud
 runtime: org.gnome.Platform
-runtime-version: '41'
+runtime-version: '42'
 sdk: org.gnome.Sdk
 command: io.github.swanux.hbud
+sdk-extensions:
+  - org.freedesktop.Sdk.Extension.rust-stable
 
 #add-extensions:
 #  org.freedesktop.Platform.ffmpeg:
@@ -24,7 +26,9 @@ finish-args:
   - --socket=fallback-x11
   - --device=dri
   - --socket=pulseaudio
-  - --filesystem=home
+#  - --filesystem=home
+  - --filesystem=xdg-music
+  - --filesystem=xdg-videos
   - --share=ipc
   - --filesystem=xdg-run/gvfs
   - --filesystem=xdg-run/gvfsd
@@ -44,41 +48,9 @@ cleanup:
   - "/lib/pkgconfig"
   - "/share/man"
   - "/var"
+  - "/lib/debug"
 
 modules:
-#  - "lib/libsass.json"
-#  - "lib/sassc.json"
-#  - lib/libass.json
-#  - "lib/liba52.json"
-#  - "lib/libmpeg2.json"
-#  - "lib/ffmpeg.json"
-#  - "gstreamer-1.0/gstreamer.json"
-
-
-- name: gtk4sink
-    sources:
-    - deptree.json
-    # - type: git
-    #   url: "https://gitlab.com/9898287/timediff"
-    #   branch: offline_flatpak
-    - type: dir
-      path: "."
-    - type: file
-      path: "resources/com.gitlab.adnan338.Timediff.png"
-    - type: file
-      path: "resources/com.gitlab.adnan338.Timediff.desktop"
-    buildsystem: simple
-    build-options:
-      append-path: /usr/lib/sdk/rust-stable/bin
-      env:
-        CARGO_HOME: /run/build/gtk4sink/cargo
-    build-commands:
-      - cargo --offline fetch --manifest-path Cargo.toml --verbose
-      - cargo --offline build --release --verbose,
-      - install -Dm755 target/release/timediff --target-directory=/app/bin
-      - install -Dm644 com.gitlab.adnan338.Timediff.desktop --target-directory=/app/share/applications
-      - install -Dm644 com.gitlab.adnan338.Timediff.png --target-directory=/app/share/icons/hicolor/scalable/apps
-
   - "codecs/liba52.json"
   - "codecs/x264.json"
   - "codecs/x265.json"
@@ -88,79 +60,26 @@ modules:
   - "codecs/libdvdnav.json"
   - "codecs/libass.json"
   - "codecs/ffmpeg.json"
-#  - "codecs/gstreamer.json"
-  - "DELETE ME??/gstreamer-1.0/gstreamer.json"
 #  - "codecs/pipewire.json"
+  - "codecs/gstreamer.json"
 
-
-  
-#  - name: gstreamer
-#    buildsystem: meson
-#    builddir: true
-#    config-opts:
-#    - "-Ddoc=disabled"
-#    - "--libdir=lib"
-#    sources:
-#    - type: git
-#      branch: master
-#      url: https://gitlab.freedesktop.org/gstreamer/gstreamer.git
-#  - name: gst-plugins-base
-#    buildsystem: meson
-#    config-opts:
-#    - "-Ddoc=disabled"
-#    - "-Dexamples=disabled"
-#    - "-Dorc=enabled"
-#    - "--libdir=lib"
-#    - "--wrap-mode=nodownload"
-#    builddir: true
-#    sources:
-#    - type: git
-#      branch: master
-#      url: https://gitlab.freedesktop.org/gstreamer/gst-plugins-base.git
-#  - name: gst-plugins-good
-#    buildsystem: meson
-#    builddir: true
-#    config-opts:
-#    - "-Ddoc=disabled"
-#    - "-Dexamples=disabled"
-#    - "--libdir=lib"
-#    sources:
-#    - type: git
-#      branch: master
-#      url: https://gitlab.freedesktop.org/gstreamer/gst-plugins-good.git
-#  - name: gst-plugins-bad
-#    buildsystem: meson
-#    builddir: true
-#    config-opts:
-#    - "-Daom=disabled"
-#    - "-Ddoc=disabled"
-#    - "-Dexamples=disabled"
-#    - "-Dv4l2codecs=enabled"
-#    - "--libdir=lib"
-#    sources:
-#    - type: git
-#      branch: master
-#      url: https://gitlab.freedesktop.org/gstreamer/gst-plugins-bad.git
-#  - name: libsass
-#    buildsystem: meson
-#    sources:
-#    - type: git
-#      url: https://github.com/lazka/libsass.git
-#      branch: meson
-#  - name: sassc
-#    buildsystem: meson
-#    sources:
-#    - type: git
-#      url: https://github.com/lazka/sassc.git
-#      branch: meson
-
-
-
-
-
-
-
-
+  - name: gst-gtk4sink
+    sources:
+    - type: git
+      commit: 18c9bd0355e0fc1ab20072d805807112945ad5bb
+      url: https://gitlab.freedesktop.org/gstreamer/gst-plugins-rs.git
+      tag: 0.8.4
+    buildsystem: simple
+    build-options:
+      append-path: /usr/lib/sdk/rust-stable/bin
+      env:
+        CARGO_HOME: /run/build/gst-gtk4sink/cargo
+      build-args:
+        - --share=network
+    build-commands:
+      - cargo install cargo-c
+      - cargo cbuild -p gst-plugin-gtk4 --libdir=/app/lib/
+      - cargo cinstall -p gst-plugin-gtk4 --libdir=/app/lib/
 
   - name: io.github.swanux.hbud
     buildsystem: simple
@@ -192,68 +111,3 @@ modules:
       - type: archive
         url: https://github.com/acoustid/chromaprint/releases/download/v1.5.1/chromaprint-1.5.1.tar.gz
         sha256: a1aad8fa3b8b18b78d3755b3767faff9abb67242e01b478ec9a64e190f335e1c
-
-#  - libvlc.yml
-
-#  - name: libvlc
-#    sources:
-#      - type: archive
-#        url: https://get.videolan.org/vlc/3.0.17/vlc-3.0.17.tar.xz
-#        sha256: 48bd9bf337aa107a1524eba57c52dc4a91e29f5a97fbdee92f6a4dba90383cd0
-#      - type: patch
-#        path: vlc-ignore-time-for-cache.patch
-#    rm-configure: true
-#    cleanup:
-#      - /share/macosx
-#    config-opts:
-#      - BUILDCC=/usr/bin/gcc -std=gnu99
-#      - --disable-lua
-#      - --disable-a52
-#      - --disable-qt
-#      - --disable-ncurses
-#      - --disable-udev
-#      - "--disable-archive"
-#      - "--disable-live555"
-#      - "--disable-dc1394"
-#      - "--disable-dv1394"
-#      - "--disable-linsys"
-#      - "--disable-dvdread"
-#      - "--disable-dvdnav"
-#      - "--disable-bluray"
-#      - "--disable-opencv"
-#      - "--disable-smbclient"
-#      - "--disable-dsm"
-#      - "--disable-sftp"
-#      - "--disable-nfs"
-#      - "--disable-smb2"
-#      - "--disable-v4l2"
-#      - "--disable-decklink"
-#      - "--disable-vcd"
-#      - "--disable-libcddb"
-#      - "--disable-screen"
-#      - "--disable-vnc"
-#      - "--disable-freerdp"
-#      - "--disable-realrtsp"
-#      - "--disable-asdcp"
-#      - "--disable-sdl-image"
-#      - "--disable-skins2"
-#      - "--disable-alsa"
-#      - "--disable-goom"
-#      - "--disable-projectm"
-#      - "--disable-vsxu"
-#      - "--disable-avahi"
-#      - "--disable-mtp"
-#      - "--disable-upnp"
-#      - "--disable-microdns"
-#      - "--disable-libgcrypt"
-#      - "--disable-secret"
-#      - "--disable-kwallet"
-#      - "--disable-vlc"
-#      - "--disable-sout"
-#      - "--disable-vlm"
-#      - "--disable-debug"
-#      - "--disable-update-check"
-#      - "--disable-maintainer-mode"
-#      - "--disable-dependency-tracking"
-#      - "--enable-flac"
-#      - "--enable-ffmpeg"

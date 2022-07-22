@@ -2,7 +2,7 @@
 <component type="desktop-application">
     <id>io.github.swanux.hbud</id>
     <name>HBud</name>
-    <summary>Simple music/video player and karaoke app written in Python and GTK</summary>
+    <summary>Simple audio/video player and karaoke app written in Python and GTK</summary>
     <metadata_license>CC0-1.0</metadata_license>
     <project_license>GPL-3.0+</project_license>
     <content_rating type="oars-1.1"/>
@@ -30,18 +30,29 @@
     <url type="homepage">https://github.com/swanux/hbud</url>
     <url type="bugtracker">https://github.com/swanux/hbud/issues</url>
 
-
     <releases>
-        <release version="0.3.6" date="2022-03-26">
+        <release version="0.4.0" date="2022-07-22">
             <description>
-                <p>Improvements, not new features</p>
+                <p>Complete migration to GTK4/LibAdwaita</p>
                 <ul>
-                    <li>Switching back to GStreamer... (now using glimagesink)</li>
-                    <li>Couple of Flatpak related fixes</li>
-                    <li>Smaller bugfixes</li>
-                    <li>Fixed issues related to videoplayback</li>
-                    <li>Better video decoding performance (for more info, check the project site)</li>
-                    <li>New update-proof config backend</li>
+                    <li>Switching back to GStreamer...</li>
+                    <li>Lots of improvements regarding flatpak packaging</li>
+                    <li>Fixed issue related to playing mp4 videos</li>
+                    <li>Complete migration to LibAdwaita and GTK4 (nearly full rewrite)</li>
+                    <li>Lots of bugfixes</li>
+                    <li>Several GUI related performance fixes</li>
+                    <li>Updated custom widgets (TrackBox now based on ActionRow)</li>
+                    <li>Code-based GUI generation instead of Glade</li>
+                    <li>Brand new preferences (frontend and backend)</li>
+                    <li>Fresh look and feel (including refreshed icon)</li>
+                    <li>More attention to GNOME design standards</li>
+                    <li>Album cover now part of the TrackBox widget</li>
+                    <li>New minimal player mode</li>
+                    <li>Removed drag and drop support (reorder is still possible using arrows)</li>
+                    <li>Now using audio metadata to store lyrics by default (misc and same folder are still supported)</li>
+                    <li>Seeking with mouse is a bit choppy (bug in GTK4 issue 4939 - had to use workaround)</li>
+                    <li>Video playback is quite power-hungry, but stable (more efficient solution is WIP, see gst-plugins-rs MR 588)</li>
+                    <li>Probably new bugs (not intentional though)</li>
                 </ul>
             </description>
         </release>
@@ -153,14 +164,15 @@
     <update_contact>swanux_at_protonmail.com</update_contact>
 
     <screenshots>
-        <screenshot type="default"><image type="source">https://github.com/swanux/hbud/raw/master/Screenshots/0.3%20-%20Vereena/0.3.5/more_opts.png</image></screenshot>
-        <screenshot><image type="source">https://github.com/swanux/hbud/raw/master/Screenshots/0.3%20-%20Vereena/0.3.5/met_ed.png</image></screenshot>
-        <screenshot><image type="source">https://github.com/swanux/hbud/raw/master/Screenshots/0.3%20-%20Vereena/0.3.5/about.png</image></screenshot>
-        <screenshot><image type="source">https://github.com/swanux/hbud/raw/master/Screenshots/0.3%20-%20Vereena/0.3.5/set_0.png</image></screenshot>
-        <screenshot><image type="source">https://github.com/swanux/hbud/raw/master/Screenshots/0.3%20-%20Vereena/0.3.5/stat_lyr.png</image></screenshot>
-        <screenshot><image type="source">https://github.com/swanux/hbud/raw/master/Screenshots/0.3%20-%20Vereena/0.3.5/set_2.png</image></screenshot>
-        <screenshot><image type="source">https://github.com/swanux/hbud/raw/master/Screenshots/0.3%20-%20Vereena/0.3.5/syn_lyr.png</image></screenshot>
-        <screenshot><image type="source">https://github.com/swanux/hbud/raw/master/Screenshots/0.3%20-%20Vereena/0.3.5/vid_with_sub.png</image></screenshot>
+        <screenshot type="default"><image type="source">https://github.com/swanux/hbud/raw/master/Screenshots/0.4%20-%20Theresa/0.4.0/audio_more_dark.png</image></screenshot>
+        <screenshot><image type="source">https://github.com/swanux/hbud/raw/master/Screenshots/0.4%20-%20Theresa/0.4.0/audio_light.png</image></screenshot>
+        <screenshot><image type="source">https://github.com/swanux/hbud/raw/master/Screenshots/0.4%20-%20Theresa/0.4.0/met_ed.png</image></screenshot>
+        <screenshot><image type="source">https://github.com/swanux/hbud/raw/master/Screenshots/0.4%20-%20Theresa/0.4.0/minimal.png</image></screenshot>
+        <screenshot><image type="source">https://github.com/swanux/hbud/raw/master/Screenshots/0.4%20-%20Theresa/0.4.0/set_0.png</image></screenshot>
+        <screenshot><image type="source">https://github.com/swanux/hbud/raw/master/Screenshots/0.4%20-%20Theresa/0.4.0/set_1.png</image></screenshot>
+        <screenshot><image type="source">https://github.com/swanux/hbud/raw/master/Screenshots/0.4%20-%20Theresa/0.4.0/stat_lyr.png</image></screenshot>
+        <screenshot><image type="source">https://github.com/swanux/hbud/raw/master/Screenshots/0.4%20-%20Theresa/0.4.0/syn_lyr.png</image></screenshot>
+        <screenshot><image type="source">https://github.com/swanux/hbud/raw/master/Screenshots/0.4%20-%20Theresa/0.4.0/vid_with_sub.png</image></screenshot>
     </screenshots>
 
     <launchable type="desktop-id">io.github.swanux.hbud.desktop</launchable>
