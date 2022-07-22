@@ -1,5 +1,5 @@
 # HBud
-Simple music / video player and karaoke app written in Python and GTK - Because why not
+Simple audio / video player and karaoke app written in Python and GTK
 
 <p align="center"><a href="https://flatstat.mijorus.it/app/io.github.swanux.hbud"  align="center"><img width="150" src="https://img.shields.io/endpoint?url=https://flathub-stats-backend.vercel.app/badges/io.github.swanux.hbud/shields.io.json"></a></p>
 
