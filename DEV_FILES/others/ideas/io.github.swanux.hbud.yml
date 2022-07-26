@@ -1,0 +1,164 @@
+app-id: io.github.swanux.hbud
+runtime: org.gnome.Platform
+runtime-version: '42'
+sdk: org.gnome.Sdk
+command: io.github.swanux.hbud
+sdk-extensions:
+  - org.freedesktop.Sdk.Extension.rust-stable
+
+finish-args:
+  - --share=network
+  - --socket=wayland
+  - --socket=fallback-x11
+  - --device=dri
+  - --socket=pulseaudio
+  - --filesystem=xdg-music
+  - --filesystem=xdg-videos
+  - --share=ipc
+  - --filesystem=xdg-run/gvfs
+  - --filesystem=xdg-run/gvfsd
+  - --filesystem=/run/media
+  - --talk-name=org.gtk.vfs.*
+  - --env=GST_PLUGIN_SYSTEM_PATH=/app/lib/gstreamer-1.0
+  - --env=GST_VAAPI_ALL_DRIVERS=1
+
+cleanup:
+  - "/lib/cmake"
+  - "*.la"
+  - "*.a"
+  - "/share/doc"
+  - "/share/gtk-doc"
+  - "/include"
+  - "/lib/debug"
+  - "/lib/pkgconfig"
+  - "/share/man"
+  - "/var"
+  - "/lib/debug"
+
+modules:
+  - "codecs/liba52.json"
+  - "codecs/x264.json"
+  - "codecs/x265.json"
+  - "codecs/libmpeg2.json"
+  - "codecs/libdvdcss.json"
+  - "codecs/libdvdread.json"
+  - "codecs/libdvdnav.json"
+  - "codecs/libass.json"
+  - "codecs/ffmpeg.json"
+  - "codecs/gstreamer.json"
+
+  - name: cargo-c
+    buildsystem: simple
+    build-options:
+      append-path: /usr/lib/sdk/rust-stable/bin
+      env:
+        CARGO_HOME: /run/build/cargo-c/cargo
+    sources:
+      - type: git
+        commit: 41f5562caf05da9abe29b2632cf6ba39957bf4e7
+        url: https://github.com/lu-zero/cargo-c.git
+      - cargo-sources.json
+    build-commands:
+      - cargo --offline fetch --manifest-path Cargo.toml --verbose
+      - cargo --offline build --release --verbose
+      - install -Dm755 ./target/release/cargo-cbuild -t /app/bin/
+      - install -Dm755 ./target/release/cargo-cinstall -t /app/bin/
+      - install -Dm755 ./target/release/cargo-capi -t /app/bin/
+
+  - name: gtk-rs-core
+    buildsystem: simple
+    build-options:
+      append-path: /usr/lib/sdk/rust-stable/bin
+      env:
+        CARGO_HOME: /run/build/gtk-rs-core/cargo
+    sources:
+      - type: git
+        commit: 59eea5774c06bfd323e9298240f615ad2f7ced9e
+        url: https://github.com/gtk-rs/gtk-rs-core.git
+      - cargo-sources-gtk.json
+    build-commands:
+      - echo "###############################################????"
+      - ls -l
+      - cargo --offline fetch --manifest-path Cargo.toml --verbose
+      - cargo --offline build --release --verbose
+      - echo "###############################################????"
+      - ls -l
+      - ls -l target/release
+      - mv target/release/* 
+
+  - name: gstreamer-rs
+    buildsystem: simple
+    build-options:
+      append-path: /usr/lib/sdk/rust-stable/bin
+      env:
+        CARGO_HOME: /run/build/gstreamer-rs/cargo
+    sources:
+      - type: git
+        commit: 9ee22baa07d2c4e67742baeafb2be49e1db9befe
+        url: https://gitlab.freedesktop.org/gstreamer/gstreamer-rs.git
+      - cargo-sources-gstrs.json
+    build-commands:
+      - echo "###############################################????"
+      - ls -l
+      - cargo --offline fetch --manifest-path Cargo.toml --verbose
+      - cargo --offline build --release --verbose
+      - echo "###############################################????"
+      - ls -l
+      - ls -l target/release
+#      - install -Dm755 ./target/release/cargo-cbuild -t /app/bin/
+#      - install -Dm755 ./target/release/cargo-cinstall -t /app/bin/
+#      - install -Dm755 ./target/release/cargo-capi -t /app/bin/
+
+  - name: gst-gtk4sink
+    sources:
+    - type: git
+      commit: 18c9bd0355e0fc1ab20072d805807112945ad5bb
+      url: https://gitlab.freedesktop.org/gstreamer/gst-plugins-rs.git
+      tag: 0.8.4
+    - cargo-sources-gst.json
+    buildsystem: simple
+    build-options:
+      append-path: /usr/lib/sdk/rust-stable/bin
+      env:
+        CARGO_HOME: /run/build/gst-gtk4sink/cargo
+    build-commands:
+#      - cd video/gtk4/
+#      - cargo --offline fetch --manifest-path Cargo.toml --verbose
+#      - cargo --offline build --release --verbose
+#      - install -Dm755 target/release/libgstgtk4.so /app/lib/gstreamer-1.0/libgstgtk4.so
+#      - cargo install cargo-c
+      - cargo cbuild --offline -p gst-plugin-gtk4 --libdir=/app/lib/
+      - cargo cinstall --offline -p gst-plugin-gtk4 --libdir=/app/lib/
+
+#  - name: io.github.swanux.hbud
+#    buildsystem: simple
+#    sources:
+#      - type: archive
+#        url: https://github.com/swanux/hbud/archive/refs/tags/v0.4.0.tar.gz
+#        sha256: 6151f566152933a7327bfddf6a0cc9005a680b5dd9ef2066e4adcb90cad15b9d
+#    build-commands:
+#      - mkdir -p /app/share/applications
+#      - mkdir -p /app/share/hbud
+#      - mkdir -p /app/bin
+#      - mkdir -p /app/share/appdata
+#      - mkdir -p /app/share/icons/hicolor/128x128/apps
+#      - cp -r DEV_FILES/hbud /app/share/hbud/.
+#      - cp -r DEV_FILES/modules /app/share/hbud/. 
+#      - cp DEV_FILES/io.github.swanux.hbud.desktop /app/share/applications/.
+#      - cp DEV_FILES/io.github.swanux.hbud /app/share/hbud/.
+#      - ln -s /app/share/hbud/io.github.swanux.hbud /app/bin/.
+#      - cp DEV_FILES/io.github.swanux.hbud.appdata.xml /app/share/appdata/.
+#      - install -Dm755 libgstgtk4.so /app/lib/gstreamer-1.0/libgstgtk4.so
+#      - install -Dm644 -t /app/share/icons/hicolor/scalable/apps/ DEV_FILES/hbud/icons/io.github.swanux.hbud.svg 
+
+#  - name: chromaprint
+#    buildsystem: cmake-ninja
+#    config-opts:
+#      - -DCMAKE_BUILD_TYPE=Release
+#      - -DBUILD_SHARED_LIBS=ON
+#      - -DCMAKE_POSITION_INDEPENDENT_CODE=ON
+#      - -DBUILD_TOOLS=ON
+#    sources:
+#      - type: archive
+#        url: https://github.com/acoustid/chromaprint/releases/download/v1.5.1/chromaprint-1.5.1.tar.gz
+#        sha256: a1aad8fa3b8b18b78d3755b3767faff9abb67242e01b478ec9a64e190f335e1c

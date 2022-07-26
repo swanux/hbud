@@ -1,0 +1,32 @@
+From 3d160f4c9bcc828a2ffd16d8b5746cfaf8171645 Mon Sep 17 00:00:00 2001
+From: He Junyan <junyan.he@intel.com>
+Date: Thu, 24 Mar 2022 21:39:30 +0800
+Subject: [PATCH] va: h265dec: Fix a crash because of missing reference frame.
+
+Some problematic H265 stream may miss the reference frame in the DPB,
+and get some message like: "No short term reference picture for xxx".
+So there may be empty entries in ref_pic_list0/1 when passing to
+decode_slice() function of sub class. We need to check the NULL pointer.
+
+Part-of: <https://gitlab.freedesktop.org/gstreamer/gstreamer/-/merge_requests/2647>
+---
+ subprojects/gst-plugins-bad/sys/va/gstvah265dec.c | 3 +++
+ 1 file changed, 3 insertions(+)
+
+diff --git a/subprojects/gst-plugins-bad/sys/va/gstvah265dec.c b/subprojects/gst-plugins-bad/sys/va/gstvah265dec.c
+index 05d55fc202f..4494446930c 100644
+--- a/subprojects/gst-plugins-bad/sys/va/gstvah265dec.c
++++ b/subprojects/gst-plugins-bad/sys/va/gstvah265dec.c
+@@ -315,6 +315,9 @@ _get_reference_index (GstH265Decoder * decoder, GstH265Picture * picture)
+   GstVaH265Dec *self = GST_VA_H265_DEC (decoder);
+   guint8 i;
+ 
++  if (!picture)
++    return 0xFF;
++
+   for (i = 0; i < 15; i++) {
+     VAPictureHEVC *ref_va_pic = &self->pic_param.base.ReferenceFrames[i];
+ 
+-- 
+GitLab
+

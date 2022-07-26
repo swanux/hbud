@@ -31,11 +31,12 @@
     <url type="bugtracker">https://github.com/swanux/hbud/issues</url>
 
     <releases>
-        <release version="0.4.0" date="2022-07-22">
+        <release version="0.4.0" date="2022-07-26">
             <description>
                 <p>Complete migration to GTK4/LibAdwaita</p>
                 <ul>
-                    <li>Switching back to GStreamer...</li>
+                    <li>Switching back to GStreamer</li>
+                    <li>Improved video performance (finally)</li>
                     <li>Lots of improvements regarding flatpak packaging</li>
                     <li>Fixed issue related to playing mp4 videos</li>
                     <li>Complete migration to LibAdwaita and GTK4 (nearly full rewrite)</li>
@@ -51,7 +52,7 @@
                     <li>Removed drag and drop support (reorder is still possible using arrows)</li>
                     <li>Now using audio metadata to store lyrics by default (misc and same folder are still supported)</li>
                     <li>Seeking with mouse is a bit choppy (bug in GTK4 issue 4939 - had to use workaround)</li>
-                    <li>Video playback is quite power-hungry, but stable (more efficient solution is WIP, see gst-plugins-rs MR 588)</li>
+                    <li>Handling imperfect video files is WIP (crash is possible)</li>
                     <li>Probably new bugs (not intentional though)</li>
                 </ul>
             </description>

@@ -3,11 +3,11 @@ runtime: org.gnome.Platform
 runtime-version: '42'
 sdk: org.gnome.Sdk
 command: io.github.swanux.hbud
-sdk-extensions:
-  - org.freedesktop.Sdk.Extension.rust-stable
+#sdk-extensions:
+#  - org.freedesktop.Sdk.Extension.rust-stable
 
 #add-extensions:
-#  org.freedesktop.Platform.ffmpeg:
+#  org.freedesktop.Platform.ffmpeg-full:
 #    directory: lib/codecs
 #    version: "21.08"
 #    add-ld-path: lib
@@ -35,6 +35,7 @@ finish-args:
   - --filesystem=/run/media
   - --talk-name=org.gtk.vfs.*
   - --env=GST_PLUGIN_SYSTEM_PATH=/app/lib/gstreamer-1.0
+  - --env=GST_PLUGIN_PATH=/app/lib/codecs/lib/gstreamer-1.0
   - --env=GST_VAAPI_ALL_DRIVERS=1
 
 cleanup:
@@ -59,27 +60,15 @@ modules:
   - "codecs/libdvdread.json"
   - "codecs/libdvdnav.json"
   - "codecs/libass.json"
-  - "codecs/ffmpeg.json"
 #  - "codecs/pipewire.json"
   - "codecs/gstreamer.json"
-
-  - name: gst-gtk4sink
-    sources:
-    - type: git
-      commit: 18c9bd0355e0fc1ab20072d805807112945ad5bb
-      url: https://gitlab.freedesktop.org/gstreamer/gst-plugins-rs.git
-      tag: 0.8.4
-    buildsystem: simple
-    build-options:
-      append-path: /usr/lib/sdk/rust-stable/bin
-      env:
-        CARGO_HOME: /run/build/gst-gtk4sink/cargo
-      build-args:
-        - --share=network
-    build-commands:
-      - cargo install cargo-c
-      - cargo cbuild -p gst-plugin-gtk4 --libdir=/app/lib/
-      - cargo cinstall -p gst-plugin-gtk4 --libdir=/app/lib/
+#  - "codecs/libgudev.json"
+#  - "codecs/uchardet.json"
+#  - "codecs/libsass.json"
+#  - "codecs/sassc.json"
+#  - "codecs/gtk4.json"
+  - "codecs/ffmpeg.json"
+#  - gstreamer2.json
 
   - name: io.github.swanux.hbud
     buildsystem: simple

@@ -1,0 +1,320 @@
+From b557a9715469e8273d8194806302cef00815a038 Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Rafa=C5=82=20Dzi=C4=99giel?= <rafostar.github@gmail.com>
+Date: Sat, 31 Jul 2021 09:37:03 +0200
+Subject: [PATCH 1/2] gl: Move supported formats init to private header
+
+This function can be shared between other GL elements
+to allow filtering video formats by what GL context supports.
+---
+ .../gst-plugins-base/gst-libs/gst/gl/gstglcolorconvert.c   | 87 +--------------------------
+ .../gst-plugins-base/gst-libs/gst/gl/gstglformat.c         | 87 +++++++++++++++++++++++++++
+ .../gst-plugins-base/gst-libs/gst/gl/gstglformat_private.h | 33 ++++++++++
+ 3 files changed, 122 insertions(+), 85 deletions(-)
+ create mode 100644 gst-libs/gst/gl/gstglformat_private.h
+
+diff --git a/subprojects/gst-plugins-base/gst-libs/gst/gl/gstglcolorconvert.c b/subprojects/gst-plugins-base/gst-libs/gst/gl/gstglcolorconvert.c
+index cf5f159c6..ab18b7703 100644
+--- a/subprojects/gst-plugins-base/gst-libs/gst/gl/gstglcolorconvert.c
++++ b/subprojects/gst-plugins-base/gst-libs/gst/gl/gstglcolorconvert.c
+@@ -30,6 +30,7 @@
+ #include "gl.h"
+ #include "gstglfuncs.h"
+ #include "gstglsl_private.h"
++#include "gstglformat_private.h"
+ 
+ /**
+  * SECTION:gstglcolorconvert
+@@ -994,90 +995,6 @@ _init_value_string_list (GValue * list, ...)
+   va_end (args);
+ }
+ 
+-static void
+-_append_value_string_list (GValue * list, ...)
+-{
+-  GValue item = G_VALUE_INIT;
+-  gchar *str;
+-  va_list args;
+-
+-  va_start (args, list);
+-  while ((str = va_arg (args, gchar *))) {
+-    g_value_init (&item, G_TYPE_STRING);
+-    g_value_set_string (&item, str);
+-
+-    gst_value_list_append_value (list, &item);
+-    g_value_unset (&item);
+-  }
+-  va_end (args);
+-}
+-
+-static void
+-_init_supported_formats (GstGLContext * context, gboolean output,
+-    GValue * supported_formats)
+-{
+-  /* Assume if context == NULL that we don't have a GL context and can
+-   * do the conversion */
+-
+-  /* Always supported input and output formats */
+-  _init_value_string_list (supported_formats, "RGBA", "RGB", "RGBx", "BGR",
+-      "BGRx", "BGRA", "xRGB", "xBGR", "ARGB", "ABGR", "GRAY8", "GRAY16_LE",
+-      "GRAY16_BE", "AYUV", "VUYA", "YUY2", "UYVY", NULL);
+-
+-  /* Always supported input formats or output with multiple draw buffers */
+-  if (!output || (!context || context->gl_vtable->DrawBuffers))
+-    _append_value_string_list (supported_formats, "GBRA", "GBR", "RGBP", "BGRP",
+-        "Y444", "I420", "YV12", "Y42B", "Y41B", "NV12", "NV21", "NV16", "NV61",
+-        "A420", "AV12", NULL);
+-
+-  /* Requires reading from a RG/LA framebuffer... */
+-  if (!context || (USING_GLES3 (context) || USING_OPENGL (context)))
+-    _append_value_string_list (supported_formats, "YUY2", "UYVY", NULL);
+-
+-  if (!context || gst_gl_format_is_supported (context, GST_GL_RGBA16))
+-    _append_value_string_list (supported_formats, "ARGB64", NULL);
+-
+-  if (!context || gst_gl_format_is_supported (context, GST_GL_RGB565))
+-    _append_value_string_list (supported_formats, "RGB16", "BGR16", NULL);
+-
+-  if (!context || gst_gl_format_is_supported (context, GST_GL_RGB10_A2)) {
+-#if G_BYTE_ORDER == G_LITTLE_ENDIAN
+-    _append_value_string_list (supported_formats, "BGR10A2_LE", "RGB10A2_LE",
+-        "Y410", NULL);
+-#else
+-    _append_value_string_list (supported_formats, "Y410", NULL);
+-#endif
+-  }
+-
+-  if (!context || (gst_gl_format_is_supported (context, GST_GL_R16) &&
+-          gst_gl_format_is_supported (context, GST_GL_RG16))) {
+-#if G_BYTE_ORDER == G_LITTLE_ENDIAN
+-    _append_value_string_list (supported_formats, "P010_10LE", "P012_LE",
+-        "P016_LE", NULL);
+-#else
+-    _append_value_string_list (supported_formats, "P010_10BE", "P012_BE",
+-        "P016_BE", NULL);
+-#endif
+-  }
+-
+-  if (!context || (gst_gl_format_is_supported (context, GST_GL_RG16))) {
+-    _append_value_string_list (supported_formats, "Y210", NULL);
+-#if G_BYTE_ORDER == G_LITTLE_ENDIAN
+-    _append_value_string_list (supported_formats, "Y212_LE", NULL);
+-#else
+-    _append_value_string_list (supported_formats, "Y212_BE", NULL);
+-#endif
+-  }
+-
+-  if (!context || gst_gl_format_is_supported (context, GST_GL_RGBA16)) {
+-#if G_BYTE_ORDER == G_LITTLE_ENDIAN
+-    _append_value_string_list (supported_formats, "Y412_LE", NULL);
+-#else
+-    _append_value_string_list (supported_formats, "Y412_BE", NULL);
+-#endif
+-  }
+-}
+-
+ /* copies the given caps */
+ static GstCaps *
+ gst_gl_color_convert_caps_transform_format_info (GstGLContext * context,
+@@ -1102,7 +1019,7 @@ gst_gl_color_convert_caps_transform_format_info (GstGLContext * context,
+   _init_value_string_list (&rgb_formats, "RGBA", "ARGB", "BGRA", "ABGR", "RGBx",
+       "xRGB", "BGRx", "xBGR", "RGB", "BGR", "ARGB64", "BGR10A2_LE",
+       "RGB10A2_LE", NULL);
+-  _init_supported_formats (context, output, &supported_formats);
++  gst_gl_format_init_supported_formats (context, output, &supported_formats);
+   gst_value_intersect (&supported_rgb_formats, &rgb_formats,
+       &supported_formats);
+ 
+diff --git a/subprojects/gst-plugins-base/gst-libs/gst/gl/gstglformat.c b/subprojects/gst-plugins-base/gst-libs/gst/gl/gstglformat.c
+index d1ce3f03a..88724ed14 100644
+--- a/subprojects/gst-plugins-base/gst-libs/gst/gl/gstglformat.c
++++ b/subprojects/gst-plugins-base/gst-libs/gst/gl/gstglformat.c
+@@ -33,6 +33,7 @@
+ #endif
+ 
+ #include "gstglformat.h"
++#include "gstglformat_private.h"
+ 
+ #include "gstglcontext.h"
+ #include "gstglfuncs.h"
+@@ -597,3 +598,89 @@ gst_gl_texture_target_to_buffer_pool_option (GstGLTextureTarget target)
+       return NULL;
+   }
+ }
++
++static void
++_append_value_string_list (GValue * list, ...)
++{
++  GValue item = G_VALUE_INIT;
++  gchar *str;
++  va_list args;
++
++  va_start (args, list);
++  while ((str = va_arg (args, gchar *))) {
++    g_value_init (&item, G_TYPE_STRING);
++    g_value_set_string (&item, str);
++
++    gst_value_list_append_value (list, &item);
++    g_value_unset (&item);
++  }
++  va_end (args);
++}
++
++void
++gst_gl_format_init_supported_formats (GstGLContext * context, gboolean output,
++    GValue * supported_formats)
++{
++  /* Assume if context == NULL that we don't have a GL context and can
++   * do the conversion */
++
++  g_value_init (supported_formats, GST_TYPE_LIST);
++
++  /* Always supported input and output formats */
++  _append_value_string_list (supported_formats, "RGBA", "RGB", "RGBx", "BGR",
++      "BGRx", "BGRA", "xRGB", "xBGR", "ARGB", "ABGR", "GRAY8", "GRAY16_LE",
++      "GRAY16_BE", "AYUV", "VUYA", "YUY2", "UYVY", NULL);
++
++  /* Always supported input formats or output with multiple draw buffers */
++  if (!output || (!context || context->gl_vtable->DrawBuffers))
++    _append_value_string_list (supported_formats, "GBRA", "GBR", "RGBP", "BGRP",
++        "Y444", "I420", "YV12", "Y42B", "Y41B", "NV12", "NV21", "NV16", "NV61",
++        "A420", "AV12", NULL);
++
++  /* Requires reading from a RG/LA framebuffer... */
++  if (!context || (USING_GLES3 (context) || USING_OPENGL (context)))
++    _append_value_string_list (supported_formats, "YUY2", "UYVY", NULL);
++
++  if (!context || gst_gl_format_is_supported (context, GST_GL_RGBA16))
++    _append_value_string_list (supported_formats, "ARGB64", NULL);
++
++  if (!context || gst_gl_format_is_supported (context, GST_GL_RGB565))
++    _append_value_string_list (supported_formats, "RGB16", "BGR16", NULL);
++
++  if (!context || gst_gl_format_is_supported (context, GST_GL_RGB10_A2)) {
++#if G_BYTE_ORDER == G_LITTLE_ENDIAN
++    _append_value_string_list (supported_formats, "BGR10A2_LE", "RGB10A2_LE",
++        "Y410", NULL);
++#else
++    _append_value_string_list (supported_formats, "Y410", NULL);
++#endif
++  }
++
++  if (!context || (gst_gl_format_is_supported (context, GST_GL_R16) &&
++          gst_gl_format_is_supported (context, GST_GL_RG16))) {
++#if G_BYTE_ORDER == G_LITTLE_ENDIAN
++    _append_value_string_list (supported_formats, "P010_10LE", "P012_LE",
++        "P016_LE", NULL);
++#else
++    _append_value_string_list (supported_formats, "P010_10BE", "P012_BE",
++        "P016_BE", NULL);
++#endif
++  }
++
++  if (!context || (gst_gl_format_is_supported (context, GST_GL_RG16))) {
++    _append_value_string_list (supported_formats, "Y210", NULL);
++#if G_BYTE_ORDER == G_LITTLE_ENDIAN
++    _append_value_string_list (supported_formats, "Y212_LE", NULL);
++#else
++    _append_value_string_list (supported_formats, "Y212_BE", NULL);
++#endif
++  }
++
++  if (!context || gst_gl_format_is_supported (context, GST_GL_RGBA16)) {
++#if G_BYTE_ORDER == G_LITTLE_ENDIAN
++    _append_value_string_list (supported_formats, "Y412_LE", NULL);
++#else
++    _append_value_string_list (supported_formats, "Y412_BE", NULL);
++#endif
++  }
++}
+diff --git a/subprojects/gst-plugins-base/gst-libs/gst/gl/gstglformat_private.h b/subprojects/gst-plugins-base/gst-libs/gst/gl/gstglformat_private.h
+new file mode 100644
+index 000000000..f078e4181
+--- /dev/null
++++ b/subprojects/gst-plugins-base/gst-libs/gst/gl/gstglformat_private.h
+@@ -0,0 +1,33 @@
++/*
++ * GStreamer
++ * Copyright (C) 2021 Rafał Dzięgiel <rafostar.github@gmail.com>
++ *
++ * This library is free software; you can redistribute it and/or
++ * modify it under the terms of the GNU Library General Public
++ * License as published by the Free Software Foundation; either
++ * version 2 of the License, or (at your option) any later version.
++ *
++ * This library is distributed in the hope that it will be useful,
++ * but WITHOUT ANY WARRANTY; without even the implied warranty of
++ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
++ * Library General Public License for more details.
++ *
++ * You should have received a copy of the GNU Library General Public
++ * License along with this library; if not, write to the
++ * Free Software Foundation, Inc., 51 Franklin St, Fifth Floor,
++ * Boston, MA 02110-1301, USA.
++ */
++
++#ifndef __GST_GL_FORMAT_PRIVATE_H__
++#define __GST_GL_FORMAT_PRIVATE_H__
++
++#include <gst/gst.h>
++#include <gst/gl/gstgl_fwd.h>
++
++G_BEGIN_DECLS
++
++G_GNUC_INTERNAL void gst_gl_format_init_supported_formats (GstGLContext * context, gboolean output, GValue * supported_formats);
++
++G_END_DECLS
++
++#endif /* __GST_GL_FORMAT_PRIVATE_H__ */
+-- 
+GitLab
+
+
+From 4b0137673e7929781216c9b8bd4f88015b0a6552 Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Rafa=C5=82=20Dzi=C4=99giel?= <rafostar.github@gmail.com>
+Date: Sat, 31 Jul 2021 09:37:47 +0200
+Subject: [PATCH 2/2] glupload: Filter formats by GL context support
+
+Check which formats are supported by used GL context
+and filter them. This makes videoconvert always choose one
+of the supported by user hardware formats.
+---
+ gst-libs/gst/gl/gstglupload.c | 6 ++----
+ 1 file changed, 2 insertions(+), 4 deletions(-)
+
+diff --git a/subprojects/gst-plugins-base/gst-libs/gst/gl/gstglupload.c b/subprojects/gst-plugins-base/gst-libs/gst/gl/gstglupload.c
+index 46fc0c700..3c4035308 100644
+--- a/subprojects/gst-plugins-base/gst-libs/gst/gl/gstglupload.c
++++ b/subprojects/gst-plugins-base/gst-libs/gst/gl/gstglupload.c
+@@ -28,6 +28,7 @@
+ #include "gl.h"
+ #include "gstglupload.h"
+ #include "gstglfuncs.h"
++#include "gstglformat_private.h"
+ 
+ #if GST_GL_HAVE_PLATFORM_EGL
+ #include "egl/gsteglimage.h"
+@@ -886,7 +887,6 @@ _direct_dma_buf_upload_transform_caps (gpointer impl, GstGLContext * context,
+     gint i, n;
+     GstCaps *tmp;
+     GValue formats = G_VALUE_INIT;
+-    gchar *format_str = g_strdup (GST_GL_MEMORY_VIDEO_FORMATS_STR);
+ 
+     ret =
+         _set_caps_features_with_passthrough (caps,
+@@ -896,12 +896,10 @@ _direct_dma_buf_upload_transform_caps (gpointer impl, GstGLContext * context,
+         GST_CAPS_FEATURE_MEMORY_SYSTEM_MEMORY, passthrough);
+     gst_caps_append (ret, tmp);
+ 
+-    g_value_init (&formats, GST_TYPE_LIST);
+-    gst_value_deserialize (&formats, format_str);
+     tmp = gst_caps_copy (ret);
++    gst_gl_format_init_supported_formats (context, FALSE, &formats);
+     gst_caps_set_value (tmp, "format", &formats);
+     gst_caps_append (ret, tmp);
+-    g_free (format_str);
+     g_value_unset (&formats);
+ 
+     n = gst_caps_get_size (ret);
+-- 
+GitLab
+

@@ -1,0 +1,99 @@
+From 1f4f61e8a3cfda508a05d731cda5485fd4144b10 Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Rafa=C5=82=20Dzi=C4=99giel?= <rafostar.github@gmail.com>
+Date: Fri, 11 Feb 2022 12:28:20 +0100
+Subject: [PATCH] dashdemux: Improve initial representation selection
+
+Do not always start with lowest quality possible. Use properties set
+by user to select best allowed initial representation at startup too.
+---
+ .../gst-plugins-bad/ext/dash/gstdashdemux.c   | 10 +++++++--
+ .../gst-plugins-bad/ext/dash/gstmpdclient.c   | 22 ++++++++++++++++---
+ .../gst-plugins-bad/ext/dash/gstmpdclient.h   |  2 +-
+ 3 files changed, 28 insertions(+), 6 deletions(-)
+
+diff --git a/subprojects/gst-plugins-bad/ext/dash/gstdashdemux.c b/subprojects/gst-plugins-bad/ext/dash/gstdashdemux.c
+index a71e72dbcf..940c942a41 100644
+--- a/subprojects/gst-plugins-bad/ext/dash/gstdashdemux.c
++++ b/subprojects/gst-plugins-bad/ext/dash/gstdashdemux.c
+@@ -756,13 +756,19 @@ gst_dash_demux_setup_mpdparser_streams (GstDashDemux * demux,
+ {
+   gboolean has_streams = FALSE;
+   GList *adapt_sets, *iter;
++  guint connection_speed;
++
++  /* Using g_object_get so it goes through mutex locking in adaptivedemux */
++  g_object_get (demux, "connection-speed", &connection_speed, NULL);
+ 
+   adapt_sets = gst_mpd_client_get_adaptation_sets (client);
+   for (iter = adapt_sets; iter; iter = g_list_next (iter)) {
+     GstMPDAdaptationSetNode *adapt_set_node = iter->data;
+ 
+-    gst_mpd_client_setup_streaming (client, adapt_set_node);
+-    has_streams = TRUE;
++    has_streams |= gst_mpd_client_setup_streaming (client, adapt_set_node,
++        connection_speed * 1000, demux->max_video_width,
++        demux->max_video_height, demux->max_video_framerate_n,
++        demux->max_video_framerate_d);
+   }
+ 
+   if (!has_streams) {
+diff --git a/subprojects/gst-plugins-bad/ext/dash/gstmpdclient.c b/subprojects/gst-plugins-bad/ext/dash/gstmpdclient.c
+index fdaaa659c8..7f6889f843 100644
+--- a/subprojects/gst-plugins-bad/ext/dash/gstmpdclient.c
++++ b/subprojects/gst-plugins-bad/ext/dash/gstmpdclient.c
+@@ -1597,11 +1597,14 @@ gst_mpd_client_get_adaptation_sets (GstMPDClient * client)
+ 
+ gboolean
+ gst_mpd_client_setup_streaming (GstMPDClient * client,
+-    GstMPDAdaptationSetNode * adapt_set)
++    GstMPDAdaptationSetNode * adapt_set, gint64 max_bandwidth,
++    gint max_video_width, gint max_video_height,
++    gint max_video_framerate_n, gint max_video_framerate_d)
+ {
+-  GstMPDRepresentationNode *representation;
++  GstMPDRepresentationNode *representation = NULL;
+   GList *rep_list = NULL;
+   GstActiveStream *stream;
++  gint rep_id;
+ 
+   rep_list = adapt_set->Representations;
+   if (!rep_list) {
+@@ -1629,8 +1632,21 @@ gst_mpd_client_setup_streaming (GstMPDClient * client,
+     representation = gst_mpd_client_get_lowest_representation (rep_list);
+   }
+ #else
++  rep_id = gst_mpd_client_get_rep_idx_with_max_bandwidth (rep_list,
++      max_bandwidth, max_video_width, max_video_height,
++      max_video_framerate_n, max_video_framerate_d);
++
++  if (rep_id >= 0) {
++    GList *best_rep;
++
++    best_rep = g_list_nth (rep_list, rep_id);
++    if (best_rep)
++      representation = (GstMPDRepresentationNode *) best_rep->data;
++  }
++
+   /* slow start */
+-  representation = gst_mpd_client_get_lowest_representation (rep_list);
++  if (!representation)
++    representation = gst_mpd_client_get_lowest_representation (rep_list);
+ #endif
+ 
+   if (!representation) {
+diff --git a/subprojects/gst-plugins-bad/ext/dash/gstmpdclient.h b/subprojects/gst-plugins-bad/ext/dash/gstmpdclient.h
+index bc422fc97c..502c1b4038 100644
+--- a/subprojects/gst-plugins-bad/ext/dash/gstmpdclient.h
++++ b/subprojects/gst-plugins-bad/ext/dash/gstmpdclient.h
+@@ -69,7 +69,7 @@ void gst_mpd_client_fetch_on_load_external_resources (GstMPDClient * client);
+ 
+ /* Streaming management */
+ gboolean gst_mpd_client_setup_media_presentation (GstMPDClient *client, GstClockTime time, gint period_index, const gchar *period_id);
+-gboolean gst_mpd_client_setup_streaming (GstMPDClient * client, GstMPDAdaptationSetNode * adapt_set);
++gboolean gst_mpd_client_setup_streaming (GstMPDClient * client, GstMPDAdaptationSetNode * adapt_set, gint64 max_bandwidth, gint max_video_width, gint max_video_height, gint max_video_framerate_n, gint max_video_framerate_d);
+ gboolean gst_mpd_client_setup_representation (GstMPDClient *client, GstActiveStream *stream, GstMPDRepresentationNode *representation);
+ 
+ GstClockTime gst_mpd_client_get_next_fragment_duration (GstMPDClient * client, GstActiveStream * stream);
+-- 
+GitLab
+
