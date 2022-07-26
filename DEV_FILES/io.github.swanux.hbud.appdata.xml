@@ -174,7 +174,7 @@
         <screenshot><image type="source">https://github.com/swanux/hbud/raw/master/Screenshots/0.4%20-%20Theresa/0.4.0/stat_lyr.png</image></screenshot>
         <screenshot><image type="source">https://github.com/swanux/hbud/raw/master/Screenshots/0.4%20-%20Theresa/0.4.0/syn_lyr.png</image></screenshot>
         <screenshot><image type="source">https://github.com/swanux/hbud/raw/master/Screenshots/0.4%20-%20Theresa/0.4.0/vid_with_sub.png</image></screenshot>
-        <screenshot><image type="source">https://github.com/swanux/hbud/blob/master/Screenshots/0.4%20-%20Theresa/0.4.0/about.png</image></screenshot>
+        <screenshot><image type="source">https://github.com/swanux/hbud/raw/master/Screenshots/0.4%20-%20Theresa/0.4.0/about.png</image></screenshot>
     </screenshots>
 
     <launchable type="desktop-id">io.github.swanux.hbud.desktop</launchable>
