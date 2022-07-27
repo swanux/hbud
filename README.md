@@ -15,7 +15,7 @@ Simple audio / video player and karaoke app written in Python and GTK
 - Seamlessly switch back and forth between video and audio playback (remembers where to continue)
 - Native, lightweight and simple
 - Minimalistic design
-- Flatpak package for comnpatibility and security
+- Flatpak package for compatibility and security
 
 ## Translation
 
