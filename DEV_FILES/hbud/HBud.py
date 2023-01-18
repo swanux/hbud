@@ -470,7 +470,8 @@ class Main(helper.Widgets):
         tmname = self.folderPath.replace("/", ">")
         self.yrEnt.update()
         f = MediaFile(self.editingFile)
-        f.year, f.artist, f.album, f.title, f.art = self.yrEnt.get_value_as_int(), self.arEnt.get_text(), self.alEnt.get_text(), self.tiEnt.get_text(), self.binary
+        buffer = self.lyrEnt.get_buffer()
+        f.year, f.artist, f.album, f.title, f.art, f.lyrics = self.yrEnt.get_value_as_int(), self.arEnt.get_text(), self.alEnt.get_text(), self.tiEnt.get_text(), self.binary, buffer.get_text(buffer.get_start_iter(), buffer.get_end_iter(), True)
         f.save()
         self.playlist[self.ednum]["year"] = self.yrEnt.get_value_as_int()
         self.playlist[self.ednum]["artist"] = self.arEnt.get_text()
@@ -494,6 +495,8 @@ class Main(helper.Widgets):
         self.arEnt.set_text(self.playlist[self.ednum]["artist"])
         self.alEnt.set_text(self.playlist[self.ednum]["album"])
         self.tiEnt.set_text(self.playlist[self.ednum]["title"])
+        try: self.lyrEnt.get_buffer().set_text(MediaFile(self.playlist[self.ednum]["uri"]).lyrics)
+        except: self.lyrEnt.get_buffer().set_text("")
         self.load_cover(mode="meta")
         self.sub2.present()
 

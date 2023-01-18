@@ -47,24 +47,6 @@ class TrackBox(Adw.ActionRow):
         self.image = jean(self.image, task="margin", ids=[7, 7, 0, 0])
         self.add_prefix(self.image)
 
-class About(Gtk.AboutDialog):
-    def __init__(self, build_version, window):
-        super(About, self).__init__()
-        _ = gettext.gettext
-        self.set_program_name(cn.App.application_name)
-        self.set_version(build_version)
-        self.set_copyright(f"Copyright © {cn.App.app_years}")
-        self.set_comments(cn.App.about_comments)
-        self.set_license_type(Gtk.License.GPL_3_0)
-        self.set_website(cn.App.main_url)
-        self.set_website_label("GitHub")
-        self.set_authors(["Dániel Kolozsi"])
-        self.set_artists(["Seh", "Dániel Kolozsi"])
-        self.set_translator_credits(_("Dániel Kolozsi"))
-        self.set_logo(Gdk.Texture.new_from_file(Gio.File.new_for_path("hbud/icons/io.github.swanux.hbud.svg")))
-        self.set_transient_for(window)
-        self.set_modal(True)
-
 class MainStack(Gtk.Stack):
     def __init__(self, gself):
         super(MainStack, self).__init__()
@@ -319,7 +301,7 @@ class Sub2(Adw.Window):
         self.set_name("sub2")
         headerbar = Adw.HeaderBar()
         headerbar.add_css_class("flat")
-        handler = Gtk.WindowHandle.new()
+        # handler = Gtk.WindowHandle.new()
         mainBox = Gtk.Box.new(1, 0)
         gself.sub2Toast = Adw.ToastOverlay()
         dat_grid = Gtk.Grid.new()
@@ -345,10 +327,13 @@ class Sub2(Adw.Window):
         gself.arEnt.set_max_length(40)
         gself.arEnt.set_input_purpose(Gtk.InputPurpose.NAME)
         gself.arEnt.set_placeholder_text(_("John Doe"))
+        gself.lyrEnt = Gtk.TextView(wrap_mode=Gtk.WrapMode.WORD, valign=Gtk.Align.CENTER)
+        scroll = Gtk.ScrolledWindow(child=gself.lyrEnt, propagate_natural_width=True)     
+        scroll.set_size_request(-1, 150)
 
-        for item in [gself.yrEnt, gself.tiEnt, gself.alEnt, gself.arEnt]: item.set_vexpand(True)
+        for item in [gself.yrEnt, gself.tiEnt, gself.alEnt, gself.arEnt, scroll]: item.set_vexpand(True)
 
-        for i, item in enumerate([_("Year :"), _("Artist :"), _("Album :"), _("Title :"), _("Cover art :")]):
+        for i, item in enumerate([_("Year :"), _("Artist :"), _("Album :"), _("Title :"), _("Lyrics :"), _("Cover art :")]):
             label = Gtk.Label.new(item)
             label.add_css_class("title-4")
             label.set_justify(Gtk.Justification.CENTER)
@@ -382,16 +367,16 @@ class Sub2(Adw.Window):
         gself.savBut.set_valign(Gtk.Align.CENTER)
         gself.savBut.set_halign(Gtk.Align.END)
         gself.savBut.set_hexpand(True)
-        dat_grid.attach(gself.magiBut, 0, 5, 1, 1)
+        dat_grid.attach(gself.magiBut, 0, 6, 1, 1)
 
-        for i, item in enumerate([gself.yrEnt, gself.arEnt, gself.alEnt, gself.tiEnt, covBox, gself.savBut]):
+        for i, item in enumerate([gself.yrEnt, gself.arEnt, gself.alEnt, gself.tiEnt, scroll, covBox, gself.savBut]):
             dat_grid.attach(item, 1, i, 1, 1)
         # Outro
         mainBox.append(headerbar)
         mainBox.append(dat_grid)
         gself.sub2Toast.set_child(mainBox)
-        handler.set_child(gself.sub2Toast)
-        self.set_content(handler)
+        # handler.set_child(gself.sub2Toast)
+        self.set_content(gself.sub2Toast)
         self.set_size_request(500, 400)
         self.set_resizable(False)
         self.set_title(_("HBud - Metadata editor"))
@@ -548,7 +533,7 @@ class Widgets(Adw.Application):
         self.window = MainWindow(self)
         self.sub2.set_transient_for(self.window)
         self.sub2.set_modal(True)
-        self.about = About(self.build_version, self.window)
+        self.about = Adw.AboutWindow(application_name=cn.App.application_name, version=self.build_version, copyright=f"Copyright © {cn.App.app_years}", issue_url=cn.App.help_url, license_type=Gtk.License.GPL_3_0, developer_name="Dániel Kolozsi", developers=["Dániel Kolozsi"], designers=["Seh", "Dániel Kolozsi"], translator_credits=_("Dániel Kolozsi"), application_icon=cn.App.application_id, comments=cn.App.about_comments, website=cn.App.main_url, transient_for=self.window, release_notes=cn.App.release_notes, default_height=450)
         self.switchDict = {"locBut" : [self.placeholder, "audio-input-microphone", "audio", self.strBut], "strBut" : [self.strBox, "view-fullscreen", "video", self.locBut]}
         self.provider, self.settings = Gtk.CssProvider(), Adw.StyleManager.get_default()
         # self.window.set_wmclass(APP, "HBud")

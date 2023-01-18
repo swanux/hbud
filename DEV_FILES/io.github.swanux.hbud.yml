@@ -1,23 +1,23 @@
 app-id: io.github.swanux.hbud
 runtime: org.gnome.Platform
-runtime-version: '42'
+runtime-version: '43'
 sdk: org.gnome.Sdk
 command: io.github.swanux.hbud
 #sdk-extensions:
 #  - org.freedesktop.Sdk.Extension.rust-stable
 
-#add-extensions:
-#  org.freedesktop.Platform.ffmpeg-full:
+add-extensions:
+  org.freedesktop.Platform.ffmpeg-full:
 #    directory: lib/codecs
-#    version: "21.08"
+    version: "22.08"
 #    add-ld-path: lib
-#  org.freedesktop.Platform.openh264:
+  org.freedesktop.Platform.openh264:
 #    directory: lib/codecs
-#    version: "21.08"
+    version: "22.08"
 #    add-ld-path: lib
-#  org.freedesktop.Platform.gstreamer-vaapi:
+  org.freedesktop.Platform.gstreamer-vaapi:
 #    directory: lib/codecs
-#    version: "21.08"
+    version: "22.08"
 #    add-ld-path: lib
 
 finish-args:
@@ -51,23 +51,23 @@ cleanup:
   - "/lib/debug"
 
 modules:
-  - "codecs/liba52.json"
-  - "codecs/x264.json"
-  - "codecs/x265.json"
-  - "codecs/libmpeg2.json"
-  - "codecs/libdvdcss.json"
-  - "codecs/libdvdread.json"
-  - "codecs/libdvdnav.json"
-  - "codecs/libass.json"
-#  - "codecs/pipewire.json"
-  - "codecs/gstreamer.json"
-#  - "codecs/libgudev.json"
-#  - "codecs/uchardet.json"
-#  - "codecs/libsass.json"
-#  - "codecs/sassc.json"
-#  - "codecs/gtk4.json"
-  - "codecs/ffmpeg.json"
-#  - gstreamer2.json
+#  - "codecs/liba52.json"
+#  - "codecs/x264.json"
+#  - "codecs/x265.json"
+#  - "codecs/libmpeg2.json"
+#  - "codecs/libdvdcss.json"
+#  - "codecs/libdvdread.json"
+#  - "codecs/libdvdnav.json"
+#  - "codecs/libass.json"
+##  - "codecs/pipewire.json"
+#  - "codecs/gstreamer.json"
+##  - "codecs/libgudev.json"
+##  - "codecs/uchardet.json"
+##  - "codecs/libsass.json"
+##  - "codecs/sassc.json"
+##  - "codecs/gtk4.json"
+#  - "codecs/ffmpeg.json"
+##  - gstreamer2.json
 
   - name: io.github.swanux.hbud
     buildsystem: simple
@@ -88,14 +88,14 @@ modules:
       - cp DEV_FILES/io.github.swanux.hbud.appdata.xml /app/share/appdata/.
       - install -Dm644 -t /app/share/icons/hicolor/scalable/apps/ DEV_FILES/hbud/icons/io.github.swanux.hbud.svg 
 
-  - name: chromaprint
-    buildsystem: cmake-ninja
-    config-opts:
-      - -DCMAKE_BUILD_TYPE=Release
-      - -DBUILD_SHARED_LIBS=ON
-      - -DCMAKE_POSITION_INDEPENDENT_CODE=ON
-      - -DBUILD_TOOLS=ON
-    sources:
-      - type: archive
-        url: https://github.com/acoustid/chromaprint/releases/download/v1.5.1/chromaprint-1.5.1.tar.gz
-        sha256: a1aad8fa3b8b18b78d3755b3767faff9abb67242e01b478ec9a64e190f335e1c
+#  - name: chromaprint
+#    buildsystem: cmake-ninja
+#    config-opts:
+#      - -DCMAKE_BUILD_TYPE=Release
+#      - -DBUILD_SHARED_LIBS=ON
+#      - -DCMAKE_POSITION_INDEPENDENT_CODE=ON
+#      - -DBUILD_TOOLS=ON
+#    sources:
+#      - type: archive
+#        url: https://github.com/acoustid/chromaprint/releases/download/v1.5.1/chromaprint-1.5.1.tar.gz
+#        sha256: a1aad8fa3b8b18b78d3755b3767faff9abb67242e01b478ec9a64e190f335e1c

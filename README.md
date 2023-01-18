@@ -1,9 +1,11 @@
 # HBud
 Simple audio / video player and karaoke app written in Python and GTK
 
-<p align="center"><a href="https://flatstat.mijorus.it/app/io.github.swanux.hbud"  align="center"><img width="150" src="https://img.shields.io/endpoint?url=https://flathub-stats-backend.vercel.app/badges/io.github.swanux.hbud/shields.io.json"></a></p>
+<p align="center"><a href="https://flathub.org/apps/details/io.github.swanux.hbud" align="center"><img width="250" alt='Download on Flathub' src='https://flathub.org/assets/badges/flathub-badge-en.png'/></a></p>
+<p align="center"><img src='https://img.shields.io/flathub/v/io.github.swanux.hbud?label=HBud&style=for-the-badge'/> <img src='https://img.shields.io/flathub/downloads/io.github.swanux.hbud?logo=Flatpak&logoColor=white&style=for-the-badge'/></p>
+<p align="center"></p>
 
-# [Website](https://swanux.github.io/hbud.html) | [Feedback](https://swanux.github.io/feedbacks.html) | [Flathub](https://flathub.org/apps/details/io.github.swanux.hbud)
+# [Website](https://swanux.github.io/hbud.html) | [Flathub](https://flathub.org/apps/details/io.github.swanux.hbud)
 
 ## Features
 - Audio and video playback
