@@ -1,5 +1,5 @@
 # HBud
-Simple audio / video player and karaoke app written in Python and GTK
+Simple audio / video player and karaoke app written in Python and GTK4
 
 <p align="center"><a href="https://flathub.org/apps/details/io.github.swanux.hbud" align="center"><img width="250" alt='Download on Flathub' src='https://flathub.org/assets/badges/flathub-badge-en.png'/></a></p>
 <p align="center"><img src='https://img.shields.io/flathub/v/io.github.swanux.hbud?label=HBud&style=for-the-badge'/> <img src='https://img.shields.io/flathub/downloads/io.github.swanux.hbud?logo=Flatpak&logoColor=white&style=for-the-badge'/></p>
@@ -15,6 +15,7 @@ Simple audio / video player and karaoke app written in Python and GTK
 - Seamlessly switch back and forth between video and audio playback (remembers where to continue)
 - Native, lightweight and simple
 - Minimalistic design
+- Customizable
 - Flatpak package for compatibility and security
 
 ## Translation
@@ -44,7 +45,8 @@ I recommend using one of these tools:
 * [srt](https://github.com/cdown/srt) - For the Python srt module
 * [mediafile](https://github.com/beetbox/mediafile) - For the handy wrapper around mutagen
 * [azapi](https://github.com/elmoiv/azapi) - For the AZLyrics API
-* [ElementaryPython](https://github.com/mirkobrombin/ElementaryPython) - For a useful template
+* [langcodes](https://github.com/rspeer/langcodes) - For providing the display name of a language in the language itself
+* [gst-plugins-rs](https://gitlab.freedesktop.org/gstreamer/gst-plugins-rs) - For `gtk4paintablesink` for video playback
 * [pyacoustid](https://github.com/beetbox/pyacoustid) and [musicbrainzngs](https://github.com/alastair/python-musicbrainzngs) - For the AcoustID and MusicBrainz bindings
 * [MusicBrainz](https://beta.musicbrainz.org/) and [AcoustID](https://acoustid.org/) - For the open databases
 * [Flatpak](https://flatpak.org/) - For this awesome distribution system
