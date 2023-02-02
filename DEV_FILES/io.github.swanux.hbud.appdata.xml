@@ -2,7 +2,7 @@
 <component type="desktop-application">
     <id>io.github.swanux.hbud</id>
     <name>HBud</name>
-    <summary>Simple audio/video player and karaoke app written in Python and GTK</summary>
+    <summary>Simple audio/video player and karaoke app written in Python and GTK4</summary>
     <metadata_license>CC0-1.0</metadata_license>
     <project_license>GPL-3.0+</project_license>
     <content_rating type="oars-1.1"/>
@@ -18,6 +18,7 @@
             <li>Seamlessly switch back and forth between video and audio playback (remembers where to continue)</li>
             <li>Native, lightweight and simple</li>
             <li>Minimalistic design</li>
+            <li>Customizable</li>
             <li>Flatpak package for compatibility and security</li>
         </ul>
     </description>
@@ -30,6 +31,25 @@
     <url type="homepage">https://github.com/swanux/hbud</url>
     <url type="bugtracker">https://github.com/swanux/hbud/issues</url>
 
+    <releases>
+        <release version="0.4.1" date="2023-02-02">
+            <description>
+                <p>Major pointrelease</p>
+                <ul>
+                    <li>New About window using Adw.AboutWindow</li>
+                    <li>Added option to edit lyric tag in the metadata editor</li>
+                    <li>Updated runtime (Gnome 42 -> 43)</li>
+                    <li>Improved video playback performance (up to 2-3x better with hardware acceleration)</li>
+                    <li>Improved overall stability and compatibility</li>
+                    <li>Handle baked in subtitles</li>
+                    <li>Fixed flatpak related issues</li>
+                    <li>Added option to disable / enable hardware acceleration</li>
+                    <li>Switched from Gtk.Video to gtk4paintablesink from gst-rs</li>
+                    <li>Fixed missing app icon in some cases</li>
+                    <li>Many smaller bugfixes</li>
+                </ul>
+            </description>
+        </release>
     <releases>
         <release version="0.4.0" date="2022-07-26">
             <description>
@@ -165,16 +185,16 @@
     <update_contact>swanux_at_protonmail.com</update_contact>
 
     <screenshots>
-        <screenshot type="default"><image type="source">https://github.com/swanux/hbud/raw/master/Screenshots/0.4%20-%20Theresa/0.4.0/audio_more_dark.png</image></screenshot>
-        <screenshot><image type="source">https://github.com/swanux/hbud/raw/master/Screenshots/0.4%20-%20Theresa/0.4.0/audio_light.png</image></screenshot>
-        <screenshot><image type="source">https://github.com/swanux/hbud/raw/master/Screenshots/0.4%20-%20Theresa/0.4.0/met_ed.png</image></screenshot>
-        <screenshot><image type="source">https://github.com/swanux/hbud/raw/master/Screenshots/0.4%20-%20Theresa/0.4.0/minimal.png</image></screenshot>
-        <screenshot><image type="source">https://github.com/swanux/hbud/raw/master/Screenshots/0.4%20-%20Theresa/0.4.0/set_0.png</image></screenshot>
-        <screenshot><image type="source">https://github.com/swanux/hbud/raw/master/Screenshots/0.4%20-%20Theresa/0.4.0/set_1.png</image></screenshot>
-        <screenshot><image type="source">https://github.com/swanux/hbud/raw/master/Screenshots/0.4%20-%20Theresa/0.4.0/stat_lyr.png</image></screenshot>
-        <screenshot><image type="source">https://github.com/swanux/hbud/raw/master/Screenshots/0.4%20-%20Theresa/0.4.0/syn_lyr.png</image></screenshot>
-        <screenshot><image type="source">https://github.com/swanux/hbud/raw/master/Screenshots/0.4%20-%20Theresa/0.4.0/vid_with_sub.png</image></screenshot>
-        <screenshot><image type="source">https://github.com/swanux/hbud/raw/master/Screenshots/0.4%20-%20Theresa/0.4.0/about.png</image></screenshot>
+        <screenshot type="default"><image type="source">https://github.com/swanux/hbud/raw/master/Screenshots/0.4%20-%20Theresa/0.4.1/audio_more_dark.png</image></screenshot>
+        <screenshot><image type="source">https://github.com/swanux/hbud/raw/master/Screenshots/0.4%20-%20Theresa/0.4.1/audio_light.png</image></screenshot>
+        <screenshot><image type="source">https://github.com/swanux/hbud/raw/master/Screenshots/0.4%20-%20Theresa/0.4.1/met_ed.png</image></screenshot>
+        <screenshot><image type="source">https://github.com/swanux/hbud/raw/master/Screenshots/0.4%20-%20Theresa/0.4.1/minimal.png</image></screenshot>
+        <screenshot><image type="source">https://github.com/swanux/hbud/raw/master/Screenshots/0.4%20-%20Theresa/0.4.1/set_0.png</image></screenshot>
+        <screenshot><image type="source">https://github.com/swanux/hbud/raw/master/Screenshots/0.4%20-%20Theresa/0.4.1/set_1.png</image></screenshot>
+        <screenshot><image type="source">https://github.com/swanux/hbud/raw/master/Screenshots/0.4%20-%20Theresa/0.4.1/stat_lyr.png</image></screenshot>
+        <screenshot><image type="source">https://github.com/swanux/hbud/raw/master/Screenshots/0.4%20-%20Theresa/0.4.1/syn_lyr.png</image></screenshot>
+        <screenshot><image type="source">https://github.com/swanux/hbud/raw/master/Screenshots/0.4%20-%20Theresa/0.4.1/vid_with_sub.png</image></screenshot>
+        <screenshot><image type="source">https://github.com/swanux/hbud/raw/master/Screenshots/0.4%20-%20Theresa/0.4.1/about.png</image></screenshot>
     </screenshots>
 
     <launchable type="desktop-id">io.github.swanux.hbud.desktop</launchable>

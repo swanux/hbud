@@ -3,12 +3,11 @@
 # This file is distributed under the same license as the PACKAGE package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
 #
-#, fuzzy
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-07-22 14:04+0200\n"
+"POT-Creation-Date: 2023-02-02 13:32+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,369 +16,375 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/helper.py:178
+#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/helper.py:160
 msgid ""
 "A minimal player mode, better performance and less distraction\n"
 "Note: The window will be refreshed after state change"
 msgstr ""
 
-#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/helper.py:164
+#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/helper.py:146
 msgid "AZLyrics"
 msgstr ""
 
-#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/helper.py:231
+#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/helper.py:215
 msgid "About"
 msgstr ""
 
-#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/helper.py:146
+#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/helper.py:128
 msgid "Accent color"
 msgstr ""
 
-#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/helper.py:342
+#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/helper.py:328
 msgid "Album"
 msgstr ""
 
-#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/helper.py:351
+#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/helper.py:340
 msgid "Album :"
 msgstr ""
 
-#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/helper.py:143
+#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/helper.py:125
 msgid "Appearance"
 msgstr ""
 
-#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/helper.py:428
+#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/helper.py:417
 msgid "Apply"
 msgstr ""
 
-#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/helper.py:351
+#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/helper.py:340
 msgid "Artist :"
 msgstr ""
 
-#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/helper.py:218
+#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/helper.py:202
 msgid "Audio"
 msgstr ""
 
-#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/helper.py:174
+#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/helper.py:156
 msgid "Auto-scroll"
 msgstr ""
 
-#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/helper.py:176
+#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/helper.py:158
 msgid "Auto-scroll positioning"
 msgstr ""
 
-#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/helper.py:174
+#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/helper.py:156
 msgid ""
 "Automatically scroll to make the current song visible - might be useful, but "
 "might be annoying"
 msgstr ""
 
-#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/helper.py:173
+#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/helper.py:155
 msgid "Behavior"
 msgstr ""
 
-#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/helper.py:362
+#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/helper.py:351
 msgid "Browse"
 msgstr ""
 
-#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/HBud.py:446
+#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/HBud.py:454
 msgid "Cancel"
 msgstr ""
 
-#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/helper.py:96
+#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/helper.py:78
 msgid "Clear"
 msgstr ""
 
-#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/helper.py:102
+#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/helper.py:84
 msgid "Clear saved order"
 msgstr ""
 
-#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/HBud.py:233
+#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/HBud.py:242
 msgid "Cleared saved order successfully!"
 msgstr ""
 
-#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/HBud.py:1059
+#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/HBud.py:1140
 msgid ""
 "Could not fetch lyrics for the current track.\n"
 "You may provide it manually."
 msgstr ""
 
-#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/HBud.py:783
-msgid ""
-"Could not find subtitle for the current video.\n"
-"You may provide it manually (OpenSubtitles, Subscene)."
-msgstr ""
-
-#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/helper.py:351
+#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/helper.py:340
 msgid "Cover art :"
 msgstr ""
 
-#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/helper.py:144
+#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/helper.py:126
 msgid "Dark"
 msgstr ""
 
-#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/helper.py:156
+#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/helper.py:138
 msgid "Dark background"
 msgstr ""
 
-#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/helper.py:152
+#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/helper.py:134
 msgid "Default is 30"
 msgstr ""
 
-#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/helper.py:176
+#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/helper.py:158
 msgid ""
 "Default is 5 - increase to make the current song appear further down on the "
 "screen"
 msgstr ""
 
-#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/helper.py:154
+#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/helper.py:136
 msgid "Default is 66"
 msgstr ""
 
-#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/helper.py:168
+#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/helper.py:150
 msgid "Default is High"
 msgstr ""
 
-#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/helper.py:237
+#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/helper.py:221
 msgid "Delete from current playqueue"
 msgstr ""
 
-#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/HBud.py:564
+#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/HBud.py:575
 msgid "Did not find any match online."
 msgstr ""
 
-#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/helper.py:86
+#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/helper.py:68
 msgid "Do not sort"
 msgstr ""
 
-#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/helper.py:63
+#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/helper.py:540
 msgid "Dániel Kolozsi"
 msgstr ""
 
-#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/helper.py:239
+#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/helper.py:223
 msgid "Edit metadata"
 msgstr ""
 
-#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/helper.py:379
+#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/HBud.py:797
+msgid "Empty"
+msgstr ""
+
+#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/helper.py:368
 msgid "Fetch metadata"
 msgstr ""
 
-#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/helper.py:397
+#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/helper.py:386
 msgid "HBud - Metadata editor"
 msgstr ""
 
-#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/helper.py:168
-#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/helper.py:521
+#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/helper.py:162
+msgid "Hardware Acceleration"
+msgstr ""
+
+#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/helper.py:150
+#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/helper.py:510
 msgid "High (500px)"
 msgstr ""
 
-#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/HBud.py:454
+#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/HBud.py:462
 msgid "Image files"
 msgstr ""
 
-#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/helper.py:415
+#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/helper.py:404
 msgid "Is this lyrics correct?"
 msgstr ""
 
-#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/helper.py:347
+#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/helper.py:333
 msgid "John Doe"
 msgstr ""
 
-#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/helper.py:166
+#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/helper.py:148
 msgid "Letras.mus.br"
 msgstr ""
 
-#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/helper.py:144
+#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/helper.py:126
 msgid "Light"
 msgstr ""
 
-#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/helper.py:154
+#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/helper.py:340
+msgid "Lyrics :"
+msgstr ""
+
+#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/helper.py:136
 msgid "Margin"
 msgstr ""
 
-#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/HBud.py:591
+#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/HBud.py:602
 msgid "Metadata fetched successfully!"
 msgstr ""
 
-#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/helper.py:178
+#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/helper.py:160
 msgid "Minimal mode"
 msgstr ""
 
-#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/helper.py:244
+#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/helper.py:228
 msgid "More options"
 msgstr ""
 
-#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/HBud.py:412
-#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/HBud.py:417
-msgid "Music"
-msgstr ""
-
-#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/helper.py:162
+#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/helper.py:144
 msgid "MusixMatch"
 msgstr ""
 
-#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/helper.py:420
+#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/helper.py:409
 msgid "No"
 msgstr ""
 
-#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/HBud.py:506
+#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/HBud.py:810
+msgid "No subtitles found."
+msgstr ""
+
+#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/HBud.py:517
 msgid "None of the above"
 msgstr ""
 
-#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/helper.py:168
-#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/helper.py:522
+#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/helper.py:150
+#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/helper.py:511
 msgid "Normal (250px)"
 msgstr ""
 
-#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/helper.py:413
+#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/helper.py:402
 msgid "Offset (ms):"
 msgstr ""
 
-#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/HBud.py:446
+#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/HBud.py:454
 msgid "Open"
 msgstr ""
 
-#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/HBud.py:430
-#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/HBud.py:452
-#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/HBud.py:463
-msgid "Pictures"
-msgstr ""
-
-#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/HBud.py:412
+#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/HBud.py:421
 msgid "Please choose a folder"
 msgstr ""
 
-#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/HBud.py:413
+#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/HBud.py:422
 msgid "Please choose a video file"
 msgstr ""
 
-#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/HBud.py:463
+#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/HBud.py:471
 msgid "Please choose an image file"
 msgstr ""
 
-#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/helper.py:229
+#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/helper.py:213
 msgid "Preferences"
 msgstr ""
 
-#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/helper.py:168
+#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/helper.py:150
 msgid "Preferred album cover quality"
 msgstr ""
 
-#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/helper.py:95
+#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/helper.py:77
 msgid "Rescan"
 msgstr ""
 
-#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/HBud.py:407
+#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/HBud.py:415
 msgid "Rescan complete. {} tracks added."
 msgstr ""
 
-#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/helper.py:101
+#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/helper.py:83
 msgid "Rescan your music library, append new tracks"
 msgstr ""
 
-#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/helper.py:94
-#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/helper.py:381
+#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/helper.py:76
+#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/helper.py:370
 msgid "Save"
 msgstr ""
 
-#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/helper.py:100
+#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/helper.py:82
 msgid "Save current order"
 msgstr ""
 
-#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/HBud.py:245
+#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/HBud.py:254
 msgid "Saved order successfully!"
 msgstr ""
 
-#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/helper.py:161
+#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/helper.py:143
 msgid "Services"
 msgstr ""
 
-#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/helper.py:152
+#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/helper.py:134
 msgid "Size"
 msgstr ""
 
-#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/helper.py:86
+#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/helper.py:68
 msgid "Sort by Artist (a-z)"
 msgstr ""
 
-#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/helper.py:86
+#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/helper.py:68
 msgid "Sort by Artist (z-a)"
 msgstr ""
 
-#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/helper.py:86
+#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/helper.py:68
 msgid "Sort by Length (0-9)"
 msgstr ""
 
-#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/helper.py:86
+#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/helper.py:68
 msgid "Sort by Length (9-0)"
 msgstr ""
 
-#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/helper.py:86
+#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/helper.py:68
 msgid "Sort by Title (a-z)"
 msgstr ""
 
-#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/helper.py:86
+#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/helper.py:68
 msgid "Sort by Title (z-a)"
 msgstr ""
 
-#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/helper.py:86
+#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/helper.py:68
 msgid "Sort by Year (0-9)"
 msgstr ""
 
-#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/helper.py:86
+#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/helper.py:68
 msgid "Sort by Year (9-0)"
 msgstr ""
 
-#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/helper.py:151
+#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/helper.py:133
 msgid "Subtitles"
 msgstr ""
 
-#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/helper.py:144
+#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/helper.py:126
 msgid "System"
 msgstr ""
 
-#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/helper.py:144
+#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/helper.py:126
 msgid "Theme"
 msgstr ""
 
-#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/helper.py:338
+#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/helper.py:324
 msgid "Title"
 msgstr ""
 
-#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/helper.py:351
+#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/helper.py:340
 msgid "Title :"
 msgstr ""
 
-#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/helper.py:168
-#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/helper.py:520
+#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/helper.py:150
+#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/helper.py:509
 msgid "Ultra High (1200px)"
 msgstr ""
 
-#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/HBud.py:375
-#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/HBud.py:376
+#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/HBud.py:382
+#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/HBud.py:383
+#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/HBud.py:802
 msgid "Unknown"
 msgstr ""
 
-#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/helper.py:221
+#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/helper.py:205
 msgid "Video"
 msgstr ""
 
-#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/HBud.py:449
+#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/HBud.py:457
 msgid "Video files"
 msgstr ""
 
-#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/HBud.py:413
-#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/HBud.py:447
-msgid "Videos"
+#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/helper.py:162
+msgid ""
+"Whether to use VA for HW acceleration or not\n"
+"Note: Turning this off may result in increased stability but worse "
+"performance"
 msgstr ""
 
-#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/helper.py:541
+#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/helper.py:530
 msgid "Which one is correct?"
 msgstr ""
 
-#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/helper.py:351
+#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/helper.py:340
 msgid "Year :"
 msgstr ""
 
-#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/helper.py:419
+#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/helper.py:408
 msgid "Yes"
+msgstr ""
+
+#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/HBud.py:811
+msgid "You may visit OpenSubtitles or Subscene."
 msgstr ""

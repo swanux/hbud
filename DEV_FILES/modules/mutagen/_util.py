@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 # Copyright (C) 2006  Joe Wreschnig
 #
 # This program is free software; you can redistribute it and/or modify
@@ -25,7 +24,7 @@ from functools import wraps
 from fnmatch import fnmatchcase
 
 
-_DEFAULT_BUFFER_SIZE = 2 ** 18
+_DEFAULT_BUFFER_SIZE = 2 ** 20
 
 
 def endswith(text, end):

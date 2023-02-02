@@ -1,7 +1,6 @@
 import logging
 from os import PathLike
-from os.path import basename, splitext
-from typing import BinaryIO, List, Optional, Set
+from typing import Any, BinaryIO, List, Optional, Set
 
 from .cd import (
     coherence_ratio,
@@ -36,15 +35,16 @@ def from_bytes(
     steps: int = 5,
     chunk_size: int = 512,
     threshold: float = 0.2,
-    cp_isolation: List[str] = None,
-    cp_exclusion: List[str] = None,
+    cp_isolation: Optional[List[str]] = None,
+    cp_exclusion: Optional[List[str]] = None,
     preemptive_behaviour: bool = True,
     explain: bool = False,
+    language_threshold: float = 0.1,
 ) -> CharsetMatches:
     """
     Given a raw bytes sequence, return the best possibles charset usable to render str objects.
     If there is no results, it is a strong indicator that the source is binary/not text.
-    By default, the process will extract 5 blocs of 512o each to assess the mess and coherence of a given sequence.
+    By default, the process will extract 5 blocks of 512o each to assess the mess and coherence of a given sequence.
     And will give up a particular code page after 20% of measured mess. Those criteria are customizable at will.
 
     The preemptive behavior DOES NOT replace the traditional detection workflow, it prioritize a particular code page
@@ -196,7 +196,14 @@ def from_bytes(
         if encoding_iana in {"utf_16", "utf_32"} and not bom_or_sig_available:
             logger.log(
                 TRACE,
-                "Encoding %s wont be tested as-is because it require a BOM. Will try some sub-encoder LE/BE.",
+                "Encoding %s won't be tested as-is because it require a BOM. Will try some sub-encoder LE/BE.",
+                encoding_iana,
+            )
+            continue
+        if encoding_iana in {"utf_7"} and not bom_or_sig_available:
+            logger.log(
+                TRACE,
+                "Encoding %s won't be tested as-is because detection is unreliable without BOM/SIG.",
                 encoding_iana,
             )
             continue
@@ -296,7 +303,13 @@ def from_bytes(
             ):
                 md_chunks.append(chunk)
 
-                md_ratios.append(mess_ratio(chunk, threshold))
+                md_ratios.append(
+                    mess_ratio(
+                        chunk,
+                        threshold,
+                        explain is True and 1 <= len(cp_isolation) <= 2,
+                    )
+                )
 
                 if md_ratios[-1] >= threshold:
                     early_stop_count += 1
@@ -388,7 +401,9 @@ def from_bytes(
         if encoding_iana != "ascii":
             for chunk in md_chunks:
                 chunk_languages = coherence_ratio(
-                    chunk, 0.1, ",".join(target_languages) if target_languages else None
+                    chunk,
+                    language_threshold,
+                    ",".join(target_languages) if target_languages else None,
                 )
 
                 cd_ratios.append(chunk_languages)
@@ -486,10 +501,11 @@ def from_fp(
     steps: int = 5,
     chunk_size: int = 512,
     threshold: float = 0.20,
-    cp_isolation: List[str] = None,
-    cp_exclusion: List[str] = None,
+    cp_isolation: Optional[List[str]] = None,
+    cp_exclusion: Optional[List[str]] = None,
     preemptive_behaviour: bool = True,
     explain: bool = False,
+    language_threshold: float = 0.1,
 ) -> CharsetMatches:
     """
     Same thing than the function from_bytes but using a file pointer that is already ready.
@@ -504,18 +520,20 @@ def from_fp(
         cp_exclusion,
         preemptive_behaviour,
         explain,
+        language_threshold,
     )
 
 
 def from_path(
-    path: PathLike,
+    path: "PathLike[Any]",
     steps: int = 5,
     chunk_size: int = 512,
     threshold: float = 0.20,
-    cp_isolation: List[str] = None,
-    cp_exclusion: List[str] = None,
+    cp_isolation: Optional[List[str]] = None,
+    cp_exclusion: Optional[List[str]] = None,
     preemptive_behaviour: bool = True,
     explain: bool = False,
+    language_threshold: float = 0.1,
 ) -> CharsetMatches:
     """
     Same thing than the function from_bytes but with one extra step. Opening and reading given file path in binary mode.
@@ -531,48 +549,5 @@ def from_path(
             cp_exclusion,
             preemptive_behaviour,
             explain,
+            language_threshold,
         )
-
-
-def normalize(
-    path: PathLike,
-    steps: int = 5,
-    chunk_size: int = 512,
-    threshold: float = 0.20,
-    cp_isolation: List[str] = None,
-    cp_exclusion: List[str] = None,
-    preemptive_behaviour: bool = True,
-) -> CharsetMatch:
-    """
-    Take a (text-based) file path and try to create another file next to it, this time using UTF-8.
-    """
-    results = from_path(
-        path,
-        steps,
-        chunk_size,
-        threshold,
-        cp_isolation,
-        cp_exclusion,
-        preemptive_behaviour,
-    )
-
-    filename = basename(path)
-    target_extensions = list(splitext(filename))
-
-    if len(results) == 0:
-        raise IOError(
-            'Unable to normalize "{}", no encoding charset seems to fit.'.format(
-                filename
-            )
-        )
-
-    result = results.best()
-
-    target_extensions[0] += "-" + result.encoding  # type: ignore
-
-    with open(
-        "{}".format(str(path).replace(filename, "".join(target_extensions))), "wb"
-    ) as fp:
-        fp.write(result.output())  # type: ignore
-
-    return result  # type: ignore

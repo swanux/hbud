@@ -59,7 +59,7 @@ import struct
 import traceback
 
 
-__version__ = '0.9.0'
+__version__ = '0.11.0'
 __all__ = ['UnreadableFileError', 'FileTypeError', 'MediaFile']
 
 log = logging.getLogger(__name__)
@@ -600,8 +600,8 @@ class ListStorageStyle(StorageStyle):
     object to each.
 
     Subclasses may overwrite ``fetch`` and ``store``.  ``fetch`` must
-    return a (possibly empty) list and ``store`` receives a serialized
-    list of values as the second argument.
+    return a (possibly empty) list or `None` if the tag does not exist.
+    ``store`` receives a serialized list of values as the second argument.
 
     The `serialize` and `deserialize` methods (from the base
     `StorageStyle`) are still called with individual values. This class
@@ -610,15 +610,23 @@ class ListStorageStyle(StorageStyle):
     def get(self, mutagen_file):
         """Get the first value in the field's value list.
         """
+        values = self.get_list(mutagen_file)
+        if values is None:
+            return None
+
         try:
-            return self.get_list(mutagen_file)[0]
+            return values[0]
         except IndexError:
             return None
 
     def get_list(self, mutagen_file):
         """Get a list of all values for the field using this style.
         """
-        return [self.deserialize(item) for item in self.fetch(mutagen_file)]
+        raw_values = self.fetch(mutagen_file)
+        if raw_values is None:
+            return None
+
+        return [self.deserialize(item) for item in raw_values]
 
     def fetch(self, mutagen_file):
         """Get the list of raw (serialized) values.
@@ -626,19 +634,27 @@ class ListStorageStyle(StorageStyle):
         try:
             return mutagen_file[self.key]
         except KeyError:
-            return []
+            return None
 
     def set(self, mutagen_file, value):
         """Set an individual value as the only value for the field using
         this style.
         """
-        self.set_list(mutagen_file, [value])
+        if value is None:
+            self.store(mutagen_file, None)
+        else:
+            self.set_list(mutagen_file, [value])
 
     def set_list(self, mutagen_file, values):
         """Set all values for the field using this style. `values`
         should be an iterable.
         """
-        self.store(mutagen_file, [self.serialize(value) for value in values])
+        if values is None:
+            self.delete(mutagen_file)
+        else:
+            self.store(
+                mutagen_file, [self.serialize(value) for value in values]
+            )
 
     def store(self, mutagen_file, values):
         """Set the list of all raw (serialized) values for this field.
@@ -1312,11 +1328,12 @@ class ListMediaField(MediaField):
     Uses ``get_list`` and set_list`` methods of its ``StorageStyle``
     strategies to do the actual work.
     """
-    def __get__(self, mediafile, _):
-        values = []
+    def __get__(self, mediafile, _=None):
         for style in self.styles(mediafile.mgfile):
-            values.extend(style.get_list(mediafile.mgfile))
-        return [_safe_cast(self.out_type, value) for value in values]
+            values = style.get_list(mediafile.mgfile)
+            if values:
+                return [_safe_cast(self.out_type, value) for value in values]
+        return None
 
     def __set__(self, mediafile, values):
         for style in self.styles(mediafile.mgfile):
@@ -1909,22 +1926,33 @@ class MediaFile(object):
         MP3StorageStyle('TPE2'),
         MP4StorageStyle('aART'),
         StorageStyle('ALBUM ARTIST'),
+        StorageStyle('ALBUM_ARTIST'),
         StorageStyle('ALBUMARTIST'),
         ASFStorageStyle('WM/AlbumArtist'),
     )
     albumartists = ListMediaField(
         MP3ListDescStorageStyle(desc=u'ALBUMARTISTS'),
+        MP3ListDescStorageStyle(desc=u'ALBUM_ARTISTS'),
+        MP3ListDescStorageStyle(desc=u'ALBUM ARTISTS', read_only=True),
         MP4ListStorageStyle('----:com.apple.iTunes:ALBUMARTISTS'),
+        MP4ListStorageStyle('----:com.apple.iTunes:ALBUM_ARTISTS'),
+        MP4ListStorageStyle(
+            '----:com.apple.iTunes:ALBUM ARTISTS', read_only=True
+        ),
         ListStorageStyle('ALBUMARTISTS'),
+        ListStorageStyle('ALBUM_ARTISTS'),
+        ListStorageStyle('ALBUM ARTISTS', read_only=True),
         ASFStorageStyle('WM/AlbumArtists'),
     )
-    albumtype = MediaField(
-        MP3DescStorageStyle(u'MusicBrainz Album Type'),
-        MP4StorageStyle('----:com.apple.iTunes:MusicBrainz Album Type'),
-        StorageStyle('RELEASETYPE'),
-        StorageStyle('MUSICBRAINZ_ALBUMTYPE'),
+    albumtypes = ListMediaField(
+        MP3ListDescStorageStyle('MusicBrainz Album Type', split_v23=True),
+        MP4ListStorageStyle('----:com.apple.iTunes:MusicBrainz Album Type'),
+        ListStorageStyle('RELEASETYPE'),
+        ListStorageStyle('MUSICBRAINZ_ALBUMTYPE'),
         ASFStorageStyle('MusicBrainz/Album Type'),
     )
+    albumtype = albumtypes.single_field()
+
     label = MediaField(
         MP3StorageStyle('TPUB'),
         MP4StorageStyle('----:com.apple.iTunes:LABEL'),
@@ -1952,12 +1980,26 @@ class MediaFile(object):
         StorageStyle('ASIN'),
         ASFStorageStyle('MusicBrainz/ASIN'),
     )
-    catalognum = MediaField(
-        MP3DescStorageStyle(u'CATALOGNUMBER'),
-        MP4StorageStyle('----:com.apple.iTunes:CATALOGNUMBER'),
-        StorageStyle('CATALOGNUMBER'),
+    catalognums = ListMediaField(
+        MP3ListDescStorageStyle('CATALOGNUMBER', split_v23=True),
+        MP3ListDescStorageStyle('CATALOGID', read_only=True),
+        MP3ListDescStorageStyle('DISCOGS_CATALOG', read_only=True),
+        MP4ListStorageStyle('----:com.apple.iTunes:CATALOGNUMBER'),
+        MP4ListStorageStyle(
+            '----:com.apple.iTunes:CATALOGID', read_only=True
+        ),
+        MP4ListStorageStyle(
+            '----:com.apple.iTunes:DISCOGS_CATALOG', read_only=True
+        ),
+        ListStorageStyle('CATALOGNUMBER'),
+        ListStorageStyle('CATALOGID', read_only=True),
+        ListStorageStyle('DISCOGS_CATALOG', read_only=True),
         ASFStorageStyle('WM/CatalogNo'),
+        ASFStorageStyle('CATALOGID', read_only=True),
+        ASFStorageStyle('DISCOGS_CATALOG', read_only=True),
     )
+    catalognum = catalognums.single_field()
+
     barcode = MediaField(
         MP3DescStorageStyle(u'BARCODE'),
         MP4StorageStyle('----:com.apple.iTunes:BARCODE'),
@@ -1993,12 +2035,14 @@ class MediaFile(object):
         StorageStyle('SCRIPT'),
         ASFStorageStyle('WM/Script'),
     )
-    language = MediaField(
-        MP3StorageStyle('TLAN'),
-        MP4StorageStyle('----:com.apple.iTunes:LANGUAGE'),
-        StorageStyle('LANGUAGE'),
+    languages = ListMediaField(
+        MP3ListStorageStyle('TLAN'),
+        MP4ListStorageStyle('----:com.apple.iTunes:LANGUAGE'),
+        ListStorageStyle('LANGUAGE'),
         ASFStorageStyle('WM/Language'),
     )
+    language = languages.single_field()
+
     country = MediaField(
         MP3DescStorageStyle(u'MusicBrainz Album Release Country'),
         MP4StorageStyle('----:com.apple.iTunes:MusicBrainz '

@@ -1,19 +1,13 @@
-try:
-    # WARNING: unicodedata2 support is going to be removed in 3.0
-    # Python is quickly catching up.
-    import unicodedata2 as unicodedata
-except ImportError:
-    import unicodedata  # type: ignore[no-redef]
-
 import importlib
 import logging
+import unicodedata
 from codecs import IncrementalDecoder
 from encodings.aliases import aliases
 from functools import lru_cache
 from re import findall
 from typing import Generator, List, Optional, Set, Tuple, Union
 
-from _multibytecodec import MultibyteIncrementalDecoder  # type: ignore
+from _multibytecodec import MultibyteIncrementalDecoder
 
 from .constant import (
     ENCODING_MARKS,
@@ -206,7 +200,7 @@ def is_unprintable(character: str) -> bool:
         character.isspace() is False  # includes \n \t \r \v
         and character.isprintable() is False
         and character != "\x1A"  # Why? Its the ASCII substitute character.
-        and character != b"\xEF\xBB\xBF".decode("utf_8")  # bug discovered in Python,
+        and character != "\ufeff"  # bug discovered in Python,
         # Zero Width No-Break Space located in 	Arabic Presentation Forms-B, Unicode 1.1 not acknowledged as space.
     )
 
@@ -230,6 +224,9 @@ def any_specified_encoding(sequence: bytes, search_zone: int = 4096) -> Optional
 
     for specified_encoding in results:
         specified_encoding = specified_encoding.lower().replace("-", "_")
+
+        encoding_alias: str
+        encoding_iana: str
 
         for encoding_alias, encoding_iana in aliases.items():
             if encoding_alias == specified_encoding:
@@ -256,7 +253,7 @@ def is_multi_byte_encoding(name: str) -> bool:
         "utf_32_be",
         "utf_7",
     } or issubclass(
-        importlib.import_module("encodings.{}".format(name)).IncrementalDecoder,  # type: ignore
+        importlib.import_module("encodings.{}".format(name)).IncrementalDecoder,
         MultibyteIncrementalDecoder,
     )
 
@@ -285,6 +282,9 @@ def should_strip_sig_or_bom(iana_encoding: str) -> bool:
 
 def iana_name(cp_name: str, strict: bool = True) -> str:
     cp_name = cp_name.lower().replace("-", "_")
+
+    encoding_alias: str
+    encoding_iana: str
 
     for encoding_alias, encoding_iana in aliases.items():
         if cp_name in [encoding_alias, encoding_iana]:
@@ -315,8 +315,12 @@ def cp_similarity(iana_name_a: str, iana_name_b: str) -> float:
     if is_multi_byte_encoding(iana_name_a) or is_multi_byte_encoding(iana_name_b):
         return 0.0
 
-    decoder_a = importlib.import_module("encodings.{}".format(iana_name_a)).IncrementalDecoder  # type: ignore
-    decoder_b = importlib.import_module("encodings.{}".format(iana_name_b)).IncrementalDecoder  # type: ignore
+    decoder_a = importlib.import_module(
+        "encodings.{}".format(iana_name_a)
+    ).IncrementalDecoder
+    decoder_b = importlib.import_module(
+        "encodings.{}".format(iana_name_b)
+    ).IncrementalDecoder
 
     id_a: IncrementalDecoder = decoder_a(errors="ignore")
     id_b: IncrementalDecoder = decoder_b(errors="ignore")
@@ -392,7 +396,7 @@ def cut_sequence_chunks(
 
             # multi-byte bad cutting detector and adjustment
             # not the cleanest way to perform that fix but clever enough for now.
-            if is_multi_byte_decoder and i > 0 and sequences[i] >= 0x80:
+            if is_multi_byte_decoder and i > 0:
 
                 chunk_partial_size_chk: int = min(chunk_size, 16)
 

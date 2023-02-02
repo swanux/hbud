@@ -6,11 +6,11 @@ azapi-3.0.8.dist-info/REQUESTED,sha256=47DEQpj8HBSa-_TImW-5JCeuQeRkm5NMpJWZG3hSu
 azapi-3.0.8.dist-info/WHEEL,sha256=YUYzQ6UQdoqxXjimOitTqynltBCkwY6qlTfTh2IzqQU,97
 azapi-3.0.8.dist-info/top_level.txt,sha256=dGiKjHj9_hq9CwamShRF44UINy7DGqNdCjSn3mnByt8,6
 azapi/__init__.py,sha256=mHTUbRjAYYAxhMqAupDGEQWRmbwqdCeGYjRmD1ZMAzw,268
-azapi/__pycache__/__init__.cpython-310.pyc,,
-azapi/__pycache__/azapi.cpython-310.pyc,,
-azapi/__pycache__/jaro.cpython-310.pyc,,
-azapi/__pycache__/requester.cpython-310.pyc,,
-azapi/__pycache__/tools.cpython-310.pyc,,
+azapi/__pycache__/__init__.cpython-311.pyc,,
+azapi/__pycache__/azapi.cpython-311.pyc,,
+azapi/__pycache__/jaro.cpython-311.pyc,,
+azapi/__pycache__/requester.cpython-311.pyc,,
+azapi/__pycache__/tools.cpython-311.pyc,,
 azapi/azapi.py,sha256=-V24TaQeMI1ICMI0GRM6aVHWkH49lYksIoErklzttoM,6004
 azapi/jaro.py,sha256=cpjB3pYnY3F2UlB_Cjx85tyw1MKdDxRJLr18YZTIzGw,1120
 azapi/requester.py,sha256=oC4MLNdxUFR7yU6e-SdRyeGIfe1sWn47QY5EaDaJl6M,5122

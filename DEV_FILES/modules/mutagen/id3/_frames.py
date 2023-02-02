@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 # Copyright (C) 2005  Michael Urman
 #
 # This program is free software; you can redistribute it and/or modify
@@ -8,6 +7,7 @@
 
 import zlib
 from struct import unpack
+from typing import Sequence
 
 from ._util import ID3JunkFrameError, ID3EncryptionUnsupportedError, unsynch, \
     ID3SaveConfig, error
@@ -17,7 +17,7 @@ from ._specs import BinaryDataSpec, StringSpec, Latin1TextSpec, \
     VolumeAdjustmentSpec, ChannelSpec, MultiSpec, SynchronizedTextSpec, \
     KeyEventSpec, TimeStampSpec, EncodedNumericPartTextSpec, \
     EncodedNumericTextSpec, SpecError, PictureTypeSpec, ID3FramesSpec, \
-    Latin1TextListSpec, CTOCFlagsSpec, FrameIDSpec, RVASpec
+    Latin1TextListSpec, CTOCFlagsSpec, FrameIDSpec, RVASpec, Spec
 
 
 def _bytes2key(b):
@@ -49,8 +49,8 @@ class Frame(object):
     FLAG24_UNSYNCH = 0x0002
     FLAG24_DATALEN = 0x0001
 
-    _framespec = []
-    _optionalspec = []
+    _framespec: Sequence[Spec] = []
+    _optionalspec: Sequence[Spec] = []
 
     def __init__(self, *args, **kwargs):
         if len(args) == 1 and len(kwargs) == 0 and \
@@ -291,7 +291,7 @@ class Frame(object):
         frame._readData(header, data)
         return frame
 
-    def __hash__(self):
+    def __hash__(self: object):
         raise TypeError("Frame objects are unhashable")
 
 
@@ -514,7 +514,7 @@ class UrlFrame(Frame):
     ASCII.
     """
 
-    _framespec = [
+    _framespec: Sequence[Spec] = [
         Latin1TextSpec('url'),
     ]
 

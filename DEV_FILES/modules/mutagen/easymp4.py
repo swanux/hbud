@@ -1,10 +1,11 @@
-# -*- coding: utf-8 -*-
 # Copyright (C) 2009  Joe Wreschnig
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation; either version 2 of the License, or
 # (at your option) any later version.
+
+from typing import Dict, Callable
 
 from mutagen import Tags
 from mutagen._util import DictMixin, dict_match
@@ -31,10 +32,10 @@ class EasyMP4Tags(DictMixin, Tags):
     MP4, not EasyMP4.
     """
 
-    Set = {}
-    Get = {}
-    Delete = {}
-    List = {}
+    Set: Dict[str, Callable] = {}
+    Get: Dict[str, Callable] = {}
+    Delete: Dict[str, Callable] = {}
+    List: Dict[str, Callable] = {}
 
     def __init__(self, *args, **kwargs):
         self.__mp4 = MP4Tags(*args, **kwargs)
@@ -276,7 +277,7 @@ class EasyMP4(MP4):
         tags (`EasyMP4Tags`)
     """
 
-    MP4Tags = EasyMP4Tags
+    MP4Tags = EasyMP4Tags  # type: ignore
 
     Get = EasyMP4Tags.Get
     Set = EasyMP4Tags.Set

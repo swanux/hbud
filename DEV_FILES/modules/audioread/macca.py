@@ -13,13 +13,14 @@
 # included in all copies or substantial portions of the Software.
 
 """Read audio files using CoreAudio on Mac OS X."""
-import os
-import sys
+import copy
 import ctypes
 import ctypes.util
-import copy
+import os
+import sys
 
 from .exceptions import DecodeError
+from .base import AudioFile
 
 
 # CoreFoundation and CoreAudio libraries along with their function
@@ -110,20 +111,20 @@ class MacError(DecodeError):
             msg = 'unsupported format'
         else:
             msg = 'error %i' % code
-        super(MacError, self).__init__(msg)
+        super().__init__(msg)
 
 
 def check(err):
     """If err is nonzero, raise a MacError exception."""
     if err == ERROR_NOT_FOUND:
-        raise IOError('file not found')
+        raise OSError('file not found')
     elif err != 0:
         raise MacError(err)
 
 
 # CoreFoundation objects.
 
-class CFObject(object):
+class CFObject:
     def __init__(self, obj):
         if obj == 0:
             raise ValueError('object is zero')
@@ -142,7 +143,7 @@ class CFURL(CFObject):
         url = _corefoundation.CFURLCreateFromFileSystemRepresentation(
             0, filename, len(filename), False
         )
-        super(CFURL, self).__init__(url)
+        super().__init__(url)
 
     def __str__(self):
         cfstr = _corefoundation.CFURLGetString(self._obj)
@@ -184,7 +185,7 @@ class AudioBufferList(ctypes.Structure):
 
 # Main functionality.
 
-class ExtAudioFile(object):
+class ExtAudioFile(AudioFile):
     """A CoreAudio "extended audio file". Reads information and raw PCM
     audio data from any file that CoreAudio knows how to decode.
 

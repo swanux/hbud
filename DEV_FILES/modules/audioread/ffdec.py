@@ -16,18 +16,16 @@
 output.
 """
 
-import sys
-import subprocess
+import queue
 import re
+import subprocess
+import sys
 import threading
 import time
-import os
-try:
-    import queue
-except ImportError:
-    import Queue as queue
+from io import DEFAULT_BUFFER_SIZE
 
 from .exceptions import DecodeError
+from .base import AudioFile
 
 COMMANDS = ('ffmpeg', 'avconv')
 
@@ -62,7 +60,7 @@ class QueueReaderThread(threading.Thread):
     over a Queue.
     """
     def __init__(self, fh, blocksize=1024, discard=False):
-        super(QueueReaderThread, self).__init__()
+        super().__init__()
         self.fh = fh
         self.blocksize = blocksize
         self.daemon = True
@@ -121,9 +119,9 @@ def available():
 windows_error_mode_lock = threading.Lock()
 
 
-class FFmpegAudioFile(object):
+class FFmpegAudioFile(AudioFile):
     """An audio file decoded by the ffmpeg command-line utility."""
-    def __init__(self, filename, block_size=4096):
+    def __init__(self, filename, block_size=DEFAULT_BUFFER_SIZE):
         # On Windows, we need to disable the subprocess's crash dialog
         # in case it dies. Passing SEM_NOGPFAULTERRORBOX to SetErrorMode
         # disables this behavior.
@@ -141,13 +139,12 @@ class FFmpegAudioFile(object):
             )
 
         try:
-            self.devnull = open(os.devnull)
             self.proc = popen_multiple(
                 COMMANDS,
                 ['-i', filename, '-f', 's16le', '-'],
                 stdout=subprocess.PIPE,
                 stderr=subprocess.PIPE,
-                stdin=self.devnull,
+                stdin=subprocess.DEVNULL,
                 creationflags=PROC_FLAGS,
             )
 
@@ -227,7 +224,7 @@ class FFmpegAudioFile(object):
             line = line.strip().lower()
 
             if 'no such file' in line:
-                raise IOError('file not found')
+                raise OSError('file not found')
             elif 'invalid data found' in line:
                 raise UnsupportedError()
             elif 'duration:' in line:
@@ -306,10 +303,6 @@ class FFmpegAudioFile(object):
             # cleanly.
             self.proc.stdout.close()
             self.proc.stderr.close()
-
-        # Close the handle to os.devnull, which is opened regardless of if
-        # a subprocess is successfully created.
-        self.devnull.close()
 
     def __del__(self):
         self.close()

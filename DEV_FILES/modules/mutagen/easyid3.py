@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 # Copyright (C) 2006  Joe Wreschnig
 #
 # This program is free software; you can redistribute it and/or modify
@@ -11,6 +10,8 @@
 EasyID3 is a wrapper around mutagen.id3.ID3 to make ID3 tags appear
 more like Vorbis or APEv2 tags.
 """
+
+from typing import Callable, Dict
 
 import mutagen.id3
 
@@ -64,10 +65,10 @@ class EasyID3(DictMixin, Metadata):
 
     """
 
-    Set = {}
-    Get = {}
-    Delete = {}
-    List = {}
+    Set: Dict[str, Callable] = {}
+    Get: Dict[str, Callable] = {}
+    Delete: Dict[str, Callable] = {}
+    List: Dict[str, Callable] = {}
 
     # For compatibility.
     valid_keys = Get
@@ -477,6 +478,7 @@ for frameid, key in {
     "TLEN": "length",
     "TMED": "media",
     "TMOO": "mood",
+    "TIT1": "grouping",
     "TIT2": "title",
     "TIT3": "version",
     "TPE1": "artist",
@@ -553,4 +555,4 @@ class EasyID3FileType(ID3FileType):
         tags (`EasyID3`)
     """
 
-    ID3 = EasyID3
+    ID3 = EasyID3  # type: ignore

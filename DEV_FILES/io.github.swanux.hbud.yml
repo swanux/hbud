@@ -3,22 +3,19 @@ runtime: org.gnome.Platform
 runtime-version: '43'
 sdk: org.gnome.Sdk
 command: io.github.swanux.hbud
-#sdk-extensions:
-#  - org.freedesktop.Sdk.Extension.rust-stable
+sdk-extensions:
+  - org.freedesktop.Sdk.Extension.rust-stable
 
-add-extensions:
-  org.freedesktop.Platform.ffmpeg-full:
-#    directory: lib/codecs
-    version: "22.08"
-#    add-ld-path: lib
-  org.freedesktop.Platform.openh264:
-#    directory: lib/codecs
-    version: "22.08"
-#    add-ld-path: lib
-  org.freedesktop.Platform.gstreamer-vaapi:
-#    directory: lib/codecs
-    version: "22.08"
-#    add-ld-path: lib
+build-options:
+  append-path: "/usr/lib/sdk/rust-stable/bin"
+
+cleanup:
+  - "/include"
+  - "/share/gdb"
+  - "/share/man"
+  - "/share/gst-plugins-base"
+  - "/share/gir-1.0"
+  - ".ref"
 
 finish-args:
   - --share=network
@@ -26,7 +23,6 @@ finish-args:
   - --socket=fallback-x11
   - --device=dri
   - --socket=pulseaudio
-#  - --filesystem=home
   - --filesystem=xdg-music
   - --filesystem=xdg-videos
   - --share=ipc
@@ -35,39 +31,26 @@ finish-args:
   - --filesystem=/run/media
   - --talk-name=org.gtk.vfs.*
   - --env=GST_PLUGIN_SYSTEM_PATH=/app/lib/gstreamer-1.0
-  - --env=GST_VAAPI_ALL_DRIVERS=1
-
-cleanup:
-  - "/lib/cmake"
-  - "*.la"
-  - "*.a"
-  - "/share/doc"
-  - "/share/gtk-doc"
-  - "/include"
-  - "/lib/debug"
-  - "/lib/pkgconfig"
-  - "/share/man"
-  - "/var"
-  - "/lib/debug"
 
 modules:
-#  - "codecs/liba52.json"
-#  - "codecs/x264.json"
-#  - "codecs/x265.json"
-#  - "codecs/libmpeg2.json"
-#  - "codecs/libdvdcss.json"
-#  - "codecs/libdvdread.json"
-#  - "codecs/libdvdnav.json"
-#  - "codecs/libass.json"
-##  - "codecs/pipewire.json"
-#  - "codecs/gstreamer.json"
-##  - "codecs/libgudev.json"
-##  - "codecs/uchardet.json"
-##  - "codecs/libsass.json"
-##  - "codecs/sassc.json"
-##  - "codecs/gtk4.json"
-#  - "codecs/ffmpeg.json"
-##  - gstreamer2.json
+  - "lib/ffmpeg.json"
+  - "lib/libmpeg2.json"
+  - "lib/libass.json"
+  - "gstreamer-1.0/gstreamer.json"
+
+  - name: gtk4paintablesink
+    buildsystem: simple
+    build-options:
+      env:
+        CARGO_HOME: "/run/build/gtk4paintablesink/cargo"
+    build-commands:
+    - cargo --offline fetch --manifest-path Cargo.toml --verbose
+    - cargo build --offline --release --verbose --features wayland,x11egl,x11glx
+    - install -Dm755 target/release/libgstgtk4.so -t /app/lib/gstreamer-1.0
+    sources:
+    - type: archive
+      url: https://github.com/swanux/hbud/releases/download/v0.4.0/gtk4paintablesink_230129.tar.xz
+      sha256: 4e53d8c9e03d0a653b7defdb1ddf38b27ad61c5882600742f7c2b120a8e1fb5b
 
   - name: io.github.swanux.hbud
     buildsystem: simple
@@ -84,18 +67,11 @@ modules:
       - cp -r DEV_FILES/modules /app/share/hbud/.
       - cp DEV_FILES/io.github.swanux.hbud.desktop /app/share/applications/.
       - cp DEV_FILES/io.github.swanux.hbud /app/share/hbud/.
+      - cp DEV_FILES/fpcalc /app/share/hbud/.
+      - install -Dm755 /app/share/hbud/fpcalc -t /app/bin/.
       - ln -s /app/share/hbud/io.github.swanux.hbud /app/bin/.
       - cp DEV_FILES/io.github.swanux.hbud.appdata.xml /app/share/appdata/.
       - install -Dm644 -t /app/share/icons/hicolor/scalable/apps/ DEV_FILES/hbud/icons/io.github.swanux.hbud.svg 
 
-#  - name: chromaprint
-#    buildsystem: cmake-ninja
-#    config-opts:
-#      - -DCMAKE_BUILD_TYPE=Release
-#      - -DBUILD_SHARED_LIBS=ON
-#      - -DCMAKE_POSITION_INDEPENDENT_CODE=ON
-#      - -DBUILD_TOOLS=ON
-#    sources:
-#      - type: archive
-#        url: https://github.com/acoustid/chromaprint/releases/download/v1.5.1/chromaprint-1.5.1.tar.gz
-#        sha256: a1aad8fa3b8b18b78d3755b3767faff9abb67242e01b478ec9a64e190f335e1c
+cleanup-commands:
+  - ln -s /lib/$FLATPAK_ARCH-linux-*/gstreamer-1.0/libgstpipewire.so /app/lib/gstreamer-1.0/

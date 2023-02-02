@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 # Copyright (C) 2006  Joe Wreschnig
 #
 # This program is free software; you can redistribute it and/or modify
@@ -98,4 +97,4 @@ class EasyTrueAudio(TrueAudio):
     """
 
     from mutagen.easyid3 import EasyID3 as ID3
-    ID3 = ID3
+    ID3 = ID3  # type: ignore

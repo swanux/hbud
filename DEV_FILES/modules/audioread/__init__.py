@@ -17,6 +17,7 @@
 from . import ffdec
 from .exceptions import DecodeError, NoBackendError
 from .version import version as __version__  # noqa
+from .base import AudioFile  # noqa
 
 
 def _gst_available():
@@ -60,8 +61,20 @@ def _mad_available():
         return True
 
 
-def available_backends():
-    """Returns a list of backends that are available on this system."""
+# A cache for the available backends.
+BACKENDS = []
+
+
+def available_backends(flush_cache=False):
+    """Returns a list of backends that are available on this system.
+
+    The list of backends is cached after the first call.
+    If the parameter `flush_cache` is set to `True`, then the cache
+    will be flushed and the backend list will be reconstructed.
+    """
+
+    if BACKENDS and not flush_cache:
+        return BACKENDS
 
     # Standard-library WAV and AIFF readers.
     from . import rawread
@@ -86,7 +99,10 @@ def available_backends():
     if ffdec.available():
         result.append(ffdec.FFmpegAudioFile)
 
-    return result
+    # Cache the backends we found
+    BACKENDS[:] = result
+
+    return BACKENDS
 
 
 def audio_open(path, backends=None):

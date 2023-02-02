@@ -1,7 +1,0 @@
---include-data-dir=
---follow-imports / --nofollow-imports
---include-module=
-
-nuitka3 HBud.py --nofollow-imports --include-module=mediafile --include-module=srt --include-module=six --include-module=mutagen --include-module=dbus
-
-six, gst, gi?, future, dbus || mediafile, mutagen, srt

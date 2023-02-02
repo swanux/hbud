@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 # Copyright (C) 2005  Joe Wreschnig
 #
 # This program is free software; you can redistribute it and/or modify
@@ -517,7 +516,7 @@ def APEValue(value, kind):
 
 class _APEValue(object):
 
-    kind = None
+    kind: int
     value = None
 
     def __init__(self, value, kind=None):

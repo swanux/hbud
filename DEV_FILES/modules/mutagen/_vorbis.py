@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 # Copyright (C) 2005-2006  Joe Wreschnig
 #                    2013  Christoph Reiter
 #
@@ -208,7 +207,7 @@ class VComment(mutagen.Tags, list):
         return u"\n".join(tags)
 
 
-class VCommentDict(VComment, DictMixin):
+class VCommentDict(VComment, DictMixin):  # type: ignore
     """A VComment that looks like a dictionary.
 
     This object differs from a dictionary in two ways. First,

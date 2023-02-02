@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 # Copyright (C) 2006  Joe Wreschnig
 #
 # This program is free software; you can redistribute it and/or modify
@@ -365,8 +364,7 @@ class MP4Tags(DictProxy, Tags):
                     self.__parse_text(atom, data, implicit=False)
             except MP4MetadataError:
                 # parsing failed, save them so we can write them back
-                key = _name2key(atom.name)
-                self._failed_atoms.setdefault(key, []).append(data)
+                self._failed_atoms.setdefault(_name2key(atom.name), []).append(data)
 
     def __setitem__(self, key, value):
         if not isinstance(key, str):
