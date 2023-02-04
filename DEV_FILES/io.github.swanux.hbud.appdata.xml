@@ -33,7 +33,7 @@
     <url type="bugtracker">https://github.com/swanux/hbud/issues</url>
 
     <releases>
-        <release version="0.4.1" date="2023-02-02">
+        <release version="0.4.1.1" date="2023-02-05">
             <description>
                 <p>Major pointrelease.</p>
                 <ul>
@@ -48,6 +48,7 @@
                     <li>Switched from Gtk.Video to gtk4paintablesink from gst-rs</li>
                     <li>Fixed missing app icon in some cases</li>
                     <li>Many smaller bugfixes</li>
+                    <li>Hotfixes over 0.4.1...</li>
                 </ul>
             </description>
         </release>

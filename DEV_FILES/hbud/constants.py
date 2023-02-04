@@ -19,7 +19,7 @@ Features:
     - Customizable
     - Flatpak package for compatibility and security
 """
-    application_version ="0.4.1 - Theresa"
+    application_version ="0.4.1.1 - Theresa"
     app_years = "2021-2023"
     main_url = "https://github.com/swanux/hbud"
     bug_url = "https://github.com/swanux/hbud/issues/labels/bug"
@@ -38,4 +38,5 @@ Features:
         <li>Switched from Gtk.Video to gtk4paintablesink from gst-rs</li>
         <li>Fixed missing app icon in some cases</li>
         <li>Many smaller bugfixes</li>
+        <li>Hotfixes over 0.4.1...</li>
     </ul>"""

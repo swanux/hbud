@@ -9,23 +9,31 @@
         "--disable-doc",
         "--disable-static",
         "--disable-everything",
+        "--enable-libsrt",
         "--enable-gpl",
         "--enable-version3",
         "--enable-shared",
         "--enable-optimizations",
         "--enable-runtime-cpudetect",
         "--enable-pthreads",
-        "--enable-protocol=file",
-        "--enable-decoder=dvvideo,flv,h263,h264,hevc,mjpeg,mpeg2video,mpeg4,mpegvideo,msmpeg4v1,msmpeg4v2,png,tiff,vc1,vp8,vp9,webp,wmv1,wmv2,wmv3,zerocodec",
-        "--enable-decoder=aac,aac_fixed,aac_latm,ac3,ac3_fixed,ape,dca,dvaudio,eac3,flac,mp3,opus,tak,truehd,tta,wmalossless",
-        "--enable-demuxer=ape,gif,yuv4mpegpipe"
+        "--enable-filter=subtitles",
+        "--enable-protocol=file,pipe",
+        "--enable-avformat",
+        "--enable-avcodec",
+        "--enable-libass",
+        "--enable-decoder=dvvideo,flv,h263,h264,hevc,mjpeg,mpeg2video,mpeg4,mpegvideo,msmpeg4v1,msmpeg4v2,tiff,vc1,vp8,vp9,webp,wmv1,wmv2,wmv3,zerocodec",
+        "--enable-decoder=aac,aac_fixed,aac_latm,ac3,ac3_fixed,ape,dca,dvaudio,eac3,flac,mp3,opus,tak,truehd,tta,wmalossless,srt,matroska",
+        "--enable-demuxer=dvvideo,flv,h263,h264,hevc,mjpeg,mpeg2video,mpeg4,mpegvideo,msmpeg4v1,msmpeg4v2,tiff,vc1,vp8,vp9,webp,wmv1,wmv2,wmv3,zerocodec",
+        "--enable-demuxer=aac,aac_fixed,aac_latm,ac3,ac3_fixed,ape,dca,dvaudio,eac3,flac,mp3,opus,tak,truehd,tta,wmalossless,srt,matroska,gif,yuv4mpegpipe",
+        "--enable-muxer=srt",
+        "--enable-encoder=srt"
     ],
     "sources": [
         {
             "type": "git",
             "url": "https://git.ffmpeg.org/ffmpeg.git",
-            "tag": "n5.0.2",
-            "commit": "2f428de9ebdcd0770de37d874871b25325aebd73"
+            "tag": "n5.1.2",
+            "commit": "eacfcbae690f914a4b1b4ad06999f138540cc3d8"
         }
     ]
 }

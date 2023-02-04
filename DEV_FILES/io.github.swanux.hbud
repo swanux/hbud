@@ -1,7 +1,6 @@
 #!/usr/bin/python3
-import os, sys
+import os
 
-# Update sys.path to include modules
 abspath = os.path.abspath(__file__)
 dname = os.path.dirname(abspath)
 print(dname)
@@ -14,6 +13,5 @@ elif "/app/" in dname:
 else:
     print("Running in native mode")
     os.chdir("/usr/share/hbud/")
-sys.path.append("modules")
 
 from hbud import HBud

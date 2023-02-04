@@ -447,7 +447,6 @@ class Main(helper.Widgets):
                 print("File selected: " + videoPath)
                 self.res = False
                 self.on_playBut_clicked(videoPath)
-                self.subtitle_search_on_play()
         elif response == Gtk.ResponseType.CANCEL: print("Cancel clicked")
 
     def fcconstructer(self, title, action, ftype, parent):
@@ -790,7 +789,7 @@ class Main(helper.Widgets):
 
     def subdone(self, _):
         data = self.local_sub(Gst.uri_get_location(self.uri))
-        if data != None: self.subtitle_dict.append({"index" : "none", "lang" : "Local", "content" : data})
+        if data != None: self.subtitle_dict.append({"index" : "none", "lang" : "local", "content" : data})
         popbox = Gtk.Box.new(1, 2)
         sub_pop = self.sub_track.get_popover()
         if len(self.subtitle_dict) >= 1:
@@ -798,8 +797,9 @@ class Main(helper.Widgets):
             check0.set_name("subno_empty")
             check0.connect("toggled", self.sub_toggle)
             for e, element in enumerate(self.subtitle_dict):
-                if element["lang"] != "unknown": check = Gtk.CheckButton.new_with_label(Language.get(element["lang"]).autonym())
-                else: check = Gtk.CheckButton.new_with_label(self._("Unknown"))
+                if element["lang"] == "unknown": check = Gtk.CheckButton.new_with_label(self._("Unknown"))
+                elif element["lang"] == "local": check = Gtk.CheckButton.new_with_label(self._("Local"))
+                else: check = Gtk.CheckButton.new_with_label(Language.get(element["lang"]).autonym())
                 check.set_group(check0)
                 check.set_name("subno_{}".format(e))
                 check.connect("toggled", self.sub_toggle)
@@ -885,6 +885,7 @@ class Main(helper.Widgets):
         GLib.idle_add(self.plaicon.set_from_icon_name, "media-playback-pause")
         GLib.timeout_add(500, self.updateSlider)
         GLib.timeout_add(40, self.updatePos)
+        if self.nowIn == "video" and misc != "continue": self.subtitle_search_on_play()
 
     def on_playBut_clicked(self, button, *_):
         if self.plaicon.is_visible() == False and self.videosink.is_visible() == False: return

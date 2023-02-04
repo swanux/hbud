@@ -3,11 +3,12 @@
 # This file is distributed under the same license as the PACKAGE package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
 #
+#, fuzzy
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-02-02 13:32+0100\n"
+"POT-Creation-Date: 2023-02-04 18:15+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -80,7 +81,7 @@ msgstr ""
 msgid "Browse"
 msgstr ""
 
-#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/HBud.py:454
+#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/HBud.py:453
 msgid "Cancel"
 msgstr ""
 
@@ -96,7 +97,7 @@ msgstr ""
 msgid "Cleared saved order successfully!"
 msgstr ""
 
-#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/HBud.py:1140
+#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/HBud.py:1145
 msgid ""
 "Could not fetch lyrics for the current track.\n"
 "You may provide it manually."
@@ -136,7 +137,7 @@ msgstr ""
 msgid "Delete from current playqueue"
 msgstr ""
 
-#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/HBud.py:575
+#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/HBud.py:574
 msgid "Did not find any match online."
 msgstr ""
 
@@ -152,7 +153,7 @@ msgstr ""
 msgid "Edit metadata"
 msgstr ""
 
-#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/HBud.py:797
+#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/HBud.py:799
 msgid "Empty"
 msgstr ""
 
@@ -173,7 +174,7 @@ msgstr ""
 msgid "High (500px)"
 msgstr ""
 
-#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/HBud.py:462
+#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/HBud.py:461
 msgid "Image files"
 msgstr ""
 
@@ -193,6 +194,10 @@ msgstr ""
 msgid "Light"
 msgstr ""
 
+#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/HBud.py:804
+msgid "Local"
+msgstr ""
+
 #: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/helper.py:340
 msgid "Lyrics :"
 msgstr ""
@@ -201,7 +206,7 @@ msgstr ""
 msgid "Margin"
 msgstr ""
 
-#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/HBud.py:602
+#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/HBud.py:601
 msgid "Metadata fetched successfully!"
 msgstr ""
 
@@ -221,11 +226,11 @@ msgstr ""
 msgid "No"
 msgstr ""
 
-#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/HBud.py:810
+#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/HBud.py:813
 msgid "No subtitles found."
 msgstr ""
 
-#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/HBud.py:517
+#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/HBud.py:516
 msgid "None of the above"
 msgstr ""
 
@@ -238,7 +243,7 @@ msgstr ""
 msgid "Offset (ms):"
 msgstr ""
 
-#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/HBud.py:454
+#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/HBud.py:453
 msgid "Open"
 msgstr ""
 
@@ -250,7 +255,7 @@ msgstr ""
 msgid "Please choose a video file"
 msgstr ""
 
-#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/HBud.py:471
+#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/HBud.py:470
 msgid "Please choose an image file"
 msgstr ""
 
@@ -354,7 +359,7 @@ msgstr ""
 
 #: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/HBud.py:382
 #: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/HBud.py:383
-#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/HBud.py:802
+#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/HBud.py:803
 msgid "Unknown"
 msgstr ""
 
@@ -362,7 +367,7 @@ msgstr ""
 msgid "Video"
 msgstr ""
 
-#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/HBud.py:457
+#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/HBud.py:456
 msgid "Video files"
 msgstr ""
 
@@ -385,6 +390,6 @@ msgstr ""
 msgid "Yes"
 msgstr ""
 
-#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/HBud.py:811
+#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/HBud.py:814
 msgid "You may visit OpenSubtitles or Subscene."
 msgstr ""

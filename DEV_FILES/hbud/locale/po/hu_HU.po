@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-02-02 13:32+0100\n"
+"POT-Creation-Date: 2023-02-04 18:15+0100\n"
 "PO-Revision-Date: 2021-10-26 17:38+0000\n"
 "Last-Translator: Dniel Kolozsi <dani@kolozsi.net>\n"
 "Language-Team: Hungarian\n"
@@ -86,7 +86,7 @@ msgstr "Viselkedés"
 msgid "Browse"
 msgstr "Böngészés"
 
-#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/HBud.py:454
+#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/HBud.py:453
 msgid "Cancel"
 msgstr "Mégse"
 
@@ -102,7 +102,7 @@ msgstr "Mentett sorrend törlése"
 msgid "Cleared saved order successfully!"
 msgstr "Mentett sorrend sikeresen törölve!"
 
-#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/HBud.py:1140
+#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/HBud.py:1145
 msgid ""
 "Could not fetch lyrics for the current track.\n"
 "You may provide it manually."
@@ -145,7 +145,7 @@ msgstr "Alapértelmezetten Magas"
 msgid "Delete from current playqueue"
 msgstr "Eltávolítás a jelenlegi lejátszási listából"
 
-#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/HBud.py:575
+#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/HBud.py:574
 msgid "Did not find any match online."
 msgstr "Nincs találat online."
 
@@ -161,7 +161,7 @@ msgstr "Kolozsi Dániel"
 msgid "Edit metadata"
 msgstr "Metaadatok szerkesztése"
 
-#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/HBud.py:797
+#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/HBud.py:799
 msgid "Empty"
 msgstr "Üres"
 
@@ -182,7 +182,7 @@ msgstr "Hardveres gyorsítás"
 msgid "High (500px)"
 msgstr "Magas (500px)"
 
-#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/HBud.py:462
+#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/HBud.py:461
 msgid "Image files"
 msgstr "Képek"
 
@@ -202,6 +202,10 @@ msgstr "Letras.mus.br"
 msgid "Light"
 msgstr "Világos"
 
+#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/HBud.py:804
+msgid "Local"
+msgstr "Helyi"
+
 #: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/helper.py:340
 msgid "Lyrics :"
 msgstr "Dalszöveg :"
@@ -210,7 +214,7 @@ msgstr "Dalszöveg :"
 msgid "Margin"
 msgstr "Keret"
 
-#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/HBud.py:602
+#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/HBud.py:601
 msgid "Metadata fetched successfully!"
 msgstr "Metaadatok sikeresen letöltve!"
 
@@ -230,11 +234,11 @@ msgstr "MusixMatch"
 msgid "No"
 msgstr "Nem"
 
-#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/HBud.py:810
+#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/HBud.py:813
 msgid "No subtitles found."
 msgstr "Felirat nem található."
 
-#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/HBud.py:517
+#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/HBud.py:516
 msgid "None of the above"
 msgstr "A fentiek közül egyik sem"
 
@@ -247,7 +251,7 @@ msgstr "Normális (250px)"
 msgid "Offset (ms):"
 msgstr "Eltolás (ms)"
 
-#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/HBud.py:454
+#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/HBud.py:453
 msgid "Open"
 msgstr "Megnyitás"
 
@@ -259,7 +263,7 @@ msgstr "Válasszon egy mappát"
 msgid "Please choose a video file"
 msgstr "Válasszon egy videó fájlt"
 
-#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/HBud.py:471
+#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/HBud.py:470
 msgid "Please choose an image file"
 msgstr "Válasszon egy képfájlt"
 
@@ -363,7 +367,7 @@ msgstr "Ultra Magas (1200px)"
 
 #: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/HBud.py:382
 #: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/HBud.py:383
-#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/HBud.py:802
+#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/HBud.py:803
 msgid "Unknown"
 msgstr "Ismeretlen"
 
@@ -371,7 +375,7 @@ msgstr "Ismeretlen"
 msgid "Video"
 msgstr "Videó"
 
-#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/HBud.py:457
+#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/HBud.py:456
 msgid "Video files"
 msgstr "Videó fájlok"
 
@@ -382,7 +386,8 @@ msgid ""
 "performance"
 msgstr ""
 "VA használata HW gyorsításhoz\n"
-"Megjegyzés: Ha kikapcsolja, az jobb stabilitást de rosszab teljesítményt eredményez"
+"Megjegyzés: Ha kikapcsolja, az jobb stabilitást de rosszab teljesítményt "
+"eredményez"
 
 #: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/helper.py:530
 msgid "Which one is correct?"
@@ -396,6 +401,6 @@ msgstr "Év :"
 msgid "Yes"
 msgstr "Igen"
 
-#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/HBud.py:811
+#: /home/daniel/GitRepos/hbud/DEV_FILES/hbud/HBud.py:814
 msgid "You may visit OpenSubtitles or Subscene."
 msgstr "Felkeresheti az OpenSubtitles vagy Subscene oldalakat"

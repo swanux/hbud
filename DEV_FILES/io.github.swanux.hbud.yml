@@ -33,10 +33,12 @@ finish-args:
   - --env=GST_PLUGIN_SYSTEM_PATH=/app/lib/gstreamer-1.0
 
 modules:
+  - "lib/libass.json"
+  - "lib/srt.json"
   - "lib/ffmpeg.json"
   - "lib/libmpeg2.json"
-  - "lib/libass.json"
   - "gstreamer-1.0/gstreamer.json"
+  - "pypi-dependencies.json"
 
   - name: gtk4paintablesink
     buildsystem: simple
@@ -64,7 +66,6 @@ modules:
       - mkdir -p /app/share/appdata
       - mkdir -p /app/share/icons/hicolor/128x128/apps
       - cp -r DEV_FILES/hbud /app/share/hbud/.
-      - cp -r DEV_FILES/modules /app/share/hbud/.
       - cp DEV_FILES/io.github.swanux.hbud.desktop /app/share/applications/.
       - cp DEV_FILES/io.github.swanux.hbud /app/share/hbud/.
       - cp DEV_FILES/fpcalc /app/share/hbud/.
