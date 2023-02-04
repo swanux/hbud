@@ -51,7 +51,7 @@ modules:
     - install -Dm755 target/release/libgstgtk4.so -t /app/lib/gstreamer-1.0
     sources:
     - type: archive
-      url: https://github.com/swanux/hbud/releases/download/v0.4.1/gtk4paintablesink_230129.tar.xz
+      url: https://github.com/swanux/hbud/releases/download/v0.4.1.1/gtk4paintablesink_230129.tar.xz
       sha256: 4e53d8c9e03d0a653b7defdb1ddf38b27ad61c5882600742f7c2b120a8e1fb5b
 
   - name: io.github.swanux.hbud
