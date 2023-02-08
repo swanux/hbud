@@ -33,6 +33,15 @@
     <url type="bugtracker">https://github.com/swanux/hbud/issues</url>
 
     <releases>
+        <release version="0.4.1.2" date="2023-02-09">
+            <description>
+                <p>Fixes and improvements.</p>
+                <ul>
+                    <li>Fixed issue where missing codecs caused crash</li>
+                    <li>Added System info page to Preferences</li>
+                </ul>
+            </description>
+        </release>
         <release version="0.4.1.1" date="2023-02-05">
             <description>
                 <p>Major pointrelease.</p>

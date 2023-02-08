@@ -1,10 +1,11 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-import gi, locale, os, gettext
+import gi, locale, os, gettext, sys
 gi.require_version('Gtk', '4.0')
 gi.require_version('Adw', '1')
-from gi.repository import Gtk, Gio, GLib, Pango, Adw
+gi.require_version('Gst', '1.0')
+from gi.repository import Gtk, Gio, GLib, Pango, Adw, Gst
 from hbud import constants as cn
 
 APP = "io.github.swanux.hbud"
@@ -120,6 +121,11 @@ class PrefWin(Adw.PreferencesWindow):
         _ = gettext.gettext
         self.set_name("prefwin")
         page = Adw.PreferencesPage.new()
+        page.set_title(_("General"))
+        page.set_icon_name("user-home-symbolic")
+        page_2 = Adw.PreferencesPage.new()
+        page_2.set_title(_("System info"))
+        page_2.set_icon_name("applications-engineering-symbolic")
 
         Group = Adw.PreferencesGroup.new()
         Group.set_title(_("Appearance"))
@@ -163,7 +169,33 @@ class PrefWin(Adw.PreferencesWindow):
         Group.add(row)
         page.add(Group)
 
+        Group = Adw.PreferencesGroup.new()
+        Group.set_title(_("Library versions"))
+        row, widget = self.gen_row(99, "GTK", Gtk.Label.new("{}.{}.{}".format(Gtk.get_major_version(), Gtk.get_minor_version(), Gtk.get_micro_version())), "label")
+        Group.add(row)
+        row, widget = self.gen_row(99, "GStreamer", Gtk.Label.new("{}.{}.{}.{}".format(Gst.version()[0], Gst.version()[1], Gst.version()[2], Gst.version()[3])), "label")
+        Group.add(row)
+        row, widget = self.gen_row(99, "LibAdwaita", Gtk.Label.new("{}.{}.{}".format(Adw.get_major_version(), Adw.get_minor_version(), Adw.get_micro_version())), "label")
+        Group.add(row)
+        row, widget = self.gen_row(99, "Python", Gtk.Label.new("{}".format(sys.version.split(" ")[0])), "label")
+        Group.add(row)
+        page_2.add(Group)
+
+        Group = Adw.PreferencesGroup.new()
+        Group.set_title(_("Hardware decoding"))
+        gself.present_codecs = {"vah264dec":None, "vah265dec":None, "vampeg2dec":None, "vaav1dec":None, "vavp8dec":None, "vavp9dec":None}
+        for c in gself.present_codecs:
+            x = Gst.ElementFactory.find(c)
+            gself.present_codecs[c] = x
+            if x != None: icon = "object-select-symbolic"
+            else: icon = "process-stop-symbolic"
+            row, widget = self.gen_row(99, c, Gtk.Image.new_from_icon_name(icon), "image")
+            Group.add(row)
+        page_2.add(Group)
+
+        del widget
         self.add(page)
+        self.add(page_2)
 
     def gen_row(self, uid, title, widget, widtype, subtitle="", extras=None):
         row = Adw.PreferencesRow.new()
@@ -495,6 +527,7 @@ class Widgets(Adw.Application):
     def __init__(self):
         super(Widgets, self).__init__()
         _ = gettext.gettext
+        Gst.init(None)
         self.application_id = cn.App.application_id
         self.build_version = cn.App.application_version
         self.bug_url = cn.App.bug_url

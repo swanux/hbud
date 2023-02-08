@@ -160,7 +160,6 @@ class Main(helper.Widgets):
         self.order_but2.connect("clicked", self.on_rescan_order)
         self.ye_but.connect("clicked", self.on_correct_lyr)
         self.no_but.connect("clicked", self.on_wrong_lyr)
-        # self.subcheck.connect("state-set", self.on_act_sub)
 
         self.darkew.connect("changed", self.config_write)
         self.colorer.connect("color-set", self.config_write)
@@ -625,8 +624,6 @@ class Main(helper.Widgets):
                         self.tnum += 1
                         if self.tnum >= len(self.playlist): self.tnum = 0
                 elif button == "clickMode0": self.tnum = 0
-                # try: self.stop()
-                # except: print("No playbin yet to stop.")
                 self.play()
                 if self.sub.get_visible(): self.on_karaoke_activate("xy")
                 if self.useMode == "audio" and button != "clickMode" and self.autoscroll == True and self.lite == False:
@@ -1390,10 +1387,12 @@ class Main(helper.Widgets):
             max_rank_element = factories[0]
             target_rank = max_rank_element.get_rank() + 1
         else: target_rank = 0
-        for element in ["vah264dec", "vah265dec", "vampeg2dec", "vadeinterlace", "vapostproc"]:
-            target_element = Gst.ElementFactory.find(element)
-            target_element.set_rank(target_rank)
-            print("Rank of target plugin:", target_element.get_name(), "(", target_element.get_rank(), ")")
+        for element in self.present_codecs:
+            target_element = self.present_codecs[element]
+            if target_element != None:
+                target_element.set_rank(target_rank)
+                print("Rank of target plugin:", target_element.get_name(), "(", target_element.get_rank(), ")")
+            else: print("Element {} is not present.".format(element))
 
     def on_hide(self, *_):
         self.stopKar = True
@@ -1401,7 +1400,6 @@ class Main(helper.Widgets):
         self.sub.hide()
 
 parser, confP, theme, color, musix, azlyr, letras, coverSize, sSize, sMarg, bg, autoscroll, positioning, minimal_mode, hwa_enabled = tools.real_init()
-Gst.init(None)
 app = Main()
 app.connect('activate', app.on_activate)
 app.run(None)
