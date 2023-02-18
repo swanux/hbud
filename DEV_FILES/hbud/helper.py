@@ -104,6 +104,7 @@ class PrefWin(Adw.PreferencesWindow):
 @Gtk.Template(resource_path='/io/github/swanux/hbud/ui/mainwindow.ui')
 class MainWindow(Adw.Window):
     __gtype_name__ = 'MainWindow'
+    _main_stack = Gtk.Template.Child()
     _main_header = Gtk.Template.Child()
     _title = Gtk.Template.Child()
     _main_toast = Gtk.Template.Child()
@@ -126,16 +127,25 @@ class MainWindow(Adw.Window):
     _karaoke_but = Gtk.Template.Child()
     _lyr_spin = Gtk.Template.Child()
     _sub_track = Gtk.Template.Child()
+    _prefbut = Gtk.Template.Child()
     def __init__(self, gself):
         super().__init__()
         _ = gettext.gettext
+
+        menu = Gio.Menu()
+        menu_item = Gio.MenuItem.new(_('Preferences'), "app.pref")
+        menu.append_item(menu_item)
+        menu_item = Gio.MenuItem.new(_('About'), "app.about")
+        menu.append_item(menu_item)
+        menu.freeze()
+        self._prefbut.set_menu_model(menu)
+
         gself.menu = Gio.Menu()
         menu_item = Gio.MenuItem.new(_('Delete from current playqueue'), "app.delete")
         gself.menu.append_item(menu_item)
         menu_item = Gio.MenuItem.new(_('Edit metadata'), "app.edit")
         gself.menu.append_item(menu_item)
         gself.menu.freeze()
-
         gself.prefwin = PrefWin()
         gself.prefwin.set_transient_for(self)
 
@@ -165,16 +175,16 @@ class MainWindow(Adw.Window):
 #         gself.strBut.set_name("strBut")
 #         gself.strBut.set_can_focus(False)
 
-#         prefbut = Gtk.MenuButton.new()
-#         prefbut.set_icon_name("open-menu-symbolic")
-#         prefbut.set_can_focus(False)
-#         menu = Gio.Menu()
-#         menu_item = Gio.MenuItem.new(_('Preferences'), "app.pref")
-#         menu.append_item(menu_item)
-#         menu_item = Gio.MenuItem.new(_('About'), "app.about")
-#         menu.append_item(menu_item)
-#         menu.freeze()
-#         prefbut.set_menu_model(menu)
+        # prefbut = Gtk.MenuButton.new()
+        # prefbut.set_icon_name("open-menu-symbolic")
+        # prefbut.set_can_focus(False)
+        # menu = Gio.Menu()
+        # menu_item = Gio.MenuItem.new(_('Preferences'), "app.pref")
+        # menu.append_item(menu_item)
+        # menu_item = Gio.MenuItem.new(_('About'), "app.about")
+        # menu.append_item(menu_item)
+        # menu.freeze()
+        # prefbut.set_menu_model(menu)
 
 #         gself.menu = Gio.Menu()
 #         menu_item = Gio.MenuItem.new(_('Delete from current playqueue'), "app.delete")
@@ -450,15 +460,16 @@ class Sub(Adw.Window):
         self.set_content(handle)
         self.set_default_size(560, 360)
 
-class Widgets(Adw.Application):
+class UI(Adw.Application):
+    application_id = cn.App.application_id
+    build_version = cn.App.application_version
+    bug_url = cn.App.bug_url
+    help_url = cn.App.help_url
     def __init__(self):
-        super(Widgets, self).__init__()
-        _ = gettext.gettext
+        super().__init__()
         Gst.init(None)
-        self.application_id = cn.App.application_id
-        self.build_version = cn.App.application_version
-        self.bug_url = cn.App.bug_url
-        self.help_url = cn.App.help_url
+        Adw.init()
+        _ = gettext.gettext
         self.useMode = "audio"
         self.supportedList = ['.3gp', '.aa', '.aac', '.aax', '.aiff', '.flac', '.m4a', '.mp3', '.ogg', '.wav', '.wma', '.wv']
         self.searchDict = {"1" : ["artist", False], "2" : ["artist", True], "3" : ["title", False], "4" : ["title", True], "5" : ["year", False], "6" : ["year", True], "7" : ["length", False], "8" : ["length", True]}
@@ -488,12 +499,11 @@ class Widgets(Adw.Application):
         self.theTitle.set_valign(Gtk.Align.END)
         self.header = Adw.HeaderBar()
         self.header.set_show_end_title_buttons(True)
-        self.mainStack = MainStack()
         self.window = MainWindow(self)
         self.sub2.set_transient_for(self.window)
         self.sub2.set_modal(True)
         self.about = Adw.AboutWindow(application_name=cn.App.application_name, version=self.build_version, copyright=f"Copyright © {cn.App.app_years}", issue_url=cn.App.help_url, license_type=Gtk.License.GPL_3_0, developer_name="Dániel Kolozsi", developers=["Dániel Kolozsi"], designers=["Seh", "Dániel Kolozsi"], translator_credits=_("Dániel Kolozsi"), application_icon=cn.App.application_id, comments=cn.App.about_comments, website=cn.App.main_url, transient_for=self.window, release_notes=cn.App.release_notes, default_height=450)
-        self.switchDict = {"locBut" : [self.mainStack._placeholder, "audio-input-microphone", "audio", self.window._str_but], "strBut" : [self.mainStack._str_box, "view-fullscreen", "video", self.window._loc_but]}
+        self.switchDict = {"locBut" : [self.window._main_stack._placeholder, "audio-input-microphone", "audio", self.window._str_but], "strBut" : [self.window._main_stack._str_box, "view-fullscreen", "video", self.window._loc_but]}
         self.provider, self.settings = Gtk.CssProvider(), Adw.StyleManager.get_default()
 
 def jean(parent, children=[""], task="append", ids=[]):

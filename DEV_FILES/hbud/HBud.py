@@ -16,11 +16,11 @@ gi.require_version('Adw', '1')
 from gi.repository import Gtk, GLib, GdkPixbuf, Gdk, Adw, Gio, Gst
 from hbud import letrasapi, musixapi, helper, tools
 
-class Main(helper.Widgets):
+class Main(helper.UI):
     def __init__(self):
-        super(Main, self).__init__()
+        super().__init__()
     
-    def on_activate(self, app):
+    def on_activate(self, _):
         self.confDir = GLib.get_user_config_dir()
         APP = "io.github.swanux.hbud"
         WHERE_AM_I = os.path.abspath(os.path.dirname(__file__))
@@ -92,13 +92,13 @@ class Main(helper.Widgets):
         self.settings.set_color_scheme(self.theme)
         # Display the program
         if self.lite == False: self.window._title.set_subtitle(self.build_version)
-        self.window.set_application(app)
+        self.window.set_application(self)
         self.window.present()
-        self.mainStack._top_box.hide()
+        self.window._main_stack._top_box.hide()
         self.window._drop_but.hide()
         if self.lite == True:
             GLib.idle_add(self.window._head_box.set_visible, False)
-            GLib.idle_add(self.mainStack.set_visible_child, self.mainStack._rd_box)
+            GLib.idle_add(self.window._main_stack.set_visible_child, self.window._main_stack._rd_box)
             GLib.idle_add(self.window.set_default_size, 1, 1)
             GLib.idle_add(self.window._main_header.add_css_class, "flat")
             self.window.set_resizable(False)
@@ -138,7 +138,7 @@ class Main(helper.Widgets):
         self.window._ofo_but.connect("clicked", self.on_openFolderBut_clicked)
         self.window._loc_but.connect("toggled", self.allToggle)
         self.window._str_but.connect("toggled", self.allToggle)
-        self.playBut.connect("clicked", self.on_playBut_clicked)
+        self.window._play_but.connect("clicked", self.on_playBut_clicked)
         self.window._prev_but.connect("clicked", self.on_prev)
         self.window._next_but.connect("clicked", self.on_next)
         self.window._prev_but.connect("clicked", self.prev_next_rel)
@@ -149,11 +149,11 @@ class Main(helper.Widgets):
         self.magiBut.connect("clicked", self.on_magiBut_clicked)
         self.iChoser.connect("clicked", self.on_iChoser_clicked)
         self.savBut.connect("clicked", self.on_save)
-        self.mainStack._combo_sort.connect("changed", self.on_sort_change)
-        self.mainStack._search_play.connect("activate", self.on_search)
-        self.mainStack._order_but.connect("clicked", self.on_order_save)
-        self.mainStack._order_but1.connect("clicked", self.on_clear_order)
-        self.mainStack._order_but2.connect("clicked", self.on_rescan_order)
+        self.window._main_stack._combo_sort.connect("changed", self.on_sort_change)
+        self.window._main_stack._search_play.connect("activate", self.on_search)
+        self.window._main_stack._order_but.connect("clicked", self.on_order_save)
+        self.window._main_stack._order_but1.connect("clicked", self.on_clear_order)
+        self.window._main_stack._order_but2.connect("clicked", self.on_rescan_order)
         self.ye_but.connect("clicked", self.on_correct_lyr)
         self.no_but.connect("clicked", self.on_wrong_lyr)
 
@@ -263,8 +263,8 @@ class Main(helper.Widgets):
             click = Gtk.GestureClick.new()
             self.videosink.add_controller(click)
             click.connect("pressed", self.on_playBut_clicked)
-            self.mainStack._str_overlay.set_child(self.videosink)
-            self.mainStack._str_overlay.add_overlay(self.theTitle)
+            self.window._main_stack._str_overlay.set_child(self.videosink)
+            self.window._main_stack._str_overlay.add_overlay(self.theTitle)
             bus = self.videoPipe.get_bus()
             bus.add_signal_watch()
             bus.connect("message", self.on_message)
@@ -274,18 +274,19 @@ class Main(helper.Widgets):
 
     def on_dropped(self, button):
         if self.window._drop_but.get_visible() == True:
-            if self.mainStack._top_box.get_visible() == False:
+            if self.window._main_stack._top_box.get_visible() == False:
+                print("lol?")
                 GLib.idle_add(self.window._drop_but.set_icon_name, "go-up")
-                GLib.idle_add(self.mainStack._top_box.show)
-                self.mainStack._search_play.grab_focus()
+                GLib.idle_add(self.window._main_stack._top_box.show)
+                self.window._main_stack._search_play.grab_focus()
             elif button != "key":
                 GLib.idle_add(self.window._drop_but.set_icon_name, "go-down")
-                GLib.idle_add(self.mainStack._top_box.hide)
+                GLib.idle_add(self.window._main_stack._top_box.hide)
 
     def allToggle(self, button):
         btn = button.get_name()
-        if self.mainStack.get_visible_child() != self.switchDict[btn][0] and button.get_active() == True:
-            self.mainStack.set_visible_child(self.switchDict[btn][0])
+        if self.window._main_stack.get_visible_child() != self.switchDict[btn][0] and button.get_active() == True:
+            self.window._main_stack.set_visible_child(self.switchDict[btn][0])
             GLib.idle_add(self.window._bottom.show)
             if btn == "locBut":
                 GLib.idle_add(self.window._shuff_but.show)
@@ -302,7 +303,7 @@ class Main(helper.Widgets):
             self.useMode = self.switchDict[btn][2]
             self.needSub = False
             GLib.idle_add(self.switchDict[btn][3].set_active, False)
-        elif self.mainStack.get_visible_child() == self.switchDict[btn][0]: GLib.idle_add(button.set_active, True) 
+        elif self.window._main_stack.get_visible_child() == self.switchDict[btn][0]: GLib.idle_add(button.set_active, True) 
     
     def neo_playlist_gen(self, name="", srBox=None, dsBox=None, src=0, dst=0):
         print("neo start", time())
@@ -325,7 +326,7 @@ class Main(helper.Widgets):
                 tools.themer(self.provider, self.window, self.color, self.tnum)
             else:
                 if name != "modular" and name != "append":
-                    try: self.mainStack._playlist_box.remove(self.mainStack._playlist_box.get_first_child())
+                    try: self.window._main_stack._playlist_box.remove(self.window._main_stack._playlist_box.get_first_child())
                     except: print("no child")
                     self.supBox = Gtk.Box.new(1, 0)
                     self.supBox.set_can_focus(False)
@@ -355,7 +356,7 @@ class Main(helper.Widgets):
                     yetScroll.set_vexpand(True)
                     yetScroll.set_hexpand(True)
                     yetScroll.set_child(self.supBox)
-                    GLib.idle_add(self.mainStack._playlist_box.append, yetScroll)
+                    GLib.idle_add(self.window._main_stack._playlist_box.append, yetScroll)
                     self.adj = yetScroll.get_vadjustment()
                     self.playlistPlayer = True
                     if self.title != None:
@@ -865,9 +866,9 @@ class Main(helper.Widgets):
         if self.useMode == "audio":
             self.title = self.playlist[self.tnum]["title"]
             if self.lite == True:
-                self.mainStack._rd_title.set_text(self.playlist[self.tnum]["title"])
-                self.mainStack._rd_artist.set_text(self.playlist[self.tnum]["artist"])
-                self.mainStack._rd_year.set_text(str(self.playlist[self.tnum]["year"]))
+                self.window._main_stack._rd_title.set_text(self.playlist[self.tnum]["title"])
+                self.window._main_stack._rd_artist.set_text(self.playlist[self.tnum]["artist"])
+                self.window._main_stack._rd_year.set_text(str(self.playlist[self.tnum]["year"]))
             else: tools.themer(self.provider, self.window, self.color, self.tnum)
         if misc != "continue":
             self.player.set_state(Gst.State.NULL)
@@ -1340,7 +1341,7 @@ class Main(helper.Widgets):
                 if self.lite == False:
                     GLib.idle_add(self.window._head_box.set_visible, True)
                     title.set_subtitle(self.build_version)
-                    GLib.idle_add(self.mainStack.set_visible_child, self.mainStack._placeholder)
+                    GLib.idle_add(self.window._main_stack.set_visible_child, self.window._main_stack._placeholder)
                     GLib.idle_add(self.window.set_default_size, 600, 450)
                     GLib.idle_add(self.window._main_header.remove_css_class, "flat")
                     self.window.set_resizable(True)
@@ -1349,13 +1350,13 @@ class Main(helper.Widgets):
                 else:
                     GLib.idle_add(self.window._head_box.set_visible, False)
                     self.window._loc_but.set_active(True)
-                    GLib.idle_add(self.mainStack.set_visible_child, self.mainStack._rd_box)
+                    GLib.idle_add(self.window._main_stack.set_visible_child, self.window._main_stack._rd_box)
                     GLib.idle_add(self.window.set_default_size, 1, 1)
                     GLib.idle_add(self.window._main_header.add_css_class, "flat")
                     try:
-                        GLib.idle_add(self.mainStack._rd_title.set_text, self.playlist[self.tnum]["title"])
-                        GLib.idle_add(self.mainStack._rd_artist.set_text, self.playlist[self.tnum]["artist"])
-                        GLib.idle_add(self.mainStack._rd_year.set_text, str(self.playlist[self.tnum]["year"]))
+                        GLib.idle_add(self.window._main_stack._rd_title.set_text, self.playlist[self.tnum]["title"])
+                        GLib.idle_add(self.window._main_stack._rd_artist.set_text, self.playlist[self.tnum]["artist"])
+                        GLib.idle_add(self.window._main_stack._rd_year.set_text, str(self.playlist[self.tnum]["year"]))
                     except: pass
                     self.window.set_resizable(False)
                 GLib.idle_add(self.window._main_header.set_title_widget, title)

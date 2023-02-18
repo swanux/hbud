@@ -17,11 +17,6 @@
           <property name="orientation">vertical</property>
           <child>
             <object class="AdwHeaderBar" id="_main_header">
-              <child>
-                <object class="AdwWindowTitle">
-                  <property name="overflow">hidden</property>
-                </object>
-              </child>
               <property name="title-widget">
                 <object class="AdwWindowTitle" id="_title">
                   <property name="title">HBud</property>
@@ -54,25 +49,9 @@
                 </object>
               </child>
               <child type="end">
-                <object class="GtkMenuButton">
+                <object class="GtkMenuButton" id="_prefbut">
                   <property name="icon-name">open-menu-symbolic</property>
                   <property name="can-focus">False</property>
-                  <attribute name="menu-model">
-                    <object class="GioMenu">
-                      <child>
-                        <object class="GioMenuItem">
-                          <property name="label" translatable="yes">Preferences</property>
-                          <property name="detailed-action">app.pref</property>
-                        </object>
-                      </child>
-                      <child>
-                        <object class="GioMenuItem">
-                          <property name="label" translatable="yes">About</property>
-                          <property name="detailed-action">app.about</property>
-                        </object>
-                      </child>
-                    </object>
-                  </attribute>
                 </object>
               </child>
             </object>
@@ -83,7 +62,7 @@
               <child>
                 <object class="AdwToastOverlay" id="_main_toast">
                   <child>
-                    <object class="MainStack"></object>
+                    <object class="MainStack" id="_main_stack"></object>
                   </child>
                 </object>
               </child>
@@ -95,11 +74,9 @@
                   <property name="margin-bottom">7</property>
                   <property name="margin-start">7</property>
                   <property name="margin-end">5</property>
-                  <attributes>
-                    <attribute name="add-controller">
-                      <object class="GtkEventControllerMotion" id="_bottom_motion"/>
-                    </attribute>
-                  </attributes>
+                  <child>
+                    <object class="GtkEventControllerMotion" id="_bottom_motion"/>
+                  </child>
                   <child>
                     <object class="GtkBox">
                       <child>
@@ -115,8 +92,6 @@
                           <property name="hexpand">True</property>
                           <property name="can-focus">False</property>
                           <property name="draw-value">False</property>
-                          <property name="step-increment">1</property>
-                          <property name="page-increment">10</property>
                           <property name="margin-start">6</property>
                           <property name="margin-end">6</property>
                         </object>
@@ -135,7 +110,7 @@
                       <child>
                         <object class="GtkBox">
                           <style><class name="linked"/></style>
-                          <property name="homogeneus">True</property>
+                          <property name="homogeneous">True</property>
                           <property name="hexpand">True</property>
                           <child>
                             <object class="GtkButton" id="_ofo_but">
