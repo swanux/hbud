@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<gresources>
+  <gresource prefix="/io/github/swanux/hbud/">
+    <file preprocess="xml-stripblanks">ui/trackbox.ui</file>
+    <file preprocess="xml-stripblanks">ui/mainstack.ui</file>
+    <file preprocess="xml-stripblanks">ui/prefwin.ui</file>
+    <file preprocess="xml-stripblanks">ui/mainwindow.ui</file>
+  </gresource>
+</gresources>
+
+<!-- glib-compile-resources io.github.swanux.hbud.gresources.xml --target=io.github.swanux.hbud.gresource -->
+
+<!-- <signal name="query-tooltip" handler="_on_tooltip_query"/> -->

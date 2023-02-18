@@ -27,6 +27,5 @@ Features:
     about_comments = application_description
     release_notes = """<p>Fixes and improvements</p>
     <ul>
-        <li>Fixed issue where missing codecs caused crash</li>
-        <li>Added System info page to Preferences</li>
+        <li></li>
     </ul>"""
