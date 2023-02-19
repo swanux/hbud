@@ -78,7 +78,7 @@ class Main(helper.UI):
         self.prefwin._hwa_switch.set_state(self.hwae)
         self.canwriteconf = True
 
-        self.off_but.connect("clicked", self.on_off_but_clicked)
+        self.sub._off_but.connect("clicked", self.on_off_but_clicked)
         click = Gtk.GestureClick.new()
         click.connect("pressed", self.on_slider_grab)
         self.window._slider.add_controller(click)
@@ -120,8 +120,8 @@ class Main(helper.UI):
 
         self.window._ev_key_main.connect("key-pressed", self.on_key_local)
         self.window._ev_key_main.connect("key-released", self.on_key_local_release)
-        self.ev_key_sub.connect("key-pressed", self.on_key_local)
-        self.ev_key_sub.connect("key-released", self.on_key_local_release)
+        self.sub._ev_key_sub.connect("key-pressed", self.on_key_local)
+        self.sub._ev_key_sub.connect("key-released", self.on_key_local_release)
 
         action = Gio.SimpleAction.new("pref", None)
         action.connect("activate", self.on_infBut_clicked)
@@ -154,8 +154,8 @@ class Main(helper.UI):
         self.window._main_stack._order_but.connect("clicked", self.on_order_save)
         self.window._main_stack._order_but1.connect("clicked", self.on_clear_order)
         self.window._main_stack._order_but2.connect("clicked", self.on_rescan_order)
-        self.ye_but.connect("clicked", self.on_correct_lyr)
-        self.no_but.connect("clicked", self.on_wrong_lyr)
+        self.sub._ye_but.connect("clicked", self.on_correct_lyr)
+        self.sub._no_but.connect("clicked", self.on_wrong_lyr)
 
         self.prefwin._darkew.connect("changed", self.config_write)
         self.prefwin._colorer.connect("color-set", self.config_write)
@@ -1004,8 +1004,8 @@ class Main(helper.UI):
         else: self.size, self.size2 = 50*x, 21.4285714*x
 
     def on_off_but_clicked(self, _):
-        self.off_spin.update()
-        self.offset = int(self.off_spin.get_value())
+        self.sub._off_spin.update()
+        self.offset = int(self.sub._off_spin.get_value())
         f = MediaFile(self.playlist[self.tnum]["uri"])
         f.offset = self.offset
         f.save()
@@ -1015,7 +1015,7 @@ class Main(helper.UI):
         f = MediaFile(self.playlist[self.tnum]["uri"])
         f.lyrics = self.tmp_lyric
         f.save()
-        GLib.idle_add(self.substackhead.hide)
+        GLib.idle_add(self.sub._sub_stackhead.hide)
     
     def on_wrong_lyr(self, _): self.on_karaoke_activate()
 
@@ -1050,38 +1050,38 @@ class Main(helper.UI):
                 tmp = os.path.splitext(self.playlist[self.tnum]["uri"])[0]
                 neo_tmp = os.path.splitext(self.playlist[self.tnum]["uri"].split("/")[-1])[0]
                 if f"{tmp}.srt" not in dbnow and f"{self.folderPath}/misc/{neo_tmp}.srt" not in neo_dbnow:
-                    GLib.idle_add(self.off_but.hide)
-                    GLib.idle_add(self.off_lab.hide)
-                    GLib.idle_add(self.off_spin.hide)
+                    GLib.idle_add(self.sub._off_but.hide)
+                    GLib.idle_add(self.sub._off_lab.hide)
+                    GLib.idle_add(self.sub._off_spin.hide)
                     if f"{tmp}.txt" in dbnow or f"{self.folderPath}/misc/{neo_tmp}.txt" in neo_dbnow:
                         try: f = open(f"{tmp}.txt", "r")
                         except: f = open(f"{self.folderPath}/misc/{neo_tmp}.txt", "r")
                         lyric = f.read()
                         f.close()
-                        self.lyrLab.set_label(lyric)
-                        self.subStack.set_visible_child(self.lyrmode)
+                        self.sub._lyr_lab.set_label(lyric)
+                        self.sub._sub_stack.set_visible_child(self.sub._lyr_lab.get_parent().get_parent())
                         self.sub.present()
-                        GLib.idle_add(self.substackhead.hide)
+                        GLib.idle_add(self.sub._sub_stackhead.hide)
                     else:
                         try:
                             f = MediaFile(self.playlist[self.tnum]["uri"])
                             lyric = f.lyrics
                             print(lyric)
                             if lyric != "":
-                                self.lyrLab.set_label(lyric)
-                                self.subStack.set_visible_child(self.lyrmode)
+                                self.sub._lyr_lab.set_label(lyric)
+                                self.sub._sub_stack.set_visible_child(self.sub._lyr_lab.get_parent().get_parent())
                                 self.sub.present()
-                                GLib.idle_add(self.substackhead.hide)
+                                GLib.idle_add(self.sub._sub_stackhead.hide)
                             else: raise Exception
                         except:
-                            self.substackhead.set_visible_child(self.subbox2)
-                            GLib.idle_add(self.substackhead.show)
+                            self.sub._sub_stackhead.set_visible_child(self.sub._sub_box2)
+                            GLib.idle_add(self.sub._sub_stackhead.show)
                             thread = futures.ThreadPoolExecutor(max_workers=2)
                             thread.submit(self.lyr_fetcher, artist, track)
                 else:
-                    GLib.idle_add(self.off_but.show)
-                    GLib.idle_add(self.off_lab.show)
-                    GLib.idle_add(self.off_spin.show)
+                    GLib.idle_add(self.sub._off_but.show)
+                    GLib.idle_add(self.sub._off_lab.show)
+                    GLib.idle_add(self.sub._off_spin.show)
                     f = MediaFile(self.playlist[self.tnum]["uri"])
                     try:
                         field = MediaField(MP3DescStorageStyle(u'offset'), StorageStyle(u'offset'))
@@ -1089,7 +1089,7 @@ class Main(helper.UI):
                     except: pass
                     if f.offset == None: f.offset = 0
                     self.offset = int(f.offset)
-                    GLib.idle_add(self.off_spin.set_value, self.offset)
+                    GLib.idle_add(self.sub._off_spin.set_value, self.offset)
                     f.save()
                     print("FOUND")
                     try:
@@ -1099,9 +1099,9 @@ class Main(helper.UI):
                     subtitle_gen = srt.parse(presub)
                     subtitle, lyrs = list(subtitle_gen), futures.ThreadPoolExecutor(max_workers=2)
                     lyrs.submit(self.slideShow, subtitle)
-                    self.subStack.set_visible_child(self.karmode)
-                    self.substackhead.set_visible_child(self.subbox)
-                    GLib.idle_add(self.substackhead.show)
+                    self.sub._sub_stack.set_visible_child(self.sub._label1.get_parent().get_parent().get_parent())
+                    self.sub._sub_stackhead.set_visible_child(self.sub._sub_box)
+                    GLib.idle_add(self.sub._sub_stackhead.show)
                     self.sub.present()
         elif self.useMode == "video":
             if self.fulle == False:
@@ -1136,8 +1136,8 @@ class Main(helper.UI):
             self.lyr_states = [True, True, True]
         else:
             self.tmp_lyric = lyric
-            GLib.idle_add(self.lyrLab.set_label, lyric)
-            GLib.idle_add(self.subStack.set_visible_child, self.lyrmode)
+            GLib.idle_add(self.sub._lyr_lab.set_label, lyric)
+            GLib.idle_add(self.sub._sub_stack.set_visible_child, self.sub._lyr_lab.get_parent().get_parent())
             GLib.idle_add(self.sub.present)
 
     def mouse_enter(self, *_):
@@ -1266,8 +1266,8 @@ class Main(helper.UI):
                 if self.stopKar or self.seekBack: break
                 simpl3 += f"{z.content.replace('#', '')} "
         else: simpl3 = ""
-        GLib.idle_add(self.label2.set_markup, f"<span size='{int(self.size2)}'>{simpl2}</span>")
-        GLib.idle_add(self.label3.set_markup, f"<span size='{int(self.size2)}'>{simpl3}</span>")
+        GLib.idle_add(self.sub._label2.set_markup, f"<span size='{int(self.size2)}'>{simpl2}</span>")
+        GLib.idle_add(self.sub._label3.set_markup, f"<span size='{int(self.size2)}'>{simpl3}</span>")
         done, tmpline, first, tl1, it = "", self.line1[:], True, self.line1, 1
         tl1.insert(0, "")
         maxit = len(tl1)-1
@@ -1279,8 +1279,8 @@ class Main(helper.UI):
             for y in tmpline:
                 if self.stopKar or self.seekBack: break
                 leftover += f"{y.content.replace('#', '')} "
-            try: GLib.idle_add(self.label1.set_markup, f"<span size='{self.size}' color='green'>{done}</span> <span size='{self.size}' color='green'> {xy.content.replace('#', '')}</span> <span size='{self.size}'> {leftover}</span>")
-            except: GLib.idle_add(self.label1.set_markup, f"<span size='{self.size}' color='green'>{done}</span> <span size='{self.size}' color='green'> {xy}</span> <span size='{self.size}'> {leftover}</span>")
+            try: GLib.idle_add(self.sub._label1.set_markup, f"<span size='{self.size}' color='green'>{done}</span> <span size='{self.size}' color='green'> {xy.content.replace('#', '')}</span> <span size='{self.size}'> {leftover}</span>")
+            except: GLib.idle_add(self.sub._label1.set_markup, f"<span size='{self.size}' color='green'>{done}</span> <span size='{self.size}' color='green'> {xy}</span> <span size='{self.size}'> {leftover}</span>")
             while not self.stopKar:
                 sleep(0.01)
                 if it > maxit:

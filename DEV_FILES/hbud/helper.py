@@ -8,7 +8,7 @@ gi.require_version('Gst', '1.0')
 from gi.repository import Gtk, Gio, GLib, Pango, Adw, Gst
 from hbud import constants as cn
 
-APP = "io.github.swanux.hbud"
+APP = cn.App.application_id
 
 WHERE_AM_I = os.path.abspath(os.path.dirname(__file__))
 LOCALE_DIR = os.path.join(WHERE_AM_I, 'locale/mo')
@@ -163,230 +163,30 @@ class Sub2(Adw.Window):
     _sav_but = Gtk.Template.Child()
     def __init__(self): super().__init__()
 
-
-
-
 @Gtk.Template(resource_path='/io/github/swanux/hbud/ui/sub.ui')
 class Sub(Adw.Window):
     __gtype_name__ = 'Sub'
-    def __init__(self, gself):
-        super().__init__()
-        _ = gettext.gettext
-        self.set_name("sub")
-        headerbar = Adw.HeaderBar()
-        mainBox = Gtk.Box.new(1, 0)
-        gself.ev_key_sub = Gtk.EventControllerKey.new()
-        gself.substackhead = Gtk.Stack.new()
-        gself.subbox = Gtk.Box.new(0, 0)
-        gself.subbox2 = Gtk.Box.new(0, 0)
-        gself.subbox = jean(gself.subbox, task="margin", ids=[0, 0, 6, 6])
-        gself.subbox2 = jean(gself.subbox2, task="margin", ids=[0, 0, 6, 6])
-        gself.off_lab = Gtk.Label.new(_("Offset (ms):"))
-        gself.off_lab.set_margin_end(10)
-        conf_lab1 = Gtk.Label.new(_("Is this lyrics correct?"))
-        conf_lab1.set_margin_end(10)
-        gself.subbox.append(gself.off_lab)
-        gself.subbox2.append(conf_lab1)
-        gself.ye_but = Gtk.Button.new_with_label(_("Yes"))
-        gself.no_but = Gtk.Button.new_with_label(_("No"))
-        gself.subbox2.append(gself.ye_but)
-        gself.subbox2.append(gself.no_but)
-        gself.off_spin = Gtk.SpinButton.new_with_range(-99999, 99999, 5)
-        gself.off_spin.set_digits(2)
-        gself.off_spin.set_numeric(True)
-        gself.off_spin.set_can_focus(False)
-        gself.subbox.append(gself.off_spin)
-        gself.off_but = Gtk.Button.new_with_label(_("Apply"))
-        gself.off_but.set_can_focus(False)
-        gself.subbox.append(gself.off_but)
-
-        ##########
-
-        gself.karmode = Gtk.ScrolledWindow()
-        gself.lyrmode = Gtk.ScrolledWindow()
-        gself.lyrmode.set_propagate_natural_width(True)
-
-        req_view = Gtk.Viewport()
-        req_view2 = Gtk.Viewport()
-        boxForText = Gtk.Box.new(1, 5)
-        gself.subStack = Gtk.Stack()
-
-        gself.label1 = Gtk.Label.new()
-        gself.label1.set_name("label1")
-        gself.label1.set_valign(Gtk.Align.FILL)
-        gself.label1.set_halign(Gtk.Align.FILL)
-        gself.label1.set_margin_top(5)
-        gself.label1.set_margin_bottom(5)
-        gself.label1.set_vexpand(True)
-        gself.label1.set_hexpand(True)
-        gself.label1.set_wrap(True)
-        gself.label1.set_wrap_mode(Gtk.WrapMode.WORD)
-        gself.label1.set_justify(Gtk.Justification.CENTER)
-        gself.label2 = Gtk.Label.new()
-        gself.label2.set_name("label2")
-        gself.label2.set_margin_top(5)
-        gself.label2.set_margin_bottom(5)
-        gself.label2.set_wrap(True)
-        gself.label2.set_wrap_mode(Gtk.WrapMode.WORD)
-        gself.label2.set_justify(Gtk.Justification.CENTER)
-        gself.label3 = Gtk.Label.new()
-        gself.label3.set_name("label3")
-        gself.label3.set_margin_top(5)
-        gself.label3.set_margin_bottom(5)
-        gself.label3.set_wrap(True)
-        gself.label3.set_wrap_mode(Gtk.WrapMode.WORD)
-        gself.label3.set_justify(Gtk.Justification.CENTER)
-
-        boxForText.append(gself.label1)
-        boxForText.append(gself.label2)
-        boxForText.append(gself.label3)
-        req_view.set_child(boxForText)
-        gself.karmode.set_child(req_view)
-        gself.subStack.add_named(gself.karmode, "req_scroll")
-
-        gself.lyrLab = Gtk.Label.new()
-        gself.lyrLab = jean(gself.lyrLab, task="margin", ids=[20, 10, 10, 10])
-        gself.lyrLab.set_wrap(True)
-        gself.lyrLab.set_wrap_mode(Gtk.WrapMode.WORD)
-        attrlist = Pango.AttrList()
-        attrlist.insert(Pango.attr_weight_new(Pango.Weight.ULTRAHEAVY))
-        attrlist.insert(Pango.attr_size_new(22000))
-        gself.lyrLab.set_attributes(attrlist)
-
-        req_view2.set_child(gself.lyrLab)
-        gself.lyrmode.set_child(req_view2)
-        gself.subStack.add_named(gself.lyrmode, "req_scroll2")
-
-        #######
-
-        gself.substackhead.add_named(gself.subbox, "subbox")
-        gself.substackhead.add_named(gself.subbox2, "subbox2")
-        gself.subbox.add_css_class("linked")
-        gself.subbox2.add_css_class("linked")
-        headerbar.pack_start(gself.substackhead)
-        headerbar.add_css_class("flat")
-        mainBox.append(headerbar)
-        mainBox.append(gself.subStack)
-        handle = Gtk.WindowHandle.new()
-        handle.set_child(mainBox)
-        self.add_controller(gself.ev_key_sub)
-        self.set_content(handle)
-        self.set_default_size(560, 360)
+    _ev_key_sub = Gtk.Template.Child()
+    _sub_stackhead = Gtk.Template.Child()
+    _sub_box = Gtk.Template.Child()
+    _sub_box2 = Gtk.Template.Child()
+    _off_lab = Gtk.Template.Child()
+    _ye_but = Gtk.Template.Child()
+    _no_but = Gtk.Template.Child()
+    _off_spin = Gtk.Template.Child()
+    _off_but = Gtk.Template.Child()
+    _sub_stack = Gtk.Template.Child()
+    _lyr_lab = Gtk.Template.Child()
+    _label1 = Gtk.Template.Child()
+    _label2 = Gtk.Template.Child()
+    _label3 = Gtk.Template.Child()
+    def __init__(self): super().__init__()
 
 
 
-
-
-# class Sub(Adw.Window):
-#     def __init__(self, gself):
-#         super(Sub, self).__init__()
-#         _ = gettext.gettext
-#         self.set_name("sub")
-#         headerbar = Adw.HeaderBar()
-#         mainBox = Gtk.Box.new(1, 0)
-#         gself.ev_key_sub = Gtk.EventControllerKey.new()
-#         gself.substackhead = Gtk.Stack.new()
-#         gself.subbox = Gtk.Box.new(0, 0)
-#         gself.subbox2 = Gtk.Box.new(0, 0)
-#         gself.subbox = jean(gself.subbox, task="margin", ids=[0, 0, 6, 6])
-#         gself.subbox2 = jean(gself.subbox2, task="margin", ids=[0, 0, 6, 6])
-#         gself.off_lab = Gtk.Label.new(_("Offset (ms):"))
-#         gself.off_lab.set_margin_end(10)
-#         conf_lab1 = Gtk.Label.new(_("Is this lyrics correct?"))
-#         conf_lab1.set_margin_end(10)
-#         gself.subbox.append(gself.off_lab)
-#         gself.subbox2.append(conf_lab1)
-#         gself.ye_but = Gtk.Button.new_with_label(_("Yes"))
-#         gself.no_but = Gtk.Button.new_with_label(_("No"))
-#         gself.subbox2.append(gself.ye_but)
-#         gself.subbox2.append(gself.no_but)
-#         gself.off_spin = Gtk.SpinButton.new_with_range(-99999, 99999, 5)
-#         gself.off_spin.set_digits(2)
-#         gself.off_spin.set_numeric(True)
-#         gself.off_spin.set_can_focus(False)
-#         gself.subbox.append(gself.off_spin)
-#         gself.off_but = Gtk.Button.new_with_label(_("Apply"))
-#         gself.off_but.set_can_focus(False)
-#         gself.subbox.append(gself.off_but)
-
-#         ##########
-
-#         gself.karmode = Gtk.ScrolledWindow()
-#         gself.lyrmode = Gtk.ScrolledWindow()
-#         gself.lyrmode.set_propagate_natural_width(True)
-
-#         req_view = Gtk.Viewport()
-#         req_view2 = Gtk.Viewport()
-#         boxForText = Gtk.Box.new(1, 5)
-#         gself.subStack = Gtk.Stack()
-
-#         gself.label1 = Gtk.Label.new()
-#         gself.label1.set_name("label1")
-#         gself.label1.set_valign(Gtk.Align.FILL)
-#         gself.label1.set_halign(Gtk.Align.FILL)
-#         gself.label1.set_margin_top(5)
-#         gself.label1.set_margin_bottom(5)
-#         gself.label1.set_vexpand(True)
-#         gself.label1.set_hexpand(True)
-#         gself.label1.set_wrap(True)
-#         gself.label1.set_wrap_mode(Gtk.WrapMode.WORD)
-#         gself.label1.set_justify(Gtk.Justification.CENTER)
-#         gself.label2 = Gtk.Label.new()
-#         gself.label2.set_name("label2")
-#         gself.label2.set_margin_top(5)
-#         gself.label2.set_margin_bottom(5)
-#         gself.label2.set_wrap(True)
-#         gself.label2.set_wrap_mode(Gtk.WrapMode.WORD)
-#         gself.label2.set_justify(Gtk.Justification.CENTER)
-#         gself.label3 = Gtk.Label.new()
-#         gself.label3.set_name("label3")
-#         gself.label3.set_margin_top(5)
-#         gself.label3.set_margin_bottom(5)
-#         gself.label3.set_wrap(True)
-#         gself.label3.set_wrap_mode(Gtk.WrapMode.WORD)
-#         gself.label3.set_justify(Gtk.Justification.CENTER)
-
-#         boxForText.append(gself.label1)
-#         boxForText.append(gself.label2)
-#         boxForText.append(gself.label3)
-#         req_view.set_child(boxForText)
-#         gself.karmode.set_child(req_view)
-#         gself.subStack.add_named(gself.karmode, "req_scroll")
-
-#         gself.lyrLab = Gtk.Label.new()
-#         gself.lyrLab = jean(gself.lyrLab, task="margin", ids=[20, 10, 10, 10])
-#         gself.lyrLab.set_wrap(True)
-#         gself.lyrLab.set_wrap_mode(Gtk.WrapMode.WORD)
-#         attrlist = Pango.AttrList()
-#         attrlist.insert(Pango.attr_weight_new(Pango.Weight.ULTRAHEAVY))
-#         attrlist.insert(Pango.attr_size_new(22000))
-#         gself.lyrLab.set_attributes(attrlist)
-
-#         req_view2.set_child(gself.lyrLab)
-#         gself.lyrmode.set_child(req_view2)
-#         gself.subStack.add_named(gself.lyrmode, "req_scroll2")
-
-#         #######
-
-#         gself.substackhead.add_named(gself.subbox, "subbox")
-#         gself.substackhead.add_named(gself.subbox2, "subbox2")
-#         gself.subbox.add_css_class("linked")
-#         gself.subbox2.add_css_class("linked")
-#         headerbar.pack_start(gself.substackhead)
-#         headerbar.add_css_class("flat")
-#         mainBox.append(headerbar)
-#         mainBox.append(gself.subStack)
-#         handle = Gtk.WindowHandle.new()
-#         handle.set_child(mainBox)
-#         self.add_controller(gself.ev_key_sub)
-#         self.set_content(handle)
-#         self.set_default_size(560, 360)
 
 class UI(Adw.Application):
-    application_id = cn.App.application_id
     build_version = cn.App.application_version
-    bug_url = cn.App.bug_url
-    help_url = cn.App.help_url
     def __init__(self):
         super().__init__()
         Gst.init(None)
@@ -397,7 +197,7 @@ class UI(Adw.Application):
         self.searchDict = {"1" : ["artist", False], "2" : ["artist", True], "3" : ["title", False], "4" : ["title", True], "5" : ["year", False], "6" : ["year", True], "7" : ["length", False], "8" : ["length", True]}
         self.playlistPlayer, self.needSub, self.nowIn = False, False, ""
         self.fulle, self.resete, self.keepReset, self.hardReset, self.tnum, self.sorted, self.aborte, self.hardreset2, self.resete2, self.clocking, self.searched = False, False, False, False, 0, False, False, False, False, False, False
-        self.sub, self.seekBack, self.playing, self.res, self.title, self.countermove, self.mx, self.my = Sub(self), False, False, False, None, 0, 0, 0
+        self.sub, self.seekBack, self.playing, self.res, self.title, self.countermove, self.mx, self.my = Sub(), False, False, False, None, 0, 0, 0
         self.offset = 0
         self.tmpDir = GLib.get_tmp_dir()
         self.lyr_states = [True, True, True]
@@ -427,15 +227,3 @@ class UI(Adw.Application):
         self.about = Adw.AboutWindow(application_name=cn.App.application_name, version=self.build_version, copyright=f"Copyright © {cn.App.app_years}", issue_url=cn.App.help_url, license_type=Gtk.License.GPL_3_0, developer_name="Dániel Kolozsi", developers=["Dániel Kolozsi"], designers=["Seh", "Dániel Kolozsi"], translator_credits=_("Dániel Kolozsi"), application_icon=cn.App.application_id, comments=cn.App.about_comments, website=cn.App.main_url, transient_for=self.window, release_notes=cn.App.release_notes, default_height=450)
         self.switchDict = {"locBut" : [self.window._main_stack._placeholder, "audio-input-microphone", "audio", self.window._str_but], "strBut" : [self.window._main_stack._str_box, "view-fullscreen", "video", self.window._loc_but]}
         self.provider, self.settings = Gtk.CssProvider(), Adw.StyleManager.get_default()
-
-def jean(parent, children=[""], task="append", ids=[]):
-    for i, child in enumerate(children):
-        if task == "append": parent.append(child)
-        elif task == "prepend": parent.prepend(child)
-        elif task == "combo": parent.append(ids[i], child)
-        elif task == "margin":
-            parent.set_margin_top(ids[0])
-            parent.set_margin_bottom(ids[1])
-            parent.set_margin_start(ids[2])
-            parent.set_margin_end(ids[3])
-    return parent
