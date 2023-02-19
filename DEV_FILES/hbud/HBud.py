@@ -146,9 +146,9 @@ class Main(helper.UI):
         self.window._shuff_but.connect("clicked", self.on_shuffBut_clicked)
         self.window._karaoke_but.connect("clicked", self.on_karaoke_activate)
         self.window._drop_but.connect("clicked", self.on_dropped)
-        self.magiBut.connect("clicked", self.on_magiBut_clicked)
-        self.iChoser.connect("clicked", self.on_iChoser_clicked)
-        self.savBut.connect("clicked", self.on_save)
+        self.sub2._magi_but.connect("clicked", self.on_magiBut_clicked)
+        self.sub2._ichoser.connect("clicked", self.on_iChoser_clicked)
+        self.sub2._sav_but.connect("clicked", self.on_save)
         self.window._main_stack._combo_sort.connect("changed", self.on_sort_change)
         self.window._main_stack._search_play.connect("activate", self.on_search)
         self.window._main_stack._order_but.connect("clicked", self.on_order_save)
@@ -466,15 +466,15 @@ class Main(helper.UI):
 
     def on_save(self, *_):
         tmname = self.folderPath.replace("/", ">")
-        self.yrEnt.update()
+        self.sub2._yr_ent.update()
         f = MediaFile(self.editingFile)
-        buffer = self.lyrEnt.get_buffer()
-        f.year, f.artist, f.album, f.title, f.art, f.lyrics = self.yrEnt.get_value_as_int(), self.arEnt.get_text(), self.alEnt.get_text(), self.tiEnt.get_text(), self.binary, buffer.get_text(buffer.get_start_iter(), buffer.get_end_iter(), True)
+        buffer = self.sub2._lyr_ent.get_buffer()
+        f.year, f.artist, f.album, f.title, f.art, f.lyrics = self.sub2._yr_ent.get_value_as_int(), self.sub2._ar_ent.get_text(), self.sub2._al_ent.get_text(), self.sub2._ti_ent.get_text(), self.binary, buffer.get_text(buffer.get_start_iter(), buffer.get_end_iter(), True)
         f.save()
-        self.playlist[self.ednum]["year"] = self.yrEnt.get_value_as_int()
-        self.playlist[self.ednum]["artist"] = self.arEnt.get_text()
-        self.playlist[self.ednum]["album"] = self.alEnt.get_text()
-        self.playlist[self.ednum]["title"] = self.tiEnt.get_text()
+        self.playlist[self.ednum]["year"] = self.sub2._yr_ent.get_value_as_int()
+        self.playlist[self.ednum]["artist"] = self.sub2._ar_ent.get_text()
+        self.playlist[self.ednum]["album"] = self.sub2._al_ent.get_text()
+        self.playlist[self.ednum]["title"] = self.sub2._ti_ent.get_text()
         if os.path.isfile(f"{self.confDir}/{tmname}.saved.order"):
             self.on_order_save()
         self.sub2_hide("xy")
@@ -483,23 +483,23 @@ class Main(helper.UI):
 
     def sub2_hide(self, *_):
         self.sub2.hide()
-        if self.magiSpin.get_spinning() == True: self.aborte = True
-        GLib.idle_add(self.magiSpin.stop)
+        if self.sub2._mag_spin.get_spinning() == True: self.aborte = True
+        GLib.idle_add(self.sub2._mag_spin.stop)
 
     def ed_cur(self, *_):
         self.popover.unparent()
         self.editingFile = self.playlist[self.ednum]["uri"].replace("file://", "")
-        self.yrEnt.set_value(self.playlist[self.ednum]["year"])
-        self.arEnt.set_text(self.playlist[self.ednum]["artist"])
-        self.alEnt.set_text(self.playlist[self.ednum]["album"])
-        self.tiEnt.set_text(self.playlist[self.ednum]["title"])
-        try: self.lyrEnt.get_buffer().set_text(MediaFile(self.playlist[self.ednum]["uri"]).lyrics)
-        except: self.lyrEnt.get_buffer().set_text("")
+        self.sub2._yr_ent.set_value(self.playlist[self.ednum]["year"])
+        self.sub2._ar_ent.set_text(self.playlist[self.ednum]["artist"])
+        self.sub2._al_ent.set_text(self.playlist[self.ednum]["album"])
+        self.sub2._ti_ent.set_text(self.playlist[self.ednum]["title"])
+        try: self.sub2._lyr_ent.get_buffer().set_text(MediaFile(self.playlist[self.ednum]["uri"]).lyrics)
+        except: self.sub2._lyr_ent.get_buffer().set_text("")
         self.load_cover(mode="meta")
         self.sub2.present()
 
     def on_magiBut_clicked(self, _):
-        GLib.idle_add(self.magiSpin.start)
+        GLib.idle_add(self.sub2._mag_spin.start)
         thread = futures.ThreadPoolExecutor(max_workers=2)
         thread.submit(self.fetch_cur)
 
@@ -530,7 +530,7 @@ class Main(helper.UI):
             data = [self.chosefrom[row]["artist"], self.chosefrom[row]["title"], self.chosefrom[row]["rid"], self.chosefrom[row]["year"], self.chosefrom[row]["album"], self.chosefrom[row]["album_ids"]]
             thread = futures.ThreadPoolExecutor(max_workers=2)
             thread.submit(self.next_fetch, data)
-        else: GLib.idle_add(self.magiSpin.stop)
+        else: GLib.idle_add(self.sub2._mag_spin.stop)
         GLib.idle_add(self.choser_window.hide)
         GLib.idle_add(self.chosBox.remove, self.chosBox.get_last_child())
 
@@ -566,8 +566,8 @@ class Main(helper.UI):
             self.aborte = False
             return
         if len(self.chosefrom) == 0:
-            self.sub2Toast.add_toast(Adw.Toast.new(self._('Did not find any match online.')))
-            GLib.idle_add(self.magiSpin.stop)
+            self.sub2._sub2_toast.add_toast(Adw.Toast.new(self._('Did not find any match online.')))
+            GLib.idle_add(self.sub2._mag_spin.stop)
         elif len(self.chosefrom) == 1:
             data = [self.chosefrom[0]["artist"], self.chosefrom[0]["title"], self.chosefrom[0]["rid"], self.chosefrom[0]["year"], self.chosefrom[0]["album"], self.chosefrom[0]["album_ids"]]
             thread = futures.ThreadPoolExecutor(max_workers=2)
@@ -587,13 +587,13 @@ class Main(helper.UI):
                 print("Cover found")
                 break
             except: release = None
-        GLib.idle_add(self.yrEnt.set_value, data[3])
-        GLib.idle_add(self.arEnt.set_text, data[0])
-        GLib.idle_add(self.alEnt.set_text, data[4])
-        GLib.idle_add(self.tiEnt.set_text, data[1])
+        GLib.idle_add(self.sub2._yr_ent.set_value, data[3])
+        GLib.idle_add(self.sub2._ar_ent.set_text, data[0])
+        GLib.idle_add(self.sub2._al_ent.set_text, data[4])
+        GLib.idle_add(self.sub2._ti_ent.set_text, data[1])
         if release != None: GLib.idle_add(self.load_cover, "brainz", release)
-        GLib.idle_add(self.magiSpin.stop)
-        self.sub2Toast.add_toast(Adw.Toast.new(self._('Metadata fetched successfully!')))
+        GLib.idle_add(self.sub2._mag_spin.stop)
+        self.sub2._sub2_toast.add_toast(Adw.Toast.new(self._('Metadata fetched successfully!')))
 
     def del_cur(self, *_):
         print(self.playlist[self.ednum])
@@ -642,7 +642,7 @@ class Main(helper.UI):
             f.close()
         if mode == "meta" or mode == "brainz":
             coverBuf = GdkPixbuf.Pixbuf.new_from_file_at_scale(tmpLoc, 100, 100, True)
-            GLib.idle_add(self.metaCover.set_pixbuf, coverBuf)
+            GLib.idle_add(self.sub2._meta_cover.set_pixbuf, coverBuf)
         else:
             coverBuf = GdkPixbuf.Pixbuf.new_from_file_at_scale(tmpLoc, 60, 60, True)
             GLib.idle_add(bitMage.set_pixbuf, coverBuf)

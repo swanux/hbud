@@ -5,6 +5,7 @@
     <file preprocess="xml-stripblanks">ui/mainstack.ui</file>
     <file preprocess="xml-stripblanks">ui/prefwin.ui</file>
     <file preprocess="xml-stripblanks">ui/mainwindow.ui</file>
+    <file preprocess="xml-stripblanks">ui/sub2.ui</file>
   </gresource>
 </gresources>
 
