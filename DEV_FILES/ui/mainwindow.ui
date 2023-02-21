@@ -14,178 +14,178 @@
       <object class="GtkWindowHandle">
         <child>
           <object class="GtkBox">
-          <property name="orientation">vertical</property>
-          <child>
-            <object class="AdwHeaderBar" id="_main_header">
-              <property name="title-widget">
-                <object class="AdwWindowTitle" id="_title">
-                  <property name="title">HBud</property>
-                </object>
-              </property>
-              <child type="start">
-                <object class="GtkBox" id="_head_box">
-                  <style><class name="linked"/></style>
-                  <child>
-                    <object class="GtkToggleButton" id="_loc_but">
-                      <property name="label" translatable="yes">Audio</property>
-                      <property name="name">locBut</property>
-                      <property name="can-focus">False</property>
-                    </object>
-                  </child>
-                  <child>
-                    <object class="GtkToggleButton" id="_str_but">
-                      <property name="label" translatable="yes">Video</property>
-                      <property name="name">strBut</property>
-                      <property name="can-focus">False</property>
-                    </object>
-                  </child>
-                  <child>
-                    <object class="GtkButton" id="_drop_but">
-                      <property name="icon-name">go-down</property>
-                      <property name="tooltip-text" translatable="yes">More options</property>
-                      <property name="can-focus">False</property>
-                    </object>
-                  </child>
-                </object>
-              </child>
-              <child type="end">
-                <object class="GtkMenuButton" id="_prefbut">
-                  <property name="icon-name">open-menu-symbolic</property>
-                  <property name="can-focus">False</property>
-                </object>
-              </child>
-            </object>
-          </child>
-          <child>
-            <object class="GtkBox">
-              <property name="orientation">vertical</property>
-              <child>
-                <object class="AdwToastOverlay" id="_main_toast">
-                  <child>
-                    <object class="MainStack" id="_main_stack"></object>
-                  </child>
-                </object>
-              </child>
-              <child>
-                <object class="GtkBox" id="_bottom">
-                  <property name="orientation">vertical</property>
-                  <property name="hexpand">True</property>
-                  <property name="margin-top">5</property>
-                  <property name="margin-bottom">7</property>
-                  <property name="margin-start">7</property>
-                  <property name="margin-end">5</property>
-                  <child>
-                    <object class="GtkEventControllerMotion" id="_bottom_motion"/>
-                  </child>
-                  <child>
-                    <object class="GtkBox">
-                      <child>
-                        <object class="GtkLabel" id="_label">
-                          <property name="margin-start">6</property>
-                          <property name="margin-end">6</property>
-                        </object>
-                      </child>
-                      <child>
-                        <object class="GtkScale" id="_slider">
-                          <property name="orientation">horizontal</property>
-                          <property name="has-tooltip">True</property>
-                          <property name="hexpand">True</property>
-                          <property name="can-focus">False</property>
-                          <property name="draw-value">False</property>
-                          <property name="margin-start">6</property>
-                          <property name="margin-end">6</property>
-                        </object>
-                      </child>
-                      <child>
-                        <object class="GtkLabel" id="_label_end">
-                          <property name="margin-start">6</property>
-                          <property name="margin-end">6</property>
-                        </object>
-                      </child>
-                    </object>
-                  </child>
-                  <child>
-                    <object class="GtkBox">
-                      <property name="margin-end">5</property>
-                      <child>
-                        <object class="GtkBox">
-                          <style><class name="linked"/></style>
-                          <property name="homogeneous">True</property>
-                          <property name="hexpand">True</property>
-                          <child>
-                            <object class="GtkButton" id="_ofo_but">
-                              <property name="icon-name">folder-open</property>
-                              <property name="can-focus">False</property>
-                            </object>
-                          </child>
-                          <child>
-                            <object class="GtkButton" id="_prev_but">
-                              <property name="icon-name">media-skip-backward</property>
-                              <property name="can-focus">False</property>
-                            </object>
-                          </child>
-                          <child>
-                            <object class="GtkButton" id="_play_but">
-                              <property name="can-focus">False</property>
-                              <property name="icon-name">media-playback-start</property>
-                            </object>
-                          </child>
-                          <child>
-                            <object class="GtkButton" id="_next_but">
-                              <property name="icon-name">media-skip-forward</property>
-                              <property name="can-focus">False</property>
-                            </object>
-                          </child>
-                          <child>
-                            <object class="GtkButton" id="_shuff_but">
-                              <property name="icon-name">media-playlist-shuffle</property>
-                              <property name="can-focus">False</property>
-                            </object>
-                          </child>
-                        </object>
-                      </child>
-                      <child>
-                        <object class="GtkMenuButton" id="_sub_track">
-                          <property name="can-focus">False</property>
-                          <property name="icon-name">media-view-subtitles-symbolic</property>
-                          <property name="sensitive">False</property>
-                          <property name="margin-start">8</property>
-                          <property name="direction">up</property>
-                          <property name="popover">
-                            <object class="GtkPopover"></object>
-                          </property>
-                        </object>
-                      </child>
-                      <child>
-                        <object class="GtkStack" id="_lyr_stack">
-                          <property name="margin-start">7</property>
-                          <child>
-                            <object class="GtkStackPage">
-                              <property name="child">
-                                <object class="GtkButton" id="_karaoke_but">
-                                  <property name="can-focus">False</property>
-                                  <property name="icon-name">audio-input-microphone</property>
-                                </object>
-                              </property>
-                            </object>
-                          </child>
-                          <child>
-                            <object class="GtkStackPage">
-                              <property name="child">
-                                <object class="GtkSpinner" id="_lyr_spin">
-                                  <property name="height-request">32</property>
-                                </object>
-                              </property>
-                            </object>
-                          </child>
-                        </object>
-                      </child>
-                    </object>
-                  </child>
-                </object>
-              </child>
-            </object>
-          </child>
+            <property name="orientation">vertical</property>
+            <child>
+              <object class="AdwHeaderBar" id="_main_header">
+                <property name="title-widget">
+                  <object class="AdwWindowTitle" id="_title">
+                    <property name="title">HBud</property>
+                  </object>
+                </property>
+                <child type="start">
+                  <object class="GtkBox" id="_head_box">
+                    <style><class name="linked"/></style>
+                    <child>
+                      <object class="GtkToggleButton" id="_loc_but">
+                        <property name="label" translatable="yes">Audio</property>
+                        <property name="name">locBut</property>
+                        <property name="can-focus">False</property>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkToggleButton" id="_str_but">
+                        <property name="label" translatable="yes">Video</property>
+                        <property name="name">strBut</property>
+                        <property name="can-focus">False</property>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkButton" id="_drop_but">
+                        <property name="icon-name">go-down</property>
+                        <property name="tooltip-text" translatable="yes">More options</property>
+                        <property name="can-focus">False</property>
+                      </object>
+                    </child>
+                  </object>
+                </child>
+                <child type="end">
+                  <object class="GtkMenuButton" id="_prefbut">
+                    <property name="icon-name">open-menu-symbolic</property>
+                    <property name="can-focus">False</property>
+                  </object>
+                </child>
+              </object>
+            </child>
+            <child>
+              <object class="GtkBox">
+                <property name="orientation">vertical</property>
+                <child>
+                  <object class="AdwToastOverlay" id="_main_toast">
+                    <child>
+                      <object class="MainStack" id="_main_stack"></object>
+                    </child>
+                  </object>
+                </child>
+                <child>
+                  <object class="GtkBox" id="_bottom">
+                    <property name="orientation">vertical</property>
+                    <property name="hexpand">True</property>
+                    <property name="margin-top">5</property>
+                    <property name="margin-bottom">7</property>
+                    <property name="margin-start">7</property>
+                    <property name="margin-end">5</property>
+                    <child>
+                      <object class="GtkEventControllerMotion" id="_bottom_motion"/>
+                    </child>
+                    <child>
+                      <object class="GtkBox">
+                        <child>
+                          <object class="GtkLabel" id="_label">
+                            <property name="margin-start">6</property>
+                            <property name="margin-end">6</property>
+                          </object>
+                        </child>
+                        <child>
+                          <object class="GtkScale" id="_slider">
+                            <property name="orientation">horizontal</property>
+                            <property name="has-tooltip">True</property>
+                            <property name="hexpand">True</property>
+                            <property name="can-focus">False</property>
+                            <property name="draw-value">False</property>
+                            <property name="margin-start">6</property>
+                            <property name="margin-end">6</property>
+                          </object>
+                        </child>
+                        <child>
+                          <object class="GtkLabel" id="_label_end">
+                            <property name="margin-start">6</property>
+                            <property name="margin-end">6</property>
+                          </object>
+                        </child>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkBox">
+                        <property name="margin-end">5</property>
+                        <child>
+                          <object class="GtkBox">
+                            <style><class name="linked"/></style>
+                            <property name="homogeneous">True</property>
+                            <property name="hexpand">True</property>
+                            <child>
+                              <object class="GtkButton" id="_ofo_but">
+                                <property name="icon-name">folder-open</property>
+                                <property name="can-focus">False</property>
+                              </object>
+                            </child>
+                            <child>
+                              <object class="GtkButton" id="_prev_but">
+                                <property name="icon-name">media-skip-backward</property>
+                                <property name="can-focus">False</property>
+                              </object>
+                            </child>
+                            <child>
+                              <object class="GtkButton" id="_play_but">
+                                <property name="can-focus">False</property>
+                                <property name="icon-name">media-playback-start</property>
+                              </object>
+                            </child>
+                            <child>
+                              <object class="GtkButton" id="_next_but">
+                                <property name="icon-name">media-skip-forward</property>
+                                <property name="can-focus">False</property>
+                              </object>
+                            </child>
+                            <child>
+                              <object class="GtkButton" id="_shuff_but">
+                                <property name="icon-name">media-playlist-shuffle</property>
+                                <property name="can-focus">False</property>
+                              </object>
+                            </child>
+                          </object>
+                        </child>
+                        <child>
+                          <object class="GtkMenuButton" id="_sub_track">
+                            <property name="can-focus">False</property>
+                            <property name="icon-name">media-view-subtitles-symbolic</property>
+                            <property name="sensitive">False</property>
+                            <property name="margin-start">8</property>
+                            <property name="direction">up</property>
+                            <property name="popover">
+                              <object class="GtkPopover"></object>
+                            </property>
+                          </object>
+                        </child>
+                        <child>
+                          <object class="GtkStack" id="_lyr_stack">
+                            <property name="margin-start">7</property>
+                            <child>
+                              <object class="GtkStackPage">
+                                <property name="child">
+                                  <object class="GtkButton" id="_karaoke_but">
+                                    <property name="can-focus">False</property>
+                                    <property name="icon-name">audio-input-microphone</property>
+                                  </object>
+                                </property>
+                              </object>
+                            </child>
+                            <child>
+                              <object class="GtkStackPage">
+                                <property name="child">
+                                  <object class="GtkSpinner" id="_lyr_spin">
+                                    <property name="height-request">32</property>
+                                  </object>
+                                </property>
+                              </object>
+                            </child>
+                          </object>
+                        </child>
+                      </object>
+                    </child>
+                  </object>
+                </child>
+              </object>
+            </child>
           </object>
         </child>
       </object>

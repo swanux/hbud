@@ -5,7 +5,7 @@ import gi, locale, os, gettext, sys
 gi.require_version('Gtk', '4.0')
 gi.require_version('Adw', '1')
 gi.require_version('Gst', '1.0')
-from gi.repository import Gtk, Gio, GLib, Pango, Adw, Gst
+from gi.repository import Gtk, Gio, GLib, Adw, Gst
 from hbud import constants as cn
 
 APP = cn.App.application_id
@@ -20,6 +20,7 @@ gettext.textdomain(APP)
 resource_data = Gio.Resource.load("io.github.swanux.hbud.gresource")
 Gio.resources_register(resource_data)
 
+
 @Gtk.Template(resource_path='/io/github/swanux/hbud/ui/trackbox.ui')
 class TrackBox(Adw.ActionRow):
     __gtype_name__ = 'TrackBox'
@@ -27,6 +28,8 @@ class TrackBox(Adw.ActionRow):
     _artist_label = Gtk.Template.Child()
     _year_label = Gtk.Template.Child()
     _length_label = Gtk.Template.Child()
+    _right_click = Gtk.Template.Child()
+    _left_click = Gtk.Template.Child()
     def __init__(self, title, artist, id, year, length, album):
         super().__init__()
         self.set_name(f"trackbox_{id}")
@@ -36,6 +39,7 @@ class TrackBox(Adw.ActionRow):
         formatted = title.replace("&", "&amp;")
         self.set_title(f"<b>{formatted}</b>")
         self.set_subtitle(album.replace("&", "&amp;"))
+
 
 @Gtk.Template(resource_path='/io/github/swanux/hbud/ui/mainstack.ui')
 class MainStack(Gtk.Stack):
@@ -58,6 +62,7 @@ class MainStack(Gtk.Stack):
     _rd_artist = Gtk.Template.Child()
     _rd_year = Gtk.Template.Child()
     def __init__(self): super().__init__()
+
 
 @Gtk.Template(resource_path='/io/github/swanux/hbud/ui/prefwin.ui')
 class PrefWin(Adw.PreferencesWindow):
@@ -98,6 +103,7 @@ class PrefWin(Adw.PreferencesWindow):
             if x != None: icon = "object-select-symbolic"
             else: icon = "process-stop-symbolic"
             self.present_codecs[c][1].set_from_icon_name(icon)
+
 
 @Gtk.Template(resource_path='/io/github/swanux/hbud/ui/mainwindow.ui')
 class MainWindow(Adw.Window):
@@ -144,8 +150,7 @@ class MainWindow(Adw.Window):
         menu_item = Gio.MenuItem.new(_('Edit metadata'), "app.edit")
         gself.menu.append_item(menu_item)
         gself.menu.freeze()
-        gself.prefwin = PrefWin()
-        gself.prefwin.set_transient_for(self)
+
 
 @Gtk.Template(resource_path='/io/github/swanux/hbud/ui/sub2.ui')
 class Sub2(Adw.Window):
@@ -162,6 +167,7 @@ class Sub2(Adw.Window):
     _magi_but = Gtk.Template.Child()
     _sav_but = Gtk.Template.Child()
     def __init__(self): super().__init__()
+
 
 @Gtk.Template(resource_path='/io/github/swanux/hbud/ui/sub.ui')
 class Sub(Adw.Window):
@@ -181,8 +187,6 @@ class Sub(Adw.Window):
     _label2 = Gtk.Template.Child()
     _label3 = Gtk.Template.Child()
     def __init__(self): super().__init__()
-
-
 
 
 class UI(Adw.Application):
@@ -222,6 +226,8 @@ class UI(Adw.Application):
         self.header = Adw.HeaderBar()
         self.header.set_show_end_title_buttons(True)
         self.window = MainWindow(self)
+        self.prefwin = PrefWin()
+        self.prefwin.set_transient_for(self.window)
         self.sub2.set_transient_for(self.window)
         self.sub2.set_modal(True)
         self.about = Adw.AboutWindow(application_name=cn.App.application_name, version=self.build_version, copyright=f"Copyright © {cn.App.app_years}", issue_url=cn.App.help_url, license_type=Gtk.License.GPL_3_0, developer_name="Dániel Kolozsi", developers=["Dániel Kolozsi"], designers=["Seh", "Dániel Kolozsi"], translator_credits=_("Dániel Kolozsi"), application_icon=cn.App.application_id, comments=cn.App.about_comments, website=cn.App.main_url, transient_for=self.window, release_notes=cn.App.release_notes, default_height=450)

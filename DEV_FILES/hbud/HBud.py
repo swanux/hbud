@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-import gi, srt, azapi, json, os, sys, gettext, locale, acoustid, musicbrainzngs, subprocess#, ctypes
+import gi, srt, azapi, json, os, sys, gettext, locale, acoustid, musicbrainzngs, subprocess
 from concurrent import futures
 from time import sleep, time
 from operator import itemgetter
@@ -196,7 +196,7 @@ class Main(helper.UI):
             self.popover.set_autohide(True)
             self.popover.set_parent(widget.get_widget())
             self.popover.popup()
-        else:
+        elif widget.get_button() == 1:
             self.tnum = int(widget.get_widget().get_name().replace("trackbox_", ""))
             tools.themer(self.provider, self.window, self.color, self.tnum)
             self.on_next("clickMode")
@@ -340,13 +340,8 @@ class Main(helper.UI):
                         if name != "append" or self.playlist[i]["widget"] == None:
                             trBox = helper.TrackBox(item["title"].replace("&", "&amp;"), item["artist"], i, item["year"], item["length"], item["album"])
                             self.playlist[i]["widget"] = trBox
-                            left_click = Gtk.GestureClick.new()
-                            trBox.add_controller(left_click)
-                            left_click.connect("pressed", self.highlight)
-                            right_click = Gtk.GestureClick.new()
-                            right_click.set_button(3)
-                            trBox.add_controller(right_click)
-                            right_click.connect("pressed", self.highlight)
+                            trBox._right_click.connect("pressed", self.highlight)
+                            trBox._left_click.connect("pressed", self.highlight)
                             self.load_cover(item["uri"], trBox.image)
                         if name == "modular" and i == self.ednum: GLib.idle_add(self.supBox.insert_child_after, trBox, self.playlist[i-1]["widget"])
                     if name != "modular" and trBox != None: self.supBox.append(trBox)
@@ -852,7 +847,7 @@ class Main(helper.UI):
                 if self.audioPipe.get_state(1)[1] == Gst.State.NULL: return
                 self.player, self.nowIn = self.audioPipe, "audio"
             else:
-                if self.audioPipe.get_state(1)[1] == Gst.State.NULL: return
+                if self.videoPipe.get_state(1)[1] == Gst.State.NULL: return
                 self.player, self.nowIn = self.videoPipe, "video"
         else:
             try: self.url, self.nowIn, self.player = "file://"+self.playlist[self.tnum]["uri"], "audio", self.audioPipe
@@ -1399,5 +1394,3 @@ app.connect('activate', app.on_activate)
 app.run(None)
 
 # GTK_DEBUG=interactive
-# top | grep xy
-# to debug

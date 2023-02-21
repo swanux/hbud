@@ -6,6 +6,16 @@
   <template class="TrackBox" parent="AdwActionRow">
     <property name="hexpand">True</property>
     <property name="margin-end">15</property>
+    <child>
+      <object class="GtkGestureClick" id="_left_click">
+        <property name="button">1</property>
+      </object>
+    </child>
+    <child>
+      <object class="GtkGestureClick" id="_right_click">
+        <property name="button">3</property>
+      </object>
+    </child>
     <child type="prefix">
       <object class="GtkPicture" id="_cover_image">
       <property name="width-request">65</property>
