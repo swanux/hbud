@@ -11,6 +11,9 @@
       <object class="GtkEventControllerKey" id="_ev_key_main"/>
     </child>
     <child>
+      <object class="GtkEventControllerMotion" id="_main_motion"/>
+    </child>
+    <child>
       <object class="GtkWindowHandle">
         <child>
           <object class="GtkBox">
@@ -94,6 +97,14 @@
                             <property name="draw-value">False</property>
                             <property name="margin-start">6</property>
                             <property name="margin-end">6</property>
+                            <child>
+                              <object class="GtkGestureClick" id="_slider_click">
+                                <!-- <property name="button">3</property> -->
+                              </object>
+                            </child>
+                            <child>
+                              <object class="GtkEventControllerMotion" id="_slide_motion"/>
+                            </child>
                           </object>
                         </child>
                         <child>

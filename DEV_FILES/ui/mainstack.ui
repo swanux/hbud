@@ -71,12 +71,18 @@
               </object>
             </child>
             <child>
-              <object class="GtkBox" id="_playlist_box">
-                <property name="orientation">vertical</property>
+              <object class="GtkScrolledWindow" id="_sup_scroll">
+                <property name="can-focus">False</property>
                 <property name="vexpand">True</property>
                 <property name="hexpand">True</property>
                 <property name="margin-top">10</property>
                 <property name="margin-start">10</property>
+                <child>
+                  <object class="GtkBox" id="_sup_box">
+                    <property name="orientation">vertical</property>
+                    <property name="can-focus">False</property>
+                  </object>
+                </child>
               </object>
             </child>
           </object>
@@ -90,9 +96,23 @@
             <property name="orientation">vertical</property>
             <property name="name">strBox</property>
             <child>
-              <object class="GtkOverlay" id="_str_overlay">
+              <object class="GtkOverlay">
                 <property name="hexpand">True</property>
                 <property name="vexpand">True</property>
+                <child>
+                  <object class="GtkPicture" id="_video_picture">
+                    <property name="name">videosink</property>
+                    <child>
+                      <object class="GtkGestureClick" id="_video_click"/>
+                    </child>
+                  </object>
+                </child>
+                <child type="overlay">
+                  <object class="GtkLabel" id="_subtitles">
+                    <property name="name">thetitle</property>
+                    <property name="valign">end</property>
+                  </object>
+                </child>
               </object>
             </child>
           </object>

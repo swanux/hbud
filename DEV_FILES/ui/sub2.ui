@@ -5,6 +5,7 @@
 
   <template class="Sub2" parent="AdwWindow">
     <property name="name">sub2</property>
+    <property name="modal">True</property>
     <property name="title" translatable="yes">HBud - Metadata editor</property>
     <property name="resizable">False</property>
     <property name="width-request">500</property>

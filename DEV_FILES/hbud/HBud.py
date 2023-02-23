@@ -3,7 +3,7 @@
 
 import gi, srt, azapi, json, os, sys, gettext, locale, acoustid, musicbrainzngs, subprocess
 from concurrent import futures
-from time import sleep, time
+from time import time
 from operator import itemgetter
 from collections import deque
 from datetime import timedelta
@@ -14,9 +14,9 @@ gi.require_version('Gtk', '4.0')
 gi.require_version('Gst', '1.0')
 gi.require_version('Adw', '1')
 from gi.repository import Gtk, GLib, GdkPixbuf, Gdk, Adw, Gio, Gst
-from hbud import letrasapi, musixapi, helper, tools
+from hbud import letrasapi, musixapi, frontend, tools
 
-class Main(helper.UI):
+class Main(frontend.UI):
     def __init__(self):
         super().__init__()
     
@@ -79,12 +79,10 @@ class Main(helper.UI):
         self.canwriteconf = True
 
         self.sub._off_but.connect("clicked", self.on_off_but_clicked)
-        click = Gtk.GestureClick.new()
-        click.connect("pressed", self.on_slider_grab)
-        self.window._slider.add_controller(click)
 
         self.hwa_change()
 
+        self.adj = self.window._main_stack._sup_scroll.get_vadjustment()
         GLib.idle_add(self.window._sub_track.hide)
         self.window.connect('notify', self._on_notify)
         self.sub.connect('notify', self._on_notify)
@@ -146,6 +144,7 @@ class Main(helper.UI):
         self.window._shuff_but.connect("clicked", self.on_shuffBut_clicked)
         self.window._karaoke_but.connect("clicked", self.on_karaoke_activate)
         self.window._drop_but.connect("clicked", self.on_dropped)
+        self.window._slider_click.connect("pressed", self.on_slider_grab)
         self.sub2._magi_but.connect("clicked", self.on_magiBut_clicked)
         self.sub2._ichoser.connect("clicked", self.on_iChoser_clicked)
         self.sub2._sav_but.connect("clicked", self.on_save)
@@ -154,6 +153,7 @@ class Main(helper.UI):
         self.window._main_stack._order_but.connect("clicked", self.on_order_save)
         self.window._main_stack._order_but1.connect("clicked", self.on_clear_order)
         self.window._main_stack._order_but2.connect("clicked", self.on_rescan_order)
+        self.window._main_stack._video_click.connect("pressed", self.on_playBut_clicked)
         self.sub._ye_but.connect("clicked", self.on_correct_lyr)
         self.sub._no_but.connect("clicked", self.on_wrong_lyr)
 
@@ -171,7 +171,11 @@ class Main(helper.UI):
         self.prefwin._lite_switch.connect("state-set", self.config_write)
         self.prefwin._hwa_switch.connect("state-set", self.config_write)
 
-        self.bg_processes()
+        self.window._slider.connect("value-changed", self.on_slider_grabbed)
+        self.window._bottom_motion.connect("enter", self.mouse_enter)
+        self.window._bottom_motion.connect("leave", self.mouse_leave)
+        self.window._slide_motion.connect("motion", self.sliding)
+        self.window._main_motion.connect("motion", self.mouse_moving)
     
     def prev_next_rel(self, *_):
         if self.useMode == self.nowIn and self.useMode == "video":
@@ -233,7 +237,7 @@ class Main(helper.UI):
 
     def on_clear_order(self, _):
         tmname = self.folderPath.replace("/", ">")
-        os.system(f"rm '{self.confDir}/{tmname}.saved.order'")
+        os.unlink(f"'{self.confDir}/{tmname}.saved.order'")
         self.window._main_toast.add_toast(Adw.Toast.new(self._('Cleared saved order successfully!')))
 
     def on_rescan_order(self, _): GLib.idle_add(self.loader, self.folderPath, True)
@@ -251,20 +255,13 @@ class Main(helper.UI):
     def createPipeline(self, mode):
         if mode == "local":
             self.videoPipe, self.audioPipe = Gst.ElementFactory.make("playbin3"), Gst.ElementFactory.make("playbin3")
-            self.videosink = Gtk.Picture.new()
             sink = Gst.ElementFactory.make("gtk4paintablesink", "sink")
             paintable = sink.get_property("paintable")
             video_sink = Gst.ElementFactory.make("glsinkbin", "video-sink")
             video_sink.set_property("sink", sink)
             self.videoPipe.set_property("video-sink", video_sink)
             Gst.util_set_object_arg(self.videoPipe, "flags", "video+audio+soft-volume+buffering+deinterlace+soft-colorbalance")
-            self.videosink.set_paintable(paintable)
-            self.videosink.set_name("videosink")
-            click = Gtk.GestureClick.new()
-            self.videosink.add_controller(click)
-            click.connect("pressed", self.on_playBut_clicked)
-            self.window._main_stack._str_overlay.set_child(self.videosink)
-            self.window._main_stack._str_overlay.add_overlay(self.theTitle)
+            self.window._main_stack._video_picture.set_paintable(paintable)
             bus = self.videoPipe.get_bus()
             bus.add_signal_watch()
             bus.connect("message", self.on_message)
@@ -275,7 +272,6 @@ class Main(helper.UI):
     def on_dropped(self, button):
         if self.window._drop_but.get_visible() == True:
             if self.window._main_stack._top_box.get_visible() == False:
-                print("lol?")
                 GLib.idle_add(self.window._drop_but.set_icon_name, "go-up")
                 GLib.idle_add(self.window._main_stack._top_box.show)
                 self.window._main_stack._search_play.grab_focus()
@@ -307,13 +303,14 @@ class Main(helper.UI):
     
     def neo_playlist_gen(self, name="", srBox=None, dsBox=None, src=0, dst=0):
         print("neo start", time())
+        GLib.timeout_add(0, self.window._main_stack._sup_box.hide)
         if self.lite == True:
             self.tnum = 0
             self.on_next("clickMode")
             return
         if self.lite == False:
             if name == "reorder":
-                self.supBox.reorder_child_after(srBox, dsBox)
+                self.window._main_stack._sup_box.reorder_child_after(srBox, dsBox)
                 for i, item in enumerate(self.playlist):
                     item["widget"].set_name(f"trackbox_{i}")
                 if self.tnum == src or self.tnum == dst:
@@ -326,10 +323,10 @@ class Main(helper.UI):
                 tools.themer(self.provider, self.window, self.color, self.tnum)
             else:
                 if name != "modular" and name != "append":
-                    try: self.window._main_stack._playlist_box.remove(self.window._main_stack._playlist_box.get_first_child())
-                    except: print("no child")
-                    self.supBox = Gtk.Box.new(1, 0)
-                    self.supBox.set_can_focus(False)
+                    child = self.window._main_stack._sup_box.get_first_child()
+                    while child is not None:
+                        self.window._main_stack._sup_box.remove(child)
+                        child = self.window._main_stack._sup_box.get_first_child()
                 for i, item in enumerate(self.playlist):
                     trBox = None
                     if name == "shuff_2nd_stage":
@@ -338,21 +335,14 @@ class Main(helper.UI):
                             trBox.set_name(f"trackbox_{i}")
                     elif name != "modular" or i == self.ednum:
                         if name != "append" or self.playlist[i]["widget"] == None:
-                            trBox = helper.TrackBox(item["title"].replace("&", "&amp;"), item["artist"], i, item["year"], item["length"], item["album"])
+                            trBox = frontend.TrackBox(item["title"].replace("&", "&amp;"), item["artist"], i, item["year"], item["length"], item["album"])
                             self.playlist[i]["widget"] = trBox
                             trBox._right_click.connect("pressed", self.highlight)
                             trBox._left_click.connect("pressed", self.highlight)
                             self.load_cover(item["uri"], trBox.image)
-                        if name == "modular" and i == self.ednum: GLib.idle_add(self.supBox.insert_child_after, trBox, self.playlist[i-1]["widget"])
-                    if name != "modular" and trBox != None: self.supBox.append(trBox)
+                        if name == "modular" and i == self.ednum: self.window._main_stack._sup_box.insert_child_after(trBox, self.playlist[i-1]["widget"])
+                    if name != "modular" and trBox != None: self.window._main_stack._sup_box.append(trBox)
                 if name != "modular" and name != "append":
-                    yetScroll = Gtk.ScrolledWindow()
-                    yetScroll.set_can_focus(False)
-                    yetScroll.set_vexpand(True)
-                    yetScroll.set_hexpand(True)
-                    yetScroll.set_child(self.supBox)
-                    GLib.idle_add(self.window._main_stack._playlist_box.append, yetScroll)
-                    self.adj = yetScroll.get_vadjustment()
                     self.playlistPlayer = True
                     if self.title != None:
                         num = 0
@@ -362,6 +352,7 @@ class Main(helper.UI):
                         self.tnum = num
                         tools.themer(self.provider, self.window, self.color, self.tnum)
                     GLib.idle_add(self.window._drop_but.show)
+        GLib.idle_add(self.window._main_stack._sup_box.show)
         print("neo end", time())
 
     def metas(self, location, extrapath, misc=False):
@@ -380,7 +371,7 @@ class Main(helper.UI):
         print("loader start", time())
         self.pltmp = []
         if self.clickedE:
-            self.metas(self.clickedE, self.clickedE.split("/")[-1])
+            self.metas(self.clickedE, GLib.path_get_basename(self.clickedE))
         else:
             pltmpin = os.listdir(path)
             for i in pltmpin:
@@ -411,7 +402,7 @@ class Main(helper.UI):
         if self.useMode == "audio": self.fcconstructer(self._("Please choose a folder"), Gtk.FileChooserAction.SELECT_FOLDER, "Music", self.window)
         else: self.fcconstructer(self._("Please choose a video file"), Gtk.FileChooserAction.OPEN, "Videos", self.window)
 
-    def on_response(self, dialog, response, _dialog, ftype):
+    def on_response(self, dialog, response, _, ftype):
         if response == Gtk.ResponseType.ACCEPT:
             if ftype == "Music":
                 self.folderPath = dialog.get_files()[0].get_path()
@@ -473,7 +464,7 @@ class Main(helper.UI):
         if os.path.isfile(f"{self.confDir}/{tmname}.saved.order"):
             self.on_order_save()
         self.sub2_hide("xy")
-        GLib.idle_add(self.supBox.remove, self.playlist[self.ednum]["widget"])
+        GLib.idle_add(self.window._main_stack._sup_box.remove, self.playlist[self.ednum]["widget"])
         self.neo_playlist_gen("modular")
 
     def sub2_hide(self, *_):
@@ -548,7 +539,7 @@ class Main(helper.UI):
                     break
                 if artist != None and title != None and i <= 10:
                     tmpData = musicbrainzngs.get_recording_by_id(rid, includes=["releases"])["recording"]["release-list"]
-                    sleep(1.1)
+                    GLib.usleep(1100000)
                     i += 1
                     if len(tmpData) > 2:
                         tmpDir = {"score": score, "rid": rid, "title": title, "artist": artist, 'year' : int(tmpData[0]["date"].split("-")[0]), "album" : tmpData[0]["title"], "album_ids" : [d['id'] for d in tmpData if 'id' in d]}
@@ -578,7 +569,7 @@ class Main(helper.UI):
             print("Trying to get cover: "+str(i))
             try:
                 release = musicbrainzngs.get_image_front(data[5][i], self.cover_size)
-                sleep(1.2)
+                GLib.usleep(1200000)
                 print("Cover found")
                 break
             except: release = None
@@ -595,7 +586,7 @@ class Main(helper.UI):
         try: self.popover.unparent()
         except: print("huh")
         torem = self.playlist[self.ednum]["widget"]
-        GLib.idle_add(self.supBox.remove, torem)
+        GLib.idle_add(self.window._main_stack._sup_box.remove, torem)
         self.playlist.remove(self.playlist[self.ednum])
         for i, item in enumerate(self.playlist):
             item["widget"].set_name(f"trackbox_{i}")
@@ -819,7 +810,7 @@ class Main(helper.UI):
         submitted.add_done_callback(self.subdone)
 
     def local_sub(self, videofile):
-        filename = videofile.split("/")[-1]
+        filename = GLib.path_get_basename(videofile)
         try: neo_tmpdbnow = os.listdir(videofile.replace(filename, "")+"misc/")
         except: neo_tmpdbnow = []
         tmpdbnow = os.listdir(videofile.replace(filename, ""))
@@ -876,7 +867,7 @@ class Main(helper.UI):
         if self.nowIn == "video" and misc != "continue": self.subtitle_search_on_play()
 
     def on_playBut_clicked(self, button, *_):
-        if self.window._play_but.is_visible() == False and self.videosink.is_visible() == False: return
+        if self.window._play_but.is_visible() == False and self.window._main_stack._video_picture.is_visible() == False: return
         if self.useMode == "audio" and self.nowIn != "video" and self.autoscroll == True and self.lite == False:
             self.visnum = 0
             for i, item in enumerate(self.playlist):
@@ -980,20 +971,8 @@ class Main(helper.UI):
             sizThread = futures.ThreadPoolExecutor(max_workers=1)
             sizThread.submit(self.different_resize, emitter)
 
-    def bg_processes(self):
-        motion = Gtk.EventControllerMotion.new()
-        self.window._slider.add_controller(motion)
-        self.window._slider.connect("value-changed", self.on_slider_grabbed)
-        self.window._bottom_motion.connect("enter", self.mouse_enter)
-        self.window._bottom_motion.connect("leave", self.mouse_leave)
-        motion.connect("motion", self.sliding)
-
-        motion = Gtk.EventControllerMotion.new()
-        self.window.add_controller(motion)
-        motion.connect("motion", self.mouse_moving)
-
     def different_resize(self, emitter):
-        sleep(0.3)
+        GLib.usleep(300000)
         x, y = emitter.get_size(Gtk.Orientation.HORIZONTAL), emitter.get_size(Gtk.Orientation.VERTICAL)
         if emitter == self.window: self.size3, self.size4 = self.sSize*y, float(f"0.0{int(self.sMarg)}")*y
         else: self.size, self.size2 = 50*x, 21.4285714*x
@@ -1026,7 +1005,7 @@ class Main(helper.UI):
                 except: artist = self.playlist[self.tnum]["artist"]
                 dbnow, neo_dbnow = [], []
                 if self.clickedE:
-                    folPathClick = self.clickedE.replace(self.clickedE.split("/")[-1], "")
+                    folPathClick = GLib.path_get_dirname(self.clickedE)
                     tmpdbnow = os.listdir(folPathClick)
                 else:
                     tmpdbnow = os.listdir(self.folderPath)
@@ -1043,7 +1022,7 @@ class Main(helper.UI):
                         neo_dbnow.append(f"{self.folderPath}/misc/{x}")
                 self.sub.set_title(f'{track} - {artist}')
                 tmp = os.path.splitext(self.playlist[self.tnum]["uri"])[0]
-                neo_tmp = os.path.splitext(self.playlist[self.tnum]["uri"].split("/")[-1])[0]
+                neo_tmp = os.path.splitext(GLib.path_get_basename(self.playlist[self.tnum]["uri"]))[0]
                 if f"{tmp}.srt" not in dbnow and f"{self.folderPath}/misc/{neo_tmp}.srt" not in neo_dbnow:
                     GLib.idle_add(self.sub._off_but.hide)
                     GLib.idle_add(self.sub._off_lab.hide)
@@ -1165,7 +1144,7 @@ class Main(helper.UI):
                 if self.hardReset == True: return
                 if self.keepReset == True: start = time()
                 elif self.resete == True: start, self.resete = time(), False    
-                sleep(0.001)
+                GLib.usleep(1000)
             if self.fulle == True:
                 cursor = Gdk.Cursor.new_from_name('none')
                 self.window.set_cursor(cursor)
@@ -1175,24 +1154,24 @@ class Main(helper.UI):
             while time() - start < 0.3:
                 if self.hardreset2 == True: return
                 start = self.resete2
-                sleep(0.001)
+                GLib.usleep(1000)
             self.on_slider_seek()
             self.clocking = False
 
     def subShow(self, subtitle):
         while self.needSub == True:
-            sleep(0.001)
+            GLib.usleep(1000)
             for line in subtitle:
                 if self.position >= line.start.total_seconds() and self.position <= line.end.total_seconds():
-                    if self.bge == True: GLib.idle_add(self.theTitle.set_markup, f"<span size='{int(self.size3)}' color='white' background='black'>{line.content}</span>")
-                    else: GLib.idle_add(self.theTitle.set_markup, f"<span size='{int(self.size3)}' color='white'>{line.content}</span>")
-                    self.theTitle.set_margin_bottom(self.size4)
-                    GLib.idle_add(self.theTitle.show)
+                    if self.bge == True: GLib.idle_add(self.window._main_stack._subtitles.set_markup, f"<span size='{int(self.size3)}' color='white' background='black'>{line.content}</span>")
+                    else: GLib.idle_add(self.window._main_stack._subtitles.set_markup, f"<span size='{int(self.size3)}' color='white'>{line.content}</span>")
+                    self.window._main_stack._subtitles.set_margin_bottom(self.size4)
+                    GLib.idle_add(self.window._main_stack._subtitles.show)
                     while self.needSub == True and self.position <= line.end.total_seconds() and self.position >= line.start.total_seconds():
-                        sleep(0.001)
+                        GLib.usleep(1000)
                         pass
-                    GLib.idle_add(self.theTitle.hide)
-                    GLib.idle_add(self.theTitle.set_label, "")
+                    GLib.idle_add(self.window._main_stack._subtitles.hide)
+                    GLib.idle_add(self.window._main_stack._subtitles.set_label, "")
 
     def slideShow(self, subtitle):
         self.lenlist = len(subtitle)-1
@@ -1277,7 +1256,7 @@ class Main(helper.UI):
             try: GLib.idle_add(self.sub._label1.set_markup, f"<span size='{self.size}' color='green'>{done}</span> <span size='{self.size}' color='green'> {xy.content.replace('#', '')}</span> <span size='{self.size}'> {leftover}</span>")
             except: GLib.idle_add(self.sub._label1.set_markup, f"<span size='{self.size}' color='green'>{done}</span> <span size='{self.size}' color='green'> {xy}</span> <span size='{self.size}'> {leftover}</span>")
             while not self.stopKar:
-                sleep(0.01)
+                GLib.usleep(10000)
                 if it > maxit:
                     if self.position >= xy.end.total_seconds()+self.offset/1000 and self.position >= 0.5: break
                 else:
@@ -1331,11 +1310,9 @@ class Main(helper.UI):
             elif uid == 11:
                 self.lite = self.prefwin._lite_switch.get_active()
                 parser.set('misc', 'minimal_mode', str(self.lite))
-                title = Adw.WindowTitle()
-                title.set_title("HBud")
                 if self.lite == False:
                     GLib.idle_add(self.window._head_box.set_visible, True)
-                    title.set_subtitle(self.build_version)
+                    GLib.idle_add(self.window._title.set_subtitle, self.build_version)
                     GLib.idle_add(self.window._main_stack.set_visible_child, self.window._main_stack._placeholder)
                     GLib.idle_add(self.window.set_default_size, 600, 450)
                     GLib.idle_add(self.window._main_header.remove_css_class, "flat")
@@ -1345,6 +1322,7 @@ class Main(helper.UI):
                 else:
                     GLib.idle_add(self.window._head_box.set_visible, False)
                     self.window._loc_but.set_active(True)
+                    GLib.idle_add(self.window._title.set_subtitle, "")
                     GLib.idle_add(self.window._main_stack.set_visible_child, self.window._main_stack._rd_box)
                     GLib.idle_add(self.window.set_default_size, 1, 1)
                     GLib.idle_add(self.window._main_header.add_css_class, "flat")
@@ -1354,7 +1332,6 @@ class Main(helper.UI):
                         GLib.idle_add(self.window._main_stack._rd_year.set_text, str(self.playlist[self.tnum]["year"]))
                     except: pass
                     self.window.set_resizable(False)
-                GLib.idle_add(self.window._main_header.set_title_widget, title)
                 GLib.idle_add(self.on_pref_close)
                 GLib.idle_add(self.window.hide)
                 GLib.idle_add(self.window.present)

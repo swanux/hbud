@@ -48,14 +48,17 @@ class MainStack(Gtk.Stack):
     _combo_sort = Gtk.Template.Child()
     _placeholder = Gtk.Template.Child()
     _top_box = Gtk.Template.Child()
-    _playlist_box = Gtk.Template.Child()
+    _sup_box = Gtk.Template.Child()
+    _sup_scroll = Gtk.Template.Child()
     _search_play = Gtk.Template.Child()
     _order_but = Gtk.Template.Child()
     _order_but1 = Gtk.Template.Child()
     _order_but2 = Gtk.Template.Child()
     # Page 2
     _str_box = Gtk.Template.Child()
-    _str_overlay = Gtk.Template.Child()
+    _video_picture = Gtk.Template.Child()
+    _video_click = Gtk.Template.Child()
+    _subtitles = Gtk.Template.Child()
     # Page 3
     _rd_box = Gtk.Template.Child()
     _rd_title = Gtk.Template.Child()
@@ -119,6 +122,8 @@ class MainWindow(Adw.Window):
     _drop_but = Gtk.Template.Child()
     _bottom = Gtk.Template.Child()
     _bottom_motion = Gtk.Template.Child()
+    _main_motion = Gtk.Template.Child()
+    _slide_motion = Gtk.Template.Child()
     _slider = Gtk.Template.Child()
     _label = Gtk.Template.Child()
     _label_end = Gtk.Template.Child()
@@ -132,10 +137,10 @@ class MainWindow(Adw.Window):
     _lyr_spin = Gtk.Template.Child()
     _sub_track = Gtk.Template.Child()
     _prefbut = Gtk.Template.Child()
-    def __init__(self, gself):
+    _slider_click = Gtk.Template.Child()
+    def __init__(self):
         super().__init__()
         _ = gettext.gettext
-
         menu = Gio.Menu()
         menu_item = Gio.MenuItem.new(_('Preferences'), "app.pref")
         menu.append_item(menu_item)
@@ -143,13 +148,6 @@ class MainWindow(Adw.Window):
         menu.append_item(menu_item)
         menu.freeze()
         self._prefbut.set_menu_model(menu)
-
-        gself.menu = Gio.Menu()
-        menu_item = Gio.MenuItem.new(_('Delete from current playqueue'), "app.delete")
-        gself.menu.append_item(menu_item)
-        menu_item = Gio.MenuItem.new(_('Edit metadata'), "app.edit")
-        gself.menu.append_item(menu_item)
-        gself.menu.freeze()
 
 
 @Gtk.Template(resource_path='/io/github/swanux/hbud/ui/sub2.ui')
@@ -220,16 +218,16 @@ class UI(Adw.Application):
         self.choser_window.set_content(handle)
         self.choser_window.set_title(_("Which one is correct?"))
         self.seeking = False
-        self.theTitle = Gtk.Label.new()
-        self.theTitle.set_name("thetitle")
-        self.theTitle.set_valign(Gtk.Align.END)
-        self.header = Adw.HeaderBar()
-        self.header.set_show_end_title_buttons(True)
-        self.window = MainWindow(self)
+        self.window = MainWindow()
         self.prefwin = PrefWin()
         self.prefwin.set_transient_for(self.window)
         self.sub2.set_transient_for(self.window)
-        self.sub2.set_modal(True)
+        self.menu = Gio.Menu()
+        menu_item = Gio.MenuItem.new(_('Delete from current playqueue'), "app.delete")
+        self.menu.append_item(menu_item)
+        menu_item = Gio.MenuItem.new(_('Edit metadata'), "app.edit")
+        self.menu.append_item(menu_item)
+        self.menu.freeze()
         self.about = Adw.AboutWindow(application_name=cn.App.application_name, version=self.build_version, copyright=f"Copyright © {cn.App.app_years}", issue_url=cn.App.help_url, license_type=Gtk.License.GPL_3_0, developer_name="Dániel Kolozsi", developers=["Dániel Kolozsi"], designers=["Seh", "Dániel Kolozsi"], translator_credits=_("Dániel Kolozsi"), application_icon=cn.App.application_id, comments=cn.App.about_comments, website=cn.App.main_url, transient_for=self.window, release_notes=cn.App.release_notes, default_height=450)
         self.switchDict = {"locBut" : [self.window._main_stack._placeholder, "audio-input-microphone", "audio", self.window._str_but], "strBut" : [self.window._main_stack._str_box, "view-fullscreen", "video", self.window._loc_but]}
         self.provider, self.settings = Gtk.CssProvider(), Adw.StyleManager.get_default()
