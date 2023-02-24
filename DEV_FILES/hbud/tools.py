@@ -7,7 +7,7 @@ from gi.repository import Gtk, Gdk, GLib
 from configparser import ConfigParser
 
 def themer(provider, window, c, w=""):
-        css = """picture {
+        css = """image {
             border-radius: 10px;
         }
         #videosink {

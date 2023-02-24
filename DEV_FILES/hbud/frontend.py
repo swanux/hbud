@@ -123,7 +123,6 @@ class MainWindow(Adw.Window):
     _bottom = Gtk.Template.Child()
     _bottom_motion = Gtk.Template.Child()
     _main_motion = Gtk.Template.Child()
-    _slide_motion = Gtk.Template.Child()
     _slider = Gtk.Template.Child()
     _label = Gtk.Template.Child()
     _label_end = Gtk.Template.Child()
@@ -137,10 +136,14 @@ class MainWindow(Adw.Window):
     _lyr_spin = Gtk.Template.Child()
     _sub_track = Gtk.Template.Child()
     _prefbut = Gtk.Template.Child()
-    _slider_click = Gtk.Template.Child()
     def __init__(self):
         super().__init__()
         _ = gettext.gettext
+        controllers = self._slider.observe_controllers()
+        for controller in controllers:
+            if isinstance(controller, gi.repository.Gtk.GestureClick):
+                self._slider_click = controller
+
         menu = Gio.Menu()
         menu_item = Gio.MenuItem.new(_('Preferences'), "app.pref")
         menu.append_item(menu_item)

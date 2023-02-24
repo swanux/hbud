@@ -95,10 +95,11 @@ class Main(frontend.UI):
         self.window._main_stack._top_box.hide()
         self.window._drop_but.hide()
         if self.lite == True:
-            GLib.idle_add(self.window._head_box.set_visible, False)
+            GLib.idle_add(self.window._head_box.hide)
             GLib.idle_add(self.window._main_stack.set_visible_child, self.window._main_stack._rd_box)
             GLib.idle_add(self.window.set_default_size, 1, 1)
             GLib.idle_add(self.window._main_header.add_css_class, "flat")
+            GLib.idle_add(self.window._label_end.hide)
             self.window.set_resizable(False)
         self.window._loc_but.set_active(True)
         if self.clickedE:
@@ -139,12 +140,9 @@ class Main(frontend.UI):
         self.window._play_but.connect("clicked", self.on_playBut_clicked)
         self.window._prev_but.connect("clicked", self.on_prev)
         self.window._next_but.connect("clicked", self.on_next)
-        self.window._prev_but.connect("clicked", self.prev_next_rel)
-        self.window._next_but.connect("clicked", self.prev_next_rel)
         self.window._shuff_but.connect("clicked", self.on_shuffBut_clicked)
         self.window._karaoke_but.connect("clicked", self.on_karaoke_activate)
         self.window._drop_but.connect("clicked", self.on_dropped)
-        self.window._slider_click.connect("pressed", self.on_slider_grab)
         self.sub2._magi_but.connect("clicked", self.on_magiBut_clicked)
         self.sub2._ichoser.connect("clicked", self.on_iChoser_clicked)
         self.sub2._sav_but.connect("clicked", self.on_save)
@@ -171,12 +169,16 @@ class Main(frontend.UI):
         self.prefwin._lite_switch.connect("state-set", self.config_write)
         self.prefwin._hwa_switch.connect("state-set", self.config_write)
 
+
+        self.window._slider_click.connect("released", self.on_slider_seek)
         self.window._slider.connect("value-changed", self.on_slider_grabbed)
+        self.window._slider_click.connect("pressed", self.on_slider_grab)
         self.window._bottom_motion.connect("enter", self.mouse_enter)
         self.window._bottom_motion.connect("leave", self.mouse_leave)
-        self.window._slide_motion.connect("motion", self.sliding)
         self.window._main_motion.connect("motion", self.mouse_moving)
-    
+        self.window._prev_but.connect("clicked", self.prev_next_rel)
+        self.window._next_but.connect("clicked", self.prev_next_rel)
+
     def prev_next_rel(self, *_):
         if self.useMode == self.nowIn and self.useMode == "video":
             if not self.clocking:
@@ -595,45 +597,49 @@ class Main(frontend.UI):
             if item["hidden"] == False and i<self.tnum: self.visnum += 1
         if self.tnum == self.ednum: self.play()
 
-    def on_next(self, button):
+    def on_next(self, arg):
         self.stopKar = True
-        if self.nowIn == self.useMode or "clickMode" in button:
-            if self.nowIn == "audio" or "clickMode" in button:
-                if "clickMode" not in button:
+        if self.nowIn == self.useMode or "clickMode" in arg:
+            if self.nowIn == "audio" or "clickMode" in arg:
+                if "clickMode" not in arg:
                     self.tnum += 1
                     if self.tnum >= len(self.playlist): self.tnum = 0
                     while self.playlist[self.tnum]["hidden"] == True:
                         self.tnum += 1
                         if self.tnum >= len(self.playlist): self.tnum = 0
-                elif button == "clickMode0": self.tnum = 0
+                elif arg == "clickMode0": self.tnum = 0
                 self.play()
                 if self.sub.get_visible(): self.on_karaoke_activate("xy")
-                if self.useMode == "audio" and button != "clickMode" and self.autoscroll == True and self.lite == False:
+                if self.useMode == "audio" and arg != "clickMode" and self.autoscroll == True and self.lite == False:
                     try: self.adj.set_value(self.visnum*79-self.scroll_val)
                     except: print("nah")
             elif self.nowIn == "video":
                 self.seeking = True
-                self.resete2 = time()
+                if arg != "key": self.resete2 = time()
                 GLib.idle_add(self.window._slider.set_value, self.window._slider.get_value() + 10)
 
     def load_cover(self, mode="", bitMage=""):
         if mode == "meta": self.binary = MediaFile(self.editingFile).art
         elif mode == "brainz": self.binary = bitMage
         else: self.binary = MediaFile(mode.replace('file://', '')).art
-        if not self.binary: tmpLoc = "hbud/icons/track.png"
+        if not self.binary:
+            if mode == "meta" or mode == "brainz":
+                GLib.idle_add(self.sub2._meta_cover.set_from_icon_name, "emblem-music-symbolic")
+            else:
+                GLib.idle_add(bitMage.set_from_icon_name, "emblem-music-symbolic")
         else:
             tmpLoc = f"{self.tmpDir}/cacheCover.jpg"
             f = open(tmpLoc, "wb")
             f.write(self.binary)
             f.close()
-        if mode == "meta" or mode == "brainz":
-            coverBuf = GdkPixbuf.Pixbuf.new_from_file_at_scale(tmpLoc, 100, 100, True)
-            GLib.idle_add(self.sub2._meta_cover.set_pixbuf, coverBuf)
-        else:
-            coverBuf = GdkPixbuf.Pixbuf.new_from_file_at_scale(tmpLoc, 60, 60, True)
-            GLib.idle_add(bitMage.set_pixbuf, coverBuf)
+            if mode == "meta" or mode == "brainz":
+                coverBuf = GdkPixbuf.Pixbuf.new_from_file_at_scale(tmpLoc, 100, 100, True)
+                GLib.idle_add(self.sub2._meta_cover.set_from_pixbuf, coverBuf)
+            else:
+                coverBuf = GdkPixbuf.Pixbuf.new_from_file_at_scale(tmpLoc, 65, 65, True)
+                GLib.idle_add(bitMage.set_from_pixbuf, coverBuf)
 
-    def on_prev(self, *_):
+    def on_prev(self, arg):
         self.stopKar = True
         if self.nowIn == self.useMode:
             if self.nowIn == "audio":
@@ -653,7 +659,7 @@ class Main(frontend.UI):
                     except: print("nah")
             elif self.nowIn == "video":
                 self.seeking = True
-                self.resete2 = time()
+                if arg != "key": self.resete2 = time()
                 GLib.idle_add(self.window._slider.set_value, self.window._slider.get_value() - 10)
 
     def stop(self, arg=False):
@@ -687,20 +693,12 @@ class Main(frontend.UI):
         GLib.timeout_add(500, self.updateSlider)
         GLib.timeout_add(40, self.updatePos)
 
-    def sliding(self, *_): self.resete2 = time()
-
-    def on_slider_grab(self, *_):
-        print("grabbed")
-        self.seeking = True
-        self.resete2 = time()
-        if not self.clocking:
-            self.clocking = True
-            ld_clock = futures.ThreadPoolExecutor(max_workers=1)
-            ld_clock.submit(self.clock, "seek")
+    def on_slider_grab(self, *_): self.seeking = True
     
     def on_slider_grabbed(self, *_):
         current_time = str(timedelta(seconds=round(self.window._slider.get_value())))
         GLib.idle_add(self.window._slider.set_tooltip_text, f"{current_time}")
+
 
     def on_slider_seek(self, *_):
         print("seeked")
@@ -913,11 +911,7 @@ class Main(frontend.UI):
     def on_key_local_release(self, _controller, keyval, *_):
         del _controller
         if self.useMode == self.nowIn and self.useMode == "video":
-            if keyval == 65363 or keyval == 65361:
-                if not self.clocking:
-                    self.clocking = True
-                    ld_clock = futures.ThreadPoolExecutor(max_workers=1)
-                    ld_clock.submit(self.clock, "seek")
+            if keyval == 65363 or keyval == 65361: self.on_slider_seek()
 
     def on_key_local(self, _controller, keyval, _keycode, modifier):
         del _controller, _keycode
@@ -930,8 +924,8 @@ class Main(frontend.UI):
             elif keyval == 32 and self.url: self.on_playBut_clicked(0) # Space
             elif keyval == 65307 or keyval == 65480:
                 if self.useMode == "video": self.on_karaoke_activate(0) # ESC and F11
-            elif keyval == 65363: self.on_next("") # Right
-            elif keyval == 65361: self.on_prev("") # Left
+            elif keyval == 65363: self.on_next("key") # Right
+            elif keyval == 65361: self.on_prev("key") # Left
             elif keyval == 65535 and self.useMode == "audio" and self.lite == False: # Delete
                 self.ednum = self.tnum
                 self.del_cur()
@@ -1311,21 +1305,23 @@ class Main(frontend.UI):
                 self.lite = self.prefwin._lite_switch.get_active()
                 parser.set('misc', 'minimal_mode', str(self.lite))
                 if self.lite == False:
-                    GLib.idle_add(self.window._head_box.set_visible, True)
+                    GLib.idle_add(self.window._head_box.show)
                     GLib.idle_add(self.window._title.set_subtitle, self.build_version)
                     GLib.idle_add(self.window._main_stack.set_visible_child, self.window._main_stack._placeholder)
                     GLib.idle_add(self.window.set_default_size, 600, 450)
                     GLib.idle_add(self.window._main_header.remove_css_class, "flat")
+                    GLib.idle_add(self.window._label_end.show)
                     self.window.set_resizable(True)
                     d_pl = futures.ThreadPoolExecutor(max_workers=4)
                     d_pl.submit(self.neo_playlist_gen)
                 else:
-                    GLib.idle_add(self.window._head_box.set_visible, False)
+                    GLib.idle_add(self.window._head_box.hide)
                     self.window._loc_but.set_active(True)
                     GLib.idle_add(self.window._title.set_subtitle, "")
                     GLib.idle_add(self.window._main_stack.set_visible_child, self.window._main_stack._rd_box)
                     GLib.idle_add(self.window.set_default_size, 1, 1)
                     GLib.idle_add(self.window._main_header.add_css_class, "flat")
+                    GLib.idle_add(self.window._label_end.hide)
                     try:
                         GLib.idle_add(self.window._main_stack._rd_title.set_text, self.playlist[self.tnum]["title"])
                         GLib.idle_add(self.window._main_stack._rd_artist.set_text, self.playlist[self.tnum]["artist"])
