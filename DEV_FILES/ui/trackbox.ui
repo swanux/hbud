@@ -9,7 +9,6 @@
     <child>
       <object class="GtkGestureClick" id="_left_click">
         <property name="button">1</property>
-        <!-- <signal name="pressed" handler="hello_button_clicked"/> -->
       </object>
     </child>
     <child>

@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schemalist>
+  <schema id="io.github.swanux.hbud" path="/io/github/swanux/hbud/">
+    <!-- Window related values -->
+    <key name="width" type="i">
+      <default>600</default>
+    </key>
+    <key name="height" type="i">
+      <default>450</default>
+    </key>
+    <key name="is-maximized" type="b">
+      <default>false</default>
+    </key>
+    <key name="is-fullscreen" type="b">
+      <default>false</default>
+    </key>
+    <!-- Subtitles -->
+    <key name="relative-size" type="i">
+        <default>30</default>
+    </key>
+    <key name="relative-margin" type="i">
+      <default>66</default>
+    </key>
+    <key name="dark-background" type="b">
+      <default>false</default>
+    </key>
+    <!-- Services -->
+    <key name="musixmatch" type="b">
+      <default>true</default>
+    </key>
+    <key name="azlyrics" type="b">
+      <default>true</default>
+    </key>
+    <key name="letrasbr" type="b">
+      <default>true</default>
+    </key>
+    <key name="cover-size" type="s">
+      <default>"500"</default>
+    </key>
+    <!-- Misc -->
+    <key name="autoscroll" type="b">
+      <default>true</default>
+    </key>
+    <key name="positioning" type="i">
+      <default>5</default>
+    </key>
+    <key name="minimal-mode" type="b">
+      <default>false</default>
+    </key>
+    <key name="hwa-enabled" type="b">
+      <default>true</default>
+    </key>
+    <!-- GUI -->
+    <key name="color" type="s">
+      <default>"rgb(0,162,168)"</default>
+    </key>
+    <key name="theme" type="s">
+      <default>"0"</default>
+    </key>
+  </schema>
+</schemalist>
+
+<!-- glib-compile-schemas io.github.swanux.hbud.schemas.xml --target-dir=~/.local/share/glib-2.0/schemas/ -->
+
+<!-- <signal name="query-tooltip" handler="_on_tooltip_query"/> -->

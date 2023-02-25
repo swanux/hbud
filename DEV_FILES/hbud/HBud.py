@@ -26,12 +26,11 @@ class Main(frontend.UI):
         WHERE_AM_I = os.path.abspath(os.path.dirname(__file__))
         LOCALE_DIR = os.path.join(WHERE_AM_I, 'locale/mo')
         print(LOCALE_DIR, locale.getlocale())
-        print(self.tmpDir, confP)
+        # print(self.tmpDir, confP)
         locale.setlocale(locale.LC_ALL, locale.getlocale())
         locale.bindtextdomain(APP, LOCALE_DIR)
         gettext.bindtextdomain(APP, LOCALE_DIR)
         gettext.textdomain(APP)
-        self._ = gettext.gettext
         self.API_KEY = "Erv1I6jCqZ"
         musicbrainzngs.set_useragent("hbud", "0.4.0", "https://github.com/swanux/hbud")
         try:
@@ -45,56 +44,27 @@ class Main(frontend.UI):
         self.connect_signals()
         self.DAPI = azapi.AZlyrics('duckduckgo', accuracy=0.65)
 
-        self.canwriteconf = False
-        self.sSize, self.sMarg = int(float(sSize)), int(float(sMarg))
-        self.size3, self.size4 = self.sSize*450, float(f"0.0{self.sMarg}")*450
-        self.prefwin._sub_spin.set_value(self.sSize)
-        self.prefwin._sub_marspin.set_value(self.sMarg)
-        self.prefwin._darkew.set_active(int(theme))
+        self.size3, self.size4 = self.settings.get_int("relative-size")*450, float("0.0{}".format(self.settings.get_int("relative-margin")))*450
         self.size, self.size2 = 35000, 15000
         self.themeDict = {"0" : 0, "1" : 4, "2" : 1}
-        self.theme = self.themeDict[theme]
-        self.bge = bg == "True"
-        self.musixe = musix == "True"
-        self.azlyre = azlyr == "True"
-        self.letrase = letras == "True"
-        self.autoscroll = autoscroll == "True"
-        self.lite = minimal_mode == "True"
-        self.hwae = hwa_enabled == "True"
-        self.scroll_val = int(positioning)
-        self.cover_size = coverSize
-        self.color = color
+        self.theme = self.themeDict[self.settings.get_string("theme")]
+        self.styles.set_color_scheme(self.theme)
+        self.color = self.settings.get_string("color")
         coco = Gdk.RGBA()
         coco.parse(self.color)
         self.prefwin._colorer.set_rgba(coco)
-        self.prefwin._bg_switch.set_state(self.bge)
-        self.prefwin._mus_switch.set_state(self.musixe)
-        self.prefwin._az_switch.set_state(self.azlyre)
-        self.prefwin._combo_size.set_active_id(str(self.cover_size))
-        self.prefwin._letr_switch.set_state(self.letrase)
-        self.prefwin._scroll_check.set_state(self.autoscroll)
-        self.prefwin._scroll_spin.set_value(self.scroll_val)
-        self.prefwin._lite_switch.set_state(self.lite)
-        self.prefwin._hwa_switch.set_state(self.hwae)
-        self.canwriteconf = True
-
-        self.sub._off_but.connect("clicked", self.on_off_but_clicked)
-
+        tools.themer(self.provider, self.window, self.color)
         self.hwa_change()
-
         self.adj = self.window._main_stack._sup_scroll.get_vadjustment()
         GLib.idle_add(self.window._sub_track.hide)
-        self.window.connect('notify', self._on_notify)
-        self.sub.connect('notify', self._on_notify)
-        tools.themer(self.provider, self.window, self.color)
-        self.settings.set_color_scheme(self.theme)
+        
         # Display the program
-        if self.lite == False: self.window._title.set_subtitle(self.build_version)
         self.window.set_application(self)
         self.window.present()
         self.window._main_stack._top_box.hide()
         self.window._drop_but.hide()
-        if self.lite == True:
+        if self.settings.get_boolean("minimal-mode") == False: self.window._title.set_subtitle(self.build_version)
+        else:
             GLib.idle_add(self.window._head_box.hide)
             GLib.idle_add(self.window._main_stack.set_visible_child, self.window._main_stack._rd_box)
             GLib.idle_add(self.window.set_default_size, 1, 1)
@@ -155,20 +125,11 @@ class Main(frontend.UI):
         self.sub._ye_but.connect("clicked", self.on_correct_lyr)
         self.sub._no_but.connect("clicked", self.on_wrong_lyr)
 
-        self.prefwin._darkew.connect("changed", self.config_write)
-        self.prefwin._colorer.connect("color-set", self.config_write)
-        self.prefwin._sub_spin.connect("value-changed", self.config_write)
-        self.prefwin._sub_marspin.connect("value-changed", self.config_write)
-        self.prefwin._bg_switch.connect("state-set", self.config_write)
-        self.prefwin._mus_switch.connect("state-set", self.config_write)
-        self.prefwin._az_switch.connect("state-set", self.config_write)
-        self.prefwin._letr_switch.connect("state-set", self.config_write)
-        self.prefwin._combo_size.connect("changed", self.config_write)
-        self.prefwin._scroll_check.connect("state-set", self.config_write)
-        self.prefwin._scroll_spin.connect("value-changed", self.config_write)
-        self.prefwin._lite_switch.connect("state-set", self.config_write)
-        self.prefwin._hwa_switch.connect("state-set", self.config_write)
-
+        self.sub._off_but.connect("clicked", self.on_off_but_clicked)
+        self.window.connect('notify', self._on_notify)
+        self.sub.connect('notify', self._on_notify)
+        self.settings.connect("changed", self.special_settings)
+        self.prefwin._colorer.connect("color-set", self.special_settings)
 
         self.window._slider_click.connect("released", self.on_slider_seek)
         self.window._slider.connect("value-changed", self.on_slider_grabbed)
@@ -262,7 +223,8 @@ class Main(frontend.UI):
             video_sink = Gst.ElementFactory.make("glsinkbin", "video-sink")
             video_sink.set_property("sink", sink)
             self.videoPipe.set_property("video-sink", video_sink)
-            Gst.util_set_object_arg(self.videoPipe, "flags", "video+audio+soft-volume+buffering+deinterlace+soft-colorbalance")
+            Gst.util_set_object_arg(self.videoPipe, "flags", "video+audio+deinterlace+soft-colorbalance+audio-resync+native-audio+native-video")
+            Gst.util_set_object_arg(self.audioPipe, "flags", "audio+soft-volume")
             self.window._main_stack._video_picture.set_paintable(paintable)
             bus = self.videoPipe.get_bus()
             bus.add_signal_watch()
@@ -306,11 +268,11 @@ class Main(frontend.UI):
     def neo_playlist_gen(self, name="", srBox=None, dsBox=None, src=0, dst=0):
         print("neo start", time())
         GLib.timeout_add(0, self.window._main_stack._sup_box.hide)
-        if self.lite == True:
+        if self.settings.get_boolean("minimal-mode") == True:
             self.tnum = 0
             self.on_next("clickMode")
             return
-        if self.lite == False:
+        else:
             if name == "reorder":
                 self.window._main_stack._sup_box.reorder_child_after(srBox, dsBox)
                 for i, item in enumerate(self.playlist):
@@ -570,7 +532,7 @@ class Main(frontend.UI):
                 break
             print("Trying to get cover: "+str(i))
             try:
-                release = musicbrainzngs.get_image_front(data[5][i], self.cover_size)
+                release = musicbrainzngs.get_image_front(data[5][i], int(self.settings.get_string("cover-size")))
                 GLib.usleep(1200000)
                 print("Cover found")
                 break
@@ -610,12 +572,12 @@ class Main(frontend.UI):
                 elif arg == "clickMode0": self.tnum = 0
                 self.play()
                 if self.sub.get_visible(): self.on_karaoke_activate("xy")
-                if self.useMode == "audio" and arg != "clickMode" and self.autoscroll == True and self.lite == False:
-                    try: self.adj.set_value(self.visnum*79-self.scroll_val)
+                if self.useMode == "audio" and arg != "clickMode" and self.settings.get_boolean("autoscroll") == True and self.settings.get_boolean("minimal-mode") == False:
+                    try: self.adj.set_value(self.visnum*79-self.settings.get_int("positioning"))
                     except: print("nah")
             elif self.nowIn == "video":
                 self.seeking = True
-                if arg != "key": self.resete2 = time()
+                self.resete2 = time()
                 GLib.idle_add(self.window._slider.set_value, self.window._slider.get_value() + 10)
 
     def load_cover(self, mode="", bitMage=""):
@@ -639,7 +601,7 @@ class Main(frontend.UI):
                 coverBuf = GdkPixbuf.Pixbuf.new_from_file_at_scale(tmpLoc, 65, 65, True)
                 GLib.idle_add(bitMage.set_from_pixbuf, coverBuf)
 
-    def on_prev(self, arg):
+    def on_prev(self, _):
         self.stopKar = True
         if self.nowIn == self.useMode:
             if self.nowIn == "audio":
@@ -654,12 +616,12 @@ class Main(frontend.UI):
                 except: print("No playbin yet to stop.")
                 self.play()
                 if self.sub.get_visible(): self.on_karaoke_activate("xy")
-                if self.useMode == "audio" and self.autoscroll == True and self.lite == False:
-                    try: self.adj.set_value(self.visnum*79-self.scroll_val)
+                if self.useMode == "audio" and self.settings.get_boolean("autoscroll") == True and self.settings.get_boolean("minimal-mode") == False:
+                    try: self.adj.set_value(self.visnum*79-self.settings.get_int("positioning"))
                     except: print("nah")
             elif self.nowIn == "video":
                 self.seeking = True
-                if arg != "key": self.resete2 = time()
+                self.resete2 = time()
                 GLib.idle_add(self.window._slider.set_value, self.window._slider.get_value() - 10)
 
     def stop(self, arg=False):
@@ -668,7 +630,7 @@ class Main(frontend.UI):
         if self.nowIn == "audio": self.audioPipe = self.player
         elif self.nowIn == "video": self.videoPipe = self.player
         self.playing = False
-        if self.lite == True: self.window._label.set_text("00:00")
+        if self.settings.get_boolean("minimal-mode") == True: self.window._label.set_text("00:00")
         else: self.window._label.set_text("0:00:00")
         GLib.idle_add(self.window._play_but.set_icon_name, "media-playback-start")
         if arg == False:
@@ -701,10 +663,8 @@ class Main(frontend.UI):
 
 
     def on_slider_seek(self, *_):
-        print("seeked")
         if self.useMode == self.nowIn:
             seek_time_secs = self.window._slider.get_value()
-            print(seek_time_secs)
             if seek_time_secs < self.position: self.seekBack = True
             self.player.seek_simple(Gst.Format.TIME,  Gst.SeekFlags.FLUSH | Gst.SeekFlags.ACCURATE, seek_time_secs * Gst.SECOND)
             self.seeking = False
@@ -731,7 +691,7 @@ class Main(frontend.UI):
                 self.window._slider.set_range(0, duration)
                 self.window._slider.set_value(self.position)
             fvalue, svalue = str(timedelta(seconds=round(self.position))), str(timedelta(seconds=int(remaining)))
-            if self.lite == True: fvalue, svalue = ":".join(fvalue.split(":")[1:]), ":".join(svalue.split(":")[1:])
+            if self.settings.get_boolean("minimal-mode") == True: fvalue, svalue = ":".join(fvalue.split(":")[1:]), ":".join(svalue.split(":")[1:])
             self.window._label.set_text(fvalue)
             self.window._label_end.set_text(svalue)
         except Exception as e:
@@ -843,13 +803,13 @@ class Main(frontend.UI):
             except: return
         print("Play")
         self.res, self.playing, self.position = True, True, 0
-        if self.useMode == "audio" and self.nowIn != "video" and self.autoscroll == True:
+        if self.useMode == "audio" and self.nowIn != "video" and self.settings.get_boolean("autoscroll") == True:
             self.visnum = 0
             for i, item in enumerate(self.playlist):
                 if item["hidden"] == False and i<self.tnum: self.visnum += 1
         if self.useMode == "audio":
             self.title = self.playlist[self.tnum]["title"]
-            if self.lite == True:
+            if self.settings.get_boolean("minimal-mode") == True:
                 self.window._main_stack._rd_title.set_text(self.playlist[self.tnum]["title"])
                 self.window._main_stack._rd_artist.set_text(self.playlist[self.tnum]["artist"])
                 self.window._main_stack._rd_year.set_text(str(self.playlist[self.tnum]["year"]))
@@ -866,11 +826,11 @@ class Main(frontend.UI):
 
     def on_playBut_clicked(self, button, *_):
         if self.window._play_but.is_visible() == False and self.window._main_stack._video_picture.is_visible() == False: return
-        if self.useMode == "audio" and self.nowIn != "video" and self.autoscroll == True and self.lite == False:
+        if self.useMode == "audio" and self.nowIn != "video" and self.settings.get_boolean("autoscroll") == True and self.settings.get_boolean("minimal-mode") == False:
             self.visnum = 0
             for i, item in enumerate(self.playlist):
                 if item["hidden"] == False and i<self.tnum: self.visnum += 1
-            try: self.adj.set_value(self.visnum*79-self.scroll_val)
+            try: self.adj.set_value(self.visnum*79-self.settings.get_int("positioning"))
             except: pass
         if self.nowIn == self.useMode or self.nowIn == "" or "/" in str(button):
             if not self.playing:
@@ -911,7 +871,11 @@ class Main(frontend.UI):
     def on_key_local_release(self, _controller, keyval, *_):
         del _controller
         if self.useMode == self.nowIn and self.useMode == "video":
-            if keyval == 65363 or keyval == 65361: self.on_slider_seek()
+            if keyval == 65363 or keyval == 65361:
+                if not self.clocking:
+                    self.clocking = True
+                    ld_clock = futures.ThreadPoolExecutor(max_workers=1)
+                    ld_clock.submit(self.clock, "seek")
 
     def on_key_local(self, _controller, keyval, _keycode, modifier):
         del _controller, _keycode
@@ -919,20 +883,20 @@ class Main(frontend.UI):
         # print(keyval)
         try:
             if Gdk.ModifierType.CONTROL_MASK & modifier: # Ctrl combo
-                if keyval == 102 and self.lite == False: self.on_dropped("key")
+                if keyval == 102 and self.settings.get_boolean("minimal-mode") == False: self.on_dropped("key")
                 elif keyval == 111: self.on_openFolderBut_clicked(None)
             elif keyval == 32 and self.url: self.on_playBut_clicked(0) # Space
             elif keyval == 65307 or keyval == 65480:
                 if self.useMode == "video": self.on_karaoke_activate(0) # ESC and F11
-            elif keyval == 65363: self.on_next("key") # Right
-            elif keyval == 65361: self.on_prev("key") # Left
-            elif keyval == 65535 and self.useMode == "audio" and self.lite == False: # Delete
+            elif keyval == 65363: self.on_next("") # Right
+            elif keyval == 65361: self.on_prev("") # Left
+            elif keyval == 65535 and self.useMode == "audio" and self.settings.get_boolean("minimal-mode") == False: # Delete
                 self.ednum = self.tnum
                 self.del_cur()
-            elif keyval == 65362 and self.useMode == "audio" and self.lite == False: # Up
+            elif keyval == 65362 and self.useMode == "audio" and self.settings.get_boolean("minimal-mode") == False: # Up
                 if self.tnum-1 < 0: self.reorderer(self.tnum, len(self.playlist)-1)
                 else: self.reorderer(self.tnum, self.tnum-1)
-            elif keyval == 65364 and self.useMode == "audio" and self.lite == False: # Down
+            elif keyval == 65364 and self.useMode == "audio" and self.settings.get_boolean("minimal-mode") == False: # Down
                 if self.tnum+1 > len(self.playlist)-1: self.reorderer(self.tnum, 0)
                 else: self.reorderer(self.tnum, self.tnum+1)
         except: print("No key local mate")
@@ -951,7 +915,7 @@ class Main(frontend.UI):
             x, y = emitter.get_size(Gtk.Orientation.HORIZONTAL), emitter.get_size(Gtk.Orientation.VERTICAL)
             if emitter == self.window:
                 if self.needSub == True:
-                    self.size3, self.size4 = self.sSize*y, float(f"0.0{int(self.sMarg)}")*y
+                    self.size3, self.size4 = self.settings.get_int("relative-size")*y, float("0.0{}".format(self.settings.get_int("relative-margin")))*y
             else: self.size, self.size2 = 50*x, 21.4285714*x
         elif param.name == "maximized":
             sizThread = futures.ThreadPoolExecutor(max_workers=1)
@@ -968,7 +932,7 @@ class Main(frontend.UI):
     def different_resize(self, emitter):
         GLib.usleep(300000)
         x, y = emitter.get_size(Gtk.Orientation.HORIZONTAL), emitter.get_size(Gtk.Orientation.VERTICAL)
-        if emitter == self.window: self.size3, self.size4 = self.sSize*y, float(f"0.0{int(self.sMarg)}")*y
+        if emitter == self.window: self.size3, self.size4 = self.settings.get_int("relative-size")*y, float("0.0{}".format(self.settings.get_int("relative-margin")))*y
         else: self.size, self.size2 = 50*x, 21.4285714*x
 
     def on_off_but_clicked(self, _):
@@ -1088,13 +1052,13 @@ class Main(frontend.UI):
         GLib.idle_add(self.window._lyr_stack.set_visible_child, self.window._lyr_spin)
         GLib.idle_add(self.window._lyr_spin.start)
         lyric = None
-        if self.musixe == True and self.lyr_states[0] == True:
+        if self.settings.get_boolean("musixmatch") == True and self.lyr_states[0] == True:
             print("musix")
             lyric, self.lyr_states = musixapi.get_lyric(artist, track), [False, True, True]
-        if self.letrase == True and lyric == None and self.lyr_states[1] == True:
+        if self.settings.get_boolean("letrasbr") == True and lyric == None and self.lyr_states[1] == True:
             print("letras")
             lyric, self.lyr_states = letrasapi.get_lyric(artist, track), [False, False, True]
-        if self.azlyre == True and lyric == None and self.lyr_states[2] == True:
+        if self.settings.get_boolean("azlyrics") == True and lyric == None and self.lyr_states[2] == True:
             print("AZ")
             lyric, self.lyr_states = tools.get_lyric(track, artist, self.DAPI), [False, False, False]
         print("end")
@@ -1157,7 +1121,7 @@ class Main(frontend.UI):
             GLib.usleep(1000)
             for line in subtitle:
                 if self.position >= line.start.total_seconds() and self.position <= line.end.total_seconds():
-                    if self.bge == True: GLib.idle_add(self.window._main_stack._subtitles.set_markup, f"<span size='{int(self.size3)}' color='white' background='black'>{line.content}</span>")
+                    if self.settings.get_boolean("dark-background") == True: GLib.idle_add(self.window._main_stack._subtitles.set_markup, f"<span size='{int(self.size3)}' color='white' background='black'>{line.content}</span>")
                     else: GLib.idle_add(self.window._main_stack._subtitles.set_markup, f"<span size='{int(self.size3)}' color='white'>{line.content}</span>")
                     self.window._main_stack._subtitles.set_margin_bottom(self.size4)
                     GLib.idle_add(self.window._main_stack._subtitles.show)
@@ -1247,8 +1211,13 @@ class Main(frontend.UI):
             for y in tmpline:
                 if self.stopKar or self.seekBack: break
                 leftover += f"{y.content.replace('#', '')} "
-            try: GLib.idle_add(self.sub._label1.set_markup, f"<span size='{self.size}' color='green'>{done}</span> <span size='{self.size}' color='green'> {xy.content.replace('#', '')}</span> <span size='{self.size}'> {leftover}</span>")
-            except: GLib.idle_add(self.sub._label1.set_markup, f"<span size='{self.size}' color='green'>{done}</span> <span size='{self.size}' color='green'> {xy}</span> <span size='{self.size}'> {leftover}</span>")
+            if done == "":
+                try:
+                    xy == ""
+                    GLib.idle_add(self.sub._label1.set_markup, f"<span size='{self.size}'>{leftover.strip()}</span>")
+                except: GLib.idle_add(self.sub._label1.set_markup, f"<span size='{self.size}' color='green'>{xy.content.replace('#', '')}</span><span size='{self.size}'> {leftover.strip()}</span>")
+            if leftover == "" and done != "": GLib.idle_add(self.sub._label1.set_markup, f"<span size='{self.size}' color='green'>{done.strip()} </span><span size='{self.size}' color='green'>{xy.content.replace('#', '')}</span>")
+            elif done != "": GLib.idle_add(self.sub._label1.set_markup, f"<span size='{self.size}' color='green'>{done.strip()} </span><span size='{self.size}' color='green'>{xy.content.replace('#', '')}</span><span size='{self.size}'> {leftover.strip()}</span>")
             while not self.stopKar:
                 GLib.usleep(10000)
                 if it > maxit:
@@ -1263,85 +1232,46 @@ class Main(frontend.UI):
                 else: done += f" {xy.content.replace('#', '')}"
             except: pass
 
-    def config_write(self, widget, *_):
-        if self.canwriteconf == True:
-            uid = int(widget.get_name())
-            if uid == 0:
-                theme = self.prefwin._darkew.get_active_id()
-                self.theme = self.themeDict[theme]
-                self.settings.set_color_scheme(self.theme)
-                parser.set("gui", "theme", str(theme))
-            elif uid == 1:
-                self.color = self.prefwin._colorer.get_rgba().to_string()
-                parser.set('gui', 'color', self.color)
-            elif uid == 2:
-                self.sSize = self.prefwin._sub_spin.get_value()
-                parser.set('subtitles', 'size', str(self.sSize))
-            elif uid == 3:
-                self.sMarg = self.prefwin._sub_marspin.get_value()
-                parser.set('subtitles', 'margin', str(self.sMarg))
-            elif uid == 4:
-                self.bge = self.prefwin._bg_switch.get_active()
-                parser.set('subtitles', 'bg', str(self.bge))
-            elif uid == 5:
-                self.musixe = self.prefwin._mus_switch.get_active()
-                parser.set('services', 'MusixMatch', str(self.musixe))
-            elif uid == 6:
-                self.azlyre = self.prefwin._az_switch.get_active()
-                parser.set('services', 'AZLyrics', str(self.azlyre))
-            elif uid == 7:
-                self.letrase = self.prefwin._letr_switch.get_active()
-                parser.set('services', 'Letras.br', str(self.letrase))
-            elif uid == 8:
-                self.cover_size = int(self.prefwin._combo_size.get_active_id())
-                parser.set('services', 'CoverSize', str(self.cover_size))
-            elif uid == 9:
-                self.autoscroll = self.prefwin._scroll_check.get_active()
-                parser.set('misc', 'autoscroll', str(self.autoscroll))
-            elif uid == 10:
-                self.scroll_val = int(self.prefwin._scroll_spin.get_value())
-                parser.set('misc', 'positioning', str(self.autoscroll))
-            elif uid == 11:
-                self.lite = self.prefwin._lite_switch.get_active()
-                parser.set('misc', 'minimal_mode', str(self.lite))
-                if self.lite == False:
-                    GLib.idle_add(self.window._head_box.show)
-                    GLib.idle_add(self.window._title.set_subtitle, self.build_version)
-                    GLib.idle_add(self.window._main_stack.set_visible_child, self.window._main_stack._placeholder)
-                    GLib.idle_add(self.window.set_default_size, 600, 450)
-                    GLib.idle_add(self.window._main_header.remove_css_class, "flat")
-                    GLib.idle_add(self.window._label_end.show)
-                    self.window.set_resizable(True)
-                    d_pl = futures.ThreadPoolExecutor(max_workers=4)
-                    d_pl.submit(self.neo_playlist_gen)
-                else:
-                    GLib.idle_add(self.window._head_box.hide)
-                    self.window._loc_but.set_active(True)
-                    GLib.idle_add(self.window._title.set_subtitle, "")
-                    GLib.idle_add(self.window._main_stack.set_visible_child, self.window._main_stack._rd_box)
-                    GLib.idle_add(self.window.set_default_size, 1, 1)
-                    GLib.idle_add(self.window._main_header.add_css_class, "flat")
-                    GLib.idle_add(self.window._label_end.hide)
-                    try:
-                        GLib.idle_add(self.window._main_stack._rd_title.set_text, self.playlist[self.tnum]["title"])
-                        GLib.idle_add(self.window._main_stack._rd_artist.set_text, self.playlist[self.tnum]["artist"])
-                        GLib.idle_add(self.window._main_stack._rd_year.set_text, str(self.playlist[self.tnum]["year"]))
-                    except: pass
-                    self.window.set_resizable(False)
-                GLib.idle_add(self.on_pref_close)
-                GLib.idle_add(self.window.hide)
-                GLib.idle_add(self.window.present)
-            elif uid == 12:
-                self.hwae = self.hwa_switch.get_active()
-                parser.set('misc', 'hwa_enabled', str(self.hwae))
-                self.hwa_change()
-            file = open(confP, "w+")
-            parser.write(file)
-            file.close()
+    def special_settings(self, obj, key=None):
+        if key == "hwa-enabled": self.hwa_change()
+        elif key == "minimal-mode":
+            if self.settings.get_boolean("minimal-mode") == False:
+                GLib.idle_add(self.window._head_box.show)
+                GLib.idle_add(self.window._title.set_subtitle, self.build_version)
+                GLib.idle_add(self.window._main_stack.set_visible_child, self.window._main_stack._placeholder)
+                GLib.idle_add(self.window.set_default_size, 600, 450)
+                GLib.idle_add(self.window._main_header.remove_css_class, "flat")
+                GLib.idle_add(self.window._label_end.show)
+                self.window.set_resizable(True)
+                d_pl = futures.ThreadPoolExecutor(max_workers=4)
+                d_pl.submit(self.neo_playlist_gen)
+            else:
+                GLib.idle_add(self.window._head_box.hide)
+                self.window._loc_but.set_active(True)
+                GLib.idle_add(self.window._title.set_subtitle, "")
+                GLib.idle_add(self.window._main_stack.set_visible_child, self.window._main_stack._rd_box)
+                GLib.idle_add(self.window.set_default_size, 1, 1)
+                GLib.idle_add(self.window._main_header.add_css_class, "flat")
+                GLib.idle_add(self.window._label_end.hide)
+                try:
+                    GLib.idle_add(self.window._main_stack._rd_title.set_text, self.playlist[self.tnum]["title"])
+                    GLib.idle_add(self.window._main_stack._rd_artist.set_text, self.playlist[self.tnum]["artist"])
+                    GLib.idle_add(self.window._main_stack._rd_year.set_text, str(self.playlist[self.tnum]["year"]))
+                except: pass
+                self.window.set_resizable(False)
+            GLib.idle_add(self.on_pref_close)
+            GLib.idle_add(self.window.hide)
+            GLib.idle_add(self.window.present)
+        elif key == "theme":
+            self.theme = self.themeDict[self.settings.get_string("theme")]
+            self.styles.set_color_scheme(self.theme)
+        elif key == None:
+            self.color = obj.get_rgba().to_string()
+            self.settings.set_string("color", self.color)
             tools.themer(self.provider, self.window, self.color, self.tnum)
 
     def hwa_change(self):
-        if self.hwae == True:
+        if self.settings.get_boolean("hwa-enabled") == True:
             filt = Gst.ELEMENT_FACTORY_TYPE_DECODER
             filt |= Gst.ELEMENT_FACTORY_TYPE_MEDIA_VIDEO
             factories = Gst.ElementFactory.list_get_elements(filt, Gst.Rank.MARGINAL)
@@ -1361,7 +1291,6 @@ class Main(frontend.UI):
         self.lyr_states = [True, True, True]
         self.sub.hide()
 
-parser, confP, theme, color, musix, azlyr, letras, coverSize, sSize, sMarg, bg, autoscroll, positioning, minimal_mode, hwa_enabled = tools.real_init()
 app = Main()
 app.connect('activate', app.on_activate)
 app.run(None)

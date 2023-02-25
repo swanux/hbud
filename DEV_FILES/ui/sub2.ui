@@ -242,6 +242,7 @@
                     <property name="valign">center</property>
                     <property name="halign">end</property>
                     <property name="label" translatable="yes">Save</property>
+                    <style><class name="suggested-action"/></style>
                     <layout>
                       <property name="column">1</property>
                       <property name="row">6</property>

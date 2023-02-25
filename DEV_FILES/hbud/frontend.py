@@ -17,9 +17,11 @@ locale.bindtextdomain(APP, LOCALE_DIR)
 gettext.bindtextdomain(APP, LOCALE_DIR)
 gettext.textdomain(APP)
 
-resource_data = Gio.Resource.load("io.github.swanux.hbud.gresource")
-Gio.resources_register(resource_data)
-
+Gio.resources_register(Gio.Resource.load("io.github.swanux.hbud.gresource"))
+schema_source = Gio.SettingsSchemaSource.new_from_directory('./schemas', None, None)
+schema = schema_source.lookup('io.github.swanux.hbud', True)
+settings = Gio.Settings.new_full(schema, None, None)
+# settings = Gio.Settings(schema_id="io.github.swanux.hbud")
 
 @Gtk.Template(resource_path='/io/github/swanux/hbud/ui/trackbox.ui')
 class TrackBox(Adw.ActionRow):
@@ -95,6 +97,19 @@ class PrefWin(Adw.PreferencesWindow):
     _vavp9dec = Gtk.Template.Child()
     def __init__(self):
         super().__init__()
+        settings.bind("theme", self._darkew, "active-id", Gio.SettingsBindFlags.DEFAULT)
+        settings.bind("relative-size", self._sub_spin, "value", Gio.SettingsBindFlags.DEFAULT)
+        settings.bind("relative-margin", self._sub_marspin, "value", Gio.SettingsBindFlags.DEFAULT)
+        settings.bind("dark-background", self._bg_switch, "active", Gio.SettingsBindFlags.DEFAULT)
+        settings.bind("musixmatch", self._mus_switch, "active", Gio.SettingsBindFlags.DEFAULT)
+        settings.bind("azlyrics", self._az_switch, "active", Gio.SettingsBindFlags.DEFAULT)
+        settings.bind("letrasbr", self._letr_switch, "active", Gio.SettingsBindFlags.DEFAULT)
+        settings.bind("cover-size", self._combo_size, "active-id", Gio.SettingsBindFlags.DEFAULT)
+        settings.bind("autoscroll", self._scroll_check, "active", Gio.SettingsBindFlags.DEFAULT)
+        settings.bind("positioning", self._scroll_spin, "value", Gio.SettingsBindFlags.DEFAULT)
+        settings.bind("minimal-mode", self._lite_switch, "active", Gio.SettingsBindFlags.DEFAULT)
+        settings.bind("hwa-enabled", self._hwa_switch, "active", Gio.SettingsBindFlags.DEFAULT)
+
         self._gtk_ver.set_label("{}.{}.{}".format(Gtk.get_major_version(), Gtk.get_minor_version(), Gtk.get_micro_version()))
         self._gst_ver.set_label("{}.{}.{}.{}".format(Gst.version()[0], Gst.version()[1], Gst.version()[2], Gst.version()[3]))
         self._adw_ver.set_label("{}.{}.{}".format(Adw.get_major_version(), Adw.get_minor_version(), Adw.get_micro_version()))
@@ -139,6 +154,12 @@ class MainWindow(Adw.Window):
     def __init__(self):
         super().__init__()
         _ = gettext.gettext
+
+        settings.bind("width", self, "default-width", Gio.SettingsBindFlags.DEFAULT)
+        settings.bind("height", self, "default-height", Gio.SettingsBindFlags.DEFAULT)
+        settings.bind("is-maximized", self, "maximized", Gio.SettingsBindFlags.DEFAULT)
+        settings.bind("is-fullscreen", self, "fullscreened", Gio.SettingsBindFlags.DEFAULT)
+
         controllers = self._slider.observe_controllers()
         for controller in controllers:
             if isinstance(controller, gi.repository.Gtk.GestureClick):
@@ -194,9 +215,14 @@ class UI(Adw.Application):
     build_version = cn.App.application_version
     def __init__(self):
         super().__init__()
+        self._ = gettext.gettext
         Gst.init(None)
         Adw.init()
-        _ = gettext.gettext
+
+
+        # self.settings = Gio.Settings(schema_id="io.github.swanux.hbud")
+
+
         self.useMode = "audio"
         self.supportedList = ['.3gp', '.aa', '.aac', '.aax', '.aiff', '.flac', '.m4a', '.mp3', '.ogg', '.wav', '.wma', '.wv']
         self.searchDict = {"1" : ["artist", False], "2" : ["artist", True], "3" : ["title", False], "4" : ["title", True], "5" : ["year", False], "6" : ["year", True], "7" : ["length", False], "8" : ["length", True]}
@@ -219,18 +245,19 @@ class UI(Adw.Application):
         handle = Gtk.WindowHandle.new()
         handle.set_child(self.chosBox)
         self.choser_window.set_content(handle)
-        self.choser_window.set_title(_("Which one is correct?"))
+        self.choser_window.set_title(self._("Which one is correct?"))
         self.seeking = False
         self.window = MainWindow()
         self.prefwin = PrefWin()
         self.prefwin.set_transient_for(self.window)
         self.sub2.set_transient_for(self.window)
         self.menu = Gio.Menu()
-        menu_item = Gio.MenuItem.new(_('Delete from current playqueue'), "app.delete")
+        menu_item = Gio.MenuItem.new(self._('Delete from current playqueue'), "app.delete")
         self.menu.append_item(menu_item)
-        menu_item = Gio.MenuItem.new(_('Edit metadata'), "app.edit")
+        menu_item = Gio.MenuItem.new(self._('Edit metadata'), "app.edit")
         self.menu.append_item(menu_item)
         self.menu.freeze()
-        self.about = Adw.AboutWindow(application_name=cn.App.application_name, version=self.build_version, copyright=f"Copyright © {cn.App.app_years}", issue_url=cn.App.help_url, license_type=Gtk.License.GPL_3_0, developer_name="Dániel Kolozsi", developers=["Dániel Kolozsi"], designers=["Seh", "Dániel Kolozsi"], translator_credits=_("Dániel Kolozsi"), application_icon=cn.App.application_id, comments=cn.App.about_comments, website=cn.App.main_url, transient_for=self.window, release_notes=cn.App.release_notes, default_height=450)
+        self.about = Adw.AboutWindow(application_name=cn.App.application_name, version=self.build_version, copyright=f"Copyright © {cn.App.app_years}", issue_url=cn.App.help_url, license_type=Gtk.License.GPL_3_0, developer_name="Dániel Kolozsi", developers=["Dániel Kolozsi"], designers=["Seh", "Dániel Kolozsi"], translator_credits=self._("Dániel Kolozsi"), application_icon=cn.App.application_id, comments=cn.App.about_comments, website=cn.App.main_url, transient_for=self.window, release_notes=cn.App.release_notes, default_height=450)
         self.switchDict = {"locBut" : [self.window._main_stack._placeholder, "audio-input-microphone", "audio", self.window._str_but], "strBut" : [self.window._main_stack._str_box, "view-fullscreen", "video", self.window._loc_but]}
-        self.provider, self.settings = Gtk.CssProvider(), Adw.StyleManager.get_default()
+        self.provider, self.styles = Gtk.CssProvider(), Adw.StyleManager.get_default()
+        self.settings = settings

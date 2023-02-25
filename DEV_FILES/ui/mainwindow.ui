@@ -5,8 +5,6 @@
 
   <template class="MainWindow" parent="AdwWindow">
     <property name="name">main</property>
-    <property name="default-width">600</property>
-    <property name="default-height">450</property>
     <child>
       <object class="GtkEventControllerKey" id="_ev_key_main"/>
     </child>
