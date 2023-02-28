@@ -34,7 +34,6 @@ finish-args:
 
 modules:
   - "lib/libass.json"
-  - "lib/srt.json"
   - "lib/ffmpeg.json"
   - "lib/libmpeg2.json"
   - "gstreamer-1.0/gstreamer.json"
@@ -61,19 +60,6 @@ modules:
         path: ../../.
     build-commands:
       - make prefix=${FLATPAK_DEST} install
-#      - mkdir -p /app/share/applications
-#      - mkdir -p /app/share/hbud
-#      - mkdir -p /app/bin
-#      - mkdir -p /app/share/appdata
-#      - mkdir -p /app/share/icons/hicolor/128x128/apps
-#      - cp -r DEV_FILES/hbud /app/share/hbud/.
-#      - cp DEV_FILES/io.github.swanux.hbud.desktop /app/share/applications/.
-#      - cp DEV_FILES/io.github.swanux.hbud /app/share/hbud/.
-#      - cp DEV_FILES/fpcalc /app/share/hbud/.
-#      - install -Dm755 /app/share/hbud/fpcalc -t /app/bin/.
-#      - ln -s /app/share/hbud/io.github.swanux.hbud /app/bin/.
-#      - cp DEV_FILES/io.github.swanux.hbud.appdata.xml /app/share/appdata/.
-#      - install -Dm644 -t /app/share/icons/hicolor/scalable/apps/ DEV_FILES/hbud/icons/io.github.swanux.hbud.svg
 
 cleanup-commands:
   - ln -s /lib/$FLATPAK_ARCH-linux-*/gstreamer-1.0/libgstpipewire.so /app/lib/gstreamer-1.0/

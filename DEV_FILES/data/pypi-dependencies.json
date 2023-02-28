@@ -157,53 +157,6 @@
             ]
         },
         {
-            "name": "python3-langcodes",
-            "buildsystem": "simple",
-            "build-commands": [
-                "pip3 install --verbose --exists-action=i --no-index --find-links=\"file://${PWD}\" --prefix=${FLATPAK_DEST} \"langcodes==3.3.0\" --no-build-isolation"
-            ],
-            "sources": [
-                {
-                    "type": "file",
-                    "url": "https://files.pythonhosted.org/packages/fe/c3/0d04d248624a181e57c2870127dfa8d371973561caf54333c85e8f9133a2/langcodes-3.3.0-py3-none-any.whl",
-                    "sha256": "4d89fc9acb6e9c8fdef70bcdf376113a3db09b67285d9e1d534de6d8818e7e69"
-                }
-            ]
-        },
-        {
-            "name": "python3-language-data",
-            "buildsystem": "simple",
-            "build-commands": [
-                "pip3 install --verbose --exists-action=i --no-index --find-links=\"file://${PWD}\" --prefix=${FLATPAK_DEST} \"language-data==1.1\" --no-build-isolation"
-            ],
-            "sources": [
-                {
-                    "type": "file",
-                    "url": "https://files.pythonhosted.org/packages/73/96/053c710a9d1df31cce0025e1050e924083acf231e3eadbeadf5d696bf370/language_data-1.1-py3-none-any.whl",
-                    "sha256": "f7ba86fafe099ef213ef597eda483d5227b12446604a61f617122d6c925847d5"
-                },
-                {
-                    "type": "file",
-                    "url": "https://files.pythonhosted.org/packages/00/fc/83398402a47222e4e36a5a6b92d7539f83e13d3ec3bab342483666386116/marisa-trie-0.7.8.tar.gz",
-                    "sha256": "aee3de5f2836074cfd803f1caf16f68390f262ef09cd7dc7d0e8aee9b6878643"
-                }
-            ]
-        },
-        {
-            "name": "python3-marisa-trie",
-            "buildsystem": "simple",
-            "build-commands": [
-                "pip3 install --verbose --exists-action=i --no-index --find-links=\"file://${PWD}\" --prefix=${FLATPAK_DEST} \"marisa-trie==0.7.8\" --no-build-isolation"
-            ],
-            "sources": [
-                {
-                    "type": "file",
-                    "url": "https://files.pythonhosted.org/packages/00/fc/83398402a47222e4e36a5a6b92d7539f83e13d3ec3bab342483666386116/marisa-trie-0.7.8.tar.gz",
-                    "sha256": "aee3de5f2836074cfd803f1caf16f68390f262ef09cd7dc7d0e8aee9b6878643"
-                }
-            ]
-        },
-        {
             "name": "python3-mediafile",
             "buildsystem": "simple",
             "build-commands": [
@@ -319,6 +272,20 @@
                     "type": "file",
                     "url": "https://files.pythonhosted.org/packages/fe/ca/466766e20b767ddb9b951202542310cba37ea5f2d792dae7589f1741af58/urllib3-1.26.14-py2.py3-none-any.whl",
                     "sha256": "75edcdc2f7d85b137124a6c3c9fc3933cdeaa12ecb9a6a959f22797a0feca7e1"
+                }
+            ]
+        },
+        {
+            "name": "python3-PyICU",
+            "buildsystem": "simple",
+            "build-commands": [
+                "pip3 install --verbose --exists-action=i --no-index --find-links=\"file://${PWD}\" --prefix=${FLATPAK_DEST} \"PyICU==2.10.2\" --no-build-isolation"
+            ],
+            "sources": [
+                {
+                    "type": "file",
+                    "url": "https://files.pythonhosted.org/packages/64/00/a531e119a97e54601f616f5061879ec2d4bb058d225014f9acf94b2970c3/PyICU-2.10.2.tar.gz",
+                    "sha256": "0c3309eea7fab6857507ace62403515b60fe096cbfb4f90d14f55ff75c5441c1"
                 }
             ]
         },

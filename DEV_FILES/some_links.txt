@@ -1,0 +1,6 @@
+Useful information for flatpak packaging / debuging
+
+GTK_DEBUG=interactive
+https://hughsie.github.io/oars/generate.html
+https://emn178.github.io/online-tools/sha256_checksum.html
+https://www.useragents.me/

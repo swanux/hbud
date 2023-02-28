@@ -8,7 +8,7 @@ from operator import itemgetter
 from collections import deque
 from datetime import timedelta
 from random import sample
-from langcodes import Language
+from icu import Locale
 from mediafile import MediaFile, MediaField, MP3DescStorageStyle, StorageStyle
 gi.require_version('Gtk', '4.0')
 gi.require_version('Gst', '1.0')
@@ -727,7 +727,7 @@ class Main(frontend.UI):
             for e, element in enumerate(self.subtitle_dict):
                 if element["lang"] == "unknown": check = Gtk.CheckButton.new_with_label(self._("Unknown"))
                 elif element["lang"] == "local": check = Gtk.CheckButton.new_with_label(self._("Local"))
-                else: check = Gtk.CheckButton.new_with_label(Language.get(element["lang"]).autonym())
+                else: check = Gtk.CheckButton.new_with_label(Locale(element["lang"]).getDisplayLanguage(Locale(element["lang"])))
                 check.set_group(check0)
                 check.set_name("subno_{}".format(e))
                 check.connect("toggled", self.sub_toggle)
@@ -1286,5 +1286,3 @@ def run():
     app = Main()
     app.connect('activate', app.on_activate)
     app.run(None)
-
-# GTK_DEBUG=interactive
