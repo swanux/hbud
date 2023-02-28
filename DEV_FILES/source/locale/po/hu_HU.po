@@ -76,7 +76,7 @@ msgid ""
 "might be annoying"
 msgstr ""
 "Automatikus görgetés hogy a jelenleg lejátszott zene legyen a középpontban - "
-"tud praktikus lenni, vagy éppen idegesítő"
+"tud praktikus lenni, vagy éppen zavaró"
 
 #: /home/daniel/GitRepos/hbud/DEV_FILES/to_translate/helper.py:152
 msgid "Behavior"

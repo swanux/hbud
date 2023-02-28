@@ -1,29 +1,27 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-import gi, locale, os, gettext, sys
+import gi, gettext, sys, os
 gi.require_version('Gtk', '4.0')
 gi.require_version('Adw', '1')
 gi.require_version('Gst', '1.0')
 from gi.repository import Gtk, Gio, GLib, Adw, Gst
-from hbud import constants as cn
+from hbud import CONSTANTS
 
-APP = cn.App.application_id
+if os.getenv('container', '') != 'flatpak':
+    if os.getenv("HDIR", "") == "":
+        Gio.resources_register(Gio.Resource.load("../io.github.swanux.hbud.gresource"))
+        schema_source = Gio.SettingsSchemaSource.new_from_directory("../schemas", None, None)
+    else:
+        Gio.resources_register(Gio.Resource.load("DEV_FILES/io.github.swanux.hbud.gresource"))
+        schema_source = Gio.SettingsSchemaSource.new_from_directory("DEV_FILES/schemas", None, None)
+    schema = schema_source.lookup("io.github.swanux.hbud", True)
+    settings = Gio.Settings.new_full(schema, None, None)
+else:
+    Gio.resources_register(Gio.Resource.load("/app/share/hbud/io.github.swanux.hbud.gresource"))
+    settings = Gio.Settings(schema_id="io.github.swanux.hbud")
 
-WHERE_AM_I = os.path.abspath(os.path.dirname(__file__))
-LOCALE_DIR = os.path.join(WHERE_AM_I, 'locale/mo')
-locale.setlocale(locale.LC_ALL, locale.getlocale())
-locale.bindtextdomain(APP, LOCALE_DIR)
-gettext.bindtextdomain(APP, LOCALE_DIR)
-gettext.textdomain(APP)
-
-Gio.resources_register(Gio.Resource.load("io.github.swanux.hbud.gresource"))
-schema_source = Gio.SettingsSchemaSource.new_from_directory('./schemas', None, None)
-schema = schema_source.lookup('io.github.swanux.hbud', True)
-settings = Gio.Settings.new_full(schema, None, None)
-# settings = Gio.Settings(schema_id="io.github.swanux.hbud")
-
-@Gtk.Template(resource_path='/io/github/swanux/hbud/ui/trackbox.ui')
+@Gtk.Template(resource_path='/io/github/swanux/hbud/DEV_FILES/source/ui/trackbox.ui')
 class TrackBox(Adw.ActionRow):
     __gtype_name__ = 'TrackBox'
     image = Gtk.Template.Child("_cover_image")
@@ -43,7 +41,7 @@ class TrackBox(Adw.ActionRow):
         self.set_subtitle(album.replace("&", "&amp;"))
 
 
-@Gtk.Template(resource_path='/io/github/swanux/hbud/ui/mainstack.ui')
+@Gtk.Template(resource_path='/io/github/swanux/hbud/DEV_FILES/source/ui/mainstack.ui')
 class MainStack(Gtk.Stack):
     __gtype_name__ = 'MainStack'
     # Page 1
@@ -69,7 +67,7 @@ class MainStack(Gtk.Stack):
     def __init__(self): super().__init__()
 
 
-@Gtk.Template(resource_path='/io/github/swanux/hbud/ui/prefwin.ui')
+@Gtk.Template(resource_path='/io/github/swanux/hbud/DEV_FILES/source/ui/prefwin.ui')
 class PrefWin(Adw.PreferencesWindow):
     __gtype_name__ = 'PrefWin'
     _darkew = Gtk.Template.Child()
@@ -123,7 +121,7 @@ class PrefWin(Adw.PreferencesWindow):
             self.present_codecs[c][1].set_from_icon_name(icon)
 
 
-@Gtk.Template(resource_path='/io/github/swanux/hbud/ui/mainwindow.ui')
+@Gtk.Template(resource_path='/io/github/swanux/hbud/DEV_FILES/source/ui/mainwindow.ui')
 class MainWindow(Adw.Window):
     __gtype_name__ = 'MainWindow'
     _main_stack = Gtk.Template.Child()
@@ -174,7 +172,7 @@ class MainWindow(Adw.Window):
         self._prefbut.set_menu_model(menu)
 
 
-@Gtk.Template(resource_path='/io/github/swanux/hbud/ui/sub2.ui')
+@Gtk.Template(resource_path='/io/github/swanux/hbud/DEV_FILES/source/ui/sub2.ui')
 class Sub2(Adw.Window):
     __gtype_name__ = 'Sub2'
     _sub2_toast = Gtk.Template.Child()
@@ -191,7 +189,7 @@ class Sub2(Adw.Window):
     def __init__(self): super().__init__()
 
 
-@Gtk.Template(resource_path='/io/github/swanux/hbud/ui/sub.ui')
+@Gtk.Template(resource_path='/io/github/swanux/hbud/DEV_FILES/source/ui/sub.ui')
 class Sub(Adw.Window):
     __gtype_name__ = 'Sub'
     _ev_key_sub = Gtk.Template.Child()
@@ -212,7 +210,7 @@ class Sub(Adw.Window):
 
 
 class UI(Adw.Application):
-    build_version = cn.App.application_version
+    build_version = CONSTANTS["version"]
     def __init__(self):
         super().__init__()
         self._ = gettext.gettext
@@ -257,7 +255,7 @@ class UI(Adw.Application):
         menu_item = Gio.MenuItem.new(self._('Edit metadata'), "app.edit")
         self.menu.append_item(menu_item)
         self.menu.freeze()
-        self.about = Adw.AboutWindow(application_name=cn.App.application_name, version=self.build_version, copyright=f"Copyright © {cn.App.app_years}", issue_url=cn.App.help_url, license_type=Gtk.License.GPL_3_0, developer_name="Dániel Kolozsi", developers=["Dániel Kolozsi"], designers=["Seh", "Dániel Kolozsi"], translator_credits=self._("Dániel Kolozsi"), application_icon=cn.App.application_id, comments=cn.App.about_comments, website=cn.App.main_url, transient_for=self.window, release_notes=cn.App.release_notes, default_height=450)
+        self.about = Adw.AboutWindow(application_name=CONSTANTS["name"], version=self.build_version, copyright="Copyright © {}".format(CONSTANTS["years"]), issue_url=CONSTANTS["help_url"], license_type=Gtk.License.GPL_3_0, developer_name="Dániel Kolozsi", developers=["Dániel Kolozsi"], designers=["Seh", "Dániel Kolozsi"], translator_credits=self._("Dániel Kolozsi"), application_icon=CONSTANTS["app_id"], comments=CONSTANTS["app_desc"], website=CONSTANTS["main_url"], transient_for=self.window, release_notes=CONSTANTS["rel_notes"], default_height=450)
         self.switchDict = {"locBut" : [self.window._main_stack._placeholder, "audio-input-microphone", "audio", self.window._str_but], "strBut" : [self.window._main_stack._str_box, "view-fullscreen", "video", self.window._loc_but]}
         self.provider, self.styles = Gtk.CssProvider(), Adw.StyleManager.get_default()
         self.settings = settings

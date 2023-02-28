@@ -2,7 +2,7 @@ app-id: io.github.swanux.hbud
 runtime: org.gnome.Platform
 runtime-version: '43'
 sdk: org.gnome.Sdk
-command: io.github.swanux.hbud
+command: hbud
 sdk-extensions:
   - org.freedesktop.Sdk.Extension.rust-stable
 
@@ -46,9 +46,9 @@ modules:
       env:
         CARGO_HOME: "/run/build/gtk4paintablesink/cargo"
     build-commands:
-    - cargo --offline fetch --manifest-path Cargo.toml --verbose
-    - cargo build --offline --release --verbose --features wayland,x11egl,x11glx
-    - install -Dm755 target/release/libgstgtk4.so -t /app/lib/gstreamer-1.0
+      - cargo --offline fetch --manifest-path Cargo.toml --verbose
+      - cargo build --offline --release --verbose --features wayland,x11egl,x11glx
+      - install -Dm755 target/release/libgstgtk4.so -t /app/lib/gstreamer-1.0
     sources:
     - type: archive
       url: https://github.com/swanux/hbud/releases/download/v0.4.1.1/gtk4paintablesink_230129.tar.xz
@@ -58,21 +58,23 @@ modules:
     buildsystem: simple
     sources:
       - type: dir
-        path: ../.
+        path: ../../.
     build-commands:
-      - mkdir -p /app/share/applications
-      - mkdir -p /app/share/hbud
-      - mkdir -p /app/bin
-      - mkdir -p /app/share/appdata
-      - mkdir -p /app/share/icons/hicolor/128x128/apps
-      - cp -r DEV_FILES/hbud /app/share/hbud/.
-      - cp DEV_FILES/io.github.swanux.hbud.desktop /app/share/applications/.
-      - cp DEV_FILES/io.github.swanux.hbud /app/share/hbud/.
-      - cp DEV_FILES/fpcalc /app/share/hbud/.
-      - install -Dm755 /app/share/hbud/fpcalc -t /app/bin/.
-      - ln -s /app/share/hbud/io.github.swanux.hbud /app/bin/.
-      - cp DEV_FILES/io.github.swanux.hbud.appdata.xml /app/share/appdata/.
-      - install -Dm644 -t /app/share/icons/hicolor/scalable/apps/ DEV_FILES/hbud/icons/io.github.swanux.hbud.svg
+      - make prefix=${FLATPAK_DEST} install
+#      - mkdir -p /app/share/applications
+#      - mkdir -p /app/share/hbud
+#      - mkdir -p /app/bin
+#      - mkdir -p /app/share/appdata
+#      - mkdir -p /app/share/icons/hicolor/128x128/apps
+#      - cp -r DEV_FILES/hbud /app/share/hbud/.
+#      - cp DEV_FILES/io.github.swanux.hbud.desktop /app/share/applications/.
+#      - cp DEV_FILES/io.github.swanux.hbud /app/share/hbud/.
+#      - cp DEV_FILES/fpcalc /app/share/hbud/.
+#      - install -Dm755 /app/share/hbud/fpcalc -t /app/bin/.
+#      - ln -s /app/share/hbud/io.github.swanux.hbud /app/bin/.
+#      - cp DEV_FILES/io.github.swanux.hbud.appdata.xml /app/share/appdata/.
+#      - install -Dm644 -t /app/share/icons/hicolor/scalable/apps/ DEV_FILES/hbud/icons/io.github.swanux.hbud.svg
 
 cleanup-commands:
   - ln -s /lib/$FLATPAK_ARCH-linux-*/gstreamer-1.0/libgstpipewire.so /app/lib/gstreamer-1.0/
+  - pip3 uninstall -y nuitka ordered-set

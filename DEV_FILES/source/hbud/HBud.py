@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-import gi, srt, azapi, json, os, sys, gettext, locale, acoustid, musicbrainzngs, subprocess
+import gi, srt, azapi, json, os, sys, acoustid, musicbrainzngs, subprocess
 from concurrent import futures
 from time import time
 from operator import itemgetter
@@ -22,15 +22,6 @@ class Main(frontend.UI):
     
     def on_activate(self, _):
         self.confDir = GLib.get_user_config_dir()
-        APP = "io.github.swanux.hbud"
-        WHERE_AM_I = os.path.abspath(os.path.dirname(__file__))
-        LOCALE_DIR = os.path.join(WHERE_AM_I, 'locale/mo')
-        print(LOCALE_DIR, locale.getlocale())
-        # print(self.tmpDir, confP)
-        locale.setlocale(locale.LC_ALL, locale.getlocale())
-        locale.bindtextdomain(APP, LOCALE_DIR)
-        gettext.bindtextdomain(APP, LOCALE_DIR)
-        gettext.textdomain(APP)
         self.API_KEY = "Erv1I6jCqZ"
         musicbrainzngs.set_useragent("hbud", "0.4.0", "https://github.com/swanux/hbud")
         try:
@@ -223,7 +214,7 @@ class Main(frontend.UI):
             video_sink = Gst.ElementFactory.make("glsinkbin", "video-sink")
             video_sink.set_property("sink", sink)
             self.videoPipe.set_property("video-sink", video_sink)
-            Gst.util_set_object_arg(self.videoPipe, "flags", "video+audio+deinterlace+soft-colorbalance+audio-resync+native-audio+native-video")
+            Gst.util_set_object_arg(self.videoPipe, "flags", "video+audio+deinterlace+soft-colorbalance")
             Gst.util_set_object_arg(self.audioPipe, "flags", "audio+soft-volume")
             self.window._main_stack._video_picture.set_paintable(paintable)
             bus = self.videoPipe.get_bus()
@@ -1291,8 +1282,9 @@ class Main(frontend.UI):
         self.lyr_states = [True, True, True]
         self.sub.hide()
 
-app = Main()
-app.connect('activate', app.on_activate)
-app.run(None)
+def run():
+    app = Main()
+    app.connect('activate', app.on_activate)
+    app.run(None)
 
 # GTK_DEBUG=interactive

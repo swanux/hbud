@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<gresources>
+  <gresource prefix="/io/github/swanux/hbud/">
+    <file preprocess="xml-stripblanks">DEV_FILES/source/ui/trackbox.ui</file>
+    <file preprocess="xml-stripblanks">DEV_FILES/source/ui/mainstack.ui</file>
+    <file preprocess="xml-stripblanks">DEV_FILES/source/ui/prefwin.ui</file>
+    <file preprocess="xml-stripblanks">DEV_FILES/source/ui/mainwindow.ui</file>
+    <file preprocess="xml-stripblanks">DEV_FILES/source/ui/sub2.ui</file>
+    <file preprocess="xml-stripblanks">DEV_FILES/source/ui/sub.ui</file>
+  </gresource>
+</gresources>
+
+<!-- <signal name="query-tooltip" handler="_on_tooltip_query"/> -->

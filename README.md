@@ -20,14 +20,14 @@ Simple audio / video player and karaoke app written in Python and GTK4
 
 ## Translation
 
-First you have to clone this repo to `/home/$USER/GitRepos/hbud` - hbud is the root of this repository
+First you have to clone this repo, then change directory into it's root (where the `Makefile` is).
 
-You can then use the provided `translate.sh`:
+You can then use the `make` command with the provided flags:
 
-- Add new translation: `./translate.sh new en_GB en`
-- Generate `.mo` files: `./translate.sh add en_GB en`
-- Update `.po` files: `./translate.sh update en_GB en`
-- Update `.mo` files: `./translate.sh upgrade en_GB en`
+- Add new translation: `make translate-new en`
+- Generate `.mo` files: `make translate-add en`
+- Update `.po` files: `make translate-update en`
+- Update `.mo` files: `make translate-upgrade en`
 
 It's important to use UTF-8 charset when needed (instead of ASCII).
 
