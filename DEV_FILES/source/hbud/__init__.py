@@ -15,11 +15,11 @@ Features:
 
     - Audio and video playback
     - Subtitle support
-    - Karaoke mode (synced lyrics needed in own srt format, see GitHub repo for instructions)
+    - Karaoke mode (synced lyrics needed in own srt format, see GitHub for instructions)
     - Static lyric automatically from online sources
     - Metadata editor (for audio files)
     - Playlists (from folder structure)
-    - Seamlessly switch back and forth between video and audio playback (remembers where to continue)
+    - Seamlessly switch between video and audio playback (remembers position)
     - Native, lightweight and simple
     - Minimalistic design
     - Customizable

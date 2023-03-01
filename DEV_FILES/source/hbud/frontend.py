@@ -5,7 +5,7 @@ import gi, gettext, sys, os
 gi.require_version('Gtk', '4.0')
 gi.require_version('Adw', '1')
 gi.require_version('Gst', '1.0')
-from gi.repository import Gtk, Gio, GLib, Adw, Gst
+from gi.repository import Gtk, Gio, GLib, Adw, Gst, Gdk
 from hbud import CONSTANTS
 
 if os.getenv('container', '') != 'flatpak':
@@ -50,10 +50,13 @@ class MainStack(Gtk.Stack):
     _top_box = Gtk.Template.Child()
     _sup_box = Gtk.Template.Child()
     _sup_scroll = Gtk.Template.Child()
+    _sup_spinbox = Gtk.Template.Child()
+    _sup_stack = Gtk.Template.Child()
     _search_play = Gtk.Template.Child()
     _order_but = Gtk.Template.Child()
     _order_but1 = Gtk.Template.Child()
     _order_but2 = Gtk.Template.Child()
+    # _drop_music = Gtk.Template.Child()
     # Page 2
     _str_box = Gtk.Template.Child()
     _video_picture = Gtk.Template.Child()
@@ -64,7 +67,11 @@ class MainStack(Gtk.Stack):
     _rd_title = Gtk.Template.Child()
     _rd_artist = Gtk.Template.Child()
     _rd_year = Gtk.Template.Child()
-    def __init__(self): super().__init__()
+    def __init__(self):
+        super().__init__()
+        content = Gdk.ContentFormats.new_for_gtype(Gdk.FileList)
+        self._drop_music = Gtk.DropTarget(formats=content, actions=Gdk.DragAction.COPY)
+        self.add_controller(self._drop_music)
 
 
 @Gtk.Template(resource_path='/io/github/swanux/hbud/DEV_FILES/source/ui/prefwin.ui')

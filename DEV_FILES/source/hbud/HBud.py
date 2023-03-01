@@ -9,11 +9,12 @@ from collections import deque
 from datetime import timedelta
 from random import sample
 from icu import Locale
+import magic
 from mediafile import MediaFile, MediaField, MP3DescStorageStyle, StorageStyle
 gi.require_version('Gtk', '4.0')
 gi.require_version('Gst', '1.0')
 gi.require_version('Adw', '1')
-from gi.repository import Gtk, GLib, GdkPixbuf, Gdk, Adw, Gio, Gst
+from gi.repository import Gtk, GLib, GdkPixbuf, Gdk, Adw, Gio, Gst 
 from hbud import letrasapi, musixapi, frontend, tools
 
 class Main(frontend.UI):
@@ -24,13 +25,6 @@ class Main(frontend.UI):
         self.confDir = GLib.get_user_config_dir()
         self.API_KEY = "Erv1I6jCqZ"
         musicbrainzngs.set_useragent("hbud", "0.4.0", "https://github.com/swanux/hbud")
-        try:
-            self.clickedE = sys.argv[1].replace("file://", "")
-            if os.path.splitext(self.clickedE)[-1] not in self.supportedList and os.path.splitext(self.clickedE)[-1] != "":
-                self.useMode = "video" 
-                print("video, now", self.clickedE)
-        except:
-            self.clickedE = False
         self.createPipeline("local")
         self.connect_signals()
         self.DAPI = azapi.AZlyrics('duckduckgo', accuracy=0.65)
@@ -54,7 +48,7 @@ class Main(frontend.UI):
         self.window.present()
         self.window._main_stack._top_box.hide()
         self.window._drop_but.hide()
-        if self.settings.get_boolean("minimal-mode") == False: self.window._title.set_subtitle(self.build_version)
+        if self.settings.get_boolean("minimal-mode") is False: self.window._title.set_subtitle(self.build_version)
         else:
             GLib.idle_add(self.window._head_box.hide)
             GLib.idle_add(self.window._main_stack.set_visible_child, self.window._main_stack._rd_box)
@@ -63,13 +57,8 @@ class Main(frontend.UI):
             GLib.idle_add(self.window._label_end.hide)
             self.window.set_resizable(False)
         self.window._loc_but.set_active(True)
-        if self.clickedE:
-            if self.useMode == "audio":
-                self.loader("xy")
-                self.on_playBut_clicked("xy")
-            else:
-                self.window._str_but.set_active(True)
-                self.on_playBut_clicked("xy")
+        try: self.manual_file_parser(sys.argv[1:])
+        except: print("No arguments specified")
 
     def connect_signals(self):
         self.window.connect("close-request", self.on_main_delete_event)
@@ -113,6 +102,9 @@ class Main(frontend.UI):
         self.window._main_stack._order_but1.connect("clicked", self.on_clear_order)
         self.window._main_stack._order_but2.connect("clicked", self.on_rescan_order)
         self.window._main_stack._video_click.connect("pressed", self.on_playBut_clicked)
+
+        self.window._main_stack._drop_music.connect("drop", self.on_drop)
+
         self.sub._ye_but.connect("clicked", self.on_correct_lyr)
         self.sub._no_but.connect("clicked", self.on_wrong_lyr)
 
@@ -159,6 +151,42 @@ class Main(frontend.UI):
             tools.themer(self.provider, self.window, self.color, self.tnum)
             self.on_next("clickMode")
 
+    def manual_file_parser(self, arguments):
+        mode, files = "", []
+        for arg in arguments:
+            tags = magic.from_file(arg, mime=True)
+            if mode == "":
+                if "audio" in tags: mode = "audio"
+                elif "video" in tags:
+                    mode = "video"
+                    self.useMode = "video"
+                    break
+                else:
+                    mode = "invalid"
+                    break
+            elif mode not in tags:
+                mode = "invalid"
+                break
+            files.append(arg)
+        if mode == "audio":
+            self.clickedE = files
+            self.window._loc_but.set_active(True)
+            self.loader("xy")
+            self.on_playBut_clicked("xy")
+        elif mode == "video":
+            self.clickedE = arguments
+            self.window._str_but.set_active(True)
+            self.on_playBut_clicked("xy")
+        else: self.clickedE = False
+
+    def on_drop(self, drop_target, value, *_):
+        del drop_target
+        files = value.get_files()
+        reaList = []
+        for file in files:
+            reaList.append(file.get_path())
+        self.manual_file_parser(reaList)
+
     def on_search(self, widget):
         print("Searching...")
         self.searched = True
@@ -174,9 +202,9 @@ class Main(frontend.UI):
     def on_sort_change(self, widget):
         print("Sorting")
         aid = int(widget.get_active_id())
-        if self.sorted == False: self.archive = self.playlist.copy()
+        if self.sorted is False: self.archive = self.playlist.copy()
         self.sorted = True
-        if aid == 0 and self.sorted == True:
+        if aid == 0 and self.sorted is True:
             self.playlist = self.archive.copy()
             self.archive = []
             self.sorted = False
@@ -225,8 +253,8 @@ class Main(frontend.UI):
             bus.connect("message", self.on_message)
 
     def on_dropped(self, button):
-        if self.window._drop_but.get_visible() == True:
-            if self.window._main_stack._top_box.get_visible() == False:
+        if self.window._drop_but.get_visible() is True:
+            if self.window._main_stack._top_box.get_visible() is False:
                 GLib.idle_add(self.window._drop_but.set_icon_name, "go-up")
                 GLib.idle_add(self.window._main_stack._top_box.show)
                 self.window._main_stack._search_play.grab_focus()
@@ -236,19 +264,19 @@ class Main(frontend.UI):
 
     def allToggle(self, button):
         btn = button.get_name()
-        if self.window._main_stack.get_visible_child() != self.switchDict[btn][0] and button.get_active() == True:
+        if self.window._main_stack.get_visible_child() != self.switchDict[btn][0] and button.get_active() is True:
             self.window._main_stack.set_visible_child(self.switchDict[btn][0])
             GLib.idle_add(self.window._bottom.show)
             if btn == "locBut":
                 GLib.idle_add(self.window._shuff_but.show)
-                if self.playlistPlayer == True: GLib.idle_add(self.window._drop_but.show)
+                if self.playlistPlayer is True: GLib.idle_add(self.window._drop_but.show)
                 GLib.idle_add(self.window._sub_track.hide)
             else:
                 GLib.idle_add(self.window._shuff_but.hide)
                 GLib.idle_add(self.window._drop_but.hide)
                 GLib.idle_add(self.window._sub_track.show)
             GLib.idle_add(self.window._karaoke_but.set_icon_name, self.switchDict[btn][1])
-            if self.playing == True:
+            if self.playing is True:
                 if self.switchDict[btn][2] == "video" and self.nowIn == "audio": self.on_playBut_clicked("xy")
                 elif self.nowIn == "video" and self.switchDict[btn][2] != "video": self.on_playBut_clicked("xy")
             self.useMode = self.switchDict[btn][2]
@@ -258,8 +286,8 @@ class Main(frontend.UI):
     
     def neo_playlist_gen(self, name="", srBox=None, dsBox=None, src=0, dst=0):
         print("neo start", time())
-        GLib.timeout_add(0, self.window._main_stack._sup_box.hide)
-        if self.settings.get_boolean("minimal-mode") == True:
+        GLib.timeout_add(0, self.window._main_stack._sup_stack.set_visible_child, self.window._main_stack._sup_spinbox)
+        if self.settings.get_boolean("minimal-mode") is True:
             self.tnum = 0
             self.on_next("clickMode")
             return
@@ -285,21 +313,21 @@ class Main(frontend.UI):
                 for i, item in enumerate(self.playlist):
                     trBox = None
                     if name == "shuff_2nd_stage":
-                        if item["hidden"] == False:
+                        if item["hidden"] is False:
                             trBox = item["widget"]
                             trBox.set_name(f"trackbox_{i}")
                     elif name != "modular" or i == self.ednum:
-                        if name != "append" or self.playlist[i]["widget"] == None:
+                        if name != "append" or self.playlist[i]["widget"] is None:
                             trBox = frontend.TrackBox(item["title"].replace("&", "&amp;"), item["artist"], i, item["year"], item["length"], item["album"])
                             self.playlist[i]["widget"] = trBox
                             trBox._right_click.connect("pressed", self.highlight)
                             trBox._left_click.connect("pressed", self.highlight)
                             self.load_cover(item["uri"], trBox.image)
                         if name == "modular" and i == self.ednum: self.window._main_stack._sup_box.insert_child_after(trBox, self.playlist[i-1]["widget"])
-                    if name != "modular" and trBox != None: self.window._main_stack._sup_box.append(trBox)
+                    if name != "modular" and trBox is not None: self.window._main_stack._sup_box.append(trBox)
                 if name != "modular" and name != "append":
                     self.playlistPlayer = True
-                    if self.title != None:
+                    if self.title is not None:
                         num = 0
                         for item in self.playlist:
                             if item["title"] == self.title: break
@@ -307,7 +335,7 @@ class Main(frontend.UI):
                         self.tnum = num
                         tools.themer(self.provider, self.window, self.color, self.tnum)
                     GLib.idle_add(self.window._drop_but.show)
-        GLib.idle_add(self.window._main_stack._sup_box.show)
+        GLib.idle_add(self.window._main_stack._sup_stack.set_visible_child, self.window._main_stack._sup_scroll)
         print("neo end", time())
 
     def metas(self, location, extrapath, misc=False):
@@ -318,7 +346,7 @@ class Main(frontend.UI):
         if not album: album = self._("Unknown")
         if not year: year = 0
         itmp = {"uri" : location, "title" : title, "artist" : artist, "year" : year, "album" : album, "length" : length, "widget" : None, "hidden" : False}
-        if misc == True:
+        if misc is True:
             if itmp not in self.playlist: self.pltmp.append(itmp)
         else: self.pltmp.append(itmp)
 
@@ -326,7 +354,9 @@ class Main(frontend.UI):
         print("loader start", time())
         self.pltmp = []
         if self.clickedE:
-            self.metas(self.clickedE, GLib.path_get_basename(self.clickedE))
+            self.folderPath = GLib.path_get_dirname(self.clickedE[0])
+            for item in self.clickedE:
+                self.metas(item, GLib.path_get_basename(item))
         else:
             pltmpin = os.listdir(path)
             for i in pltmpin:
@@ -334,9 +364,8 @@ class Main(frontend.UI):
                 if ityp in self.supportedList:
                     self.metas(f"{path}/{i}", i, misc)
         d_pl = futures.ThreadPoolExecutor(max_workers=4)
-        if misc == False:
+        if misc is False:
             self.playlist = self.pltmp
-            # print(self.playlist)
             d_pl.submit(self.neo_playlist_gen)
             # self.neo_playlist_gen()
         else:
@@ -353,7 +382,7 @@ class Main(frontend.UI):
 
     def on_openFolderBut_clicked(self, *_):
         self.clickedE = False
-        if self.playing == True: self.pause()
+        if self.playing is True: self.pause()
         if self.useMode == "audio": self.fcconstructer(self._("Please choose a folder"), Gtk.FileChooserAction.SELECT_FOLDER, "Music", self.window)
         else: self.fcconstructer(self._("Please choose a video file"), Gtk.FileChooserAction.OPEN, "Videos", self.window)
 
@@ -368,7 +397,7 @@ class Main(frontend.UI):
                     self.playlist = json.loads(f.read())
                     f.close()
                     for item in self.playlist[:]:
-                        if os.path.isfile(f"{item['uri']}") == False: self.playlist.remove(item)
+                        if os.path.isfile(f"{item['uri']}") is False: self.playlist.remove(item)
                     d_pl = futures.ThreadPoolExecutor(max_workers=4)
                     d_pl.submit(self.neo_playlist_gen)
                 else: GLib.idle_add(self.loader, self.folderPath)
@@ -424,7 +453,7 @@ class Main(frontend.UI):
 
     def sub2_hide(self, *_):
         self.sub2.hide()
-        if self.sub2._mag_spin.get_spinning() == True: self.aborte = True
+        if self.sub2._mag_spin.get_spinning() is True: self.aborte = True
         GLib.idle_add(self.sub2._mag_spin.stop)
 
     def ed_cur(self, *_):
@@ -489,10 +518,10 @@ class Main(frontend.UI):
         self.chosefrom, i = [], 0
         try:
             for score, rid, title, artist in results:
-                if self.aborte == True:
+                if self.aborte is True:
                     print("Aborted")
                     break
-                if artist != None and title != None and i <= 10:
+                if artist is not None and title is not None and i <= 10:
                     tmpData = musicbrainzngs.get_recording_by_id(rid, includes=["releases"])["recording"]["release-list"]
                     GLib.usleep(1100000)
                     i += 1
@@ -502,7 +531,7 @@ class Main(frontend.UI):
                             if item["title"] == tmpDir["title"] and item["artist"] == tmpDir["artist"] and item["year"] == tmpDir["year"]: break
                         else: self.chosefrom.append(tmpDir)
         except: print("Something bad happened...")
-        if self.aborte == True:
+        if self.aborte is True:
             print("Aborted")
             self.aborte = False
             return
@@ -517,7 +546,7 @@ class Main(frontend.UI):
             
     def next_fetch(self, data):
         for i in range(10):
-            if self.aborte == True:
+            if self.aborte is True:
                 print("Aborted")
                 self.aborte = False
                 break
@@ -532,7 +561,7 @@ class Main(frontend.UI):
         GLib.idle_add(self.sub2._ar_ent.set_text, data[0])
         GLib.idle_add(self.sub2._al_ent.set_text, data[4])
         GLib.idle_add(self.sub2._ti_ent.set_text, data[1])
-        if release != None: GLib.idle_add(self.load_cover, "brainz", release)
+        if release is not None: GLib.idle_add(self.load_cover, "brainz", release)
         GLib.idle_add(self.sub2._mag_spin.stop)
         self.sub2._sub2_toast.add_toast(Adw.Toast.new(self._('Metadata fetched successfully!')))
 
@@ -547,7 +576,7 @@ class Main(frontend.UI):
             item["widget"].set_name(f"trackbox_{i}")
         self.visnum = 0
         for i, item in enumerate(self.playlist):
-            if item["hidden"] == False and i<self.tnum: self.visnum += 1
+            if item["hidden"] is False and i<self.tnum: self.visnum += 1
         if self.tnum == self.ednum: self.play()
 
     def on_next(self, arg):
@@ -557,13 +586,13 @@ class Main(frontend.UI):
                 if "clickMode" not in arg:
                     self.tnum += 1
                     if self.tnum >= len(self.playlist): self.tnum = 0
-                    while self.playlist[self.tnum]["hidden"] == True:
+                    while self.playlist[self.tnum]["hidden"] is True:
                         self.tnum += 1
                         if self.tnum >= len(self.playlist): self.tnum = 0
                 elif arg == "clickMode0": self.tnum = 0
                 self.play()
                 if self.sub.get_visible(): self.on_karaoke_activate("xy")
-                if self.useMode == "audio" and arg != "clickMode" and self.settings.get_boolean("autoscroll") == True and self.settings.get_boolean("minimal-mode") == False:
+                if self.useMode == "audio" and arg != "clickMode" and self.settings.get_boolean("autoscroll") is True and self.settings.get_boolean("minimal-mode") is False:
                     try: self.adj.set_value(self.visnum*79-self.settings.get_int("positioning"))
                     except: print("nah")
             elif self.nowIn == "video":
@@ -598,7 +627,7 @@ class Main(frontend.UI):
             if self.nowIn == "audio":
                 self.tnum -= 1
                 if self.tnum < 0: self.tnum = len(self.playlist)-1
-                while self.playlist[self.tnum]["hidden"] == True:
+                while self.playlist[self.tnum]["hidden"] is True:
                     self.tnum -= 1
                     if self.tnum < 0: self.tnum = len(self.playlist)-1
                 try:
@@ -607,7 +636,7 @@ class Main(frontend.UI):
                 except: print("No playbin yet to stop.")
                 self.play()
                 if self.sub.get_visible(): self.on_karaoke_activate("xy")
-                if self.useMode == "audio" and self.settings.get_boolean("autoscroll") == True and self.settings.get_boolean("minimal-mode") == False:
+                if self.useMode == "audio" and self.settings.get_boolean("autoscroll") is True and self.settings.get_boolean("minimal-mode") is False:
                     try: self.adj.set_value(self.visnum*79-self.settings.get_int("positioning"))
                     except: print("nah")
             elif self.nowIn == "video":
@@ -621,10 +650,10 @@ class Main(frontend.UI):
         if self.nowIn == "audio": self.audioPipe = self.player
         elif self.nowIn == "video": self.videoPipe = self.player
         self.playing = False
-        if self.settings.get_boolean("minimal-mode") == True: self.window._label.set_text("00:00")
+        if self.settings.get_boolean("minimal-mode") is True: self.window._label.set_text("00:00")
         else: self.window._label.set_text("0:00:00")
         GLib.idle_add(self.window._play_but.set_icon_name, "media-playback-start")
-        if arg == False:
+        if arg is False:
             self.window._slider.set_value(0)
             self.res = False
             self.player.set_state(Gst.State.NULL)
@@ -661,7 +690,7 @@ class Main(frontend.UI):
             self.seeking = False
 
     def updatePos(self):
-        if(self.playing == False): return False
+        if(self.playing is False): return False
         try:
             position_nanosecs = self.player.query_position(Gst.Format.TIME)[1]
             self.position = float(position_nanosecs) / Gst.SECOND
@@ -671,18 +700,18 @@ class Main(frontend.UI):
         return True
 
     def updateSlider(self):
-        if(self.playing == False): return False
+        if(self.playing is False): return False
         try:
             duration_nanosecs = self.player.query_duration(Gst.Format.TIME)[1]
             position_nanosecs = self.player.query_position(Gst.Format.TIME)[1]
             if duration_nanosecs == -1: return True
             duration = float(duration_nanosecs) / Gst.SECOND
             remaining = float(duration_nanosecs - position_nanosecs) / Gst.SECOND
-            if self.seeking == False:
+            if self.seeking is False:
                 self.window._slider.set_range(0, duration)
                 self.window._slider.set_value(self.position)
             fvalue, svalue = str(timedelta(seconds=round(self.position))), str(timedelta(seconds=int(remaining)))
-            if self.settings.get_boolean("minimal-mode") == True: fvalue, svalue = ":".join(fvalue.split(":")[1:]), ":".join(svalue.split(":")[1:])
+            if self.settings.get_boolean("minimal-mode") is True: fvalue, svalue = ":".join(fvalue.split(":")[1:]), ":".join(svalue.split(":")[1:])
             self.window._label.set_text(fvalue)
             self.window._label_end.set_text(svalue)
         except Exception as e:
@@ -717,7 +746,7 @@ class Main(frontend.UI):
 
     def subdone(self, _):
         data = self.local_sub(Gst.uri_get_location(self.uri))
-        if data != None: self.subtitle_dict.append({"index" : "none", "lang" : "local", "content" : data})
+        if data is not None: self.subtitle_dict.append({"index" : "none", "lang" : "local", "content" : data})
         popbox = Gtk.Box.new(1, 2)
         sub_pop = self.window._sub_track.get_popover()
         if len(self.subtitle_dict) >= 1:
@@ -776,12 +805,10 @@ class Main(frontend.UI):
         else: return None
 
     def play(self, misc=""):
-        if self.clickedE:
-            self.url, self.nowIn = "file://"+self.clickedE, self.useMode
-            if self.useMode == "audio": self.player = self.audioPipe
-            else: self.player = self.videoPipe
-        elif "/" in misc:
+        if "/" in misc:
             self.url, self.nowIn, self.player = "file://"+misc, "video", self.videoPipe
+        elif self.clickedE is not False and len(self.clickedE) == 1:
+            self.url, self.nowIn, self.player = "file://"+self.clickedE[0], "video", self.videoPipe
         elif misc == "continue":
             if self.useMode == "audio":
                 if self.audioPipe.get_state(1)[1] == Gst.State.NULL: return
@@ -794,13 +821,13 @@ class Main(frontend.UI):
             except: return
         print("Play")
         self.res, self.playing, self.position = True, True, 0
-        if self.useMode == "audio" and self.nowIn != "video" and self.settings.get_boolean("autoscroll") == True:
+        if self.useMode == "audio" and self.nowIn != "video" and self.settings.get_boolean("autoscroll") is True:
             self.visnum = 0
             for i, item in enumerate(self.playlist):
-                if item["hidden"] == False and i<self.tnum: self.visnum += 1
+                if item["hidden"] is False and i<self.tnum: self.visnum += 1
         if self.useMode == "audio":
             self.title = self.playlist[self.tnum]["title"]
-            if self.settings.get_boolean("minimal-mode") == True:
+            if self.settings.get_boolean("minimal-mode") is True:
                 self.window._main_stack._rd_title.set_text(self.playlist[self.tnum]["title"])
                 self.window._main_stack._rd_artist.set_text(self.playlist[self.tnum]["artist"])
                 self.window._main_stack._rd_year.set_text(str(self.playlist[self.tnum]["year"]))
@@ -816,11 +843,11 @@ class Main(frontend.UI):
         if self.nowIn == "video" and misc != "continue": self.subtitle_search_on_play()
 
     def on_playBut_clicked(self, button, *_):
-        if self.window._play_but.is_visible() == False and self.window._main_stack._video_picture.is_visible() == False: return
-        if self.useMode == "audio" and self.nowIn != "video" and self.settings.get_boolean("autoscroll") == True and self.settings.get_boolean("minimal-mode") == False:
+        if self.window._play_but.is_visible() is False and self.window._main_stack._video_picture.is_visible() is False: return
+        if self.useMode == "audio" and self.nowIn != "video" and self.settings.get_boolean("autoscroll") is True and self.settings.get_boolean("minimal-mode") is False:
             self.visnum = 0
             for i, item in enumerate(self.playlist):
-                if item["hidden"] == False and i<self.tnum: self.visnum += 1
+                if item["hidden"] is False and i<self.tnum: self.visnum += 1
             try: self.adj.set_value(self.visnum*79-self.settings.get_int("positioning"))
             except: pass
         if self.nowIn == self.useMode or self.nowIn == "" or "/" in str(button):
@@ -838,7 +865,7 @@ class Main(frontend.UI):
         raise SystemExit
 
     def reorderer(self, src, dst):
-        if self.sorted == True or self.searched == True: return
+        if self.sorted is True or self.searched is True: return
         else:
             srcBox = self.playlist[src]["widget"]
             playlistLoc, cutList = self.playlist, []
@@ -874,20 +901,20 @@ class Main(frontend.UI):
         # print(keyval)
         try:
             if Gdk.ModifierType.CONTROL_MASK & modifier: # Ctrl combo
-                if keyval == 102 and self.settings.get_boolean("minimal-mode") == False: self.on_dropped("key")
+                if keyval == 102 and self.settings.get_boolean("minimal-mode") is False: self.on_dropped("key")
                 elif keyval == 111: self.on_openFolderBut_clicked(None)
             elif keyval == 32 and self.url: self.on_playBut_clicked(0) # Space
             elif keyval == 65307 or keyval == 65480:
                 if self.useMode == "video": self.on_karaoke_activate(0) # ESC and F11
             elif keyval == 65363: self.on_next("") # Right
             elif keyval == 65361: self.on_prev("") # Left
-            elif keyval == 65535 and self.useMode == "audio" and self.settings.get_boolean("minimal-mode") == False: # Delete
+            elif keyval == 65535 and self.useMode == "audio" and self.settings.get_boolean("minimal-mode") is False: # Delete
                 self.ednum = self.tnum
                 self.del_cur()
-            elif keyval == 65362 and self.useMode == "audio" and self.settings.get_boolean("minimal-mode") == False: # Up
+            elif keyval == 65362 and self.useMode == "audio" and self.settings.get_boolean("minimal-mode") is False: # Up
                 if self.tnum-1 < 0: self.reorderer(self.tnum, len(self.playlist)-1)
                 else: self.reorderer(self.tnum, self.tnum-1)
-            elif keyval == 65364 and self.useMode == "audio" and self.settings.get_boolean("minimal-mode") == False: # Down
+            elif keyval == 65364 and self.useMode == "audio" and self.settings.get_boolean("minimal-mode") is False: # Down
                 if self.tnum+1 > len(self.playlist)-1: self.reorderer(self.tnum, 0)
                 else: self.reorderer(self.tnum, self.tnum+1)
         except: print("No key local mate")
@@ -905,7 +932,7 @@ class Main(frontend.UI):
         if param.name in ["default-width", "default-height"]:
             x, y = emitter.get_size(Gtk.Orientation.HORIZONTAL), emitter.get_size(Gtk.Orientation.VERTICAL)
             if emitter == self.window:
-                if self.needSub == True:
+                if self.needSub is True:
                     self.size3, self.size4 = self.settings.get_int("relative-size")*y, float("0.0{}".format(self.settings.get_int("relative-margin")))*y
             else: self.size, self.size2 = 50*x, 21.4285714*x
         elif param.name == "maximized":
@@ -913,7 +940,7 @@ class Main(frontend.UI):
             sizThread.submit(self.different_resize, emitter)
         elif param.name == "fullscreened":
             self.fulle = self.window.is_fullscreen()
-            if self.fulle == True:
+            if self.fulle is True:
                 GLib.idle_add(self.window._main_header.hide)
 
             else: GLib.idle_add(self.window._main_header.show)
@@ -944,7 +971,7 @@ class Main(frontend.UI):
 
     def on_karaoke_activate(self, *_):
         if self.useMode == "audio" and self.nowIn == "audio":
-            if self.playing == True or self.res == True:
+            if self.playing is True or self.res is True:
                 print('Karaoke')
                 self.stopKar = False
                 track = self.playlist[self.tnum]["title"]
@@ -953,22 +980,15 @@ class Main(frontend.UI):
                     if artist == "AC": artist = self.playlist[self.tnum]["artist"]
                 except: artist = self.playlist[self.tnum]["artist"]
                 dbnow, neo_dbnow = [], []
-                if self.clickedE:
-                    folPathClick = GLib.path_get_dirname(self.clickedE)
-                    tmpdbnow = os.listdir(folPathClick)
-                else:
-                    tmpdbnow = os.listdir(self.folderPath)
-                    try: neo_tmpdbnow = os.listdir(self.folderPath+"/misc/")
-                    except: neo_tmpdbnow = []
+                tmpdbnow = os.listdir(self.folderPath)
+                try: neo_tmpdbnow = os.listdir(self.folderPath+"/misc/")
+                except: neo_tmpdbnow = []
                 for i in tmpdbnow:
                     if ".srt" in i or ".txt" in i:
-                        x = i
-                        if self.clickedE: dbnow.append(f"{folPathClick}{x}")
-                        else: dbnow.append(f"{self.folderPath}/{x}")
+                        dbnow.append(f"{self.folderPath}/{i}")
                 for i in neo_tmpdbnow:
                     if ".srt" in i or ".txt" in i:
-                        x = i
-                        neo_dbnow.append(f"{self.folderPath}/misc/{x}")
+                        neo_dbnow.append(f"{self.folderPath}/misc/{i}")
                 self.sub.set_title(f'{track} - {artist}')
                 tmp = os.path.splitext(self.playlist[self.tnum]["uri"])[0]
                 neo_tmp = os.path.splitext(GLib.path_get_basename(self.playlist[self.tnum]["uri"]))[0]
@@ -1010,7 +1030,7 @@ class Main(frontend.UI):
                         field = MediaField(MP3DescStorageStyle(u'offset'), StorageStyle(u'offset'))
                         f.add_field(u'offset', field)
                     except: pass
-                    if f.offset == None: f.offset = 0
+                    if f.offset is None: f.offset = 0
                     self.offset = int(f.offset)
                     GLib.idle_add(self.sub._off_spin.set_value, self.offset)
                     f.save()
@@ -1027,7 +1047,7 @@ class Main(frontend.UI):
                     GLib.idle_add(self.sub._sub_stackhead.show)
                     self.sub.present()
         elif self.useMode == "video":
-            if self.fulle == False:
+            if self.fulle is False:
                 GLib.idle_add(self.window._karaoke_but.set_icon_name, "view-restore")
                 self.window.fullscreen()
                 ld_clock = futures.ThreadPoolExecutor(max_workers=1)
@@ -1043,13 +1063,13 @@ class Main(frontend.UI):
         GLib.idle_add(self.window._lyr_stack.set_visible_child, self.window._lyr_spin)
         GLib.idle_add(self.window._lyr_spin.start)
         lyric = None
-        if self.settings.get_boolean("musixmatch") == True and self.lyr_states[0] == True:
+        if self.settings.get_boolean("musixmatch") is True and self.lyr_states[0] is True:
             print("musix")
             lyric, self.lyr_states = musixapi.get_lyric(artist, track), [False, True, True]
-        if self.settings.get_boolean("letrasbr") == True and lyric == None and self.lyr_states[1] == True:
+        if self.settings.get_boolean("letrasbr") is True and lyric is None and self.lyr_states[1] is True:
             print("letras")
             lyric, self.lyr_states = letrasapi.get_lyric(artist, track), [False, False, True]
-        if self.settings.get_boolean("azlyrics") == True and lyric == None and self.lyr_states[2] == True:
+        if self.settings.get_boolean("azlyrics") is True and lyric is None and self.lyr_states[2] is True:
             print("AZ")
             lyric, self.lyr_states = tools.get_lyric(track, artist, self.DAPI), [False, False, False]
         print("end")
@@ -1064,10 +1084,10 @@ class Main(frontend.UI):
             GLib.idle_add(self.sub.present)
 
     def mouse_enter(self, *_):
-        if self.fulle == True: self.keepReset = True
+        if self.fulle is True: self.keepReset = True
     
     def mouse_leave(self, *_):
-        if self.fulle == True: self.keepReset = False
+        if self.fulle is True: self.keepReset = False
     
     def mage(self):
         GLib.idle_add(self.window._bottom.show)
@@ -1075,13 +1095,13 @@ class Main(frontend.UI):
         self.window.set_cursor(cursor)
 
     def mouse_moving(self, _, x, y):
-        if self.fulle == True: 
+        if self.fulle is True: 
             self.countermove += 1
             if self.countermove >= 2 and self.mx != x and self.my != y:
                 self.countermove = 0
                 self.resete = True
                 self.mx, self.my = x, y
-                if self.window._bottom.get_visible() == False:
+                if self.window._bottom.get_visible() is False:
                     self.mage()
                     ld_clock = futures.ThreadPoolExecutor(max_workers=1)
                     ld_clock.submit(self.clock, "full")
@@ -1090,33 +1110,33 @@ class Main(frontend.UI):
         start = time()
         if ltype == "full":
             while time() - start < 2:
-                if self.hardReset == True: return
-                if self.keepReset == True: start = time()
-                elif self.resete == True: start, self.resete = time(), False    
+                if self.hardReset is True: return
+                if self.keepReset is True: start = time()
+                elif self.resete is True: start, self.resete = time(), False    
                 GLib.usleep(1000)
-            if self.fulle == True:
+            if self.fulle is True:
                 cursor = Gdk.Cursor.new_from_name('none')
                 self.window.set_cursor(cursor)
                 GLib.idle_add(self.window._bottom.hide)
                 self.countermove = 0
         elif ltype == "seek":
             while time() - start < 0.3:
-                if self.hardreset2 == True: return
+                if self.hardreset2 is True: return
                 start = self.resete2
                 GLib.usleep(1000)
             self.on_slider_seek()
             self.clocking = False
 
     def subShow(self, subtitle):
-        while self.needSub == True:
+        while self.needSub is True:
             GLib.usleep(1000)
             for line in subtitle:
                 if self.position >= line.start.total_seconds() and self.position <= line.end.total_seconds():
-                    if self.settings.get_boolean("dark-background") == True: GLib.idle_add(self.window._main_stack._subtitles.set_markup, f"<span size='{int(self.size3)}' color='white' background='black'>{line.content}</span>")
+                    if self.settings.get_boolean("dark-background") is True: GLib.idle_add(self.window._main_stack._subtitles.set_markup, f"<span size='{int(self.size3)}' color='white' background='black'>{line.content}</span>")
                     else: GLib.idle_add(self.window._main_stack._subtitles.set_markup, f"<span size='{int(self.size3)}' color='white'>{line.content}</span>")
                     self.window._main_stack._subtitles.set_margin_bottom(self.size4)
                     GLib.idle_add(self.window._main_stack._subtitles.show)
-                    while self.needSub == True and self.position <= line.end.total_seconds() and self.position >= line.start.total_seconds():
+                    while self.needSub is True and self.position <= line.end.total_seconds() and self.position >= line.start.total_seconds():
                         GLib.usleep(1000)
                         pass
                     GLib.idle_add(self.window._main_stack._subtitles.hide)
@@ -1226,7 +1246,7 @@ class Main(frontend.UI):
     def special_settings(self, obj, key=None):
         if key == "hwa-enabled": self.hwa_change()
         elif key == "minimal-mode":
-            if self.settings.get_boolean("minimal-mode") == False:
+            if self.settings.get_boolean("minimal-mode") is False:
                 GLib.idle_add(self.window._head_box.show)
                 GLib.idle_add(self.window._title.set_subtitle, self.build_version)
                 GLib.idle_add(self.window._main_stack.set_visible_child, self.window._main_stack._placeholder)
@@ -1256,13 +1276,13 @@ class Main(frontend.UI):
         elif key == "theme":
             self.theme = self.themeDict[self.settings.get_string("theme")]
             self.styles.set_color_scheme(self.theme)
-        elif key == None:
+        elif key is None:
             self.color = obj.get_rgba().to_string()
             self.settings.set_string("color", self.color)
             tools.themer(self.provider, self.window, self.color, self.tnum)
 
     def hwa_change(self):
-        if self.settings.get_boolean("hwa-enabled") == True:
+        if self.settings.get_boolean("hwa-enabled") is True:
             filt = Gst.ELEMENT_FACTORY_TYPE_DECODER
             filt |= Gst.ELEMENT_FACTORY_TYPE_MEDIA_VIDEO
             factories = Gst.ElementFactory.list_get_elements(filt, Gst.Rank.MARGINAL)
@@ -1272,7 +1292,7 @@ class Main(frontend.UI):
         else: target_rank = 0
         for element in self.prefwin.present_codecs:
             target_element = self.prefwin.present_codecs[element][0]
-            if target_element != None:
+            if target_element is not None:
                 target_element.set_rank(target_rank)
                 print("Rank of target plugin:", target_element.get_name(), "(", target_element.get_rank(), ")")
             else: print("Element {} is not present.".format(element))

@@ -18,6 +18,7 @@
             <property name="orientation">vertical</property>
             <child>
               <object class="AdwHeaderBar" id="_main_header">
+                <style><class name="flat"/></style>
                 <property name="title-widget">
                   <object class="AdwWindowTitle" id="_title">
                     <property name="title">HBud</property>

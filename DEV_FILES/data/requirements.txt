@@ -12,6 +12,7 @@ Nuitka==1.4.8
 ordered-set==4.1.0
 pyacoustid==1.2.2
 PyICU==2.10.2
+python-magic==0.4.27
 requests==2.28.2
 six==1.16.0
 soupsieve==2.4

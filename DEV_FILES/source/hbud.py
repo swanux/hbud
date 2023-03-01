@@ -5,15 +5,16 @@ from hbud import LANGUAGES, HBud, CONSTANTS
 def main():
     lang = os.getenv('LANG', 'en_US.UTF-8')
     chosen_lang = 'en'
-    for l in LANGUAGES:
-        if lang.split('_')[0] == l:
-            chosen_lang = l
+    for lang in LANGUAGES:
+        if lang.split('_')[0] == lang:
+            chosen_lang = lang
             break
     print(chosen_lang)
 
     if os.getenv('container', '') != 'flatpak':
         print("Running in development mode")
-        locale_dir = os.path.join(os.path.dirname(os.path.abspath("__file__")), "{}locales".format(os.getenv("HDIR", "")))
+        locale_dir = os.path.join(os.path.dirname(os.path.abspath("__file__")),
+                                  "{}locales".format(os.getenv("HDIR", "")))
         print(locale_dir)
         gettext.bindtextdomain(CONSTANTS["app_id"], locale_dir)
         gettext.textdomain(CONSTANTS["app_id"])
