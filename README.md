@@ -2,8 +2,18 @@
 Simple audio / video player and karaoke app written in Python and GTK4
 
 <p align="center"><a href="https://beta.flathub.org/apps/io.github.swanux.hbud" align="center"><img width="250" alt='Download on Flathub' src='https://raw.githubusercontent.com/swanux/hbud/master/Screenshots/flatpak-badge-new.svg'/></a></p>
-<p align="center"><a href="#"><img src='https://img.shields.io/flathub/v/io.github.swanux.hbud?label=HBud&style=for-the-badge'/></a> <a href="#"><img src='https://img.shields.io/flathub/downloads/io.github.swanux.hbud?logo=Flatpak&logoColor=white&style=for-the-badge'/></a></p>
-<p align="center"></p>
+<p align="center">
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="https://img.shields.io/flathub/v/io.github.swanux.hbud?label=HBud&style=for-the-badge">
+  <source media="(prefers-color-scheme: light)" srcset="https://img.shields.io/flathub/v/io.github.swanux.hbud?label=HBud&style=for-the-badge">
+  <img alt="Latest published version" src="https://img.shields.io/flathub/v/io.github.swanux.hbud?label=HBud&style=for-the-badge">
+</picture>
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="https://img.shields.io/flathub/downloads/io.github.swanux.hbud?logo=Flatpak&logoColor=white&style=for-the-badge">
+  <source media="(prefers-color-scheme: light)" srcset="https://img.shields.io/flathub/downloads/io.github.swanux.hbud?logo=Flatpak&logoColor=white&style=for-the-badge">
+  <img alt="Number of installs" src="https://img.shields.io/flathub/downloads/io.github.swanux.hbud?logo=Flatpak&logoColor=white&style=for-the-badge">
+</picture>
+</p>
 
 ## Features
 - Audio and video playback
