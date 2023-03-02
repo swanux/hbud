@@ -59,6 +59,8 @@ I recommend using one of these tools:
 * [gst-plugins-rs](https://gitlab.freedesktop.org/gstreamer/gst-plugins-rs) - For `gtk4paintablesink` for video playback
 * [pyacoustid](https://github.com/beetbox/pyacoustid) and [musicbrainzngs](https://github.com/alastair/python-musicbrainzngs) - For the AcoustID and MusicBrainz bindings
 * [MusicBrainz](https://beta.musicbrainz.org/) and [AcoustID](https://acoustid.org/) - For the open databases
+* [python-magic](https://github.com/ahupp/python-magic) - For the python bindings for libmagic
+* [mpris_server](https://github.com/alexdelorenzo/mpris_server) - For the MPRIS server
 * [Flatpak](https://flatpak.org/) - For this awesome distribution system
 
 # Generate synced lyrics

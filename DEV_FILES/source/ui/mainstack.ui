@@ -82,8 +82,7 @@
                         <property name="vexpand">True</property>
                         <property name="hexpand">True</property>
                         <property name="margin-top">5</property>
-                        <property name="margin-start">5</property>
-                        <property name="margin-end">5</property>
+                        <property name="margin-start">10</property>
                         <child>
                           <object class="GtkBox" id="_sup_box">
                             <property name="orientation">vertical</property>
@@ -108,8 +107,8 @@
                             <property name="halign">center</property>
                             <property name="vexpand">True</property>
                             <property name="hexpand">True</property>
-                            <property name="width-request">80</property>
-                            <property name="height-request">80</property>
+                            <property name="width-request">40</property>
+                            <property name="height-request">40</property>
                           </object>
                         </child>
                         <child>

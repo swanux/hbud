@@ -15,11 +15,14 @@ gi.require_version('Gtk', '4.0')
 gi.require_version('Gst', '1.0')
 gi.require_version('Adw', '1')
 from gi.repository import Gtk, GLib, GdkPixbuf, Gdk, Adw, Gio, Gst 
-from hbud import letrasapi, musixapi, frontend, tools
+from hbud import letrasapi, musixapi, frontend, tools, mpris
 
 class Main(frontend.UI):
     def __init__(self):
         super().__init__()
+        self.position = 0
+        self.mpris_adapter = None
+        GLib.Thread.new(None, mpris.init, self)
     
     def on_activate(self, _):
         self.confDir = GLib.get_user_config_dir()
@@ -286,7 +289,7 @@ class Main(frontend.UI):
     
     def neo_playlist_gen(self, name="", srBox=None, dsBox=None, src=0, dst=0):
         print("neo start", time())
-        GLib.timeout_add(0, self.window._main_stack._sup_stack.set_visible_child, self.window._main_stack._sup_spinbox)
+        GLib.idle_add(self.window._main_stack._sup_stack.set_visible_child, self.window._main_stack._sup_spinbox)
         if self.settings.get_boolean("minimal-mode") is True:
             self.tnum = 0
             self.on_next("clickMode")
@@ -324,7 +327,7 @@ class Main(frontend.UI):
                             trBox._left_click.connect("pressed", self.highlight)
                             self.load_cover(item["uri"], trBox.image)
                         if name == "modular" and i == self.ednum: self.window._main_stack._sup_box.insert_child_after(trBox, self.playlist[i-1]["widget"])
-                    if name != "modular" and trBox is not None: self.window._main_stack._sup_box.append(trBox)
+                    if name != "modular" and trBox is not None: GLib.idle_add(self.window._main_stack._sup_box.append, trBox)
                 if name != "modular" and name != "append":
                     self.playlistPlayer = True
                     if self.title is not None:
@@ -601,25 +604,36 @@ class Main(frontend.UI):
                 GLib.idle_add(self.window._slider.set_value, self.window._slider.get_value() + 10)
 
     def load_cover(self, mode="", bitMage=""):
-        if mode == "meta": self.binary = MediaFile(self.editingFile).art
-        elif mode == "brainz": self.binary = bitMage
-        else: self.binary = MediaFile(mode.replace('file://', '')).art
-        if not self.binary:
-            if mode == "meta" or mode == "brainz":
-                GLib.idle_add(self.sub2._meta_cover.set_from_icon_name, "emblem-music-symbolic")
+        if mode == "mpris":
+            self.binary = MediaFile(self.playlist[self.tnum]["uri"]).art
+            if not self.binary: return ""
             else:
-                GLib.idle_add(bitMage.set_from_icon_name, "emblem-music-symbolic")
+                tmpLoc = f"{self.tmpDir}/mpris_thumbnail_{self.tnum}.jpg"
+                if not os.path.isfile(tmpLoc):
+                    f = open(tmpLoc, "wb")
+                    f.write(self.binary)
+                    f.close()
+                return f"file://{tmpLoc}"
         else:
-            tmpLoc = f"{self.tmpDir}/cacheCover.jpg"
-            f = open(tmpLoc, "wb")
-            f.write(self.binary)
-            f.close()
-            if mode == "meta" or mode == "brainz":
-                coverBuf = GdkPixbuf.Pixbuf.new_from_file_at_scale(tmpLoc, 100, 100, True)
-                GLib.idle_add(self.sub2._meta_cover.set_from_pixbuf, coverBuf)
+            if mode == "meta": self.binary = MediaFile(self.editingFile).art
+            elif mode == "brainz": self.binary = bitMage
+            else: self.binary = MediaFile(mode.replace('file://', '')).art
+            if not self.binary:
+                if mode == "meta" or mode == "brainz":
+                    GLib.idle_add(self.sub2._meta_cover.set_from_icon_name, "emblem-music-symbolic")
+                else:
+                    GLib.idle_add(bitMage.set_from_icon_name, "emblem-music-symbolic")
             else:
-                coverBuf = GdkPixbuf.Pixbuf.new_from_file_at_scale(tmpLoc, 65, 65, True)
-                GLib.idle_add(bitMage.set_from_pixbuf, coverBuf)
+                tmpLoc = f"{self.tmpDir}/cacheCover.jpg"
+                f = open(tmpLoc, "wb")
+                f.write(self.binary)
+                f.close()
+                if mode == "meta" or mode == "brainz":
+                    coverBuf = GdkPixbuf.Pixbuf.new_from_file_at_scale(tmpLoc, 100, 100, True)
+                    GLib.idle_add(self.sub2._meta_cover.set_from_pixbuf, coverBuf)
+                else:
+                    coverBuf = GdkPixbuf.Pixbuf.new_from_file_at_scale(tmpLoc, 65, 65, True)
+                    GLib.idle_add(bitMage.set_from_pixbuf, coverBuf)
 
     def on_prev(self, _):
         self.stopKar = True
@@ -841,6 +855,8 @@ class Main(frontend.UI):
         GLib.timeout_add(500, self.updateSlider)
         GLib.timeout_add(40, self.updatePos)
         if self.nowIn == "video" and misc != "continue": self.subtitle_search_on_play()
+        self.mpris_adapter.emit_all()
+        self.mpris_adapter.on_playback()
 
     def on_playBut_clicked(self, button, *_):
         if self.window._play_but.is_visible() is False and self.window._main_stack._video_picture.is_visible() is False: return
@@ -858,6 +874,8 @@ class Main(frontend.UI):
                 else: self.resume()
             else: self.pause()
         else: self.play("continue")
+        self.mpris_adapter.on_playpause()
+        print("emitted")
 
     def on_main_delete_event(self, *_):
         print("Quitting...")

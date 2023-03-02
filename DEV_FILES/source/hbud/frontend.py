@@ -34,7 +34,7 @@ class TrackBox(Adw.ActionRow):
         super().__init__()
         self.set_name(f"trackbox_{id}")
         self._artist_label.set_label(artist)
-        self._year_label.set_label(str(year))
+        self._year_label.set_label("| {} |".format(str(year)))
         self._length_label.set_markup(f'<b>{length}</b>')
         formatted = title.replace("&", "&amp;")
         self.set_title(f"<b>{formatted}</b>")
