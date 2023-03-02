@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<interface domain="io.github.swanux.hbud">
+  <requires lib="libadwaita" version="1.1"/>
+  <requires lib="gtk" version="4.6"/>
+
+  <template class="HbudShortcuts" parent="GtkShortcutsWindow">
+    <property name="modal">1</property>
+    <child>
+      <object class="GtkShortcutsSection">
+        <property name="section-name">shortcuts</property>
+        <property name="max-height">12</property>
+        <child>
+          <object class="GtkShortcutsGroup">
+            <property name="title" translatable="yes">Music player</property>
+            <child>
+              <object class="GtkShortcutsShortcut">
+                <property name="accelerator">Right</property>
+                <property name="title" translatable="yes">Next song</property>
+              </object>
+            </child>
+            <child>
+              <object class="GtkShortcutsShortcut">
+                <property name="accelerator">Left</property>
+                <property name="title" translatable="yes">Previous song</property>
+              </object>
+            </child>
+            <child>
+              <object class="GtkShortcutsShortcut">
+                  <property name="accelerator">Up</property>
+                  <property name="title" translatable="yes">Move current song up</property>
+              </object>
+            </child>
+            <child>
+              <object class="GtkShortcutsShortcut">
+                  <property name="accelerator">Down</property>
+                  <property name="title" translatable="yes">Move current song down</property>
+              </object>
+            </child>
+            <child>
+              <object class="GtkShortcutsShortcut">
+                  <property name="accelerator">&lt;ctrl&gt;F</property>
+                  <property name="title" translatable="yes">Search in playqueue</property>
+              </object>
+            </child>
+            <child>
+              <object class="GtkShortcutsShortcut">
+                  <property name="accelerator">Delete</property>
+                  <property name="title" translatable="yes">Remove current song from playqueue</property>
+              </object>
+            </child>
+          </object>
+        </child>
+        <child>
+          <object class="GtkShortcutsGroup">
+            <property name="title" translatable="yes">Video player</property>
+            <child>
+              <object class="GtkShortcutsShortcut">
+                <property name="accelerator">Right</property>
+                <property name="title" translatable="yes">Forward +10s</property>
+              </object>
+            </child>
+            <child>
+              <object class="GtkShortcutsShortcut">
+                <property name="accelerator">Left</property>
+                <property name="title" translatable="yes">Backward -10s</property>
+              </object>
+            </child>
+            <child>
+              <object class="GtkShortcutsShortcut">
+                <property name="accelerator">F11</property>
+                <property name="title" translatable="yes">Fullscreen / Unfullscreen</property>
+              </object>
+            </child>
+          </object>
+        </child>
+        <child>
+          <object class="GtkShortcutsGroup">
+            <property name="title" translatable="yes">General</property>
+            <child>
+              <object class="GtkShortcutsShortcut">
+                <property name="accelerator">&lt;ctrl&gt;O</property>
+                <property name="title" translatable="yes">Open file picker window</property>
+              </object>
+            </child>
+            <child>
+              <object class="GtkShortcutsShortcut">
+                <property name="accelerator">space</property>
+                <property name="title" translatable="yes">Play / Pause</property>
+              </object>
+            </child>
+          </object>
+        </child>
+      </object>
+    </child>
+  </template>
+</interface>

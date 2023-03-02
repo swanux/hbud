@@ -34,7 +34,7 @@ class Adapter(MprisAdapter):
         GLib.Thread.new(None, self.hbud_main.on_playBut_clicked, "")
 
     def resume(self):
-        self.hbud_main.on_playBut_clicked("")
+        GLib.Thread.new(None, self.hbud_main.on_playBut_clicked, "")
 
     def stop(self):
         pass
@@ -44,12 +44,9 @@ class Adapter(MprisAdapter):
 
     def get_playstate(self) -> PlayState:
         if self.hbud_main.res is False and self.hbud_main.playing is False:
-            print("stopped")
             return PlayState.STOPPED
         elif self.hbud_main.playing is False and self.hbud_main.res is True:
-            print("paused")
             return PlayState.PAUSED
-        print("playing")
         return PlayState.PLAYING
 
     def seek(self, time):
@@ -117,7 +114,6 @@ class Adapter(MprisAdapter):
                 'xesam:artist': [song['artist']]
             }
         except:
-            print("except")
             return {'mpris:trackid': '/org/mpris/MediaPlayer2/TrackList/NoTrack'}
 
 

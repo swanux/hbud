@@ -69,6 +69,7 @@ class Main(frontend.UI):
         self.sub.connect("close-request", self.on_hide)
         self.sub2.connect("close-request", self.sub2_hide)
         self.about.connect("close-request", self.about_hide)
+        self.shortcuts.connect("close-request", self.on_shortcuts_hide)
 
         self.window._ev_key_main.connect("key-pressed", self.on_key_local)
         self.window._ev_key_main.connect("key-released", self.on_key_local_release)
@@ -77,6 +78,9 @@ class Main(frontend.UI):
 
         action = Gio.SimpleAction.new("pref", None)
         action.connect("activate", self.on_infBut_clicked)
+        self.add_action(action)
+        action = Gio.SimpleAction.new("shortcuts", None)
+        action.connect("activate", self.on_shortcuts_show)
         self.add_action(action)
         action = Gio.SimpleAction.new("about", None)
         action.connect("activate", self.on_about_clicked)
@@ -136,6 +140,10 @@ class Main(frontend.UI):
     def on_about_clicked(self, *_): self.about.show()
 
     def about_hide(self, *_): self.about.hide()
+
+    def on_shortcuts_show(self, *_): self.shortcuts.present()
+
+    def on_shortcuts_hide(self, *_): self.shortcuts.hide()
 
     def on_infBut_clicked(self, *_): self.prefwin.present()
     
@@ -922,8 +930,8 @@ class Main(frontend.UI):
                 if keyval == 102 and self.settings.get_boolean("minimal-mode") is False: self.on_dropped("key")
                 elif keyval == 111: self.on_openFolderBut_clicked(None)
             elif keyval == 32 and self.url: self.on_playBut_clicked(0) # Space
-            elif keyval == 65307 or keyval == 65480:
-                if self.useMode == "video": self.on_karaoke_activate(0) # ESC and F11
+            elif keyval == 65480:
+                if self.useMode == "video": self.on_karaoke_activate(0) # F11
             elif keyval == 65363: self.on_next("") # Right
             elif keyval == 65361: self.on_prev("") # Left
             elif keyval == 65535 and self.useMode == "audio" and self.settings.get_boolean("minimal-mode") is False: # Delete

@@ -74,6 +74,12 @@ class MainStack(Gtk.Stack):
         self.add_controller(self._drop_music)
 
 
+@Gtk.Template(resource_path='/io/github/swanux/hbud/DEV_FILES/source/ui/hbudshortcuts.ui')
+class HbudShortcuts(Gtk.ShortcutsWindow):
+    __gtype_name__ = 'HbudShortcuts'
+    def __init__(self): super().__init__()
+
+
 @Gtk.Template(resource_path='/io/github/swanux/hbud/DEV_FILES/source/ui/prefwin.ui')
 class PrefWin(Adw.PreferencesWindow):
     __gtype_name__ = 'PrefWin'
@@ -173,6 +179,8 @@ class MainWindow(Adw.Window):
         menu = Gio.Menu()
         menu_item = Gio.MenuItem.new(_('Preferences'), "app.pref")
         menu.append_item(menu_item)
+        menu_item = Gio.MenuItem.new(_('Keyboard Shortcuts'), "app.shortcuts")
+        menu.append_item(menu_item)
         menu_item = Gio.MenuItem.new(_('About'), "app.about")
         menu.append_item(menu_item)
         menu.freeze()
@@ -223,11 +231,6 @@ class UI(Adw.Application):
         self._ = gettext.gettext
         Gst.init(None)
         Adw.init()
-
-
-        # self.settings = Gio.Settings(schema_id="io.github.swanux.hbud")
-
-
         self.useMode = "audio"
         self.supportedList = ['.3gp', '.aa', '.aac', '.aax', '.aiff', '.flac', '.m4a', '.mp3', '.ogg', '.wav', '.wma', '.wv']
         self.searchDict = {"1" : ["artist", False], "2" : ["artist", True], "3" : ["title", False], "4" : ["title", True], "5" : ["year", False], "6" : ["year", True], "7" : ["length", False], "8" : ["length", True]}
@@ -253,6 +256,8 @@ class UI(Adw.Application):
         self.choser_window.set_title(self._("Which one is correct?"))
         self.seeking = False
         self.window = MainWindow()
+        self.shortcuts = HbudShortcuts()
+        self.shortcuts.set_transient_for(self.window)
         self.prefwin = PrefWin()
         self.prefwin.set_transient_for(self.window)
         self.sub2.set_transient_for(self.window)
