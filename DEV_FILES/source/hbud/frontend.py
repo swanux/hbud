@@ -56,12 +56,18 @@ class MainStack(Gtk.Stack):
     _order_but = Gtk.Template.Child()
     _order_but1 = Gtk.Template.Child()
     _order_but2 = Gtk.Template.Child()
-    # _drop_music = Gtk.Template.Child()
     # Page 2
     _str_box = Gtk.Template.Child()
     _video_picture = Gtk.Template.Child()
     _video_click = Gtk.Template.Child()
     _subtitles = Gtk.Template.Child()
+    _overlay_full = Gtk.Template.Child()
+    _overlay_play = Gtk.Template.Child()
+    _overlay_subs = Gtk.Template.Child()
+    _overlay_time = Gtk.Template.Child()
+    _overlay_scale = Gtk.Template.Child()
+    _overlay_revealer = Gtk.Template.Child()
+    _overlay_motion = Gtk.Template.Child()
     # Page 3
     _rd_box = Gtk.Template.Child()
     _rd_title = Gtk.Template.Child()
@@ -72,6 +78,12 @@ class MainStack(Gtk.Stack):
         content = Gdk.ContentFormats.new_for_gtype(Gdk.FileList)
         self._drop_music = Gtk.DropTarget(formats=content, actions=Gdk.DragAction.COPY)
         self.add_controller(self._drop_music)
+
+        controllers = self._overlay_scale.observe_controllers()
+        for controller in controllers:
+            if isinstance(controller, gi.repository.Gtk.GestureClick):
+                self._overlay_click = controller
+                break
 
 
 @Gtk.Template(resource_path='/io/github/swanux/hbud/DEV_FILES/source/ui/hbudshortcuts.ui')
@@ -147,7 +159,6 @@ class MainWindow(Adw.Window):
     _loc_but = Gtk.Template.Child()
     _drop_but = Gtk.Template.Child()
     _bottom = Gtk.Template.Child()
-    _bottom_motion = Gtk.Template.Child()
     _main_motion = Gtk.Template.Child()
     _slider = Gtk.Template.Child()
     _label = Gtk.Template.Child()
@@ -165,7 +176,6 @@ class MainWindow(Adw.Window):
     def __init__(self):
         super().__init__()
         _ = gettext.gettext
-
         settings.bind("width", self, "default-width", Gio.SettingsBindFlags.DEFAULT)
         settings.bind("height", self, "default-height", Gio.SettingsBindFlags.DEFAULT)
         settings.bind("is-maximized", self, "maximized", Gio.SettingsBindFlags.DEFAULT)
@@ -175,6 +185,7 @@ class MainWindow(Adw.Window):
         for controller in controllers:
             if isinstance(controller, gi.repository.Gtk.GestureClick):
                 self._slider_click = controller
+                break
 
         menu = Gio.Menu()
         menu_item = Gio.MenuItem.new(_('Preferences'), "app.pref")
@@ -238,7 +249,8 @@ class UI(Adw.Application):
         self.fulle, self.resete, self.keepReset, self.hardReset, self.tnum, self.sorted, self.aborte, self.hardreset2, self.resete2, self.clocking, self.searched = False, False, False, False, 0, False, False, False, False, False, False
         self.sub, self.seekBack, self.playing, self.res, self.title, self.countermove, self.mx, self.my = Sub(), False, False, False, None, 0, 0, 0
         self.offset = 0
-        self.tmpDir = GLib.get_tmp_dir()
+        self.cacheDir = GLib.get_user_cache_dir()
+        if os.path.isdir(f"{self.cacheDir}/hbud") is False: os.mkdir(f"{self.cacheDir}/hbud")
         self.lyr_states = [True, True, True]
         self.sub2 = Sub2()
         self.choser_window = Adw.Window()

@@ -44,6 +44,7 @@
                     <child>
                       <object class="GtkButton" id="_drop_but">
                         <property name="icon-name">go-down</property>
+                        <property name="visible">False</property>
                         <property name="tooltip-text" translatable="yes">More options</property>
                         <property name="can-focus">False</property>
                       </object>
@@ -72,20 +73,14 @@
                   <object class="GtkBox" id="_bottom">
                     <property name="orientation">vertical</property>
                     <property name="hexpand">True</property>
-                    <property name="margin-top">5</property>
                     <property name="margin-bottom">7</property>
                     <property name="margin-start">7</property>
-                    <property name="margin-end">5</property>
-                    <child>
-                      <object class="GtkEventControllerMotion" id="_bottom_motion"/>
-                    </child>
+                    <property name="margin-end">2</property>
                     <child>
                       <object class="GtkBox">
                         <child>
                           <object class="GtkLabel" id="_label">
-                            <property name="margin-start">3</property>
-                            <property name="margin-end">3</property>
-                            <property name="width-chars">9</property>
+                            <property name="width-chars">8</property>
                           </object>
                         </child>
                         <child>
@@ -101,9 +96,7 @@
                         </child>
                         <child>
                           <object class="GtkLabel" id="_label_end">
-                            <property name="margin-start">3</property>
-                            <property name="margin-end">3</property>
-                            <property name="width-chars">9</property>
+                            <property name="width-chars">8</property>
                           </object>
                         </child>
                       </object>
@@ -151,6 +144,7 @@
                         <child>
                           <object class="GtkMenuButton" id="_sub_track">
                             <property name="can-focus">False</property>
+                            <property name="visible">False</property>
                             <property name="icon-name">media-view-subtitles-symbolic</property>
                             <property name="sensitive">False</property>
                             <property name="margin-start">8</property>

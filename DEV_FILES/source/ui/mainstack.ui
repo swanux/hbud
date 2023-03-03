@@ -17,6 +17,7 @@
             <property name="name">placeholder</property>
             <child>
               <object class="GtkBox" id="_top_box">
+                <property name="visible">False</property>
                 <property name="margin-top">5</property>
                 <property name="margin-bottom">10</property>
                 <property name="margin-start">10</property>
@@ -151,6 +152,65 @@
                   <object class="GtkLabel" id="_subtitles">
                     <property name="name">thetitle</property>
                     <property name="valign">end</property>
+                  </object>
+                </child>
+                <child type="overlay">
+                  <object class="GtkRevealer" id="_overlay_revealer">
+                    <property name="valign">end</property>
+                    <property name="halign">center</property>
+                    <property name="transition-type">GTK_REVEALER_TRANSITION_TYPE_SLIDE_UP</property>
+                    <property name="reveal-child">False</property>
+                    <property name="margin-bottom">10</property>
+                    <child>
+                      <object class="GtkEventControllerMotion" id="_overlay_motion"/>
+                    </child>
+                    <child>
+                      <object class="GtkBox">
+                        <style><class name="overlay"/></style>
+                        <property name="spacing">8</property>
+                        <child>
+                          <object class="GtkButton" id="_overlay_play">
+                            <style><class name="flat"/></style>
+                            <property name="can-focus">False</property>
+                            <property name="icon-name">media-playback-start</property>
+                          </object>
+                        </child>
+                        <child>
+                          <object class="GtkLabel" id="_overlay_time"/>
+                        </child>
+                        <child>
+                          <object class="GtkScale" id="_overlay_scale">
+                            <property name="orientation">horizontal</property>
+                            <property name="name">overlay_scale</property>
+                            <property name="has-tooltip">True</property>
+                            <property name="hexpand">True</property>
+                            <property name="can-focus">False</property>
+                            <property name="draw-value">False</property>
+                            <property name="width-request">1000</property>
+                            <property name="height-request">40</property>
+                          </object>
+                        </child>
+                        <child>
+                          <object class="GtkMenuButton" id="_overlay_subs">
+                            <style><class name="flat"/></style>
+                            <property name="can-focus">False</property>
+                            <property name="icon-name">media-view-subtitles-symbolic</property>
+                            <property name="sensitive">False</property>
+                            <property name="direction">up</property>
+                            <property name="popover">
+                              <object class="GtkPopover"></object>
+                            </property>
+                          </object>
+                        </child>
+                        <child>
+                          <object class="GtkButton" id="_overlay_full">
+                            <style><class name="flat"/></style>
+                            <property name="can-focus">False</property>
+                            <property name="icon-name">view-restore</property>
+                          </object>
+                        </child>
+                      </object>
+                    </child>
                   </object>
                 </child>
               </object>

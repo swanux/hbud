@@ -23,6 +23,9 @@ class Main(frontend.UI):
         self.position = 0
         self.mpris_adapter = None
         GLib.Thread.new(None, mpris.init, self)
+        self.current_play = self.window._play_but
+        self.current_sub = self.window._sub_track
+        self.current_slider = self.window._slider
     
     def on_activate(self, _):
         self.confDir = GLib.get_user_config_dir()
@@ -44,13 +47,10 @@ class Main(frontend.UI):
         tools.themer(self.provider, self.window, self.color)
         self.hwa_change()
         self.adj = self.window._main_stack._sup_scroll.get_vadjustment()
-        GLib.idle_add(self.window._sub_track.hide)
         
         # Display the program
         self.window.set_application(self)
         self.window.present()
-        self.window._main_stack._top_box.hide()
-        self.window._drop_but.hide()
         if self.settings.get_boolean("minimal-mode") is False: self.window._title.set_subtitle(self.build_version)
         else:
             GLib.idle_add(self.window._head_box.hide)
@@ -95,10 +95,12 @@ class Main(frontend.UI):
         self.window._loc_but.connect("toggled", self.allToggle)
         self.window._str_but.connect("toggled", self.allToggle)
         self.window._play_but.connect("clicked", self.on_playBut_clicked)
+        self.window._main_stack._overlay_play.connect("clicked", self.on_playBut_clicked)
         self.window._prev_but.connect("clicked", self.on_prev)
         self.window._next_but.connect("clicked", self.on_next)
         self.window._shuff_but.connect("clicked", self.on_shuffBut_clicked)
         self.window._karaoke_but.connect("clicked", self.on_karaoke_activate)
+        self.window._main_stack._overlay_full.connect("clicked", self.on_karaoke_activate)
         self.window._drop_but.connect("clicked", self.on_dropped)
         self.sub2._magi_but.connect("clicked", self.on_magiBut_clicked)
         self.sub2._ichoser.connect("clicked", self.on_iChoser_clicked)
@@ -124,8 +126,11 @@ class Main(frontend.UI):
         self.window._slider_click.connect("released", self.on_slider_seek)
         self.window._slider.connect("value-changed", self.on_slider_grabbed)
         self.window._slider_click.connect("pressed", self.on_slider_grab)
-        self.window._bottom_motion.connect("enter", self.mouse_enter)
-        self.window._bottom_motion.connect("leave", self.mouse_leave)
+        self.window._main_stack._overlay_click.connect("released", self.on_slider_seek)
+        self.window._main_stack._overlay_scale.connect("value-changed", self.on_slider_grabbed)
+        self.window._main_stack._overlay_click.connect("pressed", self.on_slider_grab)
+        self.window._main_stack._overlay_motion.connect("enter", self.mouse_enter)
+        self.window._main_stack._overlay_motion.connect("leave", self.mouse_leave)
         self.window._main_motion.connect("motion", self.mouse_moving)
         self.window._prev_but.connect("clicked", self.prev_next_rel)
         self.window._next_but.connect("clicked", self.prev_next_rel)
@@ -277,7 +282,6 @@ class Main(frontend.UI):
         btn = button.get_name()
         if self.window._main_stack.get_visible_child() != self.switchDict[btn][0] and button.get_active() is True:
             self.window._main_stack.set_visible_child(self.switchDict[btn][0])
-            GLib.idle_add(self.window._bottom.show)
             if btn == "locBut":
                 GLib.idle_add(self.window._shuff_but.show)
                 if self.playlistPlayer is True: GLib.idle_add(self.window._drop_but.show)
@@ -609,14 +613,16 @@ class Main(frontend.UI):
             elif self.nowIn == "video":
                 self.seeking = True
                 self.resete2 = time()
-                GLib.idle_add(self.window._slider.set_value, self.window._slider.get_value() + 10)
+                GLib.idle_add(self.current_slider.set_value, self.current_slider.get_value() + 10)
 
     def load_cover(self, mode="", bitMage=""):
+        uuid = None
         if mode == "mpris":
             self.binary = MediaFile(self.playlist[self.tnum]["uri"]).art
             if not self.binary: return ""
             else:
-                tmpLoc = f"{self.tmpDir}/mpris_thumbnail_{self.tnum}.jpg"
+                uuid = hash(self.url)
+                tmpLoc = f"{self.cacheDir}/hbud/mpris_thumbnail_{uuid}.jpg"
                 if not os.path.isfile(tmpLoc):
                     f = open(tmpLoc, "wb")
                     f.write(self.binary)
@@ -625,17 +631,21 @@ class Main(frontend.UI):
         else:
             if mode == "meta": self.binary = MediaFile(self.editingFile).art
             elif mode == "brainz": self.binary = bitMage
-            else: self.binary = MediaFile(mode.replace('file://', '')).art
+            else:
+                uuid = hash(mode)
+                self.binary = MediaFile(mode.replace('file://', '')).art
             if not self.binary:
                 if mode == "meta" or mode == "brainz":
                     GLib.idle_add(self.sub2._meta_cover.set_from_icon_name, "emblem-music-symbolic")
                 else:
                     GLib.idle_add(bitMage.set_from_icon_name, "emblem-music-symbolic")
             else:
-                tmpLoc = f"{self.tmpDir}/cacheCover.jpg"
-                f = open(tmpLoc, "wb")
-                f.write(self.binary)
-                f.close()
+                if uuid is not None: tmpLoc = f"{self.cacheDir}/hbud/cached_{uuid}.jpg"
+                else: tmpLoc = f"{self.cacheDir}/hbud/cacheCover.jpg"
+                if not os.path.isfile(tmpLoc):
+                    f = open(tmpLoc, "wb")
+                    f.write(self.binary)
+                    f.close()
                 if mode == "meta" or mode == "brainz":
                     coverBuf = GdkPixbuf.Pixbuf.new_from_file_at_scale(tmpLoc, 100, 100, True)
                     GLib.idle_add(self.sub2._meta_cover.set_from_pixbuf, coverBuf)
@@ -664,7 +674,7 @@ class Main(frontend.UI):
             elif self.nowIn == "video":
                 self.seeking = True
                 self.resete2 = time()
-                GLib.idle_add(self.window._slider.set_value, self.window._slider.get_value() - 10)
+                GLib.idle_add(self.current_slider.set_value, self.current_slider.get_value() - 10)
 
     def stop(self, arg=False):
         print("Stop")
@@ -674,18 +684,17 @@ class Main(frontend.UI):
         self.playing = False
         if self.settings.get_boolean("minimal-mode") is True: self.window._label.set_text("00:00")
         else: self.window._label.set_text("0:00:00")
-        GLib.idle_add(self.window._play_but.set_icon_name, "media-playback-start")
+        GLib.idle_add(self._current_play.set_icon_name, "media-playback-start")
+        self.current_slider.set_value(0)
         if arg is False:
-            self.window._slider.set_value(0)
             self.res = False
             self.player.set_state(Gst.State.NULL)
-        else: self.window._slider.set_value(0)
 
     def pause(self, *_): 
         print("Pause")
         self.playing = False
         try:
-            GLib.idle_add(self.window._play_but.set_icon_name, "media-playback-start")
+            GLib.idle_add(self.current_play.set_icon_name, "media-playback-start")
             self.player.set_state(Gst.State.PAUSED)
         except: print("Pause exception")
     
@@ -693,20 +702,20 @@ class Main(frontend.UI):
         print("Resume")
         self.playing = True
         self.player.set_state(Gst.State.PLAYING)
-        GLib.idle_add(self.window._play_but.set_icon_name, "media-playback-pause")
+        GLib.idle_add(self.current_play.set_icon_name, "media-playback-pause")
         GLib.timeout_add(500, self.updateSlider)
         GLib.timeout_add(40, self.updatePos)
 
     def on_slider_grab(self, *_): self.seeking = True
     
     def on_slider_grabbed(self, *_):
-        current_time = str(timedelta(seconds=round(self.window._slider.get_value())))
-        GLib.idle_add(self.window._slider.set_tooltip_text, f"{current_time}")
+        current_time = str(timedelta(seconds=round(self.current_slider.get_value())))
+        GLib.idle_add(self.current_slider.set_tooltip_text, f"{current_time}")
 
 
     def on_slider_seek(self, *_):
         if self.useMode == self.nowIn:
-            seek_time_secs = self.window._slider.get_value()
+            seek_time_secs = self.current_slider.get_value()
             if seek_time_secs < self.position: self.seekBack = True
             self.player.seek_simple(Gst.Format.TIME,  Gst.SeekFlags.FLUSH | Gst.SeekFlags.ACCURATE, seek_time_secs * Gst.SECOND)
             self.seeking = False
@@ -724,18 +733,18 @@ class Main(frontend.UI):
     def updateSlider(self):
         if(self.playing is False): return False
         try:
-            duration_nanosecs = self.player.query_duration(Gst.Format.TIME)[1]
             position_nanosecs = self.player.query_position(Gst.Format.TIME)[1]
-            if duration_nanosecs == -1: return True
-            duration = float(duration_nanosecs) / Gst.SECOND
-            remaining = float(duration_nanosecs - position_nanosecs) / Gst.SECOND
+            if self.duration_nanosecs == -1: return True
+            remaining = float(self.duration_nanosecs - position_nanosecs) / Gst.SECOND
             if self.seeking is False:
-                self.window._slider.set_range(0, duration)
-                self.window._slider.set_value(self.position)
+                self.current_slider.set_value(self.position)
             fvalue, svalue = str(timedelta(seconds=round(self.position))), str(timedelta(seconds=int(remaining)))
             if self.settings.get_boolean("minimal-mode") is True: fvalue, svalue = ":".join(fvalue.split(":")[1:]), ":".join(svalue.split(":")[1:])
-            self.window._label.set_text(fvalue)
-            self.window._label_end.set_text(svalue)
+            if self.fulle is False:
+                self.window._label.set_text(fvalue)
+                self.window._label_end.set_text(svalue)
+            else:
+                self.window._main_stack._overlay_time.set_text(f"{fvalue} / {svalue}")
         except Exception as e:
             print (f'WS: {e}')
             pass
@@ -770,7 +779,6 @@ class Main(frontend.UI):
         data = self.local_sub(Gst.uri_get_location(self.uri))
         if data is not None: self.subtitle_dict.append({"index" : "none", "lang" : "local", "content" : data})
         popbox = Gtk.Box.new(1, 2)
-        sub_pop = self.window._sub_track.get_popover()
         if len(self.subtitle_dict) >= 1:
             check0 = Gtk.CheckButton.new_with_label(self._("Empty"))
             check0.set_name("subno_empty")
@@ -788,8 +796,8 @@ class Main(frontend.UI):
         else:
             popbox.append(Gtk.Label.new(self._("No subtitles found.")))
             popbox.append(Gtk.Label.new(self._("You may visit OpenSubtitles or Subscene.")))
-        GLib.idle_add(sub_pop.set_child, popbox)
-        GLib.idle_add(self.window._sub_track.set_sensitive, True)
+        GLib.idle_add(self.current_sub.get_popover().set_child, popbox)
+        GLib.idle_add(self.current_sub.set_sensitive, True)
 
     def sub_toggle(self, button):
         btn = button.get_name().replace("subno_", "")
@@ -803,7 +811,7 @@ class Main(frontend.UI):
             subs.submit(self.subShow, subtitle)
 
     def subtitle_search_on_play(self):
-        GLib.idle_add(self.window._sub_track.set_sensitive, False)
+        GLib.idle_add(self.current_sub.set_sensitive, False)
         self.subtitle_dict = []
         subber = futures.ThreadPoolExecutor(max_workers=4)
         submitted = subber.submit(self.extract_sub, Gst.uri_get_location(self.uri), [])
@@ -859,12 +867,23 @@ class Main(frontend.UI):
             self.player.set_property("uri", Gst.filename_to_uri(self.url.replace("file://", "")))
         self.player.set_state(Gst.State.PLAYING)
         self.uri = self.player.get_property("uri")
-        GLib.idle_add(self.window._play_but.set_icon_name, "media-playback-pause")
+        GLib.idle_add(self.current_play.set_icon_name, "media-playback-pause")
         GLib.timeout_add(500, self.updateSlider)
         GLib.timeout_add(40, self.updatePos)
         if self.nowIn == "video" and misc != "continue": self.subtitle_search_on_play()
         self.mpris_adapter.emit_all()
         self.mpris_adapter.on_playback()
+        GLib.idle_add(self.ranger)
+
+    def ranger(self):
+        while True:
+            GLib.usleep(20000)
+            try:
+                self.duration_nanosecs = self.player.query_duration(Gst.Format.TIME)[1]
+                if self.duration_nanosecs == -1: raise Exception
+                GLib.idle_add(self.current_slider.set_range, 0, float(self.duration_nanosecs) / Gst.SECOND)
+                break
+            except: pass
 
     def on_playBut_clicked(self, button, *_):
         if self.window._play_but.is_visible() is False and self.window._main_stack._video_picture.is_visible() is False: return
@@ -968,8 +987,28 @@ class Main(frontend.UI):
             self.fulle = self.window.is_fullscreen()
             if self.fulle is True:
                 GLib.idle_add(self.window._main_header.hide)
-
-            else: GLib.idle_add(self.window._main_header.show)
+                self.current_play = self.window._main_stack._overlay_play
+                self.current_sub = self.window._main_stack._overlay_subs
+                self.current_slider = self.window._main_stack._overlay_scale
+                GLib.idle_add(self.current_play.set_icon_name, self.window._play_but.get_icon_name())
+                GLib.idle_add(self.current_sub.set_sensitive, self.window._sub_track.get_sensitive())
+                widget = self.window._sub_track.get_popover().get_child()
+                self.window._sub_track.get_popover().set_child()
+                GLib.idle_add(self.current_sub.get_popover().set_child, widget)
+                GLib.idle_add(self.current_slider.set_range, 0, float(self.duration_nanosecs) / Gst.SECOND)
+                GLib.idle_add(self.window._bottom.hide)
+            else:
+                GLib.idle_add(self.window._main_header.show)
+                self.current_play = self.window._play_but
+                self.current_sub = self.window._sub_track
+                self.current_slider = self.window._slider
+                GLib.idle_add(self.current_play.set_icon_name, self.window._main_stack._overlay_play.get_icon_name())
+                GLib.idle_add(self.current_sub.set_sensitive, self.window._main_stack._overlay_subs.get_sensitive())
+                widget = self.window._main_stack._overlay_subs.get_popover().get_child()
+                self.window._main_stack._overlay_subs.get_popover().set_child()
+                GLib.idle_add(self.current_sub.get_popover().set_child, widget)
+                GLib.idle_add(self.current_slider.set_range, 0, float(self.duration_nanosecs) / Gst.SECOND)
+                GLib.idle_add(self.window._bottom.show)
             sizThread = futures.ThreadPoolExecutor(max_workers=1)
             sizThread.submit(self.different_resize, emitter)
 
@@ -1074,15 +1113,16 @@ class Main(frontend.UI):
                     self.sub.present()
         elif self.useMode == "video":
             if self.fulle is False:
-                GLib.idle_add(self.window._karaoke_but.set_icon_name, "view-restore")
                 self.window.fullscreen()
+                self.window._main_stack._overlay_revealer.set_reveal_child(True)
                 ld_clock = futures.ThreadPoolExecutor(max_workers=1)
                 ld_clock.submit(self.clock, "full")
             else:
-                GLib.idle_add(self.window._karaoke_but.set_icon_name, "view-fullscreen")
                 self.resete, self.keepReset = False, False
                 self.window.unfullscreen()
-                self.mage()
+                self.window._main_stack._overlay_revealer.set_reveal_child(False)
+                cursor = Gdk.Cursor.new_from_name('default')
+                self.window.set_cursor(cursor)
 
     def lyr_fetcher(self, artist, track):
         print("Fetcher...")
@@ -1116,18 +1156,18 @@ class Main(frontend.UI):
         if self.fulle is True: self.keepReset = False
     
     def mage(self):
-        GLib.idle_add(self.window._bottom.show)
+        self.window._main_stack._overlay_revealer.set_reveal_child(True)
         cursor = Gdk.Cursor.new_from_name('default')
         self.window.set_cursor(cursor)
 
     def mouse_moving(self, _, x, y):
-        if self.fulle is True: 
+        if self.fulle is True:
             self.countermove += 1
-            if self.countermove >= 2 and self.mx != x and self.my != y:
+            if self.countermove >= 20 and self.mx != x and self.my != y:
                 self.countermove = 0
                 self.resete = True
                 self.mx, self.my = x, y
-                if self.window._bottom.get_visible() is False:
+                if self.window._main_stack._overlay_revealer.get_reveal_child() is False:
                     self.mage()
                     ld_clock = futures.ThreadPoolExecutor(max_workers=1)
                     ld_clock.submit(self.clock, "full")
@@ -1143,7 +1183,7 @@ class Main(frontend.UI):
             if self.fulle is True:
                 cursor = Gdk.Cursor.new_from_name('none')
                 self.window.set_cursor(cursor)
-                GLib.idle_add(self.window._bottom.hide)
+                self.window._main_stack._overlay_revealer.set_reveal_child(False)
                 self.countermove = 0
         elif ltype == "seek":
             while time() - start < 0.3:

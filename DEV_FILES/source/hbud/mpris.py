@@ -105,14 +105,21 @@ class Adapter(MprisAdapter):
 
     def metadata(self) -> dict:
         try:
-            if self.hbud_main.nowIn == "video": raise Exception
-            song = self.hbud_main.playlist[self.hbud_main.tnum]
-            return {
+            if self.hbud_main.nowIn == "video":
+                return {
                 'mpris:trackid': '/track/1',
-                'mpris:artUrl': self.hbud_main.load_cover(mode="mpris"),
-                'xesam:title': song['title'],
-                'xesam:artist': [song['artist']]
+                'mpris:artUrl': "",
+                'xesam:title': GLib.path_get_basename(self.hbud_main.url.replace("file://", "")),
+                'xesam:artist': [""]
             }
+            else:
+                song = self.hbud_main.playlist[self.hbud_main.tnum]
+                return {
+                    'mpris:trackid': '/track/1',
+                    'mpris:artUrl': self.hbud_main.load_cover(mode="mpris"),
+                    'xesam:title': song['title'],
+                    'xesam:artist': [song['artist']]
+                }
         except:
             return {'mpris:trackid': '/org/mpris/MediaPlayer2/TrackList/NoTrack'}
 
