@@ -166,8 +166,8 @@
                     </child>
                     <child>
                       <object class="GtkBox">
-                        <style><class name="overlay"/></style>
                         <property name="spacing">8</property>
+                        <property name="name">overlay_box</property>
                         <child>
                           <object class="GtkButton" id="_overlay_play">
                             <style><class name="flat"/></style>
@@ -176,12 +176,14 @@
                           </object>
                         </child>
                         <child>
-                          <object class="GtkLabel" id="_overlay_time"/>
+                          <object class="GtkLabel" id="_overlay_time">
+                            <style><class name="title-4"/></style>
+                            <property name="width-chars">17</property>
+                          </object>
                         </child>
                         <child>
                           <object class="GtkScale" id="_overlay_scale">
                             <property name="orientation">horizontal</property>
-                            <property name="name">overlay_scale</property>
                             <property name="has-tooltip">True</property>
                             <property name="hexpand">True</property>
                             <property name="can-focus">False</property>

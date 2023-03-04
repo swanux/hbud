@@ -21,10 +21,16 @@ def themer(provider, window, c, w=""):
             color: #000;
             border-radius: 10px;
         }
-        #overlay_scale slider {                                                                                      
-            background-size: 100px 100px;                                                                   
-            min-width: 100px;                                                                               
-            min-height: 100px;                                                                              
+        scale slider {
+            min-height: 16px;
+            min-width: 16px;
+        }
+        highlight {
+            min-height: 16px;
+        }
+        #overlay_box {
+            background-color: rgba(0,0,0,0.7);
+            border-radius: 10px;
         }""" % (c,w,c)
         css = str.encode(css)
         provider.load_from_data(css)

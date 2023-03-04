@@ -80,7 +80,9 @@
                       <object class="GtkBox">
                         <child>
                           <object class="GtkLabel" id="_label">
-                            <property name="width-chars">8</property>
+                            <property name="width-chars">7</property>
+                            <property name="label">0:00:00</property>
+                            <style><class name="title-4"/></style>
                           </object>
                         </child>
                         <child>
@@ -96,7 +98,9 @@
                         </child>
                         <child>
                           <object class="GtkLabel" id="_label_end">
-                            <property name="width-chars">8</property>
+                            <property name="width-chars">7</property>
+                            <property name="label">0:00:00</property>
+                            <style><class name="title-4"/></style>
                           </object>
                         </child>
                       </object>

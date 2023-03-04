@@ -375,9 +375,11 @@ class Main(frontend.UI):
         else:
             pltmpin = os.listdir(path)
             for i in pltmpin:
-                ityp = os.path.splitext(i)[1]
-                if ityp in self.supportedList:
-                    self.metas(f"{path}/{i}", i, misc)
+                try:
+                    tags = magic.from_file(f"{path}/{i}", mime=True)
+                    if "audio" in tags:
+                        self.metas(f"{path}/{i}", i, misc)
+                except: pass
         d_pl = futures.ThreadPoolExecutor(max_workers=4)
         if misc is False:
             self.playlist = self.pltmp
@@ -902,7 +904,6 @@ class Main(frontend.UI):
             else: self.pause()
         else: self.play("continue")
         self.mpris_adapter.on_playpause()
-        print("emitted")
 
     def on_main_delete_event(self, *_):
         print("Quitting...")
@@ -987,30 +988,31 @@ class Main(frontend.UI):
             self.fulle = self.window.is_fullscreen()
             if self.fulle is True:
                 GLib.idle_add(self.window._main_header.hide)
-                self.current_play = self.window._main_stack._overlay_play
-                self.current_sub = self.window._main_stack._overlay_subs
-                self.current_slider = self.window._main_stack._overlay_scale
-                GLib.idle_add(self.current_play.set_icon_name, self.window._play_but.get_icon_name())
-                GLib.idle_add(self.current_sub.set_sensitive, self.window._sub_track.get_sensitive())
-                widget = self.window._sub_track.get_popover().get_child()
-                self.window._sub_track.get_popover().set_child()
-                GLib.idle_add(self.current_sub.get_popover().set_child, widget)
-                GLib.idle_add(self.current_slider.set_range, 0, float(self.duration_nanosecs) / Gst.SECOND)
+                self.switch_handler([self.current_play, self.current_sub, self.current_slider], [self.window._main_stack._overlay_play, self.window._main_stack._overlay_subs, self.window._main_stack._overlay_scale])
                 GLib.idle_add(self.window._bottom.hide)
             else:
                 GLib.idle_add(self.window._main_header.show)
-                self.current_play = self.window._play_but
-                self.current_sub = self.window._sub_track
-                self.current_slider = self.window._slider
-                GLib.idle_add(self.current_play.set_icon_name, self.window._main_stack._overlay_play.get_icon_name())
-                GLib.idle_add(self.current_sub.set_sensitive, self.window._main_stack._overlay_subs.get_sensitive())
-                widget = self.window._main_stack._overlay_subs.get_popover().get_child()
-                self.window._main_stack._overlay_subs.get_popover().set_child()
-                GLib.idle_add(self.current_sub.get_popover().set_child, widget)
-                GLib.idle_add(self.current_slider.set_range, 0, float(self.duration_nanosecs) / Gst.SECOND)
+                self.switch_handler([self.current_play, self.current_sub, self.current_slider], [self.window._play_but, self.window._sub_track, self.window._slider])
                 GLib.idle_add(self.window._bottom.show)
             sizThread = futures.ThreadPoolExecutor(max_workers=1)
             sizThread.submit(self.different_resize, emitter)
+
+    def switch_handler(self, a, b):
+        self.current_play = b[0]
+        self.current_sub = b[1]
+        self.current_slider = b[2]
+        GLib.idle_add(self.current_play.set_icon_name, a[0].get_icon_name())
+        GLib.idle_add(self.current_sub.set_sensitive, a[1].get_sensitive())
+        widget = a[1].get_popover().get_child()
+        a[1].get_popover().set_child()
+        GLib.idle_add(self.current_sub.get_popover().set_child, widget)
+        GLib.idle_add(self.current_slider.set_range, 0, float(self.duration_nanosecs) / Gst.SECOND)
+        GLib.idle_add(self.current_slider.set_value, self.position)
+        if self.fulle is False:
+            GLib.idle_add(self.window._label.set_text, self.window._main_stack._overlay_time.get_text().split(" / ")[0])
+            GLib.idle_add(self.window._label_end.set_text, self.window._main_stack._overlay_time.get_text().split(" / ")[1])
+        else:
+            GLib.idle_add(self.window._main_stack._overlay_time.set_text, "{} / {}".format(self.window._label.get_text(), self.window._label_end.get_text()))
 
     def different_resize(self, emitter):
         GLib.usleep(300000)
