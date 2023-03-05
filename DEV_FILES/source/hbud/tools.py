@@ -31,6 +31,10 @@ def themer(provider, window, c, w=""):
         #overlay_box {
             background-color: rgba(0,0,0,0.7);
             border-radius: 10px;
+        }
+        #hub_box {
+            background-color: rgba(0,0,0,0.7);
+            border-radius: 10px;
         }""" % (c,w,c)
         css = str.encode(css)
         provider.load_from_data(css)

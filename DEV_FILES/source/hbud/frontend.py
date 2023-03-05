@@ -68,6 +68,10 @@ class MainStack(Gtk.Stack):
     _overlay_scale = Gtk.Template.Child()
     _overlay_revealer = Gtk.Template.Child()
     _overlay_motion = Gtk.Template.Child()
+    _hub_motion = Gtk.Template.Child()
+    _overlay_hub = Gtk.Template.Child()
+    _current_time = Gtk.Template.Child()
+    _end_time = Gtk.Template.Child()
     # Page 3
     _rd_box = Gtk.Template.Child()
     _rd_title = Gtk.Template.Child()

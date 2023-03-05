@@ -155,12 +155,46 @@
                   </object>
                 </child>
                 <child type="overlay">
+                  <object class="GtkRevealer" id="_overlay_hub">
+                    <property name="valign">start</property>
+                    <property name="halign">start</property>
+                    <property name="transition-type">GTK_REVEALER_TRANSITION_TYPE_SLIDE_DOWN</property>
+                    <property name="reveal-child">False</property>
+                    <child>
+                      <object class="GtkEventControllerMotion" id="_hub_motion"/>
+                    </child>
+                    <child>
+                      <object class="GtkBox">
+                        <property name="orientation">vertical</property>
+                        <property name="spacing">5</property>
+                        <property name="name">hub_box</property>
+                        <property name="margin-top">10</property>
+                        <property name="margin-start">10</property>
+                        <child>
+                          <object class="GtkLabel" id="_current_time">
+                            <style><class name="title-1"/></style>
+                            <property name="label">00:00</property>
+                            <property name="width-chars">6</property>
+                            <property name="margin-top">5</property>
+                          </object>
+                        </child>
+                        <child>
+                          <object class="GtkLabel" id="_end_time">
+                            <style><class name="title-3"/></style>
+                            <property name="width-chars">16</property>
+                            <property name="margin-bottom">5</property>
+                          </object>
+                        </child>
+                      </object>
+                    </child>
+                  </object>
+                </child>
+                <child type="overlay">
                   <object class="GtkRevealer" id="_overlay_revealer">
                     <property name="valign">end</property>
                     <property name="halign">center</property>
                     <property name="transition-type">GTK_REVEALER_TRANSITION_TYPE_SLIDE_UP</property>
                     <property name="reveal-child">False</property>
-                    <property name="margin-bottom">10</property>
                     <child>
                       <object class="GtkEventControllerMotion" id="_overlay_motion"/>
                     </child>
@@ -168,6 +202,7 @@
                       <object class="GtkBox">
                         <property name="spacing">8</property>
                         <property name="name">overlay_box</property>
+                        <property name="margin-bottom">10</property>
                         <child>
                           <object class="GtkButton" id="_overlay_play">
                             <style><class name="flat"/></style>

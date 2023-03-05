@@ -6,7 +6,7 @@ from concurrent import futures
 from time import time
 from operator import itemgetter
 from collections import deque
-from datetime import timedelta
+from datetime import timedelta, datetime
 from random import sample
 from icu import Locale
 import magic
@@ -131,6 +131,8 @@ class Main(frontend.UI):
         self.window._main_stack._overlay_click.connect("pressed", self.on_slider_grab)
         self.window._main_stack._overlay_motion.connect("enter", self.mouse_enter)
         self.window._main_stack._overlay_motion.connect("leave", self.mouse_leave)
+        self.window._main_stack._hub_motion.connect("enter", self.mouse_enter)
+        self.window._main_stack._hub_motion.connect("leave", self.mouse_leave)
         self.window._main_motion.connect("motion", self.mouse_moving)
         self.window._prev_but.connect("clicked", self.prev_next_rel)
         self.window._next_but.connect("clicked", self.prev_next_rel)
@@ -737,10 +739,10 @@ class Main(frontend.UI):
         try:
             position_nanosecs = self.player.query_position(Gst.Format.TIME)[1]
             if self.duration_nanosecs == -1: return True
-            remaining = float(self.duration_nanosecs - position_nanosecs) / Gst.SECOND
+            self.remaining = float(self.duration_nanosecs - position_nanosecs) / Gst.SECOND
             if self.seeking is False:
                 self.current_slider.set_value(self.position)
-            fvalue, svalue = str(timedelta(seconds=round(self.position))), str(timedelta(seconds=int(remaining)))
+            fvalue, svalue = str(timedelta(seconds=round(self.position))), str(timedelta(seconds=int(self.remaining)))
             if self.settings.get_boolean("minimal-mode") is True: fvalue, svalue = ":".join(fvalue.split(":")[1:]), ":".join(svalue.split(":")[1:])
             if self.fulle is False:
                 self.window._label.set_text(fvalue)
@@ -1117,12 +1119,15 @@ class Main(frontend.UI):
             if self.fulle is False:
                 self.window.fullscreen()
                 self.window._main_stack._overlay_revealer.set_reveal_child(True)
+                GLib.timeout_add(500, self.displayclock)
+                self.window._main_stack._overlay_hub.set_reveal_child(True)
                 ld_clock = futures.ThreadPoolExecutor(max_workers=1)
                 ld_clock.submit(self.clock, "full")
             else:
                 self.resete, self.keepReset = False, False
                 self.window.unfullscreen()
                 self.window._main_stack._overlay_revealer.set_reveal_child(False)
+                self.window._main_stack._overlay_hub.set_reveal_child(False)
                 cursor = Gdk.Cursor.new_from_name('default')
                 self.window.set_cursor(cursor)
 
@@ -1159,13 +1164,15 @@ class Main(frontend.UI):
     
     def mage(self):
         self.window._main_stack._overlay_revealer.set_reveal_child(True)
+        GLib.timeout_add(500, self.displayclock)
+        self.window._main_stack._overlay_hub.set_reveal_child(True)
         cursor = Gdk.Cursor.new_from_name('default')
         self.window.set_cursor(cursor)
 
     def mouse_moving(self, _, x, y):
         if self.fulle is True:
             self.countermove += 1
-            if self.countermove >= 20 and self.mx != x and self.my != y:
+            if self.countermove >= 25 and self.mx != x and self.my != y:
                 self.countermove = 0
                 self.resete = True
                 self.mx, self.my = x, y
@@ -1174,6 +1181,13 @@ class Main(frontend.UI):
                     ld_clock = futures.ThreadPoolExecutor(max_workers=1)
                     ld_clock.submit(self.clock, "full")
 
+    def displayclock(self):
+        datetimenow = str(datetime.now().strftime('%H:%M'))
+        self.window._main_stack._current_time.set_label(datetimenow)
+        endtime = datetime.now()+timedelta(seconds=self.remaining)
+        self.window._main_stack._end_time.set_label(self._("Ends at: {}".format(str(endtime.strftime('%H:%M')))))
+        return self.window._main_stack._overlay_revealer.get_reveal_child()
+
     def clock(self, ltype):
         start = time()
         if ltype == "full":
@@ -1181,11 +1195,12 @@ class Main(frontend.UI):
                 if self.hardReset is True: return
                 if self.keepReset is True: start = time()
                 elif self.resete is True: start, self.resete = time(), False    
-                GLib.usleep(1000)
+                GLib.usleep(20000)
             if self.fulle is True:
                 cursor = Gdk.Cursor.new_from_name('none')
                 self.window.set_cursor(cursor)
                 self.window._main_stack._overlay_revealer.set_reveal_child(False)
+                self.window._main_stack._overlay_hub.set_reveal_child(False)
                 self.countermove = 0
         elif ltype == "seek":
             while time() - start < 0.3:
