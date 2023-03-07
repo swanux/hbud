@@ -8,6 +8,7 @@ gi.require_version('Gst', '1.0')
 from gi.repository import Gtk, Gio, GLib, Adw, Gst, Gdk
 from hbud import CONSTANTS
 
+
 if os.getenv('container', '') != 'flatpak':
     if os.getenv("HDIR", "") == "":
         Gio.resources_register(Gio.Resource.load("../io.github.swanux.hbud.gresource"))
@@ -250,14 +251,12 @@ class UI(Adw.Application):
         self.searchDict = {"1" : ["artist", False], "2" : ["artist", True], "3" : ["title", False], "4" : ["title", True], "5" : ["year", False], "6" : ["year", True], "7" : ["length", False], "8" : ["length", True]}
         self.playlistPlayer, self.needSub, self.nowIn = False, False, ""
         self.fulle, self.resete, self.keepReset, self.hardReset, self.tnum, self.sorted, self.aborte, self.hardreset2, self.resete2, self.clocking, self.searched = False, False, False, False, 0, False, False, False, False, False, False
-        self.sub, self.seekBack, self.playing, self.res, self.title, self.countermove, self.mx, self.my = Sub(), False, False, False, None, 0, 0, 0
+        self.playing, self.res, self.title, self.countermove, self.mx, self.my = False, False, None, 0, 0, 0
         self.offset = 0
         self.cacheDir = GLib.get_user_cache_dir()
         if os.path.isdir(f"{self.cacheDir}/hbud") is False: os.mkdir(f"{self.cacheDir}/hbud")
         self.lyr_states = [True, True, True]
-        self.sub2 = Sub2()
         self.choser_window = Adw.Window()
-        self.choser_window.set_transient_for(self.sub2)
         self.choser_window.set_modal(True)
         self.choser_window.set_resizable(False)
         self.headerbar = Adw.HeaderBar()
@@ -270,19 +269,21 @@ class UI(Adw.Application):
         self.choser_window.set_content(handle)
         self.choser_window.set_title(self._("Which one is correct?"))
         self.seeking = False
-        self.window = MainWindow()
-        self.shortcuts = HbudShortcuts()
-        self.shortcuts.set_transient_for(self.window)
-        self.prefwin = PrefWin()
-        self.prefwin.set_transient_for(self.window)
-        self.sub2.set_transient_for(self.window)
         self.menu = Gio.Menu()
         menu_item = Gio.MenuItem.new(self._('Delete from current playqueue'), "app.delete")
         self.menu.append_item(menu_item)
         menu_item = Gio.MenuItem.new(self._('Edit metadata'), "app.edit")
         self.menu.append_item(menu_item)
         self.menu.freeze()
-        self.about = Adw.AboutWindow(application_name=CONSTANTS["name"], version=self.build_version, copyright="Copyright © {}".format(CONSTANTS["years"]), issue_url=CONSTANTS["help_url"], license_type=Gtk.License.GPL_3_0, developer_name="Dániel Kolozsi", developers=["Dániel Kolozsi"], designers=["Seh", "Dániel Kolozsi"], translator_credits=self._("Dániel Kolozsi"), application_icon=CONSTANTS["app_id"], comments=CONSTANTS["app_desc"], website=CONSTANTS["main_url"], transient_for=self.window, release_notes=CONSTANTS["rel_notes"], default_height=450)
-        self.switchDict = {"locBut" : [self.window._main_stack._placeholder, "audio-input-microphone", "audio", self.window._str_but], "strBut" : [self.window._main_stack._str_box, "view-fullscreen", "video", self.window._loc_but]}
+        self.about = Adw.AboutWindow(application_name=CONSTANTS["name"],
+                    version=self.build_version, copyright="Copyright © {}".format(CONSTANTS["years"]),
+                    issue_url=CONSTANTS["help_url"], license_type=Gtk.License.GPL_3_0,
+                    developer_name="Dániel Kolozsi", developers=["Dániel Kolozsi"],
+                    designers=["Seh", "Dániel Kolozsi"],
+                    translator_credits=self._("Dániel Kolozsi"),
+                    application_icon=CONSTANTS["app_id"],
+                    comments=CONSTANTS["app_desc"],
+                    website=CONSTANTS["main_url"],
+                    release_notes=CONSTANTS["rel_notes"], default_height=650)
         self.provider, self.styles = Gtk.CssProvider(), Adw.StyleManager.get_default()
         self.settings = settings

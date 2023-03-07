@@ -22,7 +22,7 @@ class Adapter(MprisAdapter):
         pass
 
     def get_current_position(self) -> float:
-        return self.hbud_main.position
+        return self.hbud_main.toolClass.position
 
     def next(self):
         GLib.Thread.new(None, self.hbud_main.on_next, "")

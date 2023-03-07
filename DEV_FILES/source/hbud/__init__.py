@@ -1,7 +1,7 @@
 LANGUAGES = ['en', 'hu']
 
 CONSTANTS = {
-    "version" : "0.4.1.2 - Theresa",
+    "version" : "0.4.2 - Theresa",
     "years" : "2021-2023",
     "name" : "HBud",
     "main_url" : "https://github.com/swanux/hbud",
@@ -26,7 +26,7 @@ Features:
     - Flatpak package for compatibility and security
 """,
 
-    "rel_notes" : """<p>Fixes and improvements</p>
+    "rel_notes" : """<p></p>
 <ul>
     <li></li>
 </ul>"""

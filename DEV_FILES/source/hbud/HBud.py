@@ -15,28 +15,44 @@ gi.require_version('Gtk', '4.0')
 gi.require_version('Gst', '1.0')
 gi.require_version('Adw', '1')
 from gi.repository import Gtk, GLib, GdkPixbuf, Gdk, Adw, Gio, Gst 
-from hbud import letrasapi, musixapi, frontend, tools, mpris
+from hbud import letrasapi, musixapi, frontend, mpris, tools
 
 class Main(frontend.UI):
     def __init__(self):
         super().__init__()
-        self.position = 0
+        self.toolClass = tools.Tools()
+        self.toolClass.position = 0
         self.mpris_adapter = None
         GLib.Thread.new(None, mpris.init, self)
-        self.current_play = self.window._play_but
-        self.current_sub = self.window._sub_track
-        self.current_slider = self.window._slider
     
     def on_activate(self, _):
         self.confDir = GLib.get_user_config_dir()
         self.API_KEY = "Erv1I6jCqZ"
-        musicbrainzngs.set_useragent("hbud", "0.4.0", "https://github.com/swanux/hbud")
+        musicbrainzngs.set_useragent("hbud", "0.4.2", "https://github.com/swanux/hbud")
+        self.DAPI = azapi.AZlyrics('duckduckgo', accuracy=0.65)
+        self.window = frontend.MainWindow()
+        self.sub = frontend.Sub()
+        self.sub2 = frontend.Sub2()
+        self.sub2.set_transient_for(self.window)
+        self.choser_window.set_transient_for(self.sub2)
+        self.shortcuts = frontend.HbudShortcuts()
+        self.shortcuts.set_transient_for(self.window)
+        self.prefwin = frontend.PrefWin()
+        self.prefwin.set_transient_for(self.window)
+        self.about.set_transient_for(self.window)
+        self.switchDict = {"locBut" : [self.window._main_stack._placeholder, "audio-input-microphone", "audio", self.window._str_but],
+                           "strBut" : [self.window._main_stack._str_box, "view-fullscreen", "video", self.window._loc_but]}
+        self.current_play = self.window._play_but
+        self.current_sub = self.window._sub_track
+        self.current_slider = self.window._slider
+        self.toolClass.label1 = self.sub._label1
+        self.toolClass.label2 = self.sub._label2
+        self.toolClass.label3 = self.sub._label3
         self.createPipeline("local")
         self.connect_signals()
-        self.DAPI = azapi.AZlyrics('duckduckgo', accuracy=0.65)
 
         self.size3, self.size4 = self.settings.get_int("relative-size")*450, float("0.0{}".format(self.settings.get_int("relative-margin")))*450
-        self.size, self.size2 = 35000, 15000
+        self.toolClass.size, self.toolClass.size2 = 35000, 15000
         self.themeDict = {"0" : 0, "1" : 4, "2" : 1}
         self.theme = self.themeDict[self.settings.get_string("theme")]
         self.styles.set_color_scheme(self.theme)
@@ -44,7 +60,7 @@ class Main(frontend.UI):
         coco = Gdk.RGBA()
         coco.parse(self.color)
         self.prefwin._colorer.set_rgba(coco)
-        tools.themer(self.provider, self.window, self.color)
+        self.toolClass.themer(self.provider, self.window, self.color)
         self.hwa_change()
         self.adj = self.window._main_stack._sup_scroll.get_vadjustment()
         
@@ -56,7 +72,6 @@ class Main(frontend.UI):
             GLib.idle_add(self.window._head_box.hide)
             GLib.idle_add(self.window._main_stack.set_visible_child, self.window._main_stack._rd_box)
             GLib.idle_add(self.window.set_default_size, 1, 1)
-            GLib.idle_add(self.window._main_header.add_css_class, "flat")
             GLib.idle_add(self.window._label_end.hide)
             self.window.set_resizable(False)
         self.window._loc_but.set_active(True)
@@ -166,7 +181,7 @@ class Main(frontend.UI):
             self.popover.popup()
         elif widget.get_button() == 1:
             self.tnum = int(widget.get_widget().get_name().replace("trackbox_", ""))
-            tools.themer(self.provider, self.window, self.color, self.tnum)
+            self.toolClass.themer(self.provider, self.window, self.color, self.tnum)
             self.on_next("clickMode")
 
     def manual_file_parser(self, arguments):
@@ -233,7 +248,7 @@ class Main(frontend.UI):
             if item["title"] == self.title: break
             else: num += 1
         self.tnum = num
-        tools.themer(self.provider, self.window, self.color, self.tnum)
+        self.toolClass.themer(self.provider, self.window, self.color, self.tnum)
 
     def on_clear_order(self, _):
         tmname = self.folderPath.replace("/", ">")
@@ -320,7 +335,7 @@ class Main(frontend.UI):
                 else:
                     if src > self.tnum and dst < self.tnum: self.tnum += 1
                     elif src < self.tnum and dst > self.tnum: self.tnum -= 1
-                tools.themer(self.provider, self.window, self.color, self.tnum)
+                self.toolClass.themer(self.provider, self.window, self.color, self.tnum)
             else:
                 if name != "modular" and name != "append":
                     child = self.window._main_stack._sup_box.get_first_child()
@@ -350,7 +365,7 @@ class Main(frontend.UI):
                             if item["title"] == self.title: break
                             else: num += 1
                         self.tnum = num
-                        tools.themer(self.provider, self.window, self.color, self.tnum)
+                        self.toolClass.themer(self.provider, self.window, self.color, self.tnum)
                     GLib.idle_add(self.window._drop_but.show)
         GLib.idle_add(self.window._main_stack._sup_stack.set_visible_child, self.window._main_stack._sup_scroll)
         print("neo end", time())
@@ -599,7 +614,7 @@ class Main(frontend.UI):
         if self.tnum == self.ednum: self.play()
 
     def on_next(self, arg):
-        self.stopKar = True
+        self.toolClass.stopKar = True
         if self.nowIn == self.useMode or "clickMode" in arg:
             if self.nowIn == "audio" or "clickMode" in arg:
                 if "clickMode" not in arg:
@@ -658,7 +673,7 @@ class Main(frontend.UI):
                     GLib.idle_add(bitMage.set_from_pixbuf, coverBuf)
 
     def on_prev(self, _):
-        self.stopKar = True
+        self.toolClass.stopKar = True
         if self.nowIn == self.useMode:
             if self.nowIn == "audio":
                 self.tnum -= 1
@@ -720,7 +735,7 @@ class Main(frontend.UI):
     def on_slider_seek(self, *_):
         if self.useMode == self.nowIn:
             seek_time_secs = self.current_slider.get_value()
-            if seek_time_secs < self.position: self.seekBack = True
+            if seek_time_secs < self.toolClass.position: self.toolClass.seekBack = True
             self.player.seek_simple(Gst.Format.TIME,  Gst.SeekFlags.FLUSH | Gst.SeekFlags.ACCURATE, seek_time_secs * Gst.SECOND)
             self.seeking = False
 
@@ -728,7 +743,7 @@ class Main(frontend.UI):
         if(self.playing is False): return False
         try:
             position_nanosecs = self.player.query_position(Gst.Format.TIME)[1]
-            self.position = float(position_nanosecs) / Gst.SECOND
+            self.toolClass.position = float(position_nanosecs) / Gst.SECOND
         except Exception as e:
             print (f'WP: {e}')
             pass
@@ -741,8 +756,8 @@ class Main(frontend.UI):
             if self.duration_nanosecs == -1: return True
             self.remaining = float(self.duration_nanosecs - position_nanosecs) / Gst.SECOND
             if self.seeking is False:
-                self.current_slider.set_value(self.position)
-            fvalue, svalue = str(timedelta(seconds=round(self.position))), str(timedelta(seconds=int(self.remaining)))
+                self.current_slider.set_value(self.toolClass.position)
+            fvalue, svalue = str(timedelta(seconds=round(self.toolClass.position))), str(timedelta(seconds=int(self.remaining)))
             if self.settings.get_boolean("minimal-mode") is True: fvalue, svalue = ":".join(fvalue.split(":")[1:]), ":".join(svalue.split(":")[1:])
             if self.fulle is False:
                 self.window._label.set_text(fvalue)
@@ -854,7 +869,7 @@ class Main(frontend.UI):
             try: self.url, self.nowIn, self.player = "file://"+self.playlist[self.tnum]["uri"], "audio", self.audioPipe
             except: return
         print("Play")
-        self.res, self.playing, self.position = True, True, 0
+        self.res, self.playing, self.toolClass.position = True, True, 0
         if self.useMode == "audio" and self.nowIn != "video" and self.settings.get_boolean("autoscroll") is True:
             self.visnum = 0
             for i, item in enumerate(self.playlist):
@@ -865,7 +880,7 @@ class Main(frontend.UI):
                 self.window._main_stack._rd_title.set_text(self.playlist[self.tnum]["title"])
                 self.window._main_stack._rd_artist.set_text(self.playlist[self.tnum]["artist"])
                 self.window._main_stack._rd_year.set_text(str(self.playlist[self.tnum]["year"]))
-            else: tools.themer(self.provider, self.window, self.color, self.tnum)
+            else: self.toolClass.themer(self.provider, self.window, self.color, self.tnum)
         if misc != "continue":
             self.player.set_state(Gst.State.NULL)
             self.player.set_property("uri", Gst.filename_to_uri(self.url.replace("file://", "")))
@@ -907,9 +922,9 @@ class Main(frontend.UI):
         else: self.play("continue")
         self.mpris_adapter.on_playpause()
 
-    def on_main_delete_event(self, *_):
+    def on_main_delete_event(self, _):
         print("Quitting...")
-        self.stopKar, self.hardReset, self.needSub, self.hardreset2 = True, True, False, True
+        self.toolClass.stopKar, self.hardReset, self.needSub, self.hardreset2 = True, True, False, True
         raise SystemExit
 
     def reorderer(self, src, dst):
@@ -965,7 +980,7 @@ class Main(frontend.UI):
             elif keyval == 65364 and self.useMode == "audio" and self.settings.get_boolean("minimal-mode") is False: # Down
                 if self.tnum+1 > len(self.playlist)-1: self.reorderer(self.tnum, 0)
                 else: self.reorderer(self.tnum, self.tnum+1)
-        except: print("No key local mate")
+        except: print("No key local")
 
     def on_message(self, _, message):
         t = message.type
@@ -979,10 +994,12 @@ class Main(frontend.UI):
     def _on_notify(self, emitter, param):
         if param.name in ["default-width", "default-height"]:
             x, y = emitter.get_size(Gtk.Orientation.HORIZONTAL), emitter.get_size(Gtk.Orientation.VERTICAL)
-            if emitter == self.window:
-                if self.needSub is True:
-                    self.size3, self.size4 = self.settings.get_int("relative-size")*y, float("0.0{}".format(self.settings.get_int("relative-margin")))*y
-            else: self.size, self.size2 = 50*x, 21.4285714*x
+            try:
+                if emitter == self.window:
+                    if self.needSub is True:
+                        self.size3, self.size4 = self.settings.get_int("relative-size")*y, float("0.0{}".format(self.settings.get_int("relative-margin")))*y
+                else: self.toolClass.size, self.toolClass.size2 = 50*x, 21.4285714*x
+            except: return
         elif param.name == "maximized":
             sizThread = futures.ThreadPoolExecutor(max_workers=1)
             sizThread.submit(self.different_resize, emitter)
@@ -1009,7 +1026,7 @@ class Main(frontend.UI):
         a[1].get_popover().set_child()
         GLib.idle_add(self.current_sub.get_popover().set_child, widget)
         GLib.idle_add(self.current_slider.set_range, 0, float(self.duration_nanosecs) / Gst.SECOND)
-        GLib.idle_add(self.current_slider.set_value, self.position)
+        GLib.idle_add(self.current_slider.set_value, self.toolClass.position)
         if self.fulle is False:
             GLib.idle_add(self.window._label.set_text, self.window._main_stack._overlay_time.get_text().split(" / ")[0])
             GLib.idle_add(self.window._label_end.set_text, self.window._main_stack._overlay_time.get_text().split(" / ")[1])
@@ -1020,13 +1037,13 @@ class Main(frontend.UI):
         GLib.usleep(300000)
         x, y = emitter.get_size(Gtk.Orientation.HORIZONTAL), emitter.get_size(Gtk.Orientation.VERTICAL)
         if emitter == self.window: self.size3, self.size4 = self.settings.get_int("relative-size")*y, float("0.0{}".format(self.settings.get_int("relative-margin")))*y
-        else: self.size, self.size2 = 50*x, 21.4285714*x
+        else: self.toolClass.size, self.toolClass.size2 = 50*x, 21.4285714*x
 
     def on_off_but_clicked(self, _):
         self.sub._off_spin.update()
-        self.offset = int(self.sub._off_spin.get_value())
+        self.toolClass.offset = int(self.sub._off_spin.get_value())
         f = MediaFile(self.playlist[self.tnum]["uri"])
-        f.offset = self.offset
+        f.offset = self.toolClass.offset
         f.save()
         self.sub.set_focus(None)
 
@@ -1042,7 +1059,7 @@ class Main(frontend.UI):
         if self.useMode == "audio" and self.nowIn == "audio":
             if self.playing is True or self.res is True:
                 print('Karaoke')
-                self.stopKar = False
+                self.toolClass.stopKar = False
                 track = self.playlist[self.tnum]["title"]
                 try:
                     artist = self.playlist[self.tnum]["artist"].split("/")[0]
@@ -1100,8 +1117,8 @@ class Main(frontend.UI):
                         f.add_field(u'offset', field)
                     except: pass
                     if f.offset is None: f.offset = 0
-                    self.offset = int(f.offset)
-                    GLib.idle_add(self.sub._off_spin.set_value, self.offset)
+                    self.toolClass.offset = int(f.offset)
+                    GLib.idle_add(self.sub._off_spin.set_value, self.toolClass.offset)
                     f.save()
                     print("FOUND")
                     try:
@@ -1110,7 +1127,7 @@ class Main(frontend.UI):
                         with open (f"{self.folderPath}/misc/{neo_tmp}.srt", "r") as subfile: presub = subfile.read()
                     subtitle_gen = srt.parse(presub)
                     subtitle, lyrs = list(subtitle_gen), futures.ThreadPoolExecutor(max_workers=2)
-                    lyrs.submit(self.slideShow, subtitle)
+                    lyrs.submit(self.toolClass.slideShow, subtitle)
                     self.sub._sub_stack.set_visible_child(self.sub._label1.get_parent().get_parent().get_parent())
                     self.sub._sub_stackhead.set_visible_child(self.sub._sub_box)
                     GLib.idle_add(self.sub._sub_stackhead.show)
@@ -1144,7 +1161,7 @@ class Main(frontend.UI):
             lyric, self.lyr_states = letrasapi.get_lyric(artist, track), [False, False, True]
         if self.settings.get_boolean("azlyrics") is True and lyric is None and self.lyr_states[2] is True:
             print("AZ")
-            lyric, self.lyr_states = tools.get_lyric(track, artist, self.DAPI), [False, False, False]
+            lyric, self.lyr_states = self.toolClass.get_lyric(track, artist, self.DAPI), [False, False, False]
         print("end")
         GLib.idle_add(self.window._lyr_stack.set_visible_child, self.window._karaoke_but)
         if lyric == 0:
@@ -1214,127 +1231,25 @@ class Main(frontend.UI):
         while self.needSub is True:
             GLib.usleep(1000)
             for line in subtitle:
-                if self.position >= line.start.total_seconds() and self.position <= line.end.total_seconds():
+                if self.toolClass.position >= line.start.total_seconds() and self.toolClass.position <= line.end.total_seconds():
                     if self.settings.get_boolean("dark-background") is True: GLib.idle_add(self.window._main_stack._subtitles.set_markup, f"<span size='{int(self.size3)}' color='white' background='black'>{line.content}</span>")
                     else: GLib.idle_add(self.window._main_stack._subtitles.set_markup, f"<span size='{int(self.size3)}' color='white'>{line.content}</span>")
                     self.window._main_stack._subtitles.set_margin_bottom(self.size4)
                     GLib.idle_add(self.window._main_stack._subtitles.show)
-                    while self.needSub is True and self.position <= line.end.total_seconds() and self.position >= line.start.total_seconds():
+                    while self.needSub is True and self.toolClass.position <= line.end.total_seconds() and self.toolClass.position >= line.start.total_seconds():
                         GLib.usleep(1000)
                         pass
                     GLib.idle_add(self.window._main_stack._subtitles.hide)
                     GLib.idle_add(self.window._main_stack._subtitles.set_label, "")
 
-    def slideShow(self, subtitle):
-        self.lenlist = len(subtitle)-1
-        while not self.stopKar:
-            self.line1, self.line2, self.line3, self.buffer = [], [], [], []
-            self.hav1, self.hav2, self.hav3, self.where = False, False, False, -1
-            for word in subtitle:
-                if '#' in word.content:
-                    self.buffer.append(word)
-                    if not self.hav1: self.to1()
-                    elif not self.hav2: self.to2()
-                    else: self.to3()
-                else: self.buffer.append(word)
-                if self.stopKar or self.seekBack: break
-                self.where += 1
-            if not self.seekBack:
-                self.to2()
-                self.to1()
-                self.line2 = []
-                self.sync()
-                self.stopKar = True
-            else: self.seekBack = False
-    
-    def to1(self):
-        if self.hav2: self.line1 = self.line2
-        else:
-            self.line1 = self.buffer
-            self.buffer = []
-        self.hav1 = True
-
-    def to2(self):
-        if self.where+1 <= self.lenlist:
-            if self.hav3: self.line2 = self.line3
-            else:
-                self.line2 = self.buffer
-                self.buffer = []
-            self.hav2 = True
-        else:
-            if self.hav1 and not self.hav3: self.to1()
-            self.line2 = self.line3
-            self.line3 = []
-            self.sync()
-
-    def to3(self):
-        if self.where+2 <= self.lenlist:
-            if self.hav1 and self.hav3: self.to1()
-            if self.hav2 and self.hav3: self.to2()
-            self.line3 = self.buffer
-            self.buffer, self.hav3 = [], True
-        else:
-            if self.hav1: self.to1()
-            if self.hav2: self.to2()
-            self.line3 = self.buffer
-            self.buffer, self.hav3 = [], False
-        self.sync()
-
-    def sync(self):
-        simpl2, simpl3 = "", ""
-        if self.line2 != []:
-            for z in self.line2:
-                if self.stopKar or self.seekBack: break
-                simpl2 += f"{z.content.replace('#', '')} "
-        else: simpl2 = ""
-        if self.line3 != []:
-            for z in self.line3:
-                if self.stopKar or self.seekBack: break
-                simpl3 += f"{z.content.replace('#', '')} "
-        else: simpl3 = ""
-        GLib.idle_add(self.sub._label2.set_markup, f"<span size='{int(self.size2)}'>{simpl2}</span>")
-        GLib.idle_add(self.sub._label3.set_markup, f"<span size='{int(self.size2)}'>{simpl3}</span>")
-        done, tmpline, first, tl1, it = "", self.line1[:], True, self.line1, 1
-        tl1.insert(0, "")
-        maxit = len(tl1)-1
-        for xy in tl1:
-            if self.stopKar or self.seekBack: break
-            if first: first = False
-            else: tmpline = tmpline[1:]
-            leftover = ""
-            for y in tmpline:
-                if self.stopKar or self.seekBack: break
-                leftover += f"{y.content.replace('#', '')} "
-            if done == "":
-                try:
-                    xy == ""
-                    GLib.idle_add(self.sub._label1.set_markup, f"<span size='{self.size}'>{leftover.strip()}</span>")
-                except: GLib.idle_add(self.sub._label1.set_markup, f"<span size='{self.size}' color='green'>{xy.content.replace('#', '')}</span><span size='{self.size}'> {leftover.strip()}</span>")
-            if leftover == "" and done != "": GLib.idle_add(self.sub._label1.set_markup, f"<span size='{self.size}' color='green'>{done.strip()} </span><span size='{self.size}' color='green'>{xy.content.replace('#', '')}</span>")
-            elif done != "": GLib.idle_add(self.sub._label1.set_markup, f"<span size='{self.size}' color='green'>{done.strip()} </span><span size='{self.size}' color='green'>{xy.content.replace('#', '')}</span><span size='{self.size}'> {leftover.strip()}</span>")
-            while not self.stopKar:
-                GLib.usleep(10000)
-                if it > maxit:
-                    if self.position >= xy.end.total_seconds()+self.offset/1000 and self.position >= 0.5: break
-                else:
-                    xz = tl1[it]
-                    if self.position >= xz.start.total_seconds()+self.offset/1000 and self.position >= 0.5: break
-                if self.seekBack: break
-            it += 1
-            try:
-                if done == "": done += f"{xy.content.replace('#', '')}"
-                else: done += f" {xy.content.replace('#', '')}"
-            except: pass
-
     def special_settings(self, obj, key=None):
         if key == "hwa-enabled": self.hwa_change()
         elif key == "minimal-mode":
-            if self.settings.get_boolean("minimal-mode") is False:
+            if obj.get_boolean("minimal-mode") is False:
                 GLib.idle_add(self.window._head_box.show)
                 GLib.idle_add(self.window._title.set_subtitle, self.build_version)
                 GLib.idle_add(self.window._main_stack.set_visible_child, self.window._main_stack._placeholder)
                 GLib.idle_add(self.window.set_default_size, 600, 450)
-                GLib.idle_add(self.window._main_header.remove_css_class, "flat")
                 GLib.idle_add(self.window._label_end.show)
                 self.window.set_resizable(True)
                 d_pl = futures.ThreadPoolExecutor(max_workers=4)
@@ -1345,7 +1260,6 @@ class Main(frontend.UI):
                 GLib.idle_add(self.window._title.set_subtitle, "")
                 GLib.idle_add(self.window._main_stack.set_visible_child, self.window._main_stack._rd_box)
                 GLib.idle_add(self.window.set_default_size, 1, 1)
-                GLib.idle_add(self.window._main_header.add_css_class, "flat")
                 GLib.idle_add(self.window._label_end.hide)
                 try:
                     GLib.idle_add(self.window._main_stack._rd_title.set_text, self.playlist[self.tnum]["title"])
@@ -1357,12 +1271,12 @@ class Main(frontend.UI):
             GLib.idle_add(self.window.hide)
             GLib.idle_add(self.window.present)
         elif key == "theme":
-            self.theme = self.themeDict[self.settings.get_string("theme")]
+            self.theme = self.themeDict[obj.get_string("theme")]
             self.styles.set_color_scheme(self.theme)
         elif key is None:
             self.color = obj.get_rgba().to_string()
             self.settings.set_string("color", self.color)
-            tools.themer(self.provider, self.window, self.color, self.tnum)
+            self.toolClass.themer(self.provider, self.window, self.color, self.tnum)
 
     def hwa_change(self):
         if self.settings.get_boolean("hwa-enabled") is True:
@@ -1381,11 +1295,12 @@ class Main(frontend.UI):
             else: print("Element {} is not present.".format(element))
 
     def on_hide(self, *_):
-        self.stopKar = True
+        self.toolClass.stopKar = True
         self.lyr_states = [True, True, True]
         self.sub.hide()
 
 def run():
     app = Main()
+    frontend.app = app
     app.connect('activate', app.on_activate)
     app.run(None)
