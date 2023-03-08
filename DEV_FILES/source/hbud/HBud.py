@@ -22,32 +22,21 @@ class Main(frontend.UI):
         super().__init__()
         self.toolClass = tools.Tools()
         self.toolClass.position = 0
+        self.toolClass.o = self.settings.get_int("opacity")/10
         self.mpris_adapter = None
         GLib.Thread.new(None, mpris.init, self)
-    
-    def on_activate(self, _):
-        self.confDir = GLib.get_user_config_dir()
-        self.API_KEY = "Erv1I6jCqZ"
-        musicbrainzngs.set_useragent("hbud", "0.4.2", "https://github.com/swanux/hbud")
-        self.DAPI = azapi.AZlyrics('duckduckgo', accuracy=0.65)
-        self.window = frontend.MainWindow()
-        self.sub = frontend.Sub()
-        self.sub2 = frontend.Sub2()
-        self.sub2.set_transient_for(self.window)
-        self.choser_window.set_transient_for(self.sub2)
-        self.shortcuts = frontend.HbudShortcuts()
-        self.shortcuts.set_transient_for(self.window)
-        self.prefwin = frontend.PrefWin()
-        self.prefwin.set_transient_for(self.window)
-        self.about.set_transient_for(self.window)
-        self.switchDict = {"locBut" : [self.window._main_stack._placeholder, "audio-input-microphone", "audio", self.window._str_but],
-                           "strBut" : [self.window._main_stack._str_box, "view-fullscreen", "video", self.window._loc_but]}
         self.current_play = self.window._play_but
         self.current_sub = self.window._sub_track
         self.current_slider = self.window._slider
         self.toolClass.label1 = self.sub._label1
         self.toolClass.label2 = self.sub._label2
         self.toolClass.label3 = self.sub._label3
+    
+    def on_activate(self, _):
+        self.confDir = GLib.get_user_config_dir()
+        self.API_KEY = "Erv1I6jCqZ"
+        musicbrainzngs.set_useragent("hbud", "0.4.2", "https://github.com/swanux/hbud")
+        self.DAPI = azapi.AZlyrics('duckduckgo', accuracy=0.65)
         self.createPipeline("local")
         self.connect_signals()
 
@@ -1244,6 +1233,7 @@ class Main(frontend.UI):
 
     def special_settings(self, obj, key=None):
         if key == "hwa-enabled": self.hwa_change()
+        elif key == "opacity": self.toolClass.o = obj.get_int("opacity")/10
         elif key == "minimal-mode":
             if obj.get_boolean("minimal-mode") is False:
                 GLib.idle_add(self.window._head_box.show)

@@ -34,13 +34,13 @@ class Tools():
                 min-height: 16px;
             }
             #overlay_box {
-                background-color: rgba(0,0,0,0.7);
+                background-color: rgba(0,0,0,%s);
                 border-radius: 10px;
             }
             #hub_box {
-                background-color: rgba(0,0,0,0.7);
+                background-color: rgba(0,0,0,%s);
                 border-radius: 10px;
-            }""" % (c,w,c)
+            }""" % (c,w,c,self.o,self.o)
             css = str.encode(css)
             provider.load_from_data(css)
             GLib.idle_add(window.get_style_context().add_provider_for_display, Gdk.Display.get_default(), provider, Gtk.STYLE_PROVIDER_PRIORITY_APPLICATION)

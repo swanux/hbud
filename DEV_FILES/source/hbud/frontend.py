@@ -103,6 +103,7 @@ class PrefWin(Adw.PreferencesWindow):
     _darkew = Gtk.Template.Child()
     _colorer = Gtk.Template.Child()
     _sub_spin = Gtk.Template.Child()
+    _opac_spin = Gtk.Template.Child()
     _sub_marspin = Gtk.Template.Child()
     _bg_switch = Gtk.Template.Child()
     _mus_switch = Gtk.Template.Child()
@@ -127,6 +128,7 @@ class PrefWin(Adw.PreferencesWindow):
         super().__init__()
         settings.bind("theme", self._darkew, "active-id", Gio.SettingsBindFlags.DEFAULT)
         settings.bind("relative-size", self._sub_spin, "value", Gio.SettingsBindFlags.DEFAULT)
+        settings.bind("opacity", self._opac_spin, "value", Gio.SettingsBindFlags.DEFAULT)
         settings.bind("relative-margin", self._sub_marspin, "value", Gio.SettingsBindFlags.DEFAULT)
         settings.bind("dark-background", self._bg_switch, "active", Gio.SettingsBindFlags.DEFAULT)
         settings.bind("musixmatch", self._mus_switch, "active", Gio.SettingsBindFlags.DEFAULT)
@@ -247,7 +249,7 @@ class UI(Adw.Application):
         self._ = gettext.gettext
         Gst.init(None)
         Adw.init()
-        self.useMode = "audio"
+        self.useMode, self.duration_nanosecs, self.remaining = "audio", 0, 0
         self.searchDict = {"1" : ["artist", False], "2" : ["artist", True], "3" : ["title", False], "4" : ["title", True], "5" : ["year", False], "6" : ["year", True], "7" : ["length", False], "8" : ["length", True]}
         self.playlistPlayer, self.needSub, self.nowIn = False, False, ""
         self.fulle, self.resete, self.keepReset, self.hardReset, self.tnum, self.sorted, self.aborte, self.hardreset2, self.resete2, self.clocking, self.searched = False, False, False, False, 0, False, False, False, False, False, False
@@ -287,3 +289,15 @@ class UI(Adw.Application):
                     release_notes=CONSTANTS["rel_notes"], default_height=650)
         self.provider, self.styles = Gtk.CssProvider(), Adw.StyleManager.get_default()
         self.settings = settings
+        self.window = MainWindow()
+        self.sub = Sub()
+        self.sub2 = Sub2()
+        self.sub2.set_transient_for(self.window)
+        self.choser_window.set_transient_for(self.sub2)
+        self.shortcuts = HbudShortcuts()
+        self.shortcuts.set_transient_for(self.window)
+        self.prefwin = PrefWin()
+        self.prefwin.set_transient_for(self.window)
+        self.about.set_transient_for(self.window)
+        self.switchDict = {"locBut" : [self.window._main_stack._placeholder, "audio-input-microphone", "audio", self.window._str_but],
+                           "strBut" : [self.window._main_stack._str_box, "view-fullscreen", "video", self.window._loc_but]}

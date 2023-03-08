@@ -26,6 +26,7 @@ finish-args:
   - --filesystem=xdg-music
   - --filesystem=xdg-videos
   - --share=ipc
+  - --own-name=org.mpris.MediaPlayer2.hbud
   - --filesystem=xdg-run/gvfs
   - --filesystem=xdg-run/gvfsd
   - --filesystem=/run/media

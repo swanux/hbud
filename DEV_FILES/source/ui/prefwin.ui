@@ -21,7 +21,6 @@
                     <child>
                       <object class="GtkComboBoxText" id="_darkew">
                         <property name="valign">center</property>
-                        <property name="name">0</property>
                         <items>
                         <item id="0" translatable="yes">System</item>
                         <item id="1" translatable="yes">Dark</item>
@@ -42,7 +41,29 @@
                     <child>
                       <object class="GtkColorButton" id="_colorer">
                         <property name="valign">center</property>
-                        <property name="name">1</property>
+                      </object>
+                    </child>
+                  </object>
+                </property>
+              </object>
+            </child>
+            <child>
+              <object class="AdwPreferencesRow">
+                <property name="title" translatable="yes">Video overlay controls opacity</property>
+                <property name="child">
+                  <object class="AdwActionRow">
+                    <property name="title" translatable="yes">Video overlay controls opacity</property>
+                    <property name="subtitle" translatable="yes">Default is 7</property>
+                    <child>
+                      <object class="GtkSpinButton" id="_opac_spin">
+                        <property name="valign">center</property>
+                        <property name="adjustment">
+                          <object class="GtkAdjustment">
+                            <property name="lower">0</property>
+                            <property name="upper">10</property>
+                            <property name="step_increment">1</property>
+                          </object>
+                        </property>
                       </object>
                     </child>
                   </object>
@@ -60,12 +81,11 @@
                 <property name="title" translatable="yes">Size</property>
                 <property name="child">
                   <object class="AdwActionRow">
-                    <property name="title" translatable="yes">Subtitles</property>
+                    <property name="title" translatable="yes">Size</property>
                     <property name="subtitle" translatable="yes">Default is 30</property>
                     <child>
                       <object class="GtkSpinButton" id="_sub_spin">
                         <property name="valign">center</property>
-                        <property name="name">2</property>
                         <property name="adjustment">
                           <object class="GtkAdjustment">
                             <property name="lower">10</property>
@@ -89,7 +109,6 @@
                     <child>
                       <object class="GtkSpinButton" id="_sub_marspin">
                         <property name="valign">center</property>
-                        <property name="name">3</property>
                         <property name="adjustment">
                           <object class="GtkAdjustment">
                             <property name="lower">10</property>
@@ -112,7 +131,6 @@
                     <child>
                       <object class="GtkSwitch" id="_bg_switch">
                         <property name="valign">center</property>
-                        <property name="name">4</property>
                       </object>
                     </child>
                   </object>
@@ -134,7 +152,6 @@
                     <child>
                       <object class="GtkSwitch" id="_mus_switch">
                         <property name="valign">center</property>
-                        <property name="name">5</property>
                       </object>
                     </child>
                   </object>
@@ -150,7 +167,6 @@
                     <child>
                       <object class="GtkSwitch" id="_az_switch">
                         <property name="valign">center</property>
-                        <property name="name">6</property>
                       </object>
                     </child>
                   </object>
@@ -166,7 +182,6 @@
                     <child>
                       <object class="GtkSwitch" id="_letr_switch">
                         <property name="valign">center</property>
-                        <property name="name">7</property>
                       </object>
                     </child>
                   </object>
@@ -183,7 +198,6 @@
                     <child>
                       <object class="GtkComboBoxText" id="_combo_size">
                         <property name="valign">center</property>
-                        <property name="name">8</property>
                         <items>
                         <item id="1200" translatable="yes">Ultra High (1200px)</item>
                         <item id="500" translatable="yes">High (500px)</item>
@@ -211,7 +225,6 @@
                     <child>
                       <object class="GtkSwitch" id="_scroll_check">
                         <property name="valign">center</property>
-                        <property name="name">9</property>
                       </object>
                     </child>
                   </object>
@@ -228,7 +241,6 @@
                     <child>
                       <object class="GtkSpinButton" id="_scroll_spin">
                         <property name="valign">center</property>
-                        <property name="name">10</property>
                         <property name="adjustment">
                           <object class="GtkAdjustment">
                             <property name="lower">5</property>
@@ -252,7 +264,6 @@
                     <child>
                       <object class="GtkSwitch" id="_lite_switch">
                         <property name="valign">center</property>
-                        <property name="name">11</property>
                       </object>
                     </child>
                   </object>
@@ -269,7 +280,6 @@
                     <child>
                       <object class="GtkSwitch" id="_hwa_switch">
                         <property name="valign">center</property>
-                        <property name="name">12</property>
                       </object>
                     </child>
                   </object>
