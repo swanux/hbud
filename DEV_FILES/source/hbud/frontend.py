@@ -112,6 +112,7 @@ class PrefWin(Adw.PreferencesWindow):
     _combo_size = Gtk.Template.Child()
     _scroll_check = Gtk.Template.Child()
     _scroll_spin = Gtk.Template.Child()
+    _motion_spin = Gtk.Template.Child()
     _lite_switch = Gtk.Template.Child()
     _hwa_switch = Gtk.Template.Child()
     _gtk_ver = Gtk.Template.Child()
@@ -137,6 +138,7 @@ class PrefWin(Adw.PreferencesWindow):
         settings.bind("cover-size", self._combo_size, "active-id", Gio.SettingsBindFlags.DEFAULT)
         settings.bind("autoscroll", self._scroll_check, "active", Gio.SettingsBindFlags.DEFAULT)
         settings.bind("positioning", self._scroll_spin, "value", Gio.SettingsBindFlags.DEFAULT)
+        settings.bind("motion-threshold", self._motion_spin, "value", Gio.SettingsBindFlags.DEFAULT)
         settings.bind("minimal-mode", self._lite_switch, "active", Gio.SettingsBindFlags.DEFAULT)
         settings.bind("hwa-enabled", self._hwa_switch, "active", Gio.SettingsBindFlags.DEFAULT)
 

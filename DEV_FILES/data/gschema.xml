@@ -44,6 +44,9 @@
     <key name="positioning" type="i">
       <default>5</default>
     </key>
+    <key name="motion-threshold" type="i">
+      <default>5</default>
+    </key>
     <key name="minimal-mode" type="b">
       <default>false</default>
     </key>

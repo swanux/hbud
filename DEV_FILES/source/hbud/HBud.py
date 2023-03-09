@@ -31,6 +31,8 @@ class Main(frontend.UI):
         self.toolClass.label1 = self.sub._label1
         self.toolClass.label2 = self.sub._label2
         self.toolClass.label3 = self.sub._label3
+        self.def_cur = Gdk.Cursor.new_from_name('default')
+        self.blank_cur = Gdk.Cursor.new_from_name('none')
     
     def on_activate(self, _):
         self.confDir = GLib.get_user_config_dir()
@@ -360,7 +362,8 @@ class Main(frontend.UI):
         print("neo end", time())
 
     def metas(self, location, extrapath, misc=False):
-        f = MediaFile(f"{location}")
+        try: f = MediaFile(f"{location}")
+        except: return
         title, artist, album, year, length = f.title, f.artist, f.album, f.year, ":".join(str(timedelta(seconds=round(f.length))).split(":")[1:])
         if not title: title = os.path.splitext(extrapath)[0]
         if not artist: artist = self._("Unknown")
@@ -381,11 +384,7 @@ class Main(frontend.UI):
         else:
             pltmpin = os.listdir(path)
             for i in pltmpin:
-                try:
-                    tags = magic.from_file(f"{path}/{i}", mime=True)
-                    if "audio" in tags:
-                        self.metas(f"{path}/{i}", i, misc)
-                except: pass
+                self.metas(f"{path}/{i}", i, misc)
         d_pl = futures.ThreadPoolExecutor(max_workers=4)
         if misc is False:
             self.playlist = self.pltmp
@@ -725,7 +724,7 @@ class Main(frontend.UI):
         if self.useMode == self.nowIn:
             seek_time_secs = self.current_slider.get_value()
             if seek_time_secs < self.toolClass.position: self.toolClass.seekBack = True
-            self.player.seek_simple(Gst.Format.TIME,  Gst.SeekFlags.FLUSH | Gst.SeekFlags.ACCURATE, seek_time_secs * Gst.SECOND)
+            self.player.seek_simple(Gst.Format.TIME,  Gst.SeekFlags.FLUSH | Gst.SeekFlags.FLUSH, seek_time_secs * Gst.SECOND)
             self.seeking = False
 
     def updatePos(self):
@@ -1125,6 +1124,7 @@ class Main(frontend.UI):
             if self.fulle is False:
                 self.window.fullscreen()
                 self.window._main_stack._overlay_revealer.set_reveal_child(True)
+                self.revealed = True
                 GLib.timeout_add(500, self.displayclock)
                 self.window._main_stack._overlay_hub.set_reveal_child(True)
                 ld_clock = futures.ThreadPoolExecutor(max_workers=1)
@@ -1134,8 +1134,10 @@ class Main(frontend.UI):
                 self.window.unfullscreen()
                 self.window._main_stack._overlay_revealer.set_reveal_child(False)
                 self.window._main_stack._overlay_hub.set_reveal_child(False)
-                cursor = Gdk.Cursor.new_from_name('default')
-                self.window.set_cursor(cursor)
+                self.revealed = False
+                self.countermove = 0
+                GLib.timeout_add(1500, self.mouse_eraser)
+                self.window.set_cursor(self.def_cur)
 
     def lyr_fetcher(self, artist, track):
         print("Fetcher...")
@@ -1170,19 +1172,28 @@ class Main(frontend.UI):
     
     def mage(self):
         self.window._main_stack._overlay_revealer.set_reveal_child(True)
+        self.revealed = True
         GLib.timeout_add(500, self.displayclock)
         self.window._main_stack._overlay_hub.set_reveal_child(True)
-        cursor = Gdk.Cursor.new_from_name('default')
-        self.window.set_cursor(cursor)
+        self.window.set_cursor(self.def_cur)
+
+    def mouse_eraser(self):
+        self.countermove = 0
+        return not self.revealed
 
     def mouse_moving(self, _, x, y):
         if self.fulle is True:
-            self.countermove += 1
-            if self.countermove >= 25 and self.mx != x and self.my != y:
+            if self.mx != x and self.my != y and self.revealed is False:
+                self.mx, self.my = x, y
+                self.countermove += 1
+                print(self.countermove)
+            elif self.revealed is True and self.mx == x and self.my == y:
+                self.mx, self.my = x, y
+                self.resete = True
+            if self.countermove >= self.settings.get_int("motion-threshold"):
                 self.countermove = 0
                 self.resete = True
-                self.mx, self.my = x, y
-                if self.window._main_stack._overlay_revealer.get_reveal_child() is False:
+                if self.revealed is False:
                     self.mage()
                     ld_clock = futures.ThreadPoolExecutor(max_workers=1)
                     ld_clock.submit(self.clock, "full")
@@ -1192,7 +1203,7 @@ class Main(frontend.UI):
         self.window._main_stack._current_time.set_label(datetimenow)
         endtime = datetime.now()+timedelta(seconds=self.remaining)
         self.window._main_stack._end_time.set_label(self._("Ends at: {}".format(str(endtime.strftime('%H:%M')))))
-        return self.window._main_stack._overlay_revealer.get_reveal_child()
+        return self.revealed
 
     def clock(self, ltype):
         start = time()
@@ -1203,11 +1214,12 @@ class Main(frontend.UI):
                 elif self.resete is True: start, self.resete = time(), False    
                 GLib.usleep(20000)
             if self.fulle is True:
-                cursor = Gdk.Cursor.new_from_name('none')
-                self.window.set_cursor(cursor)
+                self.window.set_cursor(self.blank_cur)
                 self.window._main_stack._overlay_revealer.set_reveal_child(False)
                 self.window._main_stack._overlay_hub.set_reveal_child(False)
+                self.revealed = False
                 self.countermove = 0
+                GLib.timeout_add(1500, self.mouse_eraser)
         elif ltype == "seek":
             while time() - start < 0.3:
                 if self.hardreset2 is True: return
@@ -1233,7 +1245,9 @@ class Main(frontend.UI):
 
     def special_settings(self, obj, key=None):
         if key == "hwa-enabled": self.hwa_change()
-        elif key == "opacity": self.toolClass.o = obj.get_int("opacity")/10
+        elif key == "opacity":
+            self.toolClass.o = obj.get_int("opacity")/10
+            self.toolClass.themer(self.provider, self.window, self.color, self.tnum)
         elif key == "minimal-mode":
             if obj.get_boolean("minimal-mode") is False:
                 GLib.idle_add(self.window._head_box.show)
