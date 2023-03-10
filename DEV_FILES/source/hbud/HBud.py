@@ -1,15 +1,14 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-import gi, srt, azapi, json, os, sys, acoustid, musicbrainzngs, subprocess
+import gi, srt, azapi, json, os, sys, acoustid, musicbrainzngs, subprocess, hashlib, shutil
 from concurrent import futures
 from time import time
 from operator import itemgetter
 from collections import deque
-from datetime import timedelta, datetime
+from datetime import timedelta
 from random import sample
 from icu import Locale
-import magic
 from mediafile import MediaFile, MediaField, MP3DescStorageStyle, StorageStyle
 gi.require_version('Gtk', '4.0')
 gi.require_version('Gst', '1.0')
@@ -128,6 +127,7 @@ class Main(frontend.UI):
         self.sub.connect('notify', self._on_notify)
         self.settings.connect("changed", self.special_settings)
         self.prefwin._colorer.connect("color-set", self.special_settings)
+        self.prefwin._clear_cache.connect("clicked", self.cache_clear)
 
         self.window._slider_click.connect("released", self.on_slider_seek)
         self.window._slider.connect("value-changed", self.on_slider_grabbed)
@@ -139,6 +139,8 @@ class Main(frontend.UI):
         self.window._main_stack._overlay_motion.connect("leave", self.mouse_leave)
         self.window._main_stack._hub_motion.connect("enter", self.mouse_enter)
         self.window._main_stack._hub_motion.connect("leave", self.mouse_leave)
+        self.window._main_stack._hub_motion2.connect("enter", self.mouse_enter)
+        self.window._main_stack._hub_motion2.connect("leave", self.mouse_leave)
         self.window._main_motion.connect("motion", self.mouse_moving)
         self.window._prev_but.connect("clicked", self.prev_next_rel)
         self.window._next_but.connect("clicked", self.prev_next_rel)
@@ -149,6 +151,11 @@ class Main(frontend.UI):
                 self.clocking = True
                 ld_clock = futures.ThreadPoolExecutor(max_workers=1)
                 ld_clock.submit(self.clock, "seek")
+    
+    def cache_clear(self, *_):
+        shutil.rmtree(f"{self.cacheDir}/hbud")
+        os.mkdir(f"{self.cacheDir}/hbud")
+        GLib.idle_add(self.prefwin._clear_cache.set_label, self._("Clear 0 bytes"))
 
     def on_about_clicked(self, *_): self.about.show()
 
@@ -158,7 +165,21 @@ class Main(frontend.UI):
 
     def on_shortcuts_hide(self, *_): self.shortcuts.hide()
 
-    def on_infBut_clicked(self, *_): self.prefwin.present()
+    def get_directory_size(self, dir_path):
+        dir = Gio.File.new_for_path(dir_path)
+        enumerator = dir.enumerate_children(Gio.FILE_ATTRIBUTE_STANDARD_SIZE,
+                                            Gio.FileQueryInfoFlags.NONE,
+                                            None)
+        total_size = 0
+        for child_info in enumerator:
+            total_size += child_info.get_size()
+        del dir, enumerator
+        self.prefwin._clear_cache.set_label(self._("Clear {}").format(GLib.format_size(total_size)))
+        return False
+
+    def on_infBut_clicked(self, *_):
+        GLib.idle_add(self.get_directory_size, f"{self.cacheDir}/hbud")
+        self.prefwin.present()
     
     def on_pref_close (self, *_): self.prefwin.hide()
 
@@ -178,7 +199,12 @@ class Main(frontend.UI):
     def manual_file_parser(self, arguments):
         mode, files = "", []
         for arg in arguments:
-            tags = magic.from_file(arg, mime=True)
+            f = Gio.File.new_for_path(arg)
+            i = f.query_info(Gio.FILE_ATTRIBUTE_STANDARD_CONTENT_TYPE,
+                            Gio.FileQueryInfoFlags.NONE,
+                            None)
+            tags = i.get_content_type()
+            del f, i
             if mode == "":
                 if "audio" in tags: mode = "audio"
                 elif "video" in tags:
@@ -243,7 +269,7 @@ class Main(frontend.UI):
 
     def on_clear_order(self, _):
         tmname = self.folderPath.replace("/", ">")
-        os.unlink(f"'{self.confDir}/{tmname}.saved.order'")
+        os.remove(f"'{self.confDir}/{tmname}.saved.order'")
         self.window._main_toast.add_toast(Adw.Toast.new(self._('Cleared saved order successfully!')))
 
     def on_rescan_order(self, _): GLib.idle_add(self.loader, self.folderPath, True)
@@ -309,7 +335,6 @@ class Main(frontend.UI):
     
     def neo_playlist_gen(self, name="", srBox=None, dsBox=None, src=0, dst=0):
         print("neo start", time())
-        GLib.idle_add(self.window._main_stack._sup_stack.set_visible_child, self.window._main_stack._sup_spinbox)
         if self.settings.get_boolean("minimal-mode") is True:
             self.tnum = 0
             self.on_next("clickMode")
@@ -377,14 +402,16 @@ class Main(frontend.UI):
     def loader(self, path, misc=False):
         print("loader start", time())
         self.pltmp = []
+        if misc is False:
+            GLib.idle_add(self.window._main_stack._sup_stack.set_visible_child, self.window._main_stack._sup_spinbox)
         if self.clickedE:
             self.folderPath = GLib.path_get_dirname(self.clickedE[0])
             for item in self.clickedE:
                 self.metas(item, GLib.path_get_basename(item))
         else:
-            pltmpin = os.listdir(path)
+            pltmpin = os.scandir(path)
             for i in pltmpin:
-                self.metas(f"{path}/{i}", i, misc)
+                self.metas(f"{path}/{i.name}", i.name, misc)
         d_pl = futures.ThreadPoolExecutor(max_workers=4)
         if misc is False:
             self.playlist = self.pltmp
@@ -590,7 +617,7 @@ class Main(frontend.UI):
     def del_cur(self, *_):
         print(self.playlist[self.ednum])
         try: self.popover.unparent()
-        except: print("huh")
+        except: print("no unparent")
         torem = self.playlist[self.ednum]["widget"]
         GLib.idle_add(self.window._main_stack._sup_box.remove, torem)
         self.playlist.remove(self.playlist[self.ednum])
@@ -628,7 +655,7 @@ class Main(frontend.UI):
             self.binary = MediaFile(self.playlist[self.tnum]["uri"]).art
             if not self.binary: return ""
             else:
-                uuid = hash(self.url)
+                uuid = hashlib.md5(self.url.encode()).hexdigest()
                 tmpLoc = f"{self.cacheDir}/hbud/mpris_thumbnail_{uuid}.jpg"
                 if not os.path.isfile(tmpLoc):
                     f = open(tmpLoc, "wb")
@@ -639,7 +666,7 @@ class Main(frontend.UI):
             if mode == "meta": self.binary = MediaFile(self.editingFile).art
             elif mode == "brainz": self.binary = bitMage
             else:
-                uuid = hash(mode)
+                uuid = hashlib.md5(mode.encode()).hexdigest()
                 self.binary = MediaFile(mode.replace('file://', '')).art
             if not self.binary:
                 if mode == "meta" or mode == "brainz":
@@ -952,8 +979,8 @@ class Main(frontend.UI):
         # print(keyval)
         try:
             if Gdk.ModifierType.CONTROL_MASK & modifier: # Ctrl combo
-                if keyval == 102 and self.settings.get_boolean("minimal-mode") is False: self.on_dropped("key")
-                elif keyval == 111: self.on_openFolderBut_clicked(None)
+                if keyval == 102 and self.settings.get_boolean("minimal-mode") is False: self.on_dropped("key") # F
+                elif keyval == 111: self.on_openFolderBut_clicked(None) # O
             elif keyval == 32 and self.url: self.on_playBut_clicked(0) # Space
             elif keyval == 65480:
                 if self.useMode == "video": self.on_karaoke_activate(0) # F11
@@ -1010,8 +1037,9 @@ class Main(frontend.UI):
         self.current_slider = b[2]
         GLib.idle_add(self.current_play.set_icon_name, a[0].get_icon_name())
         GLib.idle_add(self.current_sub.set_sensitive, a[1].get_sensitive())
-        widget = a[1].get_popover().get_child()
-        a[1].get_popover().set_child()
+        popover = a[1].get_popover()
+        widget = popover.get_child()
+        popover.set_child()
         GLib.idle_add(self.current_sub.get_popover().set_child, widget)
         GLib.idle_add(self.current_slider.set_range, 0, float(self.duration_nanosecs) / Gst.SECOND)
         GLib.idle_add(self.current_slider.set_value, self.toolClass.position)
@@ -1136,7 +1164,7 @@ class Main(frontend.UI):
                 self.window._main_stack._overlay_hub.set_reveal_child(False)
                 self.revealed = False
                 self.countermove = 0
-                GLib.timeout_add(1500, self.mouse_eraser)
+                GLib.timeout_add(2000, self.mouse_eraser)
                 self.window.set_cursor(self.def_cur)
 
     def lyr_fetcher(self, artist, track):
@@ -1186,11 +1214,10 @@ class Main(frontend.UI):
             if self.mx != x and self.my != y and self.revealed is False:
                 self.mx, self.my = x, y
                 self.countermove += 1
-                print(self.countermove)
-            elif self.revealed is True and self.mx == x and self.my == y:
+            elif self.revealed is True and self.mx != x and self.my != y:
                 self.mx, self.my = x, y
                 self.resete = True
-            if self.countermove >= self.settings.get_int("motion-threshold"):
+            if self.countermove >= 3:
                 self.countermove = 0
                 self.resete = True
                 if self.revealed is False:
@@ -1199,10 +1226,10 @@ class Main(frontend.UI):
                     ld_clock.submit(self.clock, "full")
 
     def displayclock(self):
-        datetimenow = str(datetime.now().strftime('%H:%M'))
+        datetimenow = GLib.DateTime.new_now_local().format('%H:%M')
         self.window._main_stack._current_time.set_label(datetimenow)
-        endtime = datetime.now()+timedelta(seconds=self.remaining)
-        self.window._main_stack._end_time.set_label(self._("Ends at: {}".format(str(endtime.strftime('%H:%M')))))
+        endtime = GLib.DateTime.new_now_local().add_seconds(self.remaining).format('%H:%M')
+        self.window._main_stack._end_time.set_label(self._(f"Ends at: {endtime}"))
         return self.revealed
 
     def clock(self, ltype):
@@ -1214,12 +1241,13 @@ class Main(frontend.UI):
                 elif self.resete is True: start, self.resete = time(), False    
                 GLib.usleep(20000)
             if self.fulle is True:
+                print("Reveal?")
                 self.window.set_cursor(self.blank_cur)
                 self.window._main_stack._overlay_revealer.set_reveal_child(False)
                 self.window._main_stack._overlay_hub.set_reveal_child(False)
                 self.revealed = False
                 self.countermove = 0
-                GLib.timeout_add(1500, self.mouse_eraser)
+                GLib.timeout_add(2000, self.mouse_eraser)
         elif ltype == "seek":
             while time() - start < 0.3:
                 if self.hardreset2 is True: return

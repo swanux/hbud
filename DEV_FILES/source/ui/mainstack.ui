@@ -159,6 +159,7 @@
                     <property name="valign">start</property>
                     <property name="halign">start</property>
                     <property name="transition-type">GTK_REVEALER_TRANSITION_TYPE_SLIDE_DOWN</property>
+                    <property name="transition-duration">600</property>
                     <property name="reveal-child">False</property>
                     <child>
                       <object class="GtkEventControllerMotion" id="_hub_motion"/>
@@ -194,6 +195,7 @@
                     <property name="valign">end</property>
                     <property name="halign">center</property>
                     <property name="transition-type">GTK_REVEALER_TRANSITION_TYPE_SLIDE_UP</property>
+                    <property name="transition-duration">600</property>
                     <property name="reveal-child">False</property>
                     <child>
                       <object class="GtkEventControllerMotion" id="_overlay_motion"/>
@@ -235,7 +237,12 @@
                             <property name="sensitive">False</property>
                             <property name="direction">up</property>
                             <property name="popover">
-                              <object class="GtkPopover"></object>
+                              <object class="GtkPopover">
+                                <property name="name">hub_menu</property>
+                                <child>
+                                  <object class="GtkEventControllerMotion" id="_hub_motion2"/>
+                                </child>
+                              </object>
                             </property>
                           </object>
                         </child>

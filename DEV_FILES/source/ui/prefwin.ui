@@ -256,29 +256,6 @@
             </child>
             <child>
               <object class="AdwPreferencesRow">
-                <property name="title" translatable="yes">Motion threshold</property>
-                <property name="child">
-                  <object class="AdwActionRow">
-                    <property name="title" translatable="yes">Motion threshold</property>
-                    <property name="subtitle" translatable="yes">Default is 5 - the higher the value, the more motion is needed to reveal the mouse in fullscreen mode</property>
-                    <child>
-                      <object class="GtkSpinButton" id="_motion_spin">
-                        <property name="valign">center</property>
-                        <property name="adjustment">
-                          <object class="GtkAdjustment">
-                            <property name="lower">2</property>
-                            <property name="upper">40</property>
-                            <property name="step_increment">1</property>
-                          </object>
-                        </property>
-                      </object>
-                    </child>
-                  </object>
-                </property>
-              </object>
-            </child>
-            <child>
-              <object class="AdwPreferencesRow">
                 <property name="title" translatable="yes">Minimal mode</property>
                 <property name="child">
                   <object class="AdwActionRow">
@@ -302,6 +279,22 @@
                     <property name="subtitle" translatable="yes">Whether to use VA for HW acceleration or not\nNote: Turning this off may result in increased stability but worse performance</property>
                     <child>
                       <object class="GtkSwitch" id="_hwa_switch">
+                        <property name="valign">center</property>
+                      </object>
+                    </child>
+                  </object>
+                </property>
+              </object>
+            </child>
+            <child>
+              <object class="AdwPreferencesRow">
+                <property name="title" translatable="yes">Clear cache</property>
+                <property name="child">
+                  <object class="AdwActionRow">
+                    <property name="title" translatable="yes">Clear cache</property>
+                    <property name="subtitle" translatable="yes">Clear cached album cover images to free up space</property>
+                    <child>
+                      <object class="GtkButton" id="_clear_cache">
                         <property name="valign">center</property>
                       </object>
                     </child>

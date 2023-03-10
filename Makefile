@@ -89,7 +89,7 @@ translate-upgrade:
 py-module-gen:
 	rm -rf hbud-env
 	python3 -m venv hbud-env
-	hbud-env/bin/python3 -m pip install azapi srt mediafile pydbus pyacoustid musicbrainzngs pyicu python-magic ordered-set nuitka
+	hbud-env/bin/python3 -m pip install azapi srt mediafile pydbus pyacoustid musicbrainzngs pyicu ordered-set nuitka
 	hbud-env/bin/python3 -m pip freeze > requirements.txt
 	tools/flatpak-pip-gen.py --runtime='org.gnome.Sdk//43' -r='requirements.txt' --output pypi-dependencies
 
@@ -106,4 +106,4 @@ clean:
 
 
 setup:
-	pip3 install azapi srt mediafile pydbus pyacoustid musicbrainzngs pyicu python-magic requirements-parser
+	pip3 install azapi srt mediafile pydbus pyacoustid musicbrainzngs pyicu requirements-parser

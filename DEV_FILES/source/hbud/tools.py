@@ -33,13 +33,12 @@ class Tools():
             highlight {
                 min-height: 16px;
             }
-            #overlay_box {
+            #overlay_box, #hub_box {
                 background-color: rgba(0,0,0,%s);
                 border-radius: 10px;
             }
-            #hub_box {
+            #hub_menu contents, #hub_menu arrow {
                 background-color: rgba(0,0,0,%s);
-                border-radius: 10px;
             }""" % (c,w,c,self.o,self.o)
             css = str.encode(css)
             provider.load_from_data(css)

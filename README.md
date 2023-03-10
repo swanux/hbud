@@ -55,12 +55,11 @@ I recommend using one of these tools:
 * [srt](https://github.com/cdown/srt) - For the Python srt module
 * [mediafile](https://github.com/beetbox/mediafile) - For the handy wrapper around mutagen
 * [azapi](https://github.com/elmoiv/azapi) - For the AZLyrics API
-* [langcodes](https://github.com/rspeer/langcodes) - For providing the display name of a language in the language itself
+* [PyICU](https://gitlab.pyicu.org/main/pyicu) - For providing proper name of a language from language code
 * [gst-plugins-rs](https://gitlab.freedesktop.org/gstreamer/gst-plugins-rs) - For `gtk4paintablesink` for video playback
 * [pyacoustid](https://github.com/beetbox/pyacoustid) and [musicbrainzngs](https://github.com/alastair/python-musicbrainzngs) - For the AcoustID and MusicBrainz bindings
 * [MusicBrainz](https://beta.musicbrainz.org/) and [AcoustID](https://acoustid.org/) - For the open databases
-* [python-magic](https://github.com/ahupp/python-magic) - For the python bindings for libmagic
-* [mpris_server](https://github.com/alexdelorenzo/mpris_server) - For the MPRIS server
+* [mpris_server](https://github.com/alexdelorenzo/mpris_server) - For the MPRIS server (although I'm using a slightly modified version)
 * [Flatpak](https://flatpak.org/) - For this awesome distribution system
 
 # Generate synced lyrics
