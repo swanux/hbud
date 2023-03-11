@@ -5,7 +5,7 @@ import gi, gettext, sys, os
 gi.require_version('Gtk', '4.0')
 gi.require_version('Adw', '1')
 gi.require_version('Gst', '1.0')
-from gi.repository import Gtk, Gio, GLib, Adw, Gst, Gdk
+from gi.repository import Gtk, Gio, GLib, Adw, Gst, Gdk, GObject
 from hbud import CONSTANTS
 
 
@@ -21,6 +21,7 @@ if os.getenv('container', '') != 'flatpak':
 else:
     Gio.resources_register(Gio.Resource.load("/app/share/hbud/io.github.swanux.hbud.gresource"))
     settings = Gio.Settings(schema_id="io.github.swanux.hbud")
+
 
 @Gtk.Template(resource_path='/io/github/swanux/hbud/DEV_FILES/source/ui/trackbox.ui')
 class TrackBox(Adw.ActionRow):
@@ -42,6 +43,35 @@ class TrackBox(Adw.ActionRow):
         self.set_subtitle(album.replace("&", "&amp;"))
 
 
+@Gtk.Template(resource_path='/io/github/swanux/hbud/DEV_FILES/source/ui/playlistbox.ui')
+class PlayListBox(Adw.ActionRow):
+    __gtype_name__ = 'PlayListBox'
+    _start_but = Gtk.Template.Child()
+    _ed_but = Gtk.Template.Child()
+    _del_but = Gtk.Template.Child()
+    def __init__(self, title, subtitle, id):
+        super().__init__()
+        self.set_title(title)
+        self.set_subtitle(subtitle)
+        self.set_name(f"playlistbox_{id}")
+        self._del_but.set_name(f"del_but_{id}")
+        self._ed_but.set_name(f"ed_but_{id}")
+        self._start_but.set_name(f"start_but_{id}")
+
+
+@Gtk.Template(resource_path='/io/github/swanux/hbud/DEV_FILES/source/ui/renamedialog.ui')
+class RenameDialog(Adw.MessageDialog):
+    __gtype_name__ = 'RenameDialog'
+    _rename_entry = Gtk.Template.Child()
+    def __init__(self):
+        super().__init__()
+        self._rename_entry.connect('notify::text', self.on_rename_entry_text_changed)
+    
+    def on_rename_entry_text_changed(self, entry, _):
+        text = entry.get_text()
+        self.set_response_enabled("save", len(text) > 0)
+
+
 @Gtk.Template(resource_path='/io/github/swanux/hbud/DEV_FILES/source/ui/mainstack.ui')
 class MainStack(Gtk.Stack):
     __gtype_name__ = 'MainStack'
@@ -55,8 +85,11 @@ class MainStack(Gtk.Stack):
     _sup_stack = Gtk.Template.Child()
     _search_play = Gtk.Template.Child()
     _order_but = Gtk.Template.Child()
-    _order_but1 = Gtk.Template.Child()
     _order_but2 = Gtk.Template.Child()
+    _side_flap = Gtk.Template.Child()
+    _play_list_box = Gtk.Template.Child()
+    _flap_stack = Gtk.Template.Child()
+    _nope_lab = Gtk.Template.Child()
     # Page 2
     _str_box = Gtk.Template.Child()
     _video_picture = Gtk.Template.Child()
@@ -159,6 +192,7 @@ class PrefWin(Adw.PreferencesWindow):
 class MainWindow(Adw.Window):
     __gtype_name__ = 'MainWindow'
     _main_stack = Gtk.Template.Child()
+    _toggle_pane_button = Gtk.Template.Child()
     _main_header = Gtk.Template.Child()
     _title = Gtk.Template.Child()
     _main_toast = Gtk.Template.Child()
@@ -189,6 +223,10 @@ class MainWindow(Adw.Window):
         settings.bind("height", self, "default-height", Gio.SettingsBindFlags.DEFAULT)
         settings.bind("is-maximized", self, "maximized", Gio.SettingsBindFlags.DEFAULT)
         settings.bind("is-fullscreen", self, "fullscreened", Gio.SettingsBindFlags.DEFAULT)
+
+        self._main_stack._side_flap.bind_property(
+            "reveal-flap", self._toggle_pane_button, "active",
+            GObject.BindingFlags.SYNC_CREATE | GObject.BindingFlags.BIDIRECTIONAL)
 
         controllers = self._slider.observe_controllers()
         for controller in controllers:
@@ -301,5 +339,5 @@ class UI(Adw.Application):
         self.prefwin = PrefWin()
         self.prefwin.set_transient_for(self.window)
         self.about.set_transient_for(self.window)
-        self.switchDict = {"locBut" : [self.window._main_stack._placeholder, "audio-input-microphone", "audio", self.window._str_but],
+        self.switchDict = {"locBut" : [self.window._main_stack._side_flap, "audio-input-microphone", "audio", self.window._str_but],
                            "strBut" : [self.window._main_stack._str_box, "view-fullscreen", "video", self.window._loc_but]}

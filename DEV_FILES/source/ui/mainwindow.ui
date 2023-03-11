@@ -25,6 +25,17 @@
                   </object>
                 </property>
                 <child type="start">
+                  <object class="GtkToggleButton" id="_toggle_pane_button">
+                    <property name="icon-name">sidebar-show-symbolic</property>
+                    <property name="active">False</property>
+                    <property name="can-focus">False</property>
+                    <property name="visible"
+                      bind-source="_loc_but"
+                      bind-property="active"
+                      bind-flags="sync-create"/>
+                  </object>
+                </child>
+                <child type="start">
                   <object class="GtkBox" id="_head_box">
                     <style><class name="linked"/></style>
                     <child>
@@ -44,9 +55,13 @@
                     <child>
                       <object class="GtkButton" id="_drop_but">
                         <property name="icon-name">go-down</property>
-                        <property name="visible">False</property>
+                        <property name="sensitive">False</property>
                         <property name="tooltip-text" translatable="yes">More options</property>
                         <property name="can-focus">False</property>
+                        <property name="visible"
+                          bind-source="_loc_but"
+                          bind-property="active"
+                          bind-flags="sync-create"/>
                       </object>
                     </child>
                   </object>
@@ -141,6 +156,10 @@
                               <object class="GtkButton" id="_shuff_but">
                                 <property name="icon-name">media-playlist-shuffle</property>
                                 <property name="can-focus">False</property>
+                                <property name="visible"
+                                  bind-source="_loc_but"
+                                  bind-property="active"
+                                  bind-flags="sync-create"/>
                               </object>
                             </child>
                           </object>
@@ -153,6 +172,10 @@
                             <property name="sensitive">False</property>
                             <property name="margin-start">8</property>
                             <property name="direction">up</property>
+                            <property name="visible"
+                              bind-source="_str_but"
+                              bind-property="active"
+                              bind-flags="sync-create"/>
                             <property name="popover">
                               <object class="GtkPopover"></object>
                             </property>

@@ -8,6 +8,8 @@
     <file preprocess="xml-stripblanks">DEV_FILES/source/ui/sub2.ui</file>
     <file preprocess="xml-stripblanks">DEV_FILES/source/ui/sub.ui</file>
     <file preprocess="xml-stripblanks">DEV_FILES/source/ui/hbudshortcuts.ui</file>
+    <file preprocess="xml-stripblanks">DEV_FILES/source/ui/playlistbox.ui</file>
+    <file preprocess="xml-stripblanks">DEV_FILES/source/ui/renamedialog.ui</file>
   </gresource>
 </gresources>
 

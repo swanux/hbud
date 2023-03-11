@@ -12,120 +12,156 @@
     <child>
       <object class="GtkStackPage">
         <property name="child">
-          <object class="GtkBox" id="_placeholder">
-            <property name="orientation">vertical</property>
-            <property name="name">placeholder</property>
-            <child>
-              <object class="GtkBox" id="_top_box">
-                <property name="visible">False</property>
-                <property name="margin-top">5</property>
-                <property name="margin-bottom">10</property>
-                <property name="margin-start">10</property>
-                <property name="margin-end">10</property>
-                <style><class name="linked"/></style>
+          <object class="AdwFlap" id="_side_flap">
+            <property name="reveal-flap">True</property>
+            <property name="modal">True</property>
+            <property name="fold-policy">ADW_FLAP_FOLD_POLICY_ALWAYS</property>
+            <property name="fold-threshold-policy">ADW_FOLD_THRESHOLD_POLICY_NATURAL</property>
+            <property name="flap">
+              <object class="GtkScrolledWindow">
+                <property name="can-focus">False</property>
+                <property name="name">_flap_scroll</property>
+                <property name="width-request">300</property>
                 <child>
-                  <object class="GtkComboBoxText" id="_combo_sort">
-                    <property name="popup-fixed-width">True</property>
-                    <property name="can-focus">False</property>
-                    <items>
-                      <item id="0" translatable="yes">Do not sort</item>
-                      <item id="1" translatable="yes">Sort by Artist (a-z)</item>
-                      <item id="2" translatable="yes">Sort by Artist (z-a)</item>
-                      <item id="3" translatable="yes">Sort by Title (a-z)</item>
-                      <item id="4" translatable="yes">Sort by Title (z-a)</item>
-                      <item id="5" translatable="yes">Sort by Year (0-9)</item>
-                      <item id="6" translatable="yes">Sort by Year (9-0)</item>
-                      <item id="7" translatable="yes">Sort by Length (0-9)</item>
-                      <item id="8" translatable="yes">Sort by Length (9-0)</item>
-                    </items>
-                    <property name="active-id">0</property>
-                  </object>
-                </child>
-                <child>
-                  <object class="GtkSearchEntry" id="_search_play">
-                    <property name="max-width-chars">100</property>
-                    <property name="hexpand">True</property>
-                    <property name="name">search_play</property>
-                  </object>
-                </child>
-                <child>
-                  <object class="GtkButton" id="_order_but">
-                    <property name="tooltip-text" translatable="yes">Save current order</property>
-                    <property name="can-focus">False</property>
-                    <property name="label" translatable="yes">Save</property>
-                  </object>
-                </child>
-                <child>
-                  <object class="GtkButton" id="_order_but2">
-                    <property name="tooltip-text" translatable="yes">Rescan your music library, append new tracks</property>
-                    <property name="can-focus">False</property>
-                    <property name="label" translatable="yes">Rescan</property>
-                  </object>
-                </child>
-                <child>
-                  <object class="GtkButton" id="_order_but1">
-                    <property name="tooltip-text" translatable="yes">Clear saved order</property>
-                    <property name="can-focus">False</property>
-                    <property name="label" translatable="yes">Clear</property>
+                  <object class="GtkStack" id="_flap_stack">
+                    <child>
+                      <object class="GtkStackPage">
+                        <property name="child">
+                          <object class="GtkLabel" id="_nope_lab">
+                            <property name="label" translatable="yes">No Saved Playlists</property>
+                            <property name="halign">center</property>
+                            <property name="valign">center</property>
+                            <style><class name="title-3"/></style>
+                          </object>
+                        </property>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkStackPage">
+                        <property name="child">
+                          <object class="GtkBox" id="_play_list_box">
+                            <property name="spacing">5</property>
+                            <property name="margin-top">5</property>
+                            <property name="margin-bottom">5</property>
+                            <property name="orientation">vertical</property>
+                          </object>
+                        </property>
+                      </object>
+                    </child>
                   </object>
                 </child>
               </object>
-            </child>
-            <child>
-              <object class="GtkStack" id="_sup_stack">
-                <property name="hexpand">True</property>
-                <property name="vexpand">True</property>
+            </property>
+            <property name="content">
+              <object class="GtkBox" id="_placeholder">
+                <property name="orientation">vertical</property>
+                <property name="name">placeholder</property>
                 <child>
-                  <object class="GtkStackPage">
-                    <property name="child">
-                      <object class="GtkScrolledWindow" id="_sup_scroll">
+                  <object class="GtkBox" id="_top_box">
+                    <property name="visible">False</property>
+                    <property name="margin-top">5</property>
+                    <property name="margin-bottom">10</property>
+                    <property name="margin-start">10</property>
+                    <property name="margin-end">10</property>
+                    <style><class name="linked"/></style>
+                    <child>
+                      <object class="GtkComboBoxText" id="_combo_sort">
+                        <property name="popup-fixed-width">True</property>
                         <property name="can-focus">False</property>
-                        <property name="vexpand">True</property>
-                        <property name="hexpand">True</property>
-                        <property name="margin-top">5</property>
-                        <property name="margin-start">10</property>
-                        <child>
-                          <object class="GtkBox" id="_sup_box">
-                            <property name="orientation">vertical</property>
-                            <property name="can-focus">False</property>
-                          </object>
-                        </child>
+                        <items>
+                          <item id="0" translatable="yes">Do not sort</item>
+                          <item id="1" translatable="yes">Sort by Artist (a-z)</item>
+                          <item id="2" translatable="yes">Sort by Artist (z-a)</item>
+                          <item id="3" translatable="yes">Sort by Title (a-z)</item>
+                          <item id="4" translatable="yes">Sort by Title (z-a)</item>
+                          <item id="5" translatable="yes">Sort by Year (0-9)</item>
+                          <item id="6" translatable="yes">Sort by Year (9-0)</item>
+                          <item id="7" translatable="yes">Sort by Length (0-9)</item>
+                          <item id="8" translatable="yes">Sort by Length (9-0)</item>
+                        </items>
+                        <property name="active-id">0</property>
                       </object>
-                    </property>
+                    </child>
+                    <child>
+                      <object class="GtkSearchEntry" id="_search_play">
+                        <property name="max-width-chars">100</property>
+                        <property name="hexpand">True</property>
+                        <property name="name">search_play</property>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkButton" id="_order_but">
+                        <property name="tooltip-text" translatable="yes">Save Playlist</property>
+                        <property name="can-focus">False</property>
+                        <property name="label" translatable="yes">Save</property>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkButton" id="_order_but2">
+                        <property name="tooltip-text" translatable="yes">Rescan your music library, append new tracks</property>
+                        <property name="can-focus">False</property>
+                        <property name="label" translatable="yes">Rescan</property>
+                      </object>
+                    </child>
                   </object>
                 </child>
                 <child>
-                  <object class="GtkStackPage">
-                    <property name="child">
-                      <object class="GtkBox" id="_sup_spinbox">
-                        <property name="orientation">vertical</property>
-                        <property name="vexpand">True</property>
-                        <property name="hexpand">True</property>
-                        <child>
-                          <object class="GtkSpinner">
-                            <property name="spinning">True</property>
-                            <property name="valign">center</property>
-                            <property name="halign">center</property>
+                  <object class="GtkStack" id="_sup_stack">
+                    <property name="hexpand">True</property>
+                    <property name="vexpand">True</property>
+                    <child>
+                      <object class="GtkStackPage">
+                        <property name="child">
+                          <object class="GtkScrolledWindow" id="_sup_scroll">
+                            <property name="can-focus">False</property>
                             <property name="vexpand">True</property>
                             <property name="hexpand">True</property>
-                            <property name="width-request">40</property>
-                            <property name="height-request">40</property>
+                            <property name="margin-top">5</property>
+                            <property name="margin-start">10</property>
+                            <child>
+                              <object class="GtkBox" id="_sup_box">
+                                <property name="orientation">vertical</property>
+                                <property name="can-focus">False</property>
+                              </object>
+                            </child>
                           </object>
-                        </child>
-                        <child>
-                          <object class="GtkLabel">
-                            <property name="label" translatable="yes">Loading content...</property>
-                            <style><class name="title-4"/></style>
-                            <property name="valign">center</property>
-                            <property name="halign">center</property>
-                          </object>
-                        </child>
+                        </property>
                       </object>
-                    </property>
+                    </child>
+                    <child>
+                      <object class="GtkStackPage">
+                        <property name="child">
+                          <object class="GtkBox" id="_sup_spinbox">
+                            <property name="orientation">vertical</property>
+                            <property name="vexpand">True</property>
+                            <property name="hexpand">True</property>
+                            <child>
+                              <object class="GtkSpinner">
+                                <property name="spinning">True</property>
+                                <property name="valign">center</property>
+                                <property name="halign">center</property>
+                                <property name="vexpand">True</property>
+                                <property name="hexpand">True</property>
+                                <property name="width-request">40</property>
+                                <property name="height-request">40</property>
+                              </object>
+                            </child>
+                            <child>
+                              <object class="GtkLabel">
+                                <property name="label" translatable="yes">Loading content...</property>
+                                <style><class name="title-4"/></style>
+                                <property name="valign">center</property>
+                                <property name="halign">center</property>
+                              </object>
+                            </child>
+                          </object>
+                        </property>
+                      </object>
+                    </child>
                   </object>
                 </child>
               </object>
-            </child>
+            </property>
           </object>
         </property>
       </object>

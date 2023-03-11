@@ -60,5 +60,9 @@
     <key name="opacity" type="i">
       <default>7</default>
     </key>
+    <!-- Backend -->
+    <key name="saved-order" type="s">
+      <default>'[]'</default>
+    </key>
   </schema>
 </schemalist>

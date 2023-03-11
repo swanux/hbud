@@ -30,6 +30,9 @@ class Tools():
                 min-height: 16px;
                 min-width: 16px;
             }
+            #_flap_scroll {
+                background: @window_bg_color;
+            }
             highlight {
                 min-height: 16px;
             }

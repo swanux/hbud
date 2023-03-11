@@ -32,7 +32,55 @@ class Main(frontend.UI):
         self.toolClass.label3 = self.sub._label3
         self.def_cur = Gdk.Cursor.new_from_name('default')
         self.blank_cur = Gdk.Cursor.new_from_name('none')
+        GLib.idle_add(self.window._main_stack._side_flap.set_reveal_flap, False)
+        tmlist = json.loads(self.settings.get_string("saved-order"))
+        self.plnum = -1
+        GLib.idle_add(self.flap_init, tmlist)
+
+    def flap_init(self, tmlist):
+        if len(tmlist) != 0:
+            self.window._main_stack._flap_stack.set_visible_child(self.window._main_stack._play_list_box)
+        else:
+            self.window._main_stack._flap_stack.set_visible_child(self.window._main_stack._nope_lab)
+        child = self.window._main_stack._play_list_box.get_first_child()
+        while child is not None:
+            self.window._main_stack._play_list_box.remove(child)
+            child = self.window._main_stack._play_list_box.get_first_child()
+        for i, item in enumerate(tmlist):
+            print(i, item["name"])
+            widget = frontend.PlayListBox(item["name"], self._("{} Tracks".format(len(item["content"]))), i)
+            widget._del_but.connect("clicked", self.on_clear_order)
+            widget._start_but.connect("clicked", self.load_saved_list)
+            widget._ed_but.connect("clicked", self.edit_saved_list)
+            self.window._main_stack._play_list_box.append(widget)
+
+    def edit_saved_list(self, button):
+        curnum = int(button.get_name().replace("ed_but_", ""))
+        print(curnum)
+        dialog = frontend.RenameDialog()
+        dialog.connect("response", self.dia_response, curnum)
+        dialog.set_transient_for(self.window)
+        dialog.present()
     
+    def dia_response(self, dialog, response, curnum):
+        if response == "save":
+            tmlist = json.loads(self.settings.get_string("saved-order"))
+            tmlist[curnum]["name"] = dialog._rename_entry.get_text()
+            self.settings.set_string("saved-order", json.dumps(tmlist))
+            GLib.idle_add(self.flap_init, tmlist)
+
+    def load_saved_list(self, button):
+        tmlist = json.loads(self.settings.get_string("saved-order"))
+        self.plnum = int(button.get_name().replace("start_but_", ""))
+        print(self.plnum)
+        self.playlist = tmlist[self.plnum]["content"]
+        self.folderPath = GLib.path_get_dirname(self.playlist[0]["uri"])
+        for item in self.playlist[:]:
+            if os.path.isfile(f"{item['uri']}") is False: self.playlist.remove(item)
+        GLib.idle_add(self.window._main_stack._sup_stack.set_visible_child, self.window._main_stack._sup_spinbox)
+        d_pl = futures.ThreadPoolExecutor(max_workers=4)
+        d_pl.submit(self.neo_playlist_gen)
+
     def on_activate(self, _):
         self.confDir = GLib.get_user_config_dir()
         self.API_KEY = "Erv1I6jCqZ"
@@ -113,7 +161,6 @@ class Main(frontend.UI):
         self.window._main_stack._combo_sort.connect("changed", self.on_sort_change)
         self.window._main_stack._search_play.connect("activate", self.on_search)
         self.window._main_stack._order_but.connect("clicked", self.on_order_save)
-        self.window._main_stack._order_but1.connect("clicked", self.on_clear_order)
         self.window._main_stack._order_but2.connect("clicked", self.on_rescan_order)
         self.window._main_stack._video_click.connect("pressed", self.on_playBut_clicked)
 
@@ -221,6 +268,7 @@ class Main(frontend.UI):
         if mode == "audio":
             self.clickedE = files
             self.window._loc_but.set_active(True)
+            GLib.idle_add(self.window._main_stack._sup_stack.set_visible_child, self.window._main_stack._sup_spinbox)
             self.loader("xy")
             self.on_playBut_clicked("xy")
         elif mode == "video":
@@ -267,22 +315,32 @@ class Main(frontend.UI):
         self.tnum = num
         self.toolClass.themer(self.provider, self.window, self.color, self.tnum)
 
-    def on_clear_order(self, _):
-        tmname = self.folderPath.replace("/", ">")
-        os.remove(f"'{self.confDir}/{tmname}.saved.order'")
-        self.window._main_toast.add_toast(Adw.Toast.new(self._('Cleared saved order successfully!')))
+    def on_clear_order(self, button):
+        tmlist = json.loads(self.settings.get_string("saved-order"))
+        self.plnum = int(button.get_name().replace("del_but_", ""))
+        print(self.plnum)
+        del tmlist[self.plnum]
+        self.settings.set_string("saved-order", json.dumps(tmlist))
+        self.plnum = -1
+        self.window._main_toast.add_toast(Adw.Toast.new(self._('Deleted saved Playlist successfully!')))
+        GLib.idle_add(self.flap_init, tmlist)
 
     def on_rescan_order(self, _): GLib.idle_add(self.loader, self.folderPath, True)
 
     def on_order_save(self, _):
-        tmname = self.folderPath.replace("/", ">")
-        f = open(f"{self.confDir}/{tmname}.saved.order", "w+")
         data = []
         for i in range(len(self.playlist)): data.append(self.playlist[i].copy())
         for i in range(len(data)): data[i]["widget"] = None
-        f.write(json.dumps(data))
-        f.close()
-        self.window._main_toast.add_toast(Adw.Toast.new(self._('Saved order successfully!')))
+        tmlist = json.loads(self.settings.get_string("saved-order"))
+        if self.plnum == -1:
+            self.plnum = len(tmlist)
+            print("appending")
+            tmlist.append({"name":self._("Unnamed Playlist"), "content":data})
+        else:
+            tmlist[self.plnum]["content"] = data
+        self.settings.set_string("saved-order", json.dumps(tmlist))
+        self.window._main_toast.add_toast(Adw.Toast.new(self._('Saved Playlist successfully!')))
+        GLib.idle_add(self.flap_init, tmlist)
 
     def createPipeline(self, mode):
         if mode == "local":
@@ -303,7 +361,7 @@ class Main(frontend.UI):
             bus.connect("message", self.on_message)
 
     def on_dropped(self, button):
-        if self.window._drop_but.get_visible() is True:
+        if self.window._drop_but.get_sensitive() is True:
             if self.window._main_stack._top_box.get_visible() is False:
                 GLib.idle_add(self.window._drop_but.set_icon_name, "go-up")
                 GLib.idle_add(self.window._main_stack._top_box.show)
@@ -316,14 +374,6 @@ class Main(frontend.UI):
         btn = button.get_name()
         if self.window._main_stack.get_visible_child() != self.switchDict[btn][0] and button.get_active() is True:
             self.window._main_stack.set_visible_child(self.switchDict[btn][0])
-            if btn == "locBut":
-                GLib.idle_add(self.window._shuff_but.show)
-                if self.playlistPlayer is True: GLib.idle_add(self.window._drop_but.show)
-                GLib.idle_add(self.window._sub_track.hide)
-            else:
-                GLib.idle_add(self.window._shuff_but.hide)
-                GLib.idle_add(self.window._drop_but.hide)
-                GLib.idle_add(self.window._sub_track.show)
             GLib.idle_add(self.window._karaoke_but.set_icon_name, self.switchDict[btn][1])
             if self.playing is True:
                 if self.switchDict[btn][2] == "video" and self.nowIn == "audio": self.on_playBut_clicked("xy")
@@ -374,7 +424,6 @@ class Main(frontend.UI):
                         if name == "modular" and i == self.ednum: self.window._main_stack._sup_box.insert_child_after(trBox, self.playlist[i-1]["widget"])
                     if name != "modular" and trBox is not None: GLib.idle_add(self.window._main_stack._sup_box.append, trBox)
                 if name != "modular" and name != "append":
-                    self.playlistPlayer = True
                     if self.title is not None:
                         num = 0
                         for item in self.playlist:
@@ -382,7 +431,7 @@ class Main(frontend.UI):
                             else: num += 1
                         self.tnum = num
                         self.toolClass.themer(self.provider, self.window, self.color, self.tnum)
-                    GLib.idle_add(self.window._drop_but.show)
+                    GLib.idle_add(self.window._drop_but.set_sensitive, True)
         GLib.idle_add(self.window._main_stack._sup_stack.set_visible_child, self.window._main_stack._sup_scroll)
         print("neo end", time())
 
@@ -402,8 +451,6 @@ class Main(frontend.UI):
     def loader(self, path, misc=False):
         print("loader start", time())
         self.pltmp = []
-        if misc is False:
-            GLib.idle_add(self.window._main_stack._sup_stack.set_visible_child, self.window._main_stack._sup_spinbox)
         if self.clickedE:
             self.folderPath = GLib.path_get_dirname(self.clickedE[0])
             for item in self.clickedE:
@@ -439,17 +486,10 @@ class Main(frontend.UI):
         if response == Gtk.ResponseType.ACCEPT:
             if ftype == "Music":
                 self.folderPath = dialog.get_files()[0].get_path()
+                self.plnum = -1
+                GLib.idle_add(self.window._main_stack._sup_stack.set_visible_child, self.window._main_stack._sup_spinbox)
                 print("Folder selected: " + self.folderPath)
-                tmname = self.folderPath.replace("/", ">")
-                if os.path.isfile(f"{self.confDir}/{tmname}.saved.order"):
-                    f = open(f"{self.confDir}/{tmname}.saved.order", "r")
-                    self.playlist = json.loads(f.read())
-                    f.close()
-                    for item in self.playlist[:]:
-                        if os.path.isfile(f"{item['uri']}") is False: self.playlist.remove(item)
-                    d_pl = futures.ThreadPoolExecutor(max_workers=4)
-                    d_pl.submit(self.neo_playlist_gen)
-                else: GLib.idle_add(self.loader, self.folderPath)
+                GLib.idle_add(self.loader, self.folderPath)
             elif ftype == "Pictures":
                 path = dialog.get_file().get_path()
                 tf = open(path, "rb")
@@ -484,7 +524,6 @@ class Main(frontend.UI):
         self.fcconstructer(self._("Please choose an image file"), Gtk.FileChooserAction.OPEN, "Pictures", self.sub2)
 
     def on_save(self, *_):
-        tmname = self.folderPath.replace("/", ">")
         self.sub2._yr_ent.update()
         f = MediaFile(self.editingFile)
         buffer = self.sub2._lyr_ent.get_buffer()
@@ -494,7 +533,7 @@ class Main(frontend.UI):
         self.playlist[self.ednum]["artist"] = self.sub2._ar_ent.get_text()
         self.playlist[self.ednum]["album"] = self.sub2._al_ent.get_text()
         self.playlist[self.ednum]["title"] = self.sub2._ti_ent.get_text()
-        if os.path.isfile(f"{self.confDir}/{tmname}.saved.order"):
+        if self.plnum != -1:
             self.on_order_save()
         self.sub2_hide("xy")
         GLib.idle_add(self.window._main_stack._sup_box.remove, self.playlist[self.ednum]["widget"])
@@ -1284,6 +1323,7 @@ class Main(frontend.UI):
                 GLib.idle_add(self.window.set_default_size, 600, 450)
                 GLib.idle_add(self.window._label_end.show)
                 self.window.set_resizable(True)
+                GLib.idle_add(self.window._main_stack._sup_stack.set_visible_child, self.window._main_stack._sup_spinbox)
                 d_pl = futures.ThreadPoolExecutor(max_workers=4)
                 d_pl.submit(self.neo_playlist_gen)
             else:
