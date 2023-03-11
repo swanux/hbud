@@ -26,7 +26,7 @@
         <property name="halign">end</property>
         <property name="hexpand">False</property>
         <property name="tooltip-text" translatable="yes">Load</property>
-        <style><class name="suggested"/></style>
+        <style><class name="suggested-action"/></style>
       </object>
     </child>
     <child>
@@ -45,7 +45,7 @@
         <property name="halign">end</property>
         <property name="hexpand">False</property>
         <property name="tooltip-text" translatable="yes">Delete</property>
-        <style><class name="destructive"/></style>
+        <style><class name="destructive-action"/></style>
       </object>
     </child>
   </template>
