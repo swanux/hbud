@@ -9,6 +9,8 @@
     <property name="valign">start</property>
     <property name="title">Name</property>
     <property name="subtitle">0 Tracks</property>
+    <property name="margin-start">4</property>
+    <property name="margin-end">4</property>
     <child>
       <object class="GtkGestureClick">
         <property name="button">1</property>

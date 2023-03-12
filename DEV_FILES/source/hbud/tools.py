@@ -21,7 +21,7 @@ class Tools():
             switch:checked, highlight, menuitem:hover {
                 background-color: %s;
             }
-            #trackbox_%s{
+            #trackbox_%s, #playlistbox_%s{
                 background: %s;
                 color: #000;
                 border-radius: 10px;
@@ -42,7 +42,7 @@ class Tools():
             }
             #hub_menu contents, #hub_menu arrow {
                 background-color: rgba(0,0,0,%s);
-            }""" % (c,w,c,self.o,self.o)
+            }""" % (c,w,self.plnum,c,self.o,self.o)
             css = str.encode(css)
             provider.load_from_data(css)
             GLib.idle_add(window.get_style_context().add_provider_for_display, Gdk.Display.get_default(), provider, Gtk.STYLE_PROVIDER_PRIORITY_APPLICATION)

@@ -34,7 +34,7 @@ class Main(frontend.UI):
         self.blank_cur = Gdk.Cursor.new_from_name('none')
         GLib.idle_add(self.window._main_stack._side_flap.set_reveal_flap, False)
         tmlist = json.loads(self.settings.get_string("saved-order"))
-        self.plnum = -1
+        self.toolClass.plnum = -1
         GLib.idle_add(self.flap_init, tmlist)
 
     def flap_init(self, tmlist):
@@ -57,29 +57,30 @@ class Main(frontend.UI):
     def edit_saved_list(self, button):
         curnum = int(button.get_name().replace("ed_but_", ""))
         print(curnum)
-        dialog = frontend.RenameDialog()
-        dialog.connect("response", self.dia_response, curnum)
+        tmlist = json.loads(self.settings.get_string("saved-order"))
+        dialog = frontend.RenameDialog(tmlist[curnum]["name"])
+        dialog.connect("response", self.dia_response, curnum, tmlist)
         dialog.set_transient_for(self.window)
         dialog.present()
     
-    def dia_response(self, dialog, response, curnum):
+    def dia_response(self, dialog, response, curnum, tmlist):
         if response == "save":
-            tmlist = json.loads(self.settings.get_string("saved-order"))
             tmlist[curnum]["name"] = dialog._rename_entry.get_text()
             self.settings.set_string("saved-order", json.dumps(tmlist))
             GLib.idle_add(self.flap_init, tmlist)
 
     def load_saved_list(self, button):
         tmlist = json.loads(self.settings.get_string("saved-order"))
-        self.plnum = int(button.get_name().replace("start_but_", ""))
-        print(self.plnum)
-        self.playlist = tmlist[self.plnum]["content"]
+        self.toolClass.plnum = int(button.get_name().replace("start_but_", ""))
+        print(self.toolClass.plnum)
+        self.playlist = tmlist[self.toolClass.plnum]["content"]
         self.folderPath = GLib.path_get_dirname(self.playlist[0]["uri"])
         for item in self.playlist[:]:
             if os.path.isfile(f"{item['uri']}") is False: self.playlist.remove(item)
         GLib.idle_add(self.window._main_stack._sup_stack.set_visible_child, self.window._main_stack._sup_spinbox)
         d_pl = futures.ThreadPoolExecutor(max_workers=4)
         d_pl.submit(self.neo_playlist_gen)
+        self.toolClass.themer(self.provider, self.window, self.color, self.tnum)
 
     def on_activate(self, _):
         self.confDir = GLib.get_user_config_dir()
@@ -108,6 +109,7 @@ class Main(frontend.UI):
         if self.settings.get_boolean("minimal-mode") is False: self.window._title.set_subtitle(self.build_version)
         else:
             GLib.idle_add(self.window._head_box.hide)
+            GLib.idle_add(self.window._toggle_pane_button.hide)
             GLib.idle_add(self.window._main_stack.set_visible_child, self.window._main_stack._rd_box)
             GLib.idle_add(self.window.set_default_size, 1, 1)
             GLib.idle_add(self.window._label_end.hide)
@@ -317,11 +319,11 @@ class Main(frontend.UI):
 
     def on_clear_order(self, button):
         tmlist = json.loads(self.settings.get_string("saved-order"))
-        self.plnum = int(button.get_name().replace("del_but_", ""))
-        print(self.plnum)
-        del tmlist[self.plnum]
+        self.toolClass.plnum = int(button.get_name().replace("del_but_", ""))
+        print(self.toolClass.plnum)
+        del tmlist[self.toolClass.plnum]
         self.settings.set_string("saved-order", json.dumps(tmlist))
-        self.plnum = -1
+        self.toolClass.plnum = -1
         self.window._main_toast.add_toast(Adw.Toast.new(self._('Deleted saved Playlist successfully!')))
         GLib.idle_add(self.flap_init, tmlist)
 
@@ -332,12 +334,12 @@ class Main(frontend.UI):
         for i in range(len(self.playlist)): data.append(self.playlist[i].copy())
         for i in range(len(data)): data[i]["widget"] = None
         tmlist = json.loads(self.settings.get_string("saved-order"))
-        if self.plnum == -1:
-            self.plnum = len(tmlist)
+        if self.toolClass.plnum == -1:
+            self.toolClass.plnum = len(tmlist)
             print("appending")
             tmlist.append({"name":self._("Unnamed Playlist"), "content":data})
         else:
-            tmlist[self.plnum]["content"] = data
+            tmlist[self.toolClass.plnum]["content"] = data
         self.settings.set_string("saved-order", json.dumps(tmlist))
         self.window._main_toast.add_toast(Adw.Toast.new(self._('Saved Playlist successfully!')))
         GLib.idle_add(self.flap_init, tmlist)
@@ -486,7 +488,7 @@ class Main(frontend.UI):
         if response == Gtk.ResponseType.ACCEPT:
             if ftype == "Music":
                 self.folderPath = dialog.get_files()[0].get_path()
-                self.plnum = -1
+                self.toolClass.plnum = -1
                 GLib.idle_add(self.window._main_stack._sup_stack.set_visible_child, self.window._main_stack._sup_spinbox)
                 print("Folder selected: " + self.folderPath)
                 GLib.idle_add(self.loader, self.folderPath)
@@ -533,7 +535,7 @@ class Main(frontend.UI):
         self.playlist[self.ednum]["artist"] = self.sub2._ar_ent.get_text()
         self.playlist[self.ednum]["album"] = self.sub2._al_ent.get_text()
         self.playlist[self.ednum]["title"] = self.sub2._ti_ent.get_text()
-        if self.plnum != -1:
+        if self.toolClass.plnum != -1:
             self.on_order_save()
         self.sub2_hide("xy")
         GLib.idle_add(self.window._main_stack._sup_box.remove, self.playlist[self.ednum]["widget"])
@@ -1318,8 +1320,9 @@ class Main(frontend.UI):
         elif key == "minimal-mode":
             if obj.get_boolean("minimal-mode") is False:
                 GLib.idle_add(self.window._head_box.show)
+                GLib.idle_add(self.window._toggle_pane_button.show)
                 GLib.idle_add(self.window._title.set_subtitle, self.build_version)
-                GLib.idle_add(self.window._main_stack.set_visible_child, self.window._main_stack._placeholder)
+                GLib.idle_add(self.window._main_stack.set_visible_child, self.window._main_stack._side_flap)
                 GLib.idle_add(self.window.set_default_size, 600, 450)
                 GLib.idle_add(self.window._label_end.show)
                 self.window.set_resizable(True)
@@ -1328,6 +1331,7 @@ class Main(frontend.UI):
                 d_pl.submit(self.neo_playlist_gen)
             else:
                 GLib.idle_add(self.window._head_box.hide)
+                GLib.idle_add(self.window._toggle_pane_button.hide)
                 self.window._loc_but.set_active(True)
                 GLib.idle_add(self.window._title.set_subtitle, "")
                 GLib.idle_add(self.window._main_stack.set_visible_child, self.window._main_stack._rd_box)

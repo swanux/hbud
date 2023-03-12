@@ -30,8 +30,8 @@
                     <property name="active">False</property>
                     <property name="can-focus">False</property>
                     <property name="visible"
-                      bind-source="_loc_but"
-                      bind-property="active"
+                      bind-source="_drop_but"
+                      bind-property="visible"
                       bind-flags="sync-create"/>
                   </object>
                 </child>

@@ -63,8 +63,10 @@ class PlayListBox(Adw.ActionRow):
 class RenameDialog(Adw.MessageDialog):
     __gtype_name__ = 'RenameDialog'
     _rename_entry = Gtk.Template.Child()
-    def __init__(self):
+    def __init__(self, ogname):
         super().__init__()
+        _ = gettext.gettext
+        self.set_heading(_("Rename Playlist ({})".format(ogname)))
         self._rename_entry.connect('notify::text', self.on_rename_entry_text_changed)
     
     def on_rename_entry_text_changed(self, entry, _):
