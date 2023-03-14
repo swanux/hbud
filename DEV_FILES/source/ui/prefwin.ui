@@ -38,6 +38,7 @@
                 <property name="child">
                   <object class="AdwActionRow">
                     <property name="title" translatable="yes">Accent color</property>
+                    <property name="icon-name">color-select-symbolic</property>
                     <child>
                       <object class="GtkColorButton" id="_colorer">
                         <property name="valign">center</property>

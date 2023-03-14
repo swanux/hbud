@@ -59,6 +59,15 @@ class PlayListBox(Adw.ActionRow):
         self._start_but.set_name(f"start_but_{id}")
 
 
+@Gtk.Template(resource_path='/io/github/swanux/hbud/DEV_FILES/source/ui/deldialog.ui')
+class DeleteDialog(Adw.MessageDialog):
+    __gtype_name__ = 'DeleteDialog'
+    def __init__(self, ogname):
+        super().__init__()
+        _ = gettext.gettext
+        self.set_heading(_("Delete Playlist \"{}\"?".format(ogname)))
+
+
 @Gtk.Template(resource_path='/io/github/swanux/hbud/DEV_FILES/source/ui/renamedialog.ui')
 class RenameDialog(Adw.MessageDialog):
     __gtype_name__ = 'RenameDialog'
@@ -80,7 +89,7 @@ class MainStack(Gtk.Stack):
     # Page 1
     _combo_sort = Gtk.Template.Child()
     _placeholder = Gtk.Template.Child()
-    _top_box = Gtk.Template.Child()
+    _top_reveal = Gtk.Template.Child()
     _sup_box = Gtk.Template.Child()
     _sup_scroll = Gtk.Template.Child()
     _sup_spinbox = Gtk.Template.Child()
@@ -195,15 +204,13 @@ class MainWindow(Adw.Window):
     __gtype_name__ = 'MainWindow'
     _main_stack = Gtk.Template.Child()
     _toggle_pane_button = Gtk.Template.Child()
-    _main_header = Gtk.Template.Child()
-    _title = Gtk.Template.Child()
+    _head_reveal = Gtk.Template.Child()
     _main_toast = Gtk.Template.Child()
     _ev_key_main = Gtk.Template.Child()
     _head_box = Gtk.Template.Child()
     _str_but = Gtk.Template.Child()
     _loc_but = Gtk.Template.Child()
     _drop_but = Gtk.Template.Child()
-    _bottom = Gtk.Template.Child()
     _main_motion = Gtk.Template.Child()
     _slider = Gtk.Template.Child()
     _label = Gtk.Template.Child()
@@ -226,8 +233,22 @@ class MainWindow(Adw.Window):
         settings.bind("is-maximized", self, "maximized", Gio.SettingsBindFlags.DEFAULT)
         settings.bind("is-fullscreen", self, "fullscreened", Gio.SettingsBindFlags.DEFAULT)
 
+        _adj_over = self._main_stack._overlay_scale.get_adjustment()
+        _adj_win = self._slider.get_adjustment()
         self._main_stack._side_flap.bind_property(
             "reveal-flap", self._toggle_pane_button, "active",
+            GObject.BindingFlags.SYNC_CREATE | GObject.BindingFlags.BIDIRECTIONAL)
+        self._main_stack._overlay_play.bind_property(
+            "icon-name", self._play_but, "icon-name",
+            GObject.BindingFlags.SYNC_CREATE | GObject.BindingFlags.BIDIRECTIONAL)
+        self._main_stack._overlay_subs.bind_property(
+            "sensitive", self._sub_track, "sensitive",
+            GObject.BindingFlags.SYNC_CREATE | GObject.BindingFlags.BIDIRECTIONAL)
+        _adj_over.bind_property("lower", _adj_win, "lower",
+            GObject.BindingFlags.SYNC_CREATE | GObject.BindingFlags.BIDIRECTIONAL)
+        _adj_over.bind_property("upper", _adj_win, "upper",
+            GObject.BindingFlags.SYNC_CREATE | GObject.BindingFlags.BIDIRECTIONAL)
+        _adj_over.bind_property("value", _adj_win, "value",
             GObject.BindingFlags.SYNC_CREATE | GObject.BindingFlags.BIDIRECTIONAL)
 
         controllers = self._slider.observe_controllers()
@@ -287,7 +308,7 @@ class Sub(Adw.Window):
 class UI(Adw.Application):
     build_version = CONSTANTS["version"]
     def __init__(self):
-        super().__init__()
+        super().__init__(flags=Gio.ApplicationFlags.HANDLES_OPEN)
         self._ = gettext.gettext
         Gst.init(None)
         Adw.init()

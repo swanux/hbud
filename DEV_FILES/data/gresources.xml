@@ -10,6 +10,7 @@
     <file preprocess="xml-stripblanks">DEV_FILES/source/ui/hbudshortcuts.ui</file>
     <file preprocess="xml-stripblanks">DEV_FILES/source/ui/playlistbox.ui</file>
     <file preprocess="xml-stripblanks">DEV_FILES/source/ui/renamedialog.ui</file>
+    <file preprocess="xml-stripblanks">DEV_FILES/source/ui/deldialog.ui</file>
   </gresource>
 </gresources>
 

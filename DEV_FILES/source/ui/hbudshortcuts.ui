@@ -84,6 +84,12 @@
             </child>
             <child>
               <object class="GtkShortcutsShortcut">
+                <property name="accelerator">&lt;ctrl&gt;Tab</property>
+                <property name="title" translatable="yes">Switch between Audio / Video modes</property>
+              </object>
+            </child>
+            <child>
+              <object class="GtkShortcutsShortcut">
                 <property name="accelerator">space</property>
                 <property name="title" translatable="yes">Play / Pause</property>
               </object>

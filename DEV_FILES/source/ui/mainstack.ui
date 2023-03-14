@@ -57,50 +57,55 @@
                 <property name="orientation">vertical</property>
                 <property name="name">placeholder</property>
                 <child>
-                  <object class="GtkBox" id="_top_box">
-                    <property name="visible">False</property>
-                    <property name="margin-top">5</property>
-                    <property name="margin-bottom">10</property>
-                    <property name="margin-start">10</property>
-                    <property name="margin-end">10</property>
-                    <style><class name="linked"/></style>
+                  <object class="GtkRevealer" id="_top_reveal">
+                    <property name="transition-type">GTK_REVEALER_TRANSITION_TYPE_SLIDE_DOWN</property>
+                    <property name="reveal-child">False</property>
                     <child>
-                      <object class="GtkComboBoxText" id="_combo_sort">
-                        <property name="popup-fixed-width">True</property>
-                        <property name="can-focus">False</property>
-                        <items>
-                          <item id="0" translatable="yes">Do not sort</item>
-                          <item id="1" translatable="yes">Sort by Artist (a-z)</item>
-                          <item id="2" translatable="yes">Sort by Artist (z-a)</item>
-                          <item id="3" translatable="yes">Sort by Title (a-z)</item>
-                          <item id="4" translatable="yes">Sort by Title (z-a)</item>
-                          <item id="5" translatable="yes">Sort by Year (0-9)</item>
-                          <item id="6" translatable="yes">Sort by Year (9-0)</item>
-                          <item id="7" translatable="yes">Sort by Length (0-9)</item>
-                          <item id="8" translatable="yes">Sort by Length (9-0)</item>
-                        </items>
-                        <property name="active-id">0</property>
-                      </object>
-                    </child>
-                    <child>
-                      <object class="GtkSearchEntry" id="_search_play">
-                        <property name="max-width-chars">100</property>
-                        <property name="hexpand">True</property>
-                        <property name="name">search_play</property>
-                      </object>
-                    </child>
-                    <child>
-                      <object class="GtkButton" id="_order_but">
-                        <property name="tooltip-text" translatable="yes">Save Playlist</property>
-                        <property name="can-focus">False</property>
-                        <property name="label" translatable="yes">Save</property>
-                      </object>
-                    </child>
-                    <child>
-                      <object class="GtkButton" id="_order_but2">
-                        <property name="tooltip-text" translatable="yes">Rescan your music library, append new tracks</property>
-                        <property name="can-focus">False</property>
-                        <property name="label" translatable="yes">Rescan</property>
+                      <object class="GtkBox" id="_top_box">
+                        <property name="margin-top">5</property>
+                        <property name="margin-bottom">10</property>
+                        <property name="margin-start">10</property>
+                        <property name="margin-end">10</property>
+                        <style><class name="linked"/></style>
+                        <child>
+                          <object class="GtkComboBoxText" id="_combo_sort">
+                            <property name="popup-fixed-width">True</property>
+                            <property name="can-focus">False</property>
+                            <items>
+                              <item id="0" translatable="yes">Do not sort</item>
+                              <item id="1" translatable="yes">Sort by Artist (a-z)</item>
+                              <item id="2" translatable="yes">Sort by Artist (z-a)</item>
+                              <item id="3" translatable="yes">Sort by Title (a-z)</item>
+                              <item id="4" translatable="yes">Sort by Title (z-a)</item>
+                              <item id="5" translatable="yes">Sort by Year (0-9)</item>
+                              <item id="6" translatable="yes">Sort by Year (9-0)</item>
+                              <item id="7" translatable="yes">Sort by Length (0-9)</item>
+                              <item id="8" translatable="yes">Sort by Length (9-0)</item>
+                            </items>
+                            <property name="active-id">0</property>
+                          </object>
+                        </child>
+                        <child>
+                          <object class="GtkSearchEntry" id="_search_play">
+                            <property name="max-width-chars">100</property>
+                            <property name="hexpand">True</property>
+                            <property name="name">search_play</property>
+                          </object>
+                        </child>
+                        <child>
+                          <object class="GtkButton" id="_order_but">
+                            <property name="tooltip-text" translatable="yes">Save Playlist</property>
+                            <property name="can-focus">False</property>
+                            <property name="label" translatable="yes">Save</property>
+                          </object>
+                        </child>
+                        <child>
+                          <object class="GtkButton" id="_order_but2">
+                            <property name="tooltip-text" translatable="yes">Rescan your music library, append new tracks</property>
+                            <property name="can-focus">False</property>
+                            <property name="label" translatable="yes">Rescan</property>
+                          </object>
+                        </child>
                       </object>
                     </child>
                   </object>

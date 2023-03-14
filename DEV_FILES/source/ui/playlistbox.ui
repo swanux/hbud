@@ -22,32 +22,37 @@
       </object>
     </child>
     <child>
-      <object class="GtkButton" id="_start_but">
-        <property name="valign">center</property>
-        <property name="icon-name">media-playback-start-symbolic</property>
-        <property name="halign">end</property>
-        <property name="hexpand">False</property>
-        <property name="tooltip-text" translatable="yes">Load</property>
-        <style><class name="suggested-action"/></style>
-      </object>
-    </child>
-    <child>
-      <object class="GtkButton" id="_ed_but">
-        <property name="valign">center</property>
-        <property name="icon-name">xapp-edit-symbolic</property>
-        <property name="halign">end</property>
-        <property name="hexpand">False</property>
-        <property name="tooltip-text" translatable="yes">Rename</property>
-      </object>
-    </child>
-    <child>
-      <object class="GtkButton" id="_del_but">
-        <property name="valign">center</property>
-        <property name="icon-name">edit-delete-symbolic</property>
-        <property name="halign">end</property>
-        <property name="hexpand">False</property>
-        <property name="tooltip-text" translatable="yes">Delete</property>
-        <style><class name="destructive-action"/></style>
+      <object class="GtkBox">
+        <style><class name="linked"/></style>
+        <child>
+          <object class="GtkButton" id="_start_but">
+            <property name="valign">center</property>
+            <property name="icon-name">media-playback-start-symbolic</property>
+            <property name="halign">end</property>
+            <property name="hexpand">False</property>
+            <property name="tooltip-text" translatable="yes">Load</property>
+            <style><class name="suggested-action"/></style>
+          </object>
+        </child>
+        <child>
+          <object class="GtkButton" id="_ed_but">
+            <property name="valign">center</property>
+            <property name="icon-name">xapp-edit-symbolic</property>
+            <property name="halign">end</property>
+            <property name="hexpand">False</property>
+            <property name="tooltip-text" translatable="yes">Rename</property>
+          </object>
+        </child>
+        <child>
+          <object class="GtkButton" id="_del_but">
+            <property name="valign">center</property>
+            <property name="icon-name">edit-delete-symbolic</property>
+            <property name="halign">end</property>
+            <property name="hexpand">False</property>
+            <property name="tooltip-text" translatable="yes">Delete</property>
+            <style><class name="destructive-action"/></style>
+          </object>
+        </child>
       </object>
     </child>
   </template>

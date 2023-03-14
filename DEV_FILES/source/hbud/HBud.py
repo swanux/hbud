@@ -24,9 +24,6 @@ class Main(frontend.UI):
         self.toolClass.o = self.settings.get_int("opacity")/10
         self.mpris_adapter = None
         GLib.Thread.new(None, mpris.init, self)
-        self.current_play = self.window._play_but
-        self.current_sub = self.window._sub_track
-        self.current_slider = self.window._slider
         self.toolClass.label1 = self.sub._label1
         self.toolClass.label2 = self.sub._label2
         self.toolClass.label3 = self.sub._label3
@@ -36,6 +33,10 @@ class Main(frontend.UI):
         tmlist = json.loads(self.settings.get_string("saved-order"))
         self.toolClass.plnum = -1
         GLib.idle_add(self.flap_init, tmlist)
+
+    def do_open(self, files, n_files, hint):
+        print(files, n_files, hint)
+        pass
 
     def flap_init(self, tmlist):
         if len(tmlist) != 0:
@@ -53,21 +54,6 @@ class Main(frontend.UI):
             widget._start_but.connect("clicked", self.load_saved_list)
             widget._ed_but.connect("clicked", self.edit_saved_list)
             self.window._main_stack._play_list_box.append(widget)
-
-    def edit_saved_list(self, button):
-        curnum = int(button.get_name().replace("ed_but_", ""))
-        print(curnum)
-        tmlist = json.loads(self.settings.get_string("saved-order"))
-        dialog = frontend.RenameDialog(tmlist[curnum]["name"])
-        dialog.connect("response", self.dia_response, curnum, tmlist)
-        dialog.set_transient_for(self.window)
-        dialog.present()
-    
-    def dia_response(self, dialog, response, curnum, tmlist):
-        if response == "save":
-            tmlist[curnum]["name"] = dialog._rename_entry.get_text()
-            self.settings.set_string("saved-order", json.dumps(tmlist))
-            GLib.idle_add(self.flap_init, tmlist)
 
     def load_saved_list(self, button):
         tmlist = json.loads(self.settings.get_string("saved-order"))
@@ -100,14 +86,13 @@ class Main(frontend.UI):
         coco.parse(self.color)
         self.prefwin._colorer.set_rgba(coco)
         self.toolClass.themer(self.provider, self.window, self.color)
-        self.hwa_change()
         self.adj = self.window._main_stack._sup_scroll.get_vadjustment()
         
         # Display the program
         self.window.set_application(self)
         self.window.present()
-        if self.settings.get_boolean("minimal-mode") is False: self.window._title.set_subtitle(self.build_version)
-        else:
+        self.hwa_change()
+        if self.settings.get_boolean("minimal-mode") is True:
             GLib.idle_add(self.window._head_box.hide)
             GLib.idle_add(self.window._toggle_pane_button.hide)
             GLib.idle_add(self.window._main_stack.set_visible_child, self.window._main_stack._rd_box)
@@ -319,13 +304,33 @@ class Main(frontend.UI):
 
     def on_clear_order(self, button):
         tmlist = json.loads(self.settings.get_string("saved-order"))
-        self.toolClass.plnum = int(button.get_name().replace("del_but_", ""))
-        print(self.toolClass.plnum)
-        del tmlist[self.toolClass.plnum]
-        self.settings.set_string("saved-order", json.dumps(tmlist))
-        self.toolClass.plnum = -1
-        self.window._main_toast.add_toast(Adw.Toast.new(self._('Deleted saved Playlist successfully!')))
-        GLib.idle_add(self.flap_init, tmlist)
+        curnum = int(button.get_name().replace("del_but_", ""))
+        print(curnum)
+        dialog = frontend.DeleteDialog(tmlist[curnum]["name"])
+        dialog.connect("response", self.dia_response, curnum, tmlist)
+        dialog.set_transient_for(self.window)
+        dialog.present()
+
+    def edit_saved_list(self, button):
+        curnum = int(button.get_name().replace("ed_but_", ""))
+        print(curnum)
+        tmlist = json.loads(self.settings.get_string("saved-order"))
+        dialog = frontend.RenameDialog(tmlist[curnum]["name"])
+        dialog.connect("response", self.dia_response, curnum, tmlist)
+        dialog.set_transient_for(self.window)
+        dialog.present()
+    
+    def dia_response(self, dialog, response, curnum, tmlist):
+        if response == "save":
+            tmlist[curnum]["name"] = dialog._rename_entry.get_text()
+            self.settings.set_string("saved-order", json.dumps(tmlist))
+            GLib.idle_add(self.flap_init, tmlist)
+        elif response == "delete":
+            del tmlist[curnum]
+            self.settings.set_string("saved-order", json.dumps(tmlist))
+            if self.toolClass.plnum == curnum: self.toolClass.plnum = -1
+            self.window._main_toast.add_toast(Adw.Toast.new(self._('Deleted saved Playlist successfully!')))
+            GLib.idle_add(self.flap_init, tmlist)
 
     def on_rescan_order(self, _): GLib.idle_add(self.loader, self.folderPath, True)
 
@@ -364,13 +369,13 @@ class Main(frontend.UI):
 
     def on_dropped(self, button):
         if self.window._drop_but.get_sensitive() is True:
-            if self.window._main_stack._top_box.get_visible() is False:
+            if self.window._main_stack._top_reveal.get_reveal_child() is False:
                 GLib.idle_add(self.window._drop_but.set_icon_name, "go-up")
-                GLib.idle_add(self.window._main_stack._top_box.show)
+                self.window._main_stack._top_reveal.set_reveal_child(True)
                 self.window._main_stack._search_play.grab_focus()
             elif button != "key":
                 GLib.idle_add(self.window._drop_but.set_icon_name, "go-down")
-                GLib.idle_add(self.window._main_stack._top_box.hide)
+                self.window._main_stack._top_reveal.set_reveal_child(False)
 
     def allToggle(self, button):
         btn = button.get_name()
@@ -388,7 +393,6 @@ class Main(frontend.UI):
     def neo_playlist_gen(self, name="", srBox=None, dsBox=None, src=0, dst=0):
         print("neo start", time())
         if self.settings.get_boolean("minimal-mode") is True:
-            self.tnum = 0
             self.on_next("clickMode")
             return
         else:
@@ -688,7 +692,7 @@ class Main(frontend.UI):
             elif self.nowIn == "video":
                 self.seeking = True
                 self.resete2 = time()
-                GLib.idle_add(self.current_slider.set_value, self.current_slider.get_value() + 10)
+                GLib.idle_add(self.window._slider.set_value, self.window._slider.get_value() + 10)
 
     def load_cover(self, mode="", bitMage=""):
         uuid = None
@@ -749,7 +753,7 @@ class Main(frontend.UI):
             elif self.nowIn == "video":
                 self.seeking = True
                 self.resete2 = time()
-                GLib.idle_add(self.current_slider.set_value, self.current_slider.get_value() - 10)
+                GLib.idle_add(self.window._slider.set_value, self.window._slider.get_value() - 10)
 
     def stop(self, arg=False):
         print("Stop")
@@ -759,8 +763,8 @@ class Main(frontend.UI):
         self.playing = False
         if self.settings.get_boolean("minimal-mode") is True: self.window._label.set_text("00:00")
         else: self.window._label.set_text("0:00:00")
-        GLib.idle_add(self._current_play.set_icon_name, "media-playback-start")
-        self.current_slider.set_value(0)
+        GLib.idle_add(self.window._play_but.set_icon_name, "media-playback-start")
+        self.window._slider.set_value(0)
         if arg is False:
             self.res = False
             self.player.set_state(Gst.State.NULL)
@@ -769,7 +773,7 @@ class Main(frontend.UI):
         print("Pause")
         self.playing = False
         try:
-            GLib.idle_add(self.current_play.set_icon_name, "media-playback-start")
+            GLib.idle_add(self.window._play_but.set_icon_name, "media-playback-start")
             self.player.set_state(Gst.State.PAUSED)
         except: print("Pause exception")
     
@@ -777,20 +781,20 @@ class Main(frontend.UI):
         print("Resume")
         self.playing = True
         self.player.set_state(Gst.State.PLAYING)
-        GLib.idle_add(self.current_play.set_icon_name, "media-playback-pause")
+        GLib.idle_add(self.window._play_but.set_icon_name, "media-playback-pause")
         GLib.timeout_add(500, self.updateSlider)
         GLib.timeout_add(40, self.updatePos)
 
     def on_slider_grab(self, *_): self.seeking = True
     
     def on_slider_grabbed(self, *_):
-        current_time = str(timedelta(seconds=round(self.current_slider.get_value())))
-        GLib.idle_add(self.current_slider.set_tooltip_text, f"{current_time}")
+        current_time = str(timedelta(seconds=round(self.window._slider.get_value())))
+        GLib.idle_add(self.window._slider.set_tooltip_text, f"{current_time}")
 
 
     def on_slider_seek(self, *_):
         if self.useMode == self.nowIn:
-            seek_time_secs = self.current_slider.get_value()
+            seek_time_secs = self.window._slider.get_value()
             if seek_time_secs < self.toolClass.position: self.toolClass.seekBack = True
             self.player.seek_simple(Gst.Format.TIME,  Gst.SeekFlags.FLUSH | Gst.SeekFlags.FLUSH, seek_time_secs * Gst.SECOND)
             self.seeking = False
@@ -812,7 +816,7 @@ class Main(frontend.UI):
             if self.duration_nanosecs == -1: return True
             self.remaining = float(self.duration_nanosecs - position_nanosecs) / Gst.SECOND
             if self.seeking is False:
-                self.current_slider.set_value(self.toolClass.position)
+                self.window._slider.set_value(self.toolClass.position)
             fvalue, svalue = str(timedelta(seconds=round(self.toolClass.position))), str(timedelta(seconds=int(self.remaining)))
             if self.settings.get_boolean("minimal-mode") is True: fvalue, svalue = ":".join(fvalue.split(":")[1:]), ":".join(svalue.split(":")[1:])
             if self.fulle is False:
@@ -871,8 +875,8 @@ class Main(frontend.UI):
         else:
             popbox.append(Gtk.Label.new(self._("No subtitles found.")))
             popbox.append(Gtk.Label.new(self._("You may visit OpenSubtitles or Subscene.")))
-        GLib.idle_add(self.current_sub.get_popover().set_child, popbox)
-        GLib.idle_add(self.current_sub.set_sensitive, True)
+        GLib.idle_add(self.window._sub_track.get_popover().set_child, popbox)
+        GLib.idle_add(self.window._sub_track.set_sensitive, True)
 
     def sub_toggle(self, button):
         btn = button.get_name().replace("subno_", "")
@@ -886,7 +890,7 @@ class Main(frontend.UI):
             subs.submit(self.subShow, subtitle)
 
     def subtitle_search_on_play(self):
-        GLib.idle_add(self.current_sub.set_sensitive, False)
+        GLib.idle_add(self.window._sub_track.set_sensitive, False)
         self.subtitle_dict = []
         subber = futures.ThreadPoolExecutor(max_workers=4)
         submitted = subber.submit(self.extract_sub, Gst.uri_get_location(self.uri), [])
@@ -942,7 +946,7 @@ class Main(frontend.UI):
             self.player.set_property("uri", Gst.filename_to_uri(self.url.replace("file://", "")))
         self.player.set_state(Gst.State.PLAYING)
         self.uri = self.player.get_property("uri")
-        GLib.idle_add(self.current_play.set_icon_name, "media-playback-pause")
+        GLib.idle_add(self.window._play_but.set_icon_name, "media-playback-pause")
         GLib.timeout_add(500, self.updateSlider)
         GLib.timeout_add(40, self.updatePos)
         if self.nowIn == "video" and misc != "continue": self.subtitle_search_on_play()
@@ -956,7 +960,7 @@ class Main(frontend.UI):
             try:
                 self.duration_nanosecs = self.player.query_duration(Gst.Format.TIME)[1]
                 if self.duration_nanosecs == -1: raise Exception
-                GLib.idle_add(self.current_slider.set_range, 0, float(self.duration_nanosecs) / Gst.SECOND)
+                GLib.idle_add(self.window._slider.set_range, 0, float(self.duration_nanosecs) / Gst.SECOND)
                 break
             except: pass
 
@@ -1020,8 +1024,12 @@ class Main(frontend.UI):
         # print(keyval)
         try:
             if Gdk.ModifierType.CONTROL_MASK & modifier: # Ctrl combo
-                if keyval == 102 and self.settings.get_boolean("minimal-mode") is False: self.on_dropped("key") # F
+                if keyval == 102 and self.settings.get_boolean("minimal-mode") is False and self.useMode == "audio":
+                    self.on_dropped("key") # F
                 elif keyval == 111: self.on_openFolderBut_clicked(None) # O
+                elif keyval == 65289: # Tab
+                    if self.useMode == "video": self.window._loc_but.set_active(True)
+                    else: self.window._str_but.set_active(True)
             elif keyval == 32 and self.url: self.on_playBut_clicked(0) # Space
             elif keyval == 65480:
                 if self.useMode == "video": self.on_karaoke_activate(0) # F11
@@ -1062,33 +1070,23 @@ class Main(frontend.UI):
         elif param.name == "fullscreened":
             self.fulle = self.window.is_fullscreen()
             if self.fulle is True:
-                GLib.idle_add(self.window._main_header.hide)
-                self.switch_handler([self.current_play, self.current_sub, self.current_slider], [self.window._main_stack._overlay_play, self.window._main_stack._overlay_subs, self.window._main_stack._overlay_scale])
-                GLib.idle_add(self.window._bottom.hide)
+                GLib.idle_add(self.switch_popover, self.window._sub_track, self.window._main_stack._overlay_subs)
+                GLib.idle_add(self.window._main_stack._overlay_time.set_text, "{} / {}".format(self.window._label.get_text(), self.window._label_end.get_text()))
+                self.window._head_reveal.set_reveal_child(False)
             else:
-                GLib.idle_add(self.window._main_header.show)
-                self.switch_handler([self.current_play, self.current_sub, self.current_slider], [self.window._play_but, self.window._sub_track, self.window._slider])
-                GLib.idle_add(self.window._bottom.show)
+                GLib.idle_add(self.switch_popover, self.window._main_stack._overlay_subs, self.window._sub_track)
+                GLib.idle_add(self.window._label.set_text, self.window._main_stack._overlay_time.get_text().split(" / ")[0])
+                GLib.idle_add(self.window._label_end.set_text, self.window._main_stack._overlay_time.get_text().split(" / ")[1])
+                self.window._head_reveal.set_reveal_child(True)
             sizThread = futures.ThreadPoolExecutor(max_workers=1)
             sizThread.submit(self.different_resize, emitter)
 
-    def switch_handler(self, a, b):
-        self.current_play = b[0]
-        self.current_sub = b[1]
-        self.current_slider = b[2]
-        GLib.idle_add(self.current_play.set_icon_name, a[0].get_icon_name())
-        GLib.idle_add(self.current_sub.set_sensitive, a[1].get_sensitive())
-        popover = a[1].get_popover()
+    def switch_popover(self, a, b):
+        popover = a.get_popover()
         widget = popover.get_child()
         popover.set_child()
-        GLib.idle_add(self.current_sub.get_popover().set_child, widget)
-        GLib.idle_add(self.current_slider.set_range, 0, float(self.duration_nanosecs) / Gst.SECOND)
-        GLib.idle_add(self.current_slider.set_value, self.toolClass.position)
-        if self.fulle is False:
-            GLib.idle_add(self.window._label.set_text, self.window._main_stack._overlay_time.get_text().split(" / ")[0])
-            GLib.idle_add(self.window._label_end.set_text, self.window._main_stack._overlay_time.get_text().split(" / ")[1])
-        else:
-            GLib.idle_add(self.window._main_stack._overlay_time.set_text, "{} / {}".format(self.window._label.get_text(), self.window._label_end.get_text()))
+        b.get_popover().set_child(widget)
+        del popover, widget
 
     def different_resize(self, emitter):
         GLib.usleep(300000)
@@ -1321,7 +1319,6 @@ class Main(frontend.UI):
             if obj.get_boolean("minimal-mode") is False:
                 GLib.idle_add(self.window._head_box.show)
                 GLib.idle_add(self.window._toggle_pane_button.show)
-                GLib.idle_add(self.window._title.set_subtitle, self.build_version)
                 GLib.idle_add(self.window._main_stack.set_visible_child, self.window._main_stack._side_flap)
                 GLib.idle_add(self.window.set_default_size, 600, 450)
                 GLib.idle_add(self.window._label_end.show)
@@ -1333,7 +1330,6 @@ class Main(frontend.UI):
                 GLib.idle_add(self.window._head_box.hide)
                 GLib.idle_add(self.window._toggle_pane_button.hide)
                 self.window._loc_but.set_active(True)
-                GLib.idle_add(self.window._title.set_subtitle, "")
                 GLib.idle_add(self.window._main_stack.set_visible_child, self.window._main_stack._rd_box)
                 GLib.idle_add(self.window.set_default_size, 1, 1)
                 GLib.idle_add(self.window._label_end.hide)
@@ -1379,4 +1375,5 @@ def run():
     app = Main()
     frontend.app = app
     app.connect('activate', app.on_activate)
-    app.run(None)
+    print(sys.argv)
+    app.run(sys.argv)
