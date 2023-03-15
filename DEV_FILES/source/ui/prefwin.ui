@@ -261,7 +261,8 @@
                 <property name="child">
                   <object class="AdwActionRow">
                     <property name="title" translatable="yes">Minimal mode</property>
-                    <property name="subtitle" translatable="yes">A minimal player mode, better performance and less distraction\nNote: The window will be refreshed after state change</property>
+                    <property name="subtitle" translatable="yes">A minimal player mode, better performance and less distraction
+Note: The window will be refreshed after state change</property>
                     <child>
                       <object class="GtkSwitch" id="_lite_switch">
                         <property name="valign">center</property>
@@ -277,7 +278,8 @@
                 <property name="child">
                   <object class="AdwActionRow">
                     <property name="title" translatable="yes">Hardware Acceleration</property>
-                    <property name="subtitle" translatable="yes">Whether to use VA for HW acceleration or not\nNote: Turning this off may result in increased stability but worse performance</property>
+                    <property name="subtitle" translatable="yes">Whether to use VA for HW acceleration or not
+Note: Turning this off may result in increased stability but worse performance</property>
                     <child>
                       <object class="GtkSwitch" id="_hwa_switch">
                         <property name="valign">center</property>

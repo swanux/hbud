@@ -24,12 +24,9 @@ finish-args:
   - --device=dri
   - --socket=pulseaudio
   - --share=ipc
-  - --filesystem=xdg-videos
-  - --own-name=org.mpris.MediaPlayer2.hbud
-  - --filesystem=xdg-run/pipewire-0:ro
-  - --filesystem=xdg-run/gvfsd
-  - --filesystem=xdg-run/media
   - --talk-name=org.gtk.vfs.*
+  - --filesystem=xdg-run/gvfsd
+  - --own-name=org.mpris.MediaPlayer2.hbud
   - --env=GST_PLUGIN_SYSTEM_PATH=/app/lib/gstreamer-1.0
 
 modules:

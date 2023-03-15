@@ -30,7 +30,7 @@ class Tools():
                 min-height: 16px;
                 min-width: 16px;
             }
-            #_flap_scroll {
+            scrolledwindow, flap {
                 background: @window_bg_color;
             }
             highlight {

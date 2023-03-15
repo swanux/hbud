@@ -13,7 +13,7 @@ from mediafile import MediaFile, MediaField, MP3DescStorageStyle, StorageStyle
 gi.require_version('Gtk', '4.0')
 gi.require_version('Gst', '1.0')
 gi.require_version('Adw', '1')
-from gi.repository import Gtk, GLib, GdkPixbuf, Gdk, Adw, Gio, Gst 
+from gi.repository import Gtk, GLib, GdkPixbuf, Gdk, Adw, Gio, Gst
 from hbud import letrasapi, musixapi, frontend, mpris, tools
 
 class Main(frontend.UI):
@@ -29,14 +29,14 @@ class Main(frontend.UI):
         self.toolClass.label3 = self.sub._label3
         self.def_cur = Gdk.Cursor.new_from_name('default')
         self.blank_cur = Gdk.Cursor.new_from_name('none')
-        GLib.idle_add(self.window._main_stack._side_flap.set_reveal_flap, False)
         tmlist = json.loads(self.settings.get_string("saved-order"))
         self.toolClass.plnum = -1
         GLib.idle_add(self.flap_init, tmlist)
 
-    def do_open(self, files, n_files, hint):
-        print(files, n_files, hint)
-        pass
+    def do_open(self, files, n_files, _):
+        print(files, n_files)
+        self.on_activate(None)
+        self.manual_file_parser(files)
 
     def flap_init(self, tmlist):
         if len(tmlist) != 0:
@@ -100,8 +100,6 @@ class Main(frontend.UI):
             GLib.idle_add(self.window._label_end.hide)
             self.window.set_resizable(False)
         self.window._loc_but.set_active(True)
-        try: self.manual_file_parser(sys.argv[1:])
-        except: print("No arguments specified")
 
     def connect_signals(self):
         self.window.connect("close-request", self.on_main_delete_event)
@@ -233,12 +231,12 @@ class Main(frontend.UI):
     def manual_file_parser(self, arguments):
         mode, files = "", []
         for arg in arguments:
-            f = Gio.File.new_for_path(arg)
-            i = f.query_info(Gio.FILE_ATTRIBUTE_STANDARD_CONTENT_TYPE,
+            i = arg.query_info(Gio.FILE_ATTRIBUTE_STANDARD_CONTENT_TYPE,
                             Gio.FileQueryInfoFlags.NONE,
                             None)
             tags = i.get_content_type()
-            del f, i
+            print(tags)
+            del i
             if mode == "":
                 if "audio" in tags: mode = "audio"
                 elif "video" in tags:
@@ -267,10 +265,7 @@ class Main(frontend.UI):
     def on_drop(self, drop_target, value, *_):
         del drop_target
         files = value.get_files()
-        reaList = []
-        for file in files:
-            reaList.append(file.get_path())
-        self.manual_file_parser(reaList)
+        self.manual_file_parser(files)
 
     def on_search(self, widget):
         print("Searching...")
@@ -442,8 +437,13 @@ class Main(frontend.UI):
         print("neo end", time())
 
     def metas(self, location, extrapath, misc=False):
-        try: f = MediaFile(f"{location}")
-        except: return
+        tf = Gio.File.new_for_path(location)
+        i = tf.query_info(Gio.FILE_ATTRIBUTE_STANDARD_CONTENT_TYPE,
+                        Gio.FileQueryInfoFlags.NONE,
+                        None)
+        tags = i.get_content_type()
+        if "audio" not in tags: return
+        f = MediaFile(location)
         title, artist, album, year, length = f.title, f.artist, f.album, f.year, ":".join(str(timedelta(seconds=round(f.length))).split(":")[1:])
         if not title: title = os.path.splitext(extrapath)[0]
         if not artist: artist = self._("Unknown")
@@ -458,9 +458,9 @@ class Main(frontend.UI):
         print("loader start", time())
         self.pltmp = []
         if self.clickedE:
-            self.folderPath = GLib.path_get_dirname(self.clickedE[0])
+            self.folderPath = GLib.path_get_dirname(self.clickedE[0].get_path())
             for item in self.clickedE:
-                self.metas(item, GLib.path_get_basename(item))
+                self.metas(item.get_path(), GLib.path_get_basename(item.get_path()))
         else:
             pltmpin = os.scandir(path)
             for i in pltmpin:
@@ -916,8 +916,8 @@ class Main(frontend.UI):
     def play(self, misc=""):
         if "/" in misc:
             self.url, self.nowIn, self.player = "file://"+misc, "video", self.videoPipe
-        elif self.clickedE is not False and len(self.clickedE) == 1:
-            self.url, self.nowIn, self.player = "file://"+self.clickedE[0], "video", self.videoPipe
+        elif self.clickedE is not False and self.useMode == "video":
+            self.url, self.nowIn, self.player = self.clickedE[0].get_path(), "video", self.videoPipe
         elif misc == "continue":
             if self.useMode == "audio":
                 if self.audioPipe.get_state(1)[1] == Gst.State.NULL: return
@@ -1375,5 +1375,4 @@ def run():
     app = Main()
     frontend.app = app
     app.connect('activate', app.on_activate)
-    print(sys.argv)
     app.run(sys.argv)
