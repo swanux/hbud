@@ -24,8 +24,6 @@ finish-args:
   - --device=dri
   - --socket=pulseaudio
   - --share=ipc
-  - --talk-name=org.gtk.vfs.*
-  - --filesystem=xdg-run/gvfsd
   - --own-name=org.mpris.MediaPlayer2.hbud
   - --env=GST_PLUGIN_SYSTEM_PATH=/app/lib/gstreamer-1.0
 
