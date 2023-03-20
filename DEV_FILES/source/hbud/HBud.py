@@ -101,6 +101,7 @@ class Main(frontend.UI):
             GLib.idle_add(self.window._main_stack.set_visible_child, self.window._main_stack._rd_box)
             GLib.idle_add(self.window.set_default_size, 1, 1)
             GLib.idle_add(self.window._label_end.hide)
+            GLib.idle_add(self.window._drop_but.hide)
             self.window.set_resizable(False)
         self.window._loc_but.set_active(True)
 
@@ -243,7 +244,7 @@ class Main(frontend.UI):
             del i
             if mode == "":
                 if "audio" in tags: mode = "audio"
-                elif "video" in tags:
+                elif "video" in tags and self.settings.get_boolean("minimal-mode") is False:
                     mode = "video"
                     self.useMode = "video"
                     break
@@ -260,7 +261,7 @@ class Main(frontend.UI):
             self.window._loc_but.set_active(True)
             self.window._main_stack._sup_stack.set_visible_child(self.window._main_stack._sup_spinbox)
             self.loader("xy")
-        elif mode == "video":
+        elif mode == "video" and self.settings.get_boolean("minimal-mode") is False:
             self.clickedE = arguments
             self.window._str_but.set_active(True)
             self.on_playBut_clicked(arguments[0].get_path())

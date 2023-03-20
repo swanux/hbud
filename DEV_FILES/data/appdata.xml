@@ -31,6 +31,7 @@
     </categories>
     <url type="homepage">https://github.com/swanux/hbud</url>
     <url type="bugtracker">https://github.com/swanux/hbud/issues</url>
+     <url type="donation">https://ko-fi.com/swanux</url>
 
     <releases>
         <release version="0.4.1.2" date="2023-02-09">
