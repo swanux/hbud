@@ -13,8 +13,8 @@ Simple audio / video player and karaoke app written in Python and GTK4
   <source media="(prefers-color-scheme: light)" srcset="https://img.shields.io/flathub/downloads/io.github.swanux.hbud?logo=Flatpak&logoColor=white&style=for-the-badge">
   <img alt="Number of installs" src="https://img.shields.io/flathub/downloads/io.github.swanux.hbud?logo=Flatpak&logoColor=white&style=for-the-badge">
 </picture>
-[![ko-fi](https://ko-fi.com/img/githubbutton_sm.svg)](https://ko-fi.com/O5O5JN9T5)
 </p>
+<p align="center"><a href="https://ko-fi.com/O5O5JN9T5" align="center"><img alt='Donate on Ko-fi' src='https://ko-fi.com/img/githubbutton_sm.svg'/></a></p>
 
 ## Features
 - Audio and video playback
