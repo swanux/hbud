@@ -340,9 +340,9 @@ class UI(Adw.Application):
         self.choser_window.set_title(self._("Which one is correct?"))
         self.seeking = False
         self.menu = Gio.Menu()
-        menu_item = Gio.MenuItem.new(self._('Delete from current playqueue'), "app.delete")
+        menu_item = Gio.MenuItem.new(self._('Delete from Current Playqueue'), "app.delete")
         self.menu.append_item(menu_item)
-        menu_item = Gio.MenuItem.new(self._('Edit metadata'), "app.edit")
+        menu_item = Gio.MenuItem.new(self._('Edit Metadata'), "app.edit")
         self.menu.append_item(menu_item)
         self.menu.freeze()
         self.about = Adw.AboutWindow(application_name=CONSTANTS["name"],

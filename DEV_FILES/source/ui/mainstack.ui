@@ -70,7 +70,7 @@
                             <property name="popup-fixed-width">True</property>
                             <property name="can-focus">False</property>
                             <items>
-                              <item id="0" translatable="yes">Do not sort</item>
+                              <item id="0" translatable="yes">Do Not Sort</item>
                               <item id="1" translatable="yes">Sort by Artist (a-z)</item>
                               <item id="2" translatable="yes">Sort by Artist (z-a)</item>
                               <item id="3" translatable="yes">Sort by Title (a-z)</item>
@@ -151,7 +151,7 @@
                             </child>
                             <child>
                               <object class="GtkLabel">
-                                <property name="label" translatable="yes">Loading content...</property>
+                                <property name="label" translatable="yes">Loading Content...</property>
                                 <style><class name="title-4"/></style>
                                 <property name="valign">center</property>
                                 <property name="halign">center</property>

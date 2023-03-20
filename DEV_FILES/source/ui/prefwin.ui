@@ -34,10 +34,10 @@
             </child>
             <child>
               <object class="AdwPreferencesRow">
-                <property name="title" translatable="yes">Accent color</property>
+                <property name="title" translatable="yes">Accent Color</property>
                 <property name="child">
                   <object class="AdwActionRow">
-                    <property name="title" translatable="yes">Accent color</property>
+                    <property name="title" translatable="yes">Accent Color</property>
                     <property name="icon-name">color-select-symbolic</property>
                     <child>
                       <object class="GtkColorButton" id="_colorer">
@@ -50,10 +50,10 @@
             </child>
             <child>
               <object class="AdwPreferencesRow">
-                <property name="title" translatable="yes">Video overlay controls opacity</property>
+                <property name="title" translatable="yes">Video Overlay Controls Opacity</property>
                 <property name="child">
                   <object class="AdwActionRow">
-                    <property name="title" translatable="yes">Video overlay controls opacity</property>
+                    <property name="title" translatable="yes">Video Overlay Controls Opacity</property>
                     <property name="subtitle" translatable="yes">Default is 7</property>
                     <child>
                       <object class="GtkSpinButton" id="_opac_spin">
@@ -125,10 +125,10 @@
             </child>
             <child>
               <object class="AdwPreferencesRow">
-                <property name="title" translatable="yes">Dark background</property>
+                <property name="title" translatable="yes">Dark Background</property>
                 <property name="child">
                   <object class="AdwActionRow">
-                    <property name="title" translatable="yes">Dark background</property>
+                    <property name="title" translatable="yes">Dark Background</property>
                     <child>
                       <object class="GtkSwitch" id="_bg_switch">
                         <property name="valign">center</property>
@@ -191,10 +191,10 @@
             </child>
             <child>
               <object class="AdwPreferencesRow">
-                <property name="title" translatable="yes">Preferred album cover quality</property>
+                <property name="title" translatable="yes">Preferred Album Cover Quality</property>
                 <property name="child">
                   <object class="AdwActionRow">
-                    <property name="title" translatable="yes">Preferred album cover quality</property>
+                    <property name="title" translatable="yes">Preferred Album Cover Quality</property>
                     <property name="subtitle" translatable="yes">Default is High</property>
                     <child>
                       <object class="GtkComboBoxText" id="_combo_size">
@@ -234,10 +234,10 @@
             </child>
             <child>
               <object class="AdwPreferencesRow">
-                <property name="title" translatable="yes">Auto-scroll positioning</property>
+                <property name="title" translatable="yes">Auto-scroll Positioning</property>
                 <property name="child">
                   <object class="AdwActionRow">
-                    <property name="title" translatable="yes">Auto-scroll positioning</property>
+                    <property name="title" translatable="yes">Auto-scroll Positioning</property>
                     <property name="subtitle" translatable="yes">Default is 5 - increase to make the current song appear further down on the screen</property>
                     <child>
                       <object class="GtkSpinButton" id="_scroll_spin">
@@ -257,10 +257,10 @@
             </child>
             <child>
               <object class="AdwPreferencesRow">
-                <property name="title" translatable="yes">Minimal mode</property>
+                <property name="title" translatable="yes">Minimal Mode</property>
                 <property name="child">
                   <object class="AdwActionRow">
-                    <property name="title" translatable="yes">Minimal mode</property>
+                    <property name="title" translatable="yes">Minimal Mode</property>
                     <property name="subtitle" translatable="yes">A minimal player mode, better performance and less distraction
 Note: The window will be refreshed after state change</property>
                     <child>
@@ -291,10 +291,10 @@ Note: Turning this off may result in increased stability but worse performance</
             </child>
             <child>
               <object class="AdwPreferencesRow">
-                <property name="title" translatable="yes">Clear cache</property>
+                <property name="title" translatable="yes">Clear Cache</property>
                 <property name="child">
                   <object class="AdwActionRow">
-                    <property name="title" translatable="yes">Clear cache</property>
+                    <property name="title" translatable="yes">Clear Cache</property>
                     <property name="subtitle" translatable="yes">Clear cached album cover images to free up space</property>
                     <child>
                       <object class="GtkButton" id="_clear_cache">
@@ -312,11 +312,11 @@ Note: Turning this off may result in increased stability but worse performance</
 
     <child>
       <object class="AdwPreferencesPage">
-        <property name="title" translatable="yes">System info</property>
+        <property name="title" translatable="yes">System Info</property>
         <property name="icon-name">applications-engineering-symbolic</property>
         <child>
           <object class="AdwPreferencesGroup">
-            <property name="title" translatable="yes">Library versions</property>
+            <property name="title" translatable="yes">Library Versions</property>
             <child>
               <object class="AdwPreferencesRow">
                 <property name="title">GTK</property>
@@ -382,7 +382,7 @@ Note: Turning this off may result in increased stability but worse performance</
 
         <child>
           <object class="AdwPreferencesGroup">
-            <property name="title" translatable="yes">Hardware decoding</property>
+            <property name="title" translatable="yes">Hardware Decoding</property>
             <child>
               <object class="AdwPreferencesRow">
                 <property name="title">vah264dec</property>

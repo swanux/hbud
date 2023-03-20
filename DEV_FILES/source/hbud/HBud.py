@@ -38,7 +38,7 @@ class Main(frontend.UI):
 
     def do_open(self, files, n_files, _):
         print(files, n_files)
-        self.on_activate(None)
+        self.activate()
         self.manual_file_parser(files)
 
     def flap_init(self, tmlist):
@@ -71,7 +71,7 @@ class Main(frontend.UI):
         GLib.idle_add(self.window._main_stack._side_flap.set_reveal_flap, False)
         GLib.Thread.new(None, self.loader, self.folderPath, False, True)
 
-    def on_activate(self, _):
+    def do_activate(self):
         self.confDir = GLib.get_user_config_dir()
         self.API_KEY = "Erv1I6jCqZ"
         musicbrainzngs.set_useragent("hbud", "0.4.2", "https://github.com/swanux/hbud")
@@ -332,7 +332,7 @@ class Main(frontend.UI):
             del tmlist[curnum]
             self.settings.set_string("saved-order", json.dumps(tmlist))
             if self.toolClass.plnum == curnum: self.toolClass.plnum = -1
-            self.toast_templ.set_title(self._('Deleted saved Playlist successfully!'))
+            self.toast_templ.set_title(self._('Deleted Playlist Successfully'))
             self.window._main_toast.add_toast(self.toast_templ)
             GLib.idle_add(self.flap_init, tmlist)
 
@@ -350,7 +350,7 @@ class Main(frontend.UI):
         else:
             tmlist[self.toolClass.plnum]["content"] = data
         self.settings.set_string("saved-order", json.dumps(tmlist))
-        self.toast_templ.set_title(self._('Saved Playlist successfully!'))
+        self.toast_templ.set_title(self._('Saved Playlist Successfully'))
         self.window._main_toast.add_toast(self.toast_templ)
         GLib.idle_add(self.flap_init, tmlist)
 
@@ -483,8 +483,9 @@ class Main(frontend.UI):
         if misc is False:
             if skippl is False: self.playlist = self.pltmp
             widList = self.neo_playlist_gen()
-            for i in widList:
-                GLib.idle_add(self.window._main_stack._sup_box.append, i)
+            if self.settings.get_boolean("minimal-mode") is False:
+                for i in widList:
+                    GLib.idle_add(self.window._main_stack._sup_box.append, i)
             GLib.idle_add(self.window._main_stack._sup_stack.set_visible_child, self.window._main_stack._sup_scroll)
         else:
             uristmp = []
@@ -497,21 +498,23 @@ class Main(frontend.UI):
             widList = self.neo_playlist_gen(name="append")
             for widget in widList:
                 GLib.idle_add(self.window._main_stack._sup_box.append, widget)
-            self.toast_templ.set_title(self._('Rescan complete. {} tracks added.').format(i))
+            self.toast_templ.set_title(self._('Rescan Complete\n{} Tracks Added').format(i))
             self.window._main_toast.add_toast(self.toast_templ)
         print("loader end", time())
 
     def on_openFolderBut_clicked(self, *_):
         self.clickedE = False
         if self.playing is True: self.pause()
-        if self.useMode == "audio": self.fcconstructer(self._("Please choose a folder"), Gtk.FileChooserAction.SELECT_FOLDER, "Music", self.window)
-        else: self.fcconstructer(self._("Please choose a video file"), Gtk.FileChooserAction.OPEN, "Videos", self.window)
+        if self.useMode == "audio": self.fcconstructer(self._("Choose a Folder"), Gtk.FileChooserAction.SELECT_FOLDER, "Music", self.window)
+        else: self.fcconstructer(self._("Choose a Video File"), Gtk.FileChooserAction.OPEN, "Videos", self.window)
 
     def reset_player(self):
         if self.nowIn == "audio" and self.useMode == "audio":
             try: self.stop(arg=False)
             except: print("Not stopping")
-        else: self.player.set_state(Gst.State.PAUSED)
+        else:
+            try: self.player.set_state(Gst.State.PAUSED)
+            except: print("Not pausing")
         self.tnum = -1
         self.toolClass.themer(self.provider, self.window, self.color, self.tnum)
 
@@ -541,12 +544,12 @@ class Main(frontend.UI):
         filechooserdialog = Gtk.FileChooserNative.new(title, parent, action, self._("Open"), self._("Cancel"))
         if ftype == "Videos":
             filterr = Gtk.FileFilter()
-            filterr.set_name(self._("Video files"))
+            filterr.set_name(self._("Video Files"))
             filterr.add_mime_type("video/*")
             filechooserdialog.add_filter(filterr)
         elif ftype == "Pictures":
             filterr = Gtk.FileFilter()
-            filterr.set_name(self._("Image files"))
+            filterr.set_name(self._("Image Files"))
             filterr.add_mime_type("image/*")
             filechooserdialog.add_filter(filterr)
         filechooserdialog.connect("response", self.on_response, filechooserdialog, ftype)
@@ -555,7 +558,7 @@ class Main(frontend.UI):
         filechooserdialog.show()
 
     def on_iChoser_clicked(self, *_):
-        self.fcconstructer(self._("Please choose an image file"), Gtk.FileChooserAction.OPEN, "Pictures", self.sub2)
+        self.fcconstructer(self._("Choose an Image File"), Gtk.FileChooserAction.OPEN, "Pictures", self.sub2)
 
     def on_save(self, *_):
         self.sub2._yr_ent.update()
@@ -658,7 +661,7 @@ class Main(frontend.UI):
             self.aborte = False
             return
         if len(self.chosefrom) == 0:
-            self.toast_templ.set_title(self._('Did not find any match online.'))
+            self.toast_templ.set_title(self._('Did Not Find Any Match Online'))
             self.sub2._sub2_toast.add_toast(self.toast_templ)
             GLib.idle_add(self.sub2._mag_spin.stop)
         elif len(self.chosefrom) == 1:
@@ -686,7 +689,7 @@ class Main(frontend.UI):
         GLib.idle_add(self.sub2._ti_ent.set_text, data[1])
         if release is not None: GLib.idle_add(self.load_cover, "brainz", release)
         GLib.idle_add(self.sub2._mag_spin.stop)
-        self.toast_templ.set_title(self._('Metadata fetched successfully!'))
+        self.toast_templ.set_title(self._('Metadata Fetched Successfully'))
         self.sub2._sub2_toast.add_toast(self.toast_templ)
 
     def del_cur(self, *_):
@@ -907,8 +910,8 @@ class Main(frontend.UI):
             popbox.append(check0)
             check0.set_active(True)
         else:
-            popbox.append(Gtk.Label.new(self._("No subtitles found.")))
-            popbox.append(Gtk.Label.new(self._("You may visit OpenSubtitles or Subscene.")))
+            popbox.append(Gtk.Label.new(self._("No Subtitles Found")))
+            popbox.append(Gtk.Label.new(self._("Visit OpenSubtitles or Subscene")))
         GLib.idle_add(self.window._sub_track.get_popover().set_child, popbox)
         GLib.idle_add(self.window._sub_track.set_sensitive, True)
 
@@ -1253,7 +1256,7 @@ class Main(frontend.UI):
         print("end")
         GLib.idle_add(self.window._lyr_stack.set_visible_child, self.window._karaoke_but)
         if lyric == 0:
-            self.toast_templ.set_title(self._('Could not fetch lyrics for the current track.\nYou may provide it manually.'))
+            self.toast_templ.set_title(self._('Could Not Fetch Lyrics for the Current Track.\nPlease Provide it Manually.'))
             self.window._main_toast.add_toast(self.toast_templ)
             self.lyr_states = [True, True, True]
         else:
@@ -1299,7 +1302,7 @@ class Main(frontend.UI):
         datetimenow = GLib.DateTime.new_now_local().format('%H:%M')
         self.window._main_stack._current_time.set_label(datetimenow)
         endtime = GLib.DateTime.new_now_local().add_seconds(self.remaining).format('%H:%M')
-        self.window._main_stack._end_time.set_label(self._(f"Ends at: {endtime}"))
+        self.window._main_stack._end_time.set_label(self._(f"Ends At: {endtime}"))
         return self.revealed
 
     def clock(self, ltype):
@@ -1344,18 +1347,20 @@ class Main(frontend.UI):
     def special_settings(self, obj, key=None):
         if key == "hwa-enabled": self.hwa_change()
         elif key == "opacity":
-            self.toolClass.o = obj.get_int("opacity")/10
+            self.toolClass.o = obj.get_int(key)/10
             self.toolClass.themer(self.provider, self.window, self.color, self.tnum)
         elif key == "minimal-mode":
-            if obj.get_boolean("minimal-mode") is False:
+            if obj.get_boolean(key) is False:
                 GLib.idle_add(self.window._head_box.show)
                 GLib.idle_add(self.window._toggle_pane_button.show)
                 GLib.idle_add(self.window._main_stack.set_visible_child, self.window._main_stack._side_flap)
                 GLib.idle_add(self.window.set_default_size, 600, 450)
                 GLib.idle_add(self.window._label_end.show)
+                GLib.idle_add(self.window._drop_but.show)
                 self.window.set_resizable(True)
-                d_pl = futures.ThreadPoolExecutor(max_workers=4)
-                d_pl.submit(self.neo_playlist_gen)
+                widList = self.neo_playlist_gen()
+                for i in widList:
+                    GLib.idle_add(self.window._main_stack._sup_box.append, i)
             else:
                 GLib.idle_add(self.window._head_box.hide)
                 GLib.idle_add(self.window._toggle_pane_button.hide)
@@ -1363,6 +1368,7 @@ class Main(frontend.UI):
                 GLib.idle_add(self.window._main_stack.set_visible_child, self.window._main_stack._rd_box)
                 GLib.idle_add(self.window.set_default_size, 1, 1)
                 GLib.idle_add(self.window._label_end.hide)
+                GLib.idle_add(self.window._drop_but.hide)
                 try:
                     GLib.idle_add(self.window._main_stack._rd_title.set_text, self.playlist[self.tnum]["title"])
                     GLib.idle_add(self.window._main_stack._rd_artist.set_text, self.playlist[self.tnum]["artist"])
@@ -1404,5 +1410,4 @@ class Main(frontend.UI):
 def run():
     app = Main()
     frontend.app = app
-    app.connect('activate', app.on_activate)
     app.run(sys.argv)

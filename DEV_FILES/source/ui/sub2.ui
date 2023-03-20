@@ -6,7 +6,7 @@
   <template class="Sub2" parent="AdwWindow">
     <property name="name">sub2</property>
     <property name="modal">True</property>
-    <property name="title" translatable="yes">HBud - Metadata editor</property>
+    <property name="title" translatable="yes">HBud - Metadata Editor</property>
     <property name="resizable">False</property>
     <property name="width-request">500</property>
     <property name="height-request">400</property>
@@ -85,7 +85,7 @@
                 </child>
                 <child>
                   <object class="GtkLabel">
-                    <property name="label" translatable="yes">Cover art :</property>
+                    <property name="label" translatable="yes">Cover Art :</property>
                     <property name="justify">center</property>
                     <style><class name="title-4"/></style>
                     <layout>
@@ -107,7 +107,7 @@
                         </child>
                         <child>
                           <object class="GtkLabel">
-                            <property name="label" translatable="yes">Fetch metadata</property>
+                            <property name="label" translatable="yes">Fetch Metadata</property>
                           </object>
                         </child>
                       </object>

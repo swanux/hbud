@@ -11,48 +11,48 @@
         <property name="max-height">12</property>
         <child>
           <object class="GtkShortcutsGroup">
-            <property name="title" translatable="yes">Music player</property>
+            <property name="title" translatable="yes">Music Player</property>
             <child>
               <object class="GtkShortcutsShortcut">
                 <property name="accelerator">Right</property>
-                <property name="title" translatable="yes">Next song</property>
+                <property name="title" translatable="yes">Next Song</property>
               </object>
             </child>
             <child>
               <object class="GtkShortcutsShortcut">
                 <property name="accelerator">Left</property>
-                <property name="title" translatable="yes">Previous song</property>
+                <property name="title" translatable="yes">Previous Song</property>
               </object>
             </child>
             <child>
               <object class="GtkShortcutsShortcut">
                   <property name="accelerator">Up</property>
-                  <property name="title" translatable="yes">Move current song up</property>
+                  <property name="title" translatable="yes">Move Current Song Up</property>
               </object>
             </child>
             <child>
               <object class="GtkShortcutsShortcut">
                   <property name="accelerator">Down</property>
-                  <property name="title" translatable="yes">Move current song down</property>
+                  <property name="title" translatable="yes">Move Current Song Down</property>
               </object>
             </child>
             <child>
               <object class="GtkShortcutsShortcut">
                   <property name="accelerator">&lt;ctrl&gt;F</property>
-                  <property name="title" translatable="yes">Search in playqueue</property>
+                  <property name="title" translatable="yes">Search in Playqueue</property>
               </object>
             </child>
             <child>
               <object class="GtkShortcutsShortcut">
                   <property name="accelerator">Delete</property>
-                  <property name="title" translatable="yes">Remove current song from playqueue</property>
+                  <property name="title" translatable="yes">Remove Current Song from Playqueue</property>
               </object>
             </child>
           </object>
         </child>
         <child>
           <object class="GtkShortcutsGroup">
-            <property name="title" translatable="yes">Video player</property>
+            <property name="title" translatable="yes">Video Player</property>
             <child>
               <object class="GtkShortcutsShortcut">
                 <property name="accelerator">Right</property>
