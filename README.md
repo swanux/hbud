@@ -35,10 +35,10 @@ First you have to clone this repo, then change directory into it's root (where t
 
 You can then use the `make` command with the provided flags:
 
-- Add new translation: `make translate-new en`
-- Generate `.mo` files: `make translate-add en`
-- Update `.po` files: `make translate-update en`
-- Update `.mo` files: `make translate-upgrade en`
+- Add new translation: `make translate-new lang=en`
+- Generate `.mo` files: `make translate-add lang=en`
+- Update `.po` files: `make translate-update lang=en`
+- Update `.mo` files: `make translate-upgrade lang=en`
 
 It's important to use UTF-8 charset when needed (instead of ASCII).
 

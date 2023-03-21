@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-02-27 16:49+0100\n"
+"POT-Creation-Date: 2023-03-21 15:50+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,19 +17,19 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: /home/daniel/GitRepos/hbud/DEV_FILES/source/ui/prefwin.ui:251
+#: /home/daniel/GitRepos/hbud/DEV_FILES/source/ui/prefwin.ui:264
 msgid ""
-"A minimal player mode, better performance and less distraction\\nNote: The "
-"window will be refreshed after state change"
+"A minimal player mode, better performance and less distraction\n"
+"Note: The window will be refreshed after state change"
 msgstr ""
 
-#: /home/daniel/GitRepos/hbud/DEV_FILES/source/hbud/frontend.py:162
+#: /home/daniel/GitRepos/hbud/DEV_FILES/source/hbud/frontend.py:270
 msgid "About"
 msgstr ""
 
-#: /home/daniel/GitRepos/hbud/DEV_FILES/source/ui/prefwin.ui:38
-#: /home/daniel/GitRepos/hbud/DEV_FILES/source/ui/prefwin.ui:41
-msgid "Accent color"
+#: /home/daniel/GitRepos/hbud/DEV_FILES/source/ui/prefwin.ui:37
+#: /home/daniel/GitRepos/hbud/DEV_FILES/source/ui/prefwin.ui:40
+msgid "Accent Color"
 msgstr ""
 
 #: /home/daniel/GitRepos/hbud/DEV_FILES/source/ui/sub2.ui:159
@@ -52,27 +52,27 @@ msgstr ""
 msgid "Artist :"
 msgstr ""
 
-#: /home/daniel/GitRepos/hbud/DEV_FILES/source/ui/mainwindow.ui:31
+#: /home/daniel/GitRepos/hbud/DEV_FILES/source/ui/mainwindow.ui:53
 msgid "Audio"
 msgstr ""
 
-#: /home/daniel/GitRepos/hbud/DEV_FILES/source/ui/prefwin.ui:206
-#: /home/daniel/GitRepos/hbud/DEV_FILES/source/ui/prefwin.ui:209
+#: /home/daniel/GitRepos/hbud/DEV_FILES/source/ui/prefwin.ui:221
+#: /home/daniel/GitRepos/hbud/DEV_FILES/source/ui/prefwin.ui:224
 msgid "Auto-scroll"
 msgstr ""
 
-#: /home/daniel/GitRepos/hbud/DEV_FILES/source/ui/prefwin.ui:223
-#: /home/daniel/GitRepos/hbud/DEV_FILES/source/ui/prefwin.ui:226
-msgid "Auto-scroll positioning"
+#: /home/daniel/GitRepos/hbud/DEV_FILES/source/ui/prefwin.ui:237
+#: /home/daniel/GitRepos/hbud/DEV_FILES/source/ui/prefwin.ui:240
+msgid "Auto-scroll Positioning"
 msgstr ""
 
-#: /home/daniel/GitRepos/hbud/DEV_FILES/source/ui/prefwin.ui:210
+#: /home/daniel/GitRepos/hbud/DEV_FILES/source/ui/prefwin.ui:225
 msgid ""
 "Automatically scroll to make the current song visible - might be useful, but "
 "might be annoying"
 msgstr ""
 
-#: /home/daniel/GitRepos/hbud/DEV_FILES/source/ui/prefwin.ui:203
+#: /home/daniel/GitRepos/hbud/DEV_FILES/source/ui/prefwin.ui:218
 msgid "Behavior"
 msgstr ""
 
@@ -80,85 +80,119 @@ msgstr ""
 msgid "Browse"
 msgstr ""
 
-#: /home/daniel/GitRepos/hbud/DEV_FILES/source/hbud/HBud.py:389
+#: /home/daniel/GitRepos/hbud/DEV_FILES/source/hbud/HBud.py:563
 msgid "Cancel"
 msgstr ""
 
-#: /home/daniel/GitRepos/hbud/DEV_FILES/source/ui/mainstack.ui:68
-msgid "Clear"
+#: /home/daniel/GitRepos/hbud/DEV_FILES/source/hbud/HBud.py:523
+msgid "Choose a Folder"
 msgstr ""
 
-#: /home/daniel/GitRepos/hbud/DEV_FILES/source/ui/mainstack.ui:66
-msgid "Clear saved order"
+#: /home/daniel/GitRepos/hbud/DEV_FILES/source/hbud/HBud.py:524
+msgid "Choose a Video File"
 msgstr ""
 
-#: /home/daniel/GitRepos/hbud/DEV_FILES/source/hbud/HBud.py:195
-msgid "Cleared saved order successfully!"
+#: /home/daniel/GitRepos/hbud/DEV_FILES/source/hbud/HBud.py:580
+msgid "Choose an Image File"
 msgstr ""
 
-#: /home/daniel/GitRepos/hbud/DEV_FILES/source/hbud/HBud.py:1058
+#: /home/daniel/GitRepos/hbud/DEV_FILES/source/hbud/HBud.py:198
+msgid "Clear 0 bytes"
+msgstr ""
+
+#: /home/daniel/GitRepos/hbud/DEV_FILES/source/ui/prefwin.ui:294
+#: /home/daniel/GitRepos/hbud/DEV_FILES/source/ui/prefwin.ui:297
+msgid "Clear Cache"
+msgstr ""
+
+#: /home/daniel/GitRepos/hbud/DEV_FILES/source/ui/prefwin.ui:298
+msgid "Clear cached album cover images to free up space"
+msgstr ""
+
+#: /home/daniel/GitRepos/hbud/DEV_FILES/source/hbud/HBud.py:217
+msgid "Clear {}"
+msgstr ""
+
+#: /home/daniel/GitRepos/hbud/DEV_FILES/source/hbud/HBud.py:1293
 msgid ""
-"Could not fetch lyrics for the current track.\n"
-"You may provide it manually."
+"Could Not Fetch Lyrics for the Current Track.\n"
+"Please Provide it Manually."
 msgstr ""
 
 #: /home/daniel/GitRepos/hbud/DEV_FILES/source/ui/sub2.ui:88
-msgid "Cover art :"
+msgid "Cover Art :"
 msgstr ""
 
-#: /home/daniel/GitRepos/hbud/DEV_FILES/source/ui/prefwin.ui:27
+#: /home/daniel/GitRepos/hbud/DEV_FILES/source/ui/prefwin.ui:26
 msgid "Dark"
 msgstr ""
 
-#: /home/daniel/GitRepos/hbud/DEV_FILES/source/ui/prefwin.ui:108
-#: /home/daniel/GitRepos/hbud/DEV_FILES/source/ui/prefwin.ui:111
-msgid "Dark background"
+#: /home/daniel/GitRepos/hbud/DEV_FILES/source/ui/prefwin.ui:128
+#: /home/daniel/GitRepos/hbud/DEV_FILES/source/ui/prefwin.ui:131
+msgid "Dark Background"
 msgstr ""
 
-#: /home/daniel/GitRepos/hbud/DEV_FILES/source/ui/prefwin.ui:64
+#: /home/daniel/GitRepos/hbud/DEV_FILES/source/ui/prefwin.ui:86
 msgid "Default is 30"
 msgstr ""
 
-#: /home/daniel/GitRepos/hbud/DEV_FILES/source/ui/prefwin.ui:227
+#: /home/daniel/GitRepos/hbud/DEV_FILES/source/ui/prefwin.ui:241
 msgid ""
 "Default is 5 - increase to make the current song appear further down on the "
 "screen"
 msgstr ""
 
-#: /home/daniel/GitRepos/hbud/DEV_FILES/source/ui/prefwin.ui:88
+#: /home/daniel/GitRepos/hbud/DEV_FILES/source/ui/prefwin.ui:109
 msgid "Default is 66"
 msgstr ""
 
-#: /home/daniel/GitRepos/hbud/DEV_FILES/source/ui/prefwin.ui:182
+#: /home/daniel/GitRepos/hbud/DEV_FILES/source/ui/prefwin.ui:57
+msgid "Default is 7"
+msgstr ""
+
+#: /home/daniel/GitRepos/hbud/DEV_FILES/source/ui/prefwin.ui:198
 msgid "Default is High"
 msgstr ""
 
-#: /home/daniel/GitRepos/hbud/DEV_FILES/source/hbud/frontend.py:246
-msgid "Delete from current playqueue"
+#: /home/daniel/GitRepos/hbud/DEV_FILES/source/hbud/frontend.py:68
+msgid "Delete Playlist \"{}\"?"
 msgstr ""
 
-#: /home/daniel/GitRepos/hbud/DEV_FILES/source/hbud/HBud.py:510
-msgid "Did not find any match online."
+#: /home/daniel/GitRepos/hbud/DEV_FILES/source/hbud/frontend.py:343
+msgid "Delete from Current Playqueue"
 msgstr ""
 
-#: /home/daniel/GitRepos/hbud/DEV_FILES/source/ui/mainstack.ui:30
-msgid "Do not sort"
+#: /home/daniel/GitRepos/hbud/DEV_FILES/source/hbud/HBud.py:344
+msgid "Deleted Playlist Successfully"
 msgstr ""
 
-#: /home/daniel/GitRepos/hbud/DEV_FILES/source/hbud/frontend.py:251
+#: /home/daniel/GitRepos/hbud/DEV_FILES/source/hbud/HBud.py:686
+msgid "Did Not Find Any Match Online"
+msgstr ""
+
+#: /home/daniel/GitRepos/hbud/DEV_FILES/source/ui/mainstack.ui:75
+msgid "Do Not Sort"
+msgstr ""
+
+#: /home/daniel/GitRepos/hbud/DEV_FILES/source/hbud/frontend.py:355
 msgid "Dániel Kolozsi"
 msgstr ""
 
-#: /home/daniel/GitRepos/hbud/DEV_FILES/source/hbud/frontend.py:248
-msgid "Edit metadata"
+#: /home/daniel/GitRepos/hbud/DEV_FILES/source/hbud/frontend.py:347
+msgid "Edit Metadata"
 msgstr ""
 
-#: /home/daniel/GitRepos/hbud/DEV_FILES/source/hbud/HBud.py:724
+#: /home/daniel/GitRepos/hbud/DEV_FILES/source/hbud/HBud.py:932
 msgid "Empty"
 msgstr ""
 
+#: /home/daniel/GitRepos/hbud/DEV_FILES/source/hbud/HBud.py:1339
+#, python-brace-format
+msgid "Ends At: {endtime}"
+msgstr ""
+
 #: /home/daniel/GitRepos/hbud/DEV_FILES/source/ui/sub2.ui:110
-msgid "Fetch metadata"
+msgid "Fetch Metadata"
 msgstr ""
 
 #: /home/daniel/GitRepos/hbud/DEV_FILES/source/ui/prefwin.ui:10
@@ -166,24 +200,24 @@ msgid "General"
 msgstr ""
 
 #: /home/daniel/GitRepos/hbud/DEV_FILES/source/ui/sub2.ui:9
-msgid "HBud - Metadata editor"
+msgid "HBud - Metadata Editor"
 msgstr ""
 
-#: /home/daniel/GitRepos/hbud/DEV_FILES/source/ui/prefwin.ui:264
-#: /home/daniel/GitRepos/hbud/DEV_FILES/source/ui/prefwin.ui:267
+#: /home/daniel/GitRepos/hbud/DEV_FILES/source/ui/prefwin.ui:277
+#: /home/daniel/GitRepos/hbud/DEV_FILES/source/ui/prefwin.ui:280
 msgid "Hardware Acceleration"
 msgstr ""
 
-#: /home/daniel/GitRepos/hbud/DEV_FILES/source/ui/prefwin.ui:356
-msgid "Hardware decoding"
+#: /home/daniel/GitRepos/hbud/DEV_FILES/source/ui/prefwin.ui:385
+msgid "Hardware Decoding"
 msgstr ""
 
-#: /home/daniel/GitRepos/hbud/DEV_FILES/source/ui/prefwin.ui:189
+#: /home/daniel/GitRepos/hbud/DEV_FILES/source/ui/prefwin.ui:204
 msgid "High (500px)"
 msgstr ""
 
-#: /home/daniel/GitRepos/hbud/DEV_FILES/source/hbud/HBud.py:397
-msgid "Image files"
+#: /home/daniel/GitRepos/hbud/DEV_FILES/source/hbud/HBud.py:571
+msgid "Image Files"
 msgstr ""
 
 #: /home/daniel/GitRepos/hbud/DEV_FILES/source/ui/sub.ui:70
@@ -194,15 +228,23 @@ msgstr ""
 msgid "John Doe"
 msgstr ""
 
-#: /home/daniel/GitRepos/hbud/DEV_FILES/source/ui/prefwin.ui:290
-msgid "Library versions"
+#: /home/daniel/GitRepos/hbud/DEV_FILES/source/hbud/frontend.py:268
+msgid "Keyboard Shortcuts"
 msgstr ""
 
-#: /home/daniel/GitRepos/hbud/DEV_FILES/source/ui/prefwin.ui:28
+#: /home/daniel/GitRepos/hbud/DEV_FILES/source/ui/prefwin.ui:319
+msgid "Library Versions"
+msgstr ""
+
+#: /home/daniel/GitRepos/hbud/DEV_FILES/source/ui/prefwin.ui:27
 msgid "Light"
 msgstr ""
 
-#: /home/daniel/GitRepos/hbud/DEV_FILES/source/hbud/HBud.py:729
+#: /home/daniel/GitRepos/hbud/DEV_FILES/source/ui/mainstack.ui:156
+msgid "Loading Content..."
+msgstr ""
+
+#: /home/daniel/GitRepos/hbud/DEV_FILES/source/hbud/HBud.py:937
 msgid "Local"
 msgstr ""
 
@@ -210,37 +252,41 @@ msgstr ""
 msgid "Lyrics :"
 msgstr ""
 
-#: /home/daniel/GitRepos/hbud/DEV_FILES/source/ui/prefwin.ui:84
-#: /home/daniel/GitRepos/hbud/DEV_FILES/source/ui/prefwin.ui:87
+#: /home/daniel/GitRepos/hbud/DEV_FILES/source/ui/prefwin.ui:105
+#: /home/daniel/GitRepos/hbud/DEV_FILES/source/ui/prefwin.ui:108
 msgid "Margin"
 msgstr ""
 
-#: /home/daniel/GitRepos/hbud/DEV_FILES/source/hbud/HBud.py:537
-msgid "Metadata fetched successfully!"
+#: /home/daniel/GitRepos/hbud/DEV_FILES/source/hbud/HBud.py:714
+msgid "Metadata Fetched Successfully"
 msgstr ""
 
-#: /home/daniel/GitRepos/hbud/DEV_FILES/source/ui/prefwin.ui:247
-#: /home/daniel/GitRepos/hbud/DEV_FILES/source/ui/prefwin.ui:250
-msgid "Minimal mode"
+#: /home/daniel/GitRepos/hbud/DEV_FILES/source/ui/prefwin.ui:260
+#: /home/daniel/GitRepos/hbud/DEV_FILES/source/ui/prefwin.ui:263
+msgid "Minimal Mode"
 msgstr ""
 
-#: /home/daniel/GitRepos/hbud/DEV_FILES/source/ui/mainwindow.ui:46
-msgid "More options"
+#: /home/daniel/GitRepos/hbud/DEV_FILES/source/ui/mainwindow.ui:80
+msgid "More Options"
 msgstr ""
 
 #: /home/daniel/GitRepos/hbud/DEV_FILES/source/ui/sub.ui:82
 msgid "No"
 msgstr ""
 
-#: /home/daniel/GitRepos/hbud/DEV_FILES/source/hbud/HBud.py:738
-msgid "No subtitles found."
+#: /home/daniel/GitRepos/hbud/DEV_FILES/source/ui/mainstack.ui:31
+msgid "No Saved Playlists"
 msgstr ""
 
-#: /home/daniel/GitRepos/hbud/DEV_FILES/source/hbud/HBud.py:452
+#: /home/daniel/GitRepos/hbud/DEV_FILES/source/hbud/HBud.py:946
+msgid "No Subtitles Found"
+msgstr ""
+
+#: /home/daniel/GitRepos/hbud/DEV_FILES/source/hbud/HBud.py:627
 msgid "None of the above"
 msgstr ""
 
-#: /home/daniel/GitRepos/hbud/DEV_FILES/source/ui/prefwin.ui:190
+#: /home/daniel/GitRepos/hbud/DEV_FILES/source/ui/prefwin.ui:205
 msgid "Normal (250px)"
 msgstr ""
 
@@ -248,107 +294,105 @@ msgstr ""
 msgid "Offset (ms):"
 msgstr ""
 
-#: /home/daniel/GitRepos/hbud/DEV_FILES/source/hbud/HBud.py:389
+#: /home/daniel/GitRepos/hbud/DEV_FILES/source/hbud/HBud.py:563
 msgid "Open"
 msgstr ""
 
-#: /home/daniel/GitRepos/hbud/DEV_FILES/source/hbud/HBud.py:357
-msgid "Please choose a folder"
+#: /home/daniel/GitRepos/hbud/DEV_FILES/source/hbud/frontend.py:345
+msgid "Play Next"
 msgstr ""
 
-#: /home/daniel/GitRepos/hbud/DEV_FILES/source/hbud/HBud.py:358
-msgid "Please choose a video file"
-msgstr ""
-
-#: /home/daniel/GitRepos/hbud/DEV_FILES/source/hbud/HBud.py:406
-msgid "Please choose an image file"
-msgstr ""
-
-#: /home/daniel/GitRepos/hbud/DEV_FILES/source/hbud/frontend.py:160
+#: /home/daniel/GitRepos/hbud/DEV_FILES/source/hbud/frontend.py:266
 msgid "Preferences"
 msgstr ""
 
-#: /home/daniel/GitRepos/hbud/DEV_FILES/source/ui/prefwin.ui:178
-#: /home/daniel/GitRepos/hbud/DEV_FILES/source/ui/prefwin.ui:181
-msgid "Preferred album cover quality"
+#: /home/daniel/GitRepos/hbud/DEV_FILES/source/ui/prefwin.ui:194
+#: /home/daniel/GitRepos/hbud/DEV_FILES/source/ui/prefwin.ui:197
+msgid "Preferred Album Cover Quality"
 msgstr ""
 
-#: /home/daniel/GitRepos/hbud/DEV_FILES/source/ui/mainstack.ui:61
+#: /home/daniel/GitRepos/hbud/DEV_FILES/source/hbud/frontend.py:78
+msgid "Rename Playlist ({})"
+msgstr ""
+
+#: /home/daniel/GitRepos/hbud/DEV_FILES/source/ui/mainstack.ui:106
 msgid "Rescan"
 msgstr ""
 
-#: /home/daniel/GitRepos/hbud/DEV_FILES/source/hbud/HBud.py:351
-msgid "Rescan complete. {} tracks added."
+#: /home/daniel/GitRepos/hbud/DEV_FILES/source/hbud/HBud.py:516
+msgid ""
+"Rescan Complete\n"
+"{} Tracks Added"
 msgstr ""
 
-#: /home/daniel/GitRepos/hbud/DEV_FILES/source/ui/mainstack.ui:59
+#: /home/daniel/GitRepos/hbud/DEV_FILES/source/ui/mainstack.ui:104
 msgid "Rescan your music library, append new tracks"
 msgstr ""
 
-#: /home/daniel/GitRepos/hbud/DEV_FILES/source/ui/mainstack.ui:54
+#: /home/daniel/GitRepos/hbud/DEV_FILES/source/ui/mainstack.ui:99
 #: /home/daniel/GitRepos/hbud/DEV_FILES/source/ui/sub2.ui:244
 msgid "Save"
 msgstr ""
 
-#: /home/daniel/GitRepos/hbud/DEV_FILES/source/ui/mainstack.ui:52
-msgid "Save current order"
+#: /home/daniel/GitRepos/hbud/DEV_FILES/source/ui/mainstack.ui:97
+msgid "Save Playlist"
 msgstr ""
 
-#: /home/daniel/GitRepos/hbud/DEV_FILES/source/hbud/HBud.py:207
-msgid "Saved order successfully!"
+#: /home/daniel/GitRepos/hbud/DEV_FILES/source/hbud/HBud.py:367
+msgid "Saved Playlist Successfully"
 msgstr ""
 
-#: /home/daniel/GitRepos/hbud/DEV_FILES/source/ui/prefwin.ui:127
+#: /home/daniel/GitRepos/hbud/DEV_FILES/source/ui/prefwin.ui:146
 msgid "Services"
 msgstr ""
 
-#: /home/daniel/GitRepos/hbud/DEV_FILES/source/ui/prefwin.ui:60
+#: /home/daniel/GitRepos/hbud/DEV_FILES/source/ui/prefwin.ui:82
+#: /home/daniel/GitRepos/hbud/DEV_FILES/source/ui/prefwin.ui:85
 msgid "Size"
 msgstr ""
 
-#: /home/daniel/GitRepos/hbud/DEV_FILES/source/ui/mainstack.ui:31
+#: /home/daniel/GitRepos/hbud/DEV_FILES/source/ui/mainstack.ui:76
 msgid "Sort by Artist (a-z)"
 msgstr ""
 
-#: /home/daniel/GitRepos/hbud/DEV_FILES/source/ui/mainstack.ui:32
+#: /home/daniel/GitRepos/hbud/DEV_FILES/source/ui/mainstack.ui:77
 msgid "Sort by Artist (z-a)"
 msgstr ""
 
-#: /home/daniel/GitRepos/hbud/DEV_FILES/source/ui/mainstack.ui:37
+#: /home/daniel/GitRepos/hbud/DEV_FILES/source/ui/mainstack.ui:82
 msgid "Sort by Length (0-9)"
 msgstr ""
 
-#: /home/daniel/GitRepos/hbud/DEV_FILES/source/ui/mainstack.ui:38
+#: /home/daniel/GitRepos/hbud/DEV_FILES/source/ui/mainstack.ui:83
 msgid "Sort by Length (9-0)"
 msgstr ""
 
-#: /home/daniel/GitRepos/hbud/DEV_FILES/source/ui/mainstack.ui:33
+#: /home/daniel/GitRepos/hbud/DEV_FILES/source/ui/mainstack.ui:78
 msgid "Sort by Title (a-z)"
 msgstr ""
 
-#: /home/daniel/GitRepos/hbud/DEV_FILES/source/ui/mainstack.ui:34
+#: /home/daniel/GitRepos/hbud/DEV_FILES/source/ui/mainstack.ui:79
 msgid "Sort by Title (z-a)"
 msgstr ""
 
-#: /home/daniel/GitRepos/hbud/DEV_FILES/source/ui/mainstack.ui:35
+#: /home/daniel/GitRepos/hbud/DEV_FILES/source/ui/mainstack.ui:80
 msgid "Sort by Year (0-9)"
 msgstr ""
 
-#: /home/daniel/GitRepos/hbud/DEV_FILES/source/ui/mainstack.ui:36
+#: /home/daniel/GitRepos/hbud/DEV_FILES/source/ui/mainstack.ui:81
 msgid "Sort by Year (9-0)"
 msgstr ""
 
-#: /home/daniel/GitRepos/hbud/DEV_FILES/source/ui/prefwin.ui:57
-#: /home/daniel/GitRepos/hbud/DEV_FILES/source/ui/prefwin.ui:63
+#: /home/daniel/GitRepos/hbud/DEV_FILES/source/ui/prefwin.ui:79
 msgid "Subtitles"
 msgstr ""
 
-#: /home/daniel/GitRepos/hbud/DEV_FILES/source/ui/prefwin.ui:26
+#: /home/daniel/GitRepos/hbud/DEV_FILES/source/ui/prefwin.ui:25
 msgid "System"
 msgstr ""
 
-#: /home/daniel/GitRepos/hbud/DEV_FILES/source/ui/prefwin.ui:286
-msgid "System info"
+#: /home/daniel/GitRepos/hbud/DEV_FILES/source/ui/prefwin.ui:315
+msgid "System Info"
 msgstr ""
 
 #: /home/daniel/GitRepos/hbud/DEV_FILES/source/ui/prefwin.ui:17
@@ -364,31 +408,45 @@ msgstr ""
 msgid "Title :"
 msgstr ""
 
-#: /home/daniel/GitRepos/hbud/DEV_FILES/source/ui/prefwin.ui:188
+#: /home/daniel/GitRepos/hbud/DEV_FILES/source/ui/prefwin.ui:203
 msgid "Ultra High (1200px)"
 msgstr ""
 
-#: /home/daniel/GitRepos/hbud/DEV_FILES/source/hbud/HBud.py:317
-#: /home/daniel/GitRepos/hbud/DEV_FILES/source/hbud/HBud.py:318
-#: /home/daniel/GitRepos/hbud/DEV_FILES/source/hbud/HBud.py:728
+#: /home/daniel/GitRepos/hbud/DEV_FILES/source/hbud/HBud.py:478
+#: /home/daniel/GitRepos/hbud/DEV_FILES/source/hbud/HBud.py:479
+#: /home/daniel/GitRepos/hbud/DEV_FILES/source/hbud/HBud.py:936
 msgid "Unknown"
 msgstr ""
 
-#: /home/daniel/GitRepos/hbud/DEV_FILES/source/ui/mainwindow.ui:38
+#: /home/daniel/GitRepos/hbud/DEV_FILES/source/hbud/HBud.py:363
+msgid "Unnamed Playlist"
+msgstr ""
+
+#: /home/daniel/GitRepos/hbud/DEV_FILES/source/ui/mainwindow.ui:61
 msgid "Video"
 msgstr ""
 
-#: /home/daniel/GitRepos/hbud/DEV_FILES/source/hbud/HBud.py:392
-msgid "Video files"
+#: /home/daniel/GitRepos/hbud/DEV_FILES/source/hbud/HBud.py:566
+msgid "Video Files"
 msgstr ""
 
-#: /home/daniel/GitRepos/hbud/DEV_FILES/source/ui/prefwin.ui:268
+#: /home/daniel/GitRepos/hbud/DEV_FILES/source/ui/prefwin.ui:53
+#: /home/daniel/GitRepos/hbud/DEV_FILES/source/ui/prefwin.ui:56
+msgid "Video Overlay Controls Opacity"
+msgstr ""
+
+#: /home/daniel/GitRepos/hbud/DEV_FILES/source/hbud/HBud.py:947
+msgid "Visit OpenSubtitles or Subscene"
+msgstr ""
+
+#: /home/daniel/GitRepos/hbud/DEV_FILES/source/ui/prefwin.ui:281
 msgid ""
-"Whether to use VA for HW acceleration or not\\nNote: Turning this off may "
-"result in increased stability but worse performance"
+"Whether to use VA for HW acceleration or not\n"
+"Note: Turning this off may result in increased stability but worse "
+"performance"
 msgstr ""
 
-#: /home/daniel/GitRepos/hbud/DEV_FILES/source/hbud/frontend.py:239
+#: /home/daniel/GitRepos/hbud/DEV_FILES/source/hbud/frontend.py:340
 msgid "Which one is correct?"
 msgstr ""
 
@@ -400,6 +458,6 @@ msgstr ""
 msgid "Yes"
 msgstr ""
 
-#: /home/daniel/GitRepos/hbud/DEV_FILES/source/hbud/HBud.py:739
-msgid "You may visit OpenSubtitles or Subscene."
+#: /home/daniel/GitRepos/hbud/DEV_FILES/source/hbud/HBud.py:55
+msgid "{} Tracks"
 msgstr ""

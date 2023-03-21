@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-02-27 16:49+0100\n"
+"POT-Creation-Date: 2023-03-21 15:50+0100\n"
 "PO-Revision-Date: 2023-02-27 16:49+0100\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: none\n"
@@ -17,22 +17,22 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
-#: /home/daniel/GitRepos/hbud/DEV_FILES/source/ui/prefwin.ui:251
+#: /home/daniel/GitRepos/hbud/DEV_FILES/source/ui/prefwin.ui:264
 msgid ""
-"A minimal player mode, better performance and less distraction\\nNote: The "
-"window will be refreshed after state change"
+"A minimal player mode, better performance and less distraction\n"
+"Note: The window will be refreshed after state change"
 msgstr ""
 "Minimalista lejátszó, jobb teljesítmény és kevesebb zavaró tényező\n"
 "Megjegyzés: Az ablak újra fog tölteni állapotváltozás után"
 
-#: /home/daniel/GitRepos/hbud/DEV_FILES/source/hbud/frontend.py:162
+#: /home/daniel/GitRepos/hbud/DEV_FILES/source/hbud/frontend.py:270
 msgid "About"
-msgstr "A programról"
+msgstr "A Programról"
 
-#: /home/daniel/GitRepos/hbud/DEV_FILES/source/ui/prefwin.ui:38
-#: /home/daniel/GitRepos/hbud/DEV_FILES/source/ui/prefwin.ui:41
-msgid "Accent color"
-msgstr "Alkalmazás színe"
+#: /home/daniel/GitRepos/hbud/DEV_FILES/source/ui/prefwin.ui:37
+#: /home/daniel/GitRepos/hbud/DEV_FILES/source/ui/prefwin.ui:40
+msgid "Accent Color"
+msgstr "Alkalmazás Színe"
 
 #: /home/daniel/GitRepos/hbud/DEV_FILES/source/ui/sub2.ui:159
 msgid "Album"
@@ -54,21 +54,21 @@ msgstr "Alkalmazás"
 msgid "Artist :"
 msgstr "Előadó :"
 
-#: /home/daniel/GitRepos/hbud/DEV_FILES/source/ui/mainwindow.ui:31
+#: /home/daniel/GitRepos/hbud/DEV_FILES/source/ui/mainwindow.ui:53
 msgid "Audio"
 msgstr "Audió"
 
-#: /home/daniel/GitRepos/hbud/DEV_FILES/source/ui/prefwin.ui:206
-#: /home/daniel/GitRepos/hbud/DEV_FILES/source/ui/prefwin.ui:209
+#: /home/daniel/GitRepos/hbud/DEV_FILES/source/ui/prefwin.ui:221
+#: /home/daniel/GitRepos/hbud/DEV_FILES/source/ui/prefwin.ui:224
 msgid "Auto-scroll"
-msgstr "Automatikus görgetés"
+msgstr "Automatikus Görgetés"
 
-#: /home/daniel/GitRepos/hbud/DEV_FILES/source/ui/prefwin.ui:223
-#: /home/daniel/GitRepos/hbud/DEV_FILES/source/ui/prefwin.ui:226
-msgid "Auto-scroll positioning"
-msgstr "Automatikus görgetés pozícionálása"
+#: /home/daniel/GitRepos/hbud/DEV_FILES/source/ui/prefwin.ui:237
+#: /home/daniel/GitRepos/hbud/DEV_FILES/source/ui/prefwin.ui:240
+msgid "Auto-scroll Positioning"
+msgstr "Automatikus Görgetés Pozícionálása"
 
-#: /home/daniel/GitRepos/hbud/DEV_FILES/source/ui/prefwin.ui:210
+#: /home/daniel/GitRepos/hbud/DEV_FILES/source/ui/prefwin.ui:225
 msgid ""
 "Automatically scroll to make the current song visible - might be useful, but "
 "might be annoying"
@@ -76,7 +76,7 @@ msgstr ""
 "Automatikus görgetés hogy a jelenleg lejátszott zene legyen a középpontban - "
 "tud praktikus lenni, vagy éppen zavaró"
 
-#: /home/daniel/GitRepos/hbud/DEV_FILES/source/ui/prefwin.ui:203
+#: /home/daniel/GitRepos/hbud/DEV_FILES/source/ui/prefwin.ui:218
 msgid "Behavior"
 msgstr "Viselkedés"
 
@@ -84,113 +84,147 @@ msgstr "Viselkedés"
 msgid "Browse"
 msgstr "Böngészés"
 
-#: /home/daniel/GitRepos/hbud/DEV_FILES/source/hbud/HBud.py:389
+#: /home/daniel/GitRepos/hbud/DEV_FILES/source/hbud/HBud.py:563
 msgid "Cancel"
 msgstr "Mégse"
 
-#: /home/daniel/GitRepos/hbud/DEV_FILES/source/ui/mainstack.ui:68
-msgid "Clear"
-msgstr "Visszaállítás"
+#: /home/daniel/GitRepos/hbud/DEV_FILES/source/hbud/HBud.py:523
+msgid "Choose a Folder"
+msgstr "Válasszon egy Mappát"
 
-#: /home/daniel/GitRepos/hbud/DEV_FILES/source/ui/mainstack.ui:66
-msgid "Clear saved order"
-msgstr "Mentett sorrend törlése"
+#: /home/daniel/GitRepos/hbud/DEV_FILES/source/hbud/HBud.py:524
+msgid "Choose a Video File"
+msgstr "Válasszon egy Videófájlt"
 
-#: /home/daniel/GitRepos/hbud/DEV_FILES/source/hbud/HBud.py:195
-msgid "Cleared saved order successfully!"
-msgstr "Mentett sorrend sikeresen törölve!"
+#: /home/daniel/GitRepos/hbud/DEV_FILES/source/hbud/HBud.py:580
+msgid "Choose an Image File"
+msgstr "Válasszon egy Képfájlt"
 
-#: /home/daniel/GitRepos/hbud/DEV_FILES/source/hbud/HBud.py:1058
+#: /home/daniel/GitRepos/hbud/DEV_FILES/source/hbud/HBud.py:198
+msgid "Clear 0 bytes"
+msgstr "0 bájt Törlése"
+
+#: /home/daniel/GitRepos/hbud/DEV_FILES/source/ui/prefwin.ui:294
+#: /home/daniel/GitRepos/hbud/DEV_FILES/source/ui/prefwin.ui:297
+msgid "Clear Cache"
+msgstr "Cache Törlése"
+
+#: /home/daniel/GitRepos/hbud/DEV_FILES/source/ui/prefwin.ui:298
+msgid "Clear cached album cover images to free up space"
+msgstr "Tárolt albumborítók törlése, hely felszabadítása"
+
+#: /home/daniel/GitRepos/hbud/DEV_FILES/source/hbud/HBud.py:217
+msgid "Clear {}"
+msgstr "{} Törlése"
+
+#: /home/daniel/GitRepos/hbud/DEV_FILES/source/hbud/HBud.py:1293
 msgid ""
-"Could not fetch lyrics for the current track.\n"
-"You may provide it manually."
+"Could Not Fetch Lyrics for the Current Track.\n"
+"Please Provide it Manually."
 msgstr ""
 "Nem található dalszöveg.\n"
-"Biztosíthatja manuálisan."
+"Biztosítsa manuálisan."
 
 #: /home/daniel/GitRepos/hbud/DEV_FILES/source/ui/sub2.ui:88
-msgid "Cover art :"
+msgid "Cover Art :"
 msgstr "Borítókép :"
 
-#: /home/daniel/GitRepos/hbud/DEV_FILES/source/ui/prefwin.ui:27
+#: /home/daniel/GitRepos/hbud/DEV_FILES/source/ui/prefwin.ui:26
 msgid "Dark"
 msgstr "Sötét"
 
-#: /home/daniel/GitRepos/hbud/DEV_FILES/source/ui/prefwin.ui:108
-#: /home/daniel/GitRepos/hbud/DEV_FILES/source/ui/prefwin.ui:111
-msgid "Dark background"
-msgstr "Sötét háttér"
+#: /home/daniel/GitRepos/hbud/DEV_FILES/source/ui/prefwin.ui:128
+#: /home/daniel/GitRepos/hbud/DEV_FILES/source/ui/prefwin.ui:131
+msgid "Dark Background"
+msgstr "Sötét Háttér"
 
-#: /home/daniel/GitRepos/hbud/DEV_FILES/source/ui/prefwin.ui:64
+#: /home/daniel/GitRepos/hbud/DEV_FILES/source/ui/prefwin.ui:86
 msgid "Default is 30"
 msgstr "Alapértelmezetten 30"
 
-#: /home/daniel/GitRepos/hbud/DEV_FILES/source/ui/prefwin.ui:227
+#: /home/daniel/GitRepos/hbud/DEV_FILES/source/ui/prefwin.ui:241
 msgid ""
 "Default is 5 - increase to make the current song appear further down on the "
 "screen"
 msgstr ""
 "Alapértelmezetten 5 - növelje hogy lejjebb kerüljön az aktív zene a kijelzőn"
 
-#: /home/daniel/GitRepos/hbud/DEV_FILES/source/ui/prefwin.ui:88
+#: /home/daniel/GitRepos/hbud/DEV_FILES/source/ui/prefwin.ui:109
 msgid "Default is 66"
 msgstr "Alapértelmezetten 66"
 
-#: /home/daniel/GitRepos/hbud/DEV_FILES/source/ui/prefwin.ui:182
+#: /home/daniel/GitRepos/hbud/DEV_FILES/source/ui/prefwin.ui:57
+msgid "Default is 7"
+msgstr "Alapértelmezetten 7"
+
+#: /home/daniel/GitRepos/hbud/DEV_FILES/source/ui/prefwin.ui:198
 msgid "Default is High"
 msgstr "Alapértelmezetten Magas"
 
-#: /home/daniel/GitRepos/hbud/DEV_FILES/source/hbud/frontend.py:246
-msgid "Delete from current playqueue"
-msgstr "Eltávolítás a jelenlegi lejátszási listából"
+#: /home/daniel/GitRepos/hbud/DEV_FILES/source/hbud/frontend.py:68
+msgid "Delete Playlist \"{}\"?"
+msgstr " \"{}\" Lejátszási Lista Törlése?"
 
-#: /home/daniel/GitRepos/hbud/DEV_FILES/source/hbud/HBud.py:510
-msgid "Did not find any match online."
-msgstr "Nincs találat online."
+#: /home/daniel/GitRepos/hbud/DEV_FILES/source/hbud/frontend.py:343
+msgid "Delete from Current Playqueue"
+msgstr "Eltávolítás a Jelenlegi Lejátszási Listából"
 
-#: /home/daniel/GitRepos/hbud/DEV_FILES/source/ui/mainstack.ui:30
-msgid "Do not sort"
-msgstr "Ne rendezze"
+#: /home/daniel/GitRepos/hbud/DEV_FILES/source/hbud/HBud.py:344
+msgid "Deleted Playlist Successfully"
+msgstr "Lejátszási Lista Sikeresen Törölve"
 
-#: /home/daniel/GitRepos/hbud/DEV_FILES/source/hbud/frontend.py:251
+#: /home/daniel/GitRepos/hbud/DEV_FILES/source/hbud/HBud.py:686
+msgid "Did Not Find Any Match Online"
+msgstr "Nincs Találat Online."
+
+#: /home/daniel/GitRepos/hbud/DEV_FILES/source/ui/mainstack.ui:75
+msgid "Do Not Sort"
+msgstr "Ne Rendezze"
+
+#: /home/daniel/GitRepos/hbud/DEV_FILES/source/hbud/frontend.py:355
 msgid "Dániel Kolozsi"
 msgstr "Kolozsi Dániel"
 
-#: /home/daniel/GitRepos/hbud/DEV_FILES/source/hbud/frontend.py:248
-msgid "Edit metadata"
-msgstr "Metaadatok szerkesztése"
+#: /home/daniel/GitRepos/hbud/DEV_FILES/source/hbud/frontend.py:347
+msgid "Edit Metadata"
+msgstr "Metaadatok Szerkesztése"
 
-#: /home/daniel/GitRepos/hbud/DEV_FILES/source/hbud/HBud.py:724
+#: /home/daniel/GitRepos/hbud/DEV_FILES/source/hbud/HBud.py:932
 msgid "Empty"
 msgstr "Üres"
 
+#: /home/daniel/GitRepos/hbud/DEV_FILES/source/hbud/HBud.py:1339
+#, python-brace-format
+msgid "Ends At: {endtime}"
+msgstr "Várható Befejezés: {endtime}"
+
 #: /home/daniel/GitRepos/hbud/DEV_FILES/source/ui/sub2.ui:110
-msgid "Fetch metadata"
-msgstr "Metaadatok keresése"
+msgid "Fetch Metadata"
+msgstr "Metaadatok Keresése"
 
 #: /home/daniel/GitRepos/hbud/DEV_FILES/source/ui/prefwin.ui:10
 msgid "General"
 msgstr "Általános"
 
 #: /home/daniel/GitRepos/hbud/DEV_FILES/source/ui/sub2.ui:9
-msgid "HBud - Metadata editor"
-msgstr "HBud - Metaadat szerkesző"
+msgid "HBud - Metadata Editor"
+msgstr "HBud - Metaadat Szerkesző"
 
-#: /home/daniel/GitRepos/hbud/DEV_FILES/source/ui/prefwin.ui:264
-#: /home/daniel/GitRepos/hbud/DEV_FILES/source/ui/prefwin.ui:267
+#: /home/daniel/GitRepos/hbud/DEV_FILES/source/ui/prefwin.ui:277
+#: /home/daniel/GitRepos/hbud/DEV_FILES/source/ui/prefwin.ui:280
 msgid "Hardware Acceleration"
-msgstr "Hardveres gyorsítás"
+msgstr "Hardveres Gyorsítás"
 
-#: /home/daniel/GitRepos/hbud/DEV_FILES/source/ui/prefwin.ui:356
-msgid "Hardware decoding"
-msgstr "Hardveres dekódolás"
+#: /home/daniel/GitRepos/hbud/DEV_FILES/source/ui/prefwin.ui:385
+msgid "Hardware Decoding"
+msgstr "Hardveres Dekódolás"
 
-#: /home/daniel/GitRepos/hbud/DEV_FILES/source/ui/prefwin.ui:189
+#: /home/daniel/GitRepos/hbud/DEV_FILES/source/ui/prefwin.ui:204
 msgid "High (500px)"
 msgstr "Magas (500px)"
 
-#: /home/daniel/GitRepos/hbud/DEV_FILES/source/hbud/HBud.py:397
-msgid "Image files"
+#: /home/daniel/GitRepos/hbud/DEV_FILES/source/hbud/HBud.py:571
+msgid "Image Files"
 msgstr "Képek"
 
 #: /home/daniel/GitRepos/hbud/DEV_FILES/source/ui/sub.ui:70
@@ -201,15 +235,23 @@ msgstr "Helyes ez a szöveg?"
 msgid "John Doe"
 msgstr "Kis János"
 
-#: /home/daniel/GitRepos/hbud/DEV_FILES/source/ui/prefwin.ui:290
-msgid "Library versions"
-msgstr "Könyvtár verziók"
+#: /home/daniel/GitRepos/hbud/DEV_FILES/source/hbud/frontend.py:268
+msgid "Keyboard Shortcuts"
+msgstr "Gyorsbillentyűk"
 
-#: /home/daniel/GitRepos/hbud/DEV_FILES/source/ui/prefwin.ui:28
+#: /home/daniel/GitRepos/hbud/DEV_FILES/source/ui/prefwin.ui:319
+msgid "Library Versions"
+msgstr "Könyvtár Verziók"
+
+#: /home/daniel/GitRepos/hbud/DEV_FILES/source/ui/prefwin.ui:27
 msgid "Light"
 msgstr "Világos"
 
-#: /home/daniel/GitRepos/hbud/DEV_FILES/source/hbud/HBud.py:729
+#: /home/daniel/GitRepos/hbud/DEV_FILES/source/ui/mainstack.ui:156
+msgid "Loading Content..."
+msgstr "Tartalom Betöltése..."
+
+#: /home/daniel/GitRepos/hbud/DEV_FILES/source/hbud/HBud.py:937
 msgid "Local"
 msgstr "Helyi"
 
@@ -217,37 +259,41 @@ msgstr "Helyi"
 msgid "Lyrics :"
 msgstr "Dalszöveg :"
 
-#: /home/daniel/GitRepos/hbud/DEV_FILES/source/ui/prefwin.ui:84
-#: /home/daniel/GitRepos/hbud/DEV_FILES/source/ui/prefwin.ui:87
+#: /home/daniel/GitRepos/hbud/DEV_FILES/source/ui/prefwin.ui:105
+#: /home/daniel/GitRepos/hbud/DEV_FILES/source/ui/prefwin.ui:108
 msgid "Margin"
 msgstr "Keret"
 
-#: /home/daniel/GitRepos/hbud/DEV_FILES/source/hbud/HBud.py:537
-msgid "Metadata fetched successfully!"
-msgstr "Metaadatok sikeresen letöltve!"
+#: /home/daniel/GitRepos/hbud/DEV_FILES/source/hbud/HBud.py:714
+msgid "Metadata Fetched Successfully"
+msgstr "Metaadatok Sikeresen Letöltve"
 
-#: /home/daniel/GitRepos/hbud/DEV_FILES/source/ui/prefwin.ui:247
-#: /home/daniel/GitRepos/hbud/DEV_FILES/source/ui/prefwin.ui:250
-msgid "Minimal mode"
-msgstr "Minimalista mód"
+#: /home/daniel/GitRepos/hbud/DEV_FILES/source/ui/prefwin.ui:260
+#: /home/daniel/GitRepos/hbud/DEV_FILES/source/ui/prefwin.ui:263
+msgid "Minimal Mode"
+msgstr "Egyszerű Mód"
 
-#: /home/daniel/GitRepos/hbud/DEV_FILES/source/ui/mainwindow.ui:46
-msgid "More options"
-msgstr "További lehetőségek"
+#: /home/daniel/GitRepos/hbud/DEV_FILES/source/ui/mainwindow.ui:80
+msgid "More Options"
+msgstr "További Lehetőségek"
 
 #: /home/daniel/GitRepos/hbud/DEV_FILES/source/ui/sub.ui:82
 msgid "No"
 msgstr "Nem"
 
-#: /home/daniel/GitRepos/hbud/DEV_FILES/source/hbud/HBud.py:738
-msgid "No subtitles found."
-msgstr "Felirat nem található."
+#: /home/daniel/GitRepos/hbud/DEV_FILES/source/ui/mainstack.ui:31
+msgid "No Saved Playlists"
+msgstr "Nincs Mentett Lejátszási Lista"
 
-#: /home/daniel/GitRepos/hbud/DEV_FILES/source/hbud/HBud.py:452
+#: /home/daniel/GitRepos/hbud/DEV_FILES/source/hbud/HBud.py:946
+msgid "No Subtitles Found"
+msgstr "Felirat Nem Található"
+
+#: /home/daniel/GitRepos/hbud/DEV_FILES/source/hbud/HBud.py:627
 msgid "None of the above"
 msgstr "A fentiek közül egyik sem"
 
-#: /home/daniel/GitRepos/hbud/DEV_FILES/source/ui/prefwin.ui:190
+#: /home/daniel/GitRepos/hbud/DEV_FILES/source/ui/prefwin.ui:205
 msgid "Normal (250px)"
 msgstr "Normális (250px)"
 
@@ -255,108 +301,107 @@ msgstr "Normális (250px)"
 msgid "Offset (ms):"
 msgstr "Eltolás (ms)"
 
-#: /home/daniel/GitRepos/hbud/DEV_FILES/source/hbud/HBud.py:389
+#: /home/daniel/GitRepos/hbud/DEV_FILES/source/hbud/HBud.py:563
 msgid "Open"
 msgstr "Megnyitás"
 
-#: /home/daniel/GitRepos/hbud/DEV_FILES/source/hbud/HBud.py:357
-msgid "Please choose a folder"
-msgstr "Válasszon egy mappát"
+#: /home/daniel/GitRepos/hbud/DEV_FILES/source/hbud/frontend.py:345
+msgid "Play Next"
+msgstr "Lejátszás Következőként"
 
-#: /home/daniel/GitRepos/hbud/DEV_FILES/source/hbud/HBud.py:358
-msgid "Please choose a video file"
-msgstr "Válasszon egy videó fájlt"
-
-#: /home/daniel/GitRepos/hbud/DEV_FILES/source/hbud/HBud.py:406
-msgid "Please choose an image file"
-msgstr "Válasszon egy képfájlt"
-
-#: /home/daniel/GitRepos/hbud/DEV_FILES/source/hbud/frontend.py:160
+#: /home/daniel/GitRepos/hbud/DEV_FILES/source/hbud/frontend.py:266
 msgid "Preferences"
 msgstr "Beállítások"
 
-#: /home/daniel/GitRepos/hbud/DEV_FILES/source/ui/prefwin.ui:178
-#: /home/daniel/GitRepos/hbud/DEV_FILES/source/ui/prefwin.ui:181
-msgid "Preferred album cover quality"
-msgstr "Preferált borítókép méret"
+#: /home/daniel/GitRepos/hbud/DEV_FILES/source/ui/prefwin.ui:194
+#: /home/daniel/GitRepos/hbud/DEV_FILES/source/ui/prefwin.ui:197
+msgid "Preferred Album Cover Quality"
+msgstr "Preferált Borítókép Méret"
 
-#: /home/daniel/GitRepos/hbud/DEV_FILES/source/ui/mainstack.ui:61
+#: /home/daniel/GitRepos/hbud/DEV_FILES/source/hbud/frontend.py:78
+msgid "Rename Playlist ({})"
+msgstr "Lejátszási Lista Átnevezése ({})"
+
+#: /home/daniel/GitRepos/hbud/DEV_FILES/source/ui/mainstack.ui:106
 msgid "Rescan"
 msgstr "Keresés újra"
 
-#: /home/daniel/GitRepos/hbud/DEV_FILES/source/hbud/HBud.py:351
-msgid "Rescan complete. {} tracks added."
-msgstr "Keresés kész. {} találat hozzáadva."
+#: /home/daniel/GitRepos/hbud/DEV_FILES/source/hbud/HBud.py:516
+msgid ""
+"Rescan Complete\n"
+"{} Tracks Added"
+msgstr "Keresés Kész\n"
+"{} Találat Hozzáadva."
 
-#: /home/daniel/GitRepos/hbud/DEV_FILES/source/ui/mainstack.ui:59
+#: /home/daniel/GitRepos/hbud/DEV_FILES/source/ui/mainstack.ui:104
 msgid "Rescan your music library, append new tracks"
 msgstr "Új számok keresése a könyvtárban, a jelenlegi lista végére beszúrás"
 
-#: /home/daniel/GitRepos/hbud/DEV_FILES/source/ui/mainstack.ui:54
+#: /home/daniel/GitRepos/hbud/DEV_FILES/source/ui/mainstack.ui:99
 #: /home/daniel/GitRepos/hbud/DEV_FILES/source/ui/sub2.ui:244
 msgid "Save"
 msgstr "Mentés"
 
-#: /home/daniel/GitRepos/hbud/DEV_FILES/source/ui/mainstack.ui:52
-msgid "Save current order"
-msgstr "Jelenlegi sorrend mentése"
+#: /home/daniel/GitRepos/hbud/DEV_FILES/source/ui/mainstack.ui:97
+msgid "Save Playlist"
+msgstr "Lejátszási Lista Mentése"
 
-#: /home/daniel/GitRepos/hbud/DEV_FILES/source/hbud/HBud.py:207
-msgid "Saved order successfully!"
-msgstr "Sorrend sikeresen mentve!"
+#: /home/daniel/GitRepos/hbud/DEV_FILES/source/hbud/HBud.py:367
+msgid "Saved Playlist Successfully"
+msgstr "Lejátszási Lista Sikeresen Mentve"
 
-#: /home/daniel/GitRepos/hbud/DEV_FILES/source/ui/prefwin.ui:127
+#: /home/daniel/GitRepos/hbud/DEV_FILES/source/ui/prefwin.ui:146
 msgid "Services"
 msgstr "Szolgáltatások"
 
-#: /home/daniel/GitRepos/hbud/DEV_FILES/source/ui/prefwin.ui:60
+#: /home/daniel/GitRepos/hbud/DEV_FILES/source/ui/prefwin.ui:82
+#: /home/daniel/GitRepos/hbud/DEV_FILES/source/ui/prefwin.ui:85
 msgid "Size"
 msgstr "Méret"
 
-#: /home/daniel/GitRepos/hbud/DEV_FILES/source/ui/mainstack.ui:31
+#: /home/daniel/GitRepos/hbud/DEV_FILES/source/ui/mainstack.ui:76
 msgid "Sort by Artist (a-z)"
 msgstr "Rendezés előadó szerint (a-z)"
 
-#: /home/daniel/GitRepos/hbud/DEV_FILES/source/ui/mainstack.ui:32
+#: /home/daniel/GitRepos/hbud/DEV_FILES/source/ui/mainstack.ui:77
 msgid "Sort by Artist (z-a)"
 msgstr "Rendezés előadó szerint (z-a)"
 
-#: /home/daniel/GitRepos/hbud/DEV_FILES/source/ui/mainstack.ui:37
+#: /home/daniel/GitRepos/hbud/DEV_FILES/source/ui/mainstack.ui:82
 msgid "Sort by Length (0-9)"
 msgstr "Rendezés időtartam szerint (0-9)"
 
-#: /home/daniel/GitRepos/hbud/DEV_FILES/source/ui/mainstack.ui:38
+#: /home/daniel/GitRepos/hbud/DEV_FILES/source/ui/mainstack.ui:83
 msgid "Sort by Length (9-0)"
 msgstr "Rendezés időtartam szerint (9-0)"
 
-#: /home/daniel/GitRepos/hbud/DEV_FILES/source/ui/mainstack.ui:33
+#: /home/daniel/GitRepos/hbud/DEV_FILES/source/ui/mainstack.ui:78
 msgid "Sort by Title (a-z)"
 msgstr "Rendezés cím szerint (a-z)"
 
-#: /home/daniel/GitRepos/hbud/DEV_FILES/source/ui/mainstack.ui:34
+#: /home/daniel/GitRepos/hbud/DEV_FILES/source/ui/mainstack.ui:79
 msgid "Sort by Title (z-a)"
 msgstr "Rendezés cím szerint (z-a)"
 
-#: /home/daniel/GitRepos/hbud/DEV_FILES/source/ui/mainstack.ui:35
+#: /home/daniel/GitRepos/hbud/DEV_FILES/source/ui/mainstack.ui:80
 msgid "Sort by Year (0-9)"
 msgstr "Rendezés dátum szerint (0-9)"
 
-#: /home/daniel/GitRepos/hbud/DEV_FILES/source/ui/mainstack.ui:36
+#: /home/daniel/GitRepos/hbud/DEV_FILES/source/ui/mainstack.ui:81
 msgid "Sort by Year (9-0)"
 msgstr "Rendezés dátum szerint (9-0)"
 
-#: /home/daniel/GitRepos/hbud/DEV_FILES/source/ui/prefwin.ui:57
-#: /home/daniel/GitRepos/hbud/DEV_FILES/source/ui/prefwin.ui:63
+#: /home/daniel/GitRepos/hbud/DEV_FILES/source/ui/prefwin.ui:79
 msgid "Subtitles"
 msgstr "Feliratok"
 
-#: /home/daniel/GitRepos/hbud/DEV_FILES/source/ui/prefwin.ui:26
+#: /home/daniel/GitRepos/hbud/DEV_FILES/source/ui/prefwin.ui:25
 msgid "System"
 msgstr "Rendszer"
 
-#: /home/daniel/GitRepos/hbud/DEV_FILES/source/ui/prefwin.ui:286
-msgid "System info"
-msgstr "Rendszer infó"
+#: /home/daniel/GitRepos/hbud/DEV_FILES/source/ui/prefwin.ui:315
+msgid "System Info"
+msgstr "Rendszer Infó"
 
 #: /home/daniel/GitRepos/hbud/DEV_FILES/source/ui/prefwin.ui:17
 #: /home/daniel/GitRepos/hbud/DEV_FILES/source/ui/prefwin.ui:20
@@ -371,34 +416,48 @@ msgstr "Cím"
 msgid "Title :"
 msgstr "Cím :"
 
-#: /home/daniel/GitRepos/hbud/DEV_FILES/source/ui/prefwin.ui:188
+#: /home/daniel/GitRepos/hbud/DEV_FILES/source/ui/prefwin.ui:203
 msgid "Ultra High (1200px)"
 msgstr "Ultra Magas (1200px)"
 
-#: /home/daniel/GitRepos/hbud/DEV_FILES/source/hbud/HBud.py:317
-#: /home/daniel/GitRepos/hbud/DEV_FILES/source/hbud/HBud.py:318
-#: /home/daniel/GitRepos/hbud/DEV_FILES/source/hbud/HBud.py:728
+#: /home/daniel/GitRepos/hbud/DEV_FILES/source/hbud/HBud.py:478
+#: /home/daniel/GitRepos/hbud/DEV_FILES/source/hbud/HBud.py:479
+#: /home/daniel/GitRepos/hbud/DEV_FILES/source/hbud/HBud.py:936
 msgid "Unknown"
 msgstr "Ismeretlen"
 
-#: /home/daniel/GitRepos/hbud/DEV_FILES/source/ui/mainwindow.ui:38
+#: /home/daniel/GitRepos/hbud/DEV_FILES/source/hbud/HBud.py:363
+msgid "Unnamed Playlist"
+msgstr "Névtelen Lejátszási Lista"
+
+#: /home/daniel/GitRepos/hbud/DEV_FILES/source/ui/mainwindow.ui:61
 msgid "Video"
 msgstr "Videó"
 
-#: /home/daniel/GitRepos/hbud/DEV_FILES/source/hbud/HBud.py:392
-msgid "Video files"
-msgstr "Videó fájlok"
+#: /home/daniel/GitRepos/hbud/DEV_FILES/source/hbud/HBud.py:566
+msgid "Video Files"
+msgstr "Videófájlok"
 
-#: /home/daniel/GitRepos/hbud/DEV_FILES/source/ui/prefwin.ui:268
+#: /home/daniel/GitRepos/hbud/DEV_FILES/source/ui/prefwin.ui:53
+#: /home/daniel/GitRepos/hbud/DEV_FILES/source/ui/prefwin.ui:56
+msgid "Video Overlay Controls Opacity"
+msgstr "Teljesképernyős Vezérlés Áttetszősége"
+
+#: /home/daniel/GitRepos/hbud/DEV_FILES/source/hbud/HBud.py:947
+msgid "Visit OpenSubtitles or Subscene"
+msgstr "Keresse fel az OpenSubtitles vagy Subscene oldalakat"
+
+#: /home/daniel/GitRepos/hbud/DEV_FILES/source/ui/prefwin.ui:281
 msgid ""
-"Whether to use VA for HW acceleration or not\\nNote: Turning this off may "
-"result in increased stability but worse performance"
+"Whether to use VA for HW acceleration or not\n"
+"Note: Turning this off may result in increased stability but worse "
+"performance"
 msgstr ""
 "VA használata HW gyorsításhoz\n"
 "Megjegyzés: Ha kikapcsolja, az jobb stabilitást de rosszab teljesítményt "
 "eredményez"
 
-#: /home/daniel/GitRepos/hbud/DEV_FILES/source/hbud/frontend.py:239
+#: /home/daniel/GitRepos/hbud/DEV_FILES/source/hbud/frontend.py:340
 msgid "Which one is correct?"
 msgstr "Melyik helyes?"
 
@@ -410,6 +469,6 @@ msgstr "Év :"
 msgid "Yes"
 msgstr "Igen"
 
-#: /home/daniel/GitRepos/hbud/DEV_FILES/source/hbud/HBud.py:739
-msgid "You may visit OpenSubtitles or Subscene."
-msgstr "Felkeresheti az OpenSubtitles vagy Subscene oldalakat"
+#: /home/daniel/GitRepos/hbud/DEV_FILES/source/hbud/HBud.py:55
+msgid "{} Tracks"
+msgstr "{} Szám"
