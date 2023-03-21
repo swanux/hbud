@@ -28,6 +28,25 @@ Features:
 
     "rel_notes" : """<p></p>
 <ul>
-    <li></li>
+    <li>Loading animation during playlist processing</li>
+    <li>Added MPRIS integration</li>
+    <li>Added ability to open multiple files at once from file browser</li>
+    <li>Now possible to drag and drop files to open (video / audio / subtitle - detected automatically)</li>
+    <li>Added keyboard shortcuts window + new shortcuts</li>
+    <li>Reworked fullscreen video experience</li>
+    <li>Added option to set fullscreen player UI opacity</li>
+    <li>New right click menu option to play a track next</li>
+    <li>Added option to clear cache</li>
+    <li>New utility pane for managing multiple saved playlists (folder-based for now)</li>
+    <li>Hardened flatpak permissions (no filesystem access at all!)</li>
+    <li>Added animations to make changes in the UI more visually appealing / coherent</li>
+    <li>Faster loading speed with artwork caching (noticable with larger playlists)</li>
+    <li>Reduced flatpak installed size by around 50% (runtimes not included)</li>
+    <li>Reworked and improved seeking and slider</li>
+    <li>Changed the default icon for tracks without artwork</li>
+    <li>Polished karaoke lyric display</li>
+    <li>Lots of backend and frontend related fixes and improvements</li>
+    <li>Restructured development environment and codebase</li>
+    <li>Other minor UI and UX tweaks</li>
 </ul>"""
 }

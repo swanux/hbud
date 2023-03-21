@@ -17,7 +17,7 @@ install:
 	$(INSTALL_DATA) DEV_FILES/data/hbud.desktop $(prefix)/share/applications/io.github.swanux.hbud.desktop
 
 	@# metainfo
-	$(INSTALL_DATA) DEV_FILES/data/appdata.xml $(prefix)/share/appdata/io.github.swanux.hbud.appdata.xml
+	$(INSTALL_DATA) DEV_FILES/data/io.github.swanux.hbud.appdata.xml $(prefix)/share/appdata/io.github.swanux.hbud.appdata.xml
 
 	@# icons
 	$(INSTALL_DATA) DEV_FILES/data/icons/scalable.svg $(prefix)/share/icons/hicolor/scalable/apps/io.github.swanux.hbud.svg
