@@ -155,7 +155,7 @@
                                 <style><class name="linked"/></style>
                                 <property name="homogeneous">True</property>
                                 <property name="hexpand">True</property>
-                                <property name="margin-end">8</property>
+                                <property name="margin-end">7</property>
                                 <child>
                                   <object class="GtkButton" id="_ofo_but">
                                     <property name="icon-name">folder-open</property>

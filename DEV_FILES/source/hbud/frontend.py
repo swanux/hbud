@@ -322,7 +322,7 @@ class UI(Adw.Application):
         self.playlistPlayer, self.needSub, self.nowIn = False, False, ""
         self.fulle, self.resete, self.keepReset, self.hardReset, self.tnum, self.sorted, self.aborte, self.hardreset2, self.resete2, self.clocking, self.searched = False, False, False, False, -1, False, False, False, False, False, False
         self.playing, self.res, self.title, self.countermove, self.mx, self.my = False, False, None, 0, 0, 0
-        self.offset = 0
+        self.offset, self.playlist = 0, None
         self.cacheDir = GLib.get_user_cache_dir()
         if os.path.isdir(f"{self.cacheDir}/hbud") is False: os.mkdir(f"{self.cacheDir}/hbud")
         self.lyr_states = [True, True, True]
@@ -341,6 +341,8 @@ class UI(Adw.Application):
         self.seeking = False
         self.menu = Gio.Menu()
         menu_item = Gio.MenuItem.new(self._('Delete from Current Playqueue'), "app.delete")
+        self.menu.append_item(menu_item)
+        menu_item = Gio.MenuItem.new(self._('Play Next'), "app.nextthis")
         self.menu.append_item(menu_item)
         menu_item = Gio.MenuItem.new(self._('Edit Metadata'), "app.edit")
         self.menu.append_item(menu_item)

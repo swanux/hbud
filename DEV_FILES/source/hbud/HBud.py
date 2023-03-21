@@ -33,7 +33,7 @@ class Main(frontend.UI):
         self.toolClass.plnum = -1
         GLib.idle_add(self.flap_init, tmlist)
         self.toast_templ = Adw.Toast()
-        self.toast_templ.set_timeout(4)
+        self.toast_templ.set_timeout(3)
         self.clickedE = False
 
     def do_open(self, files, n_files, _):
@@ -65,6 +65,7 @@ class Main(frontend.UI):
         self.reset_player()
         self.playlist = tmlist[self.toolClass.plnum]["content"]
         self.folderPath = GLib.path_get_dirname(self.playlist[0]["uri"])
+        print(self.folderPath)
         for item in self.playlist[:]:
             if os.path.isfile(f"{item['uri']}") is False: self.playlist.remove(item)
         GLib.idle_add(self.window._main_stack._sup_stack.set_visible_child, self.window._main_stack._sup_spinbox)
@@ -132,6 +133,9 @@ class Main(frontend.UI):
         self.add_action(action)
         action = Gio.SimpleAction.new("edit", None)
         action.connect("activate", self.ed_cur)
+        self.add_action(action)
+        action = Gio.SimpleAction.new("nextthis", None)
+        action.connect("activate", self.next_cur)
         self.add_action(action)
         self.window._ofo_but.connect("clicked", self.on_openFolderBut_clicked)
         self.window._loc_but.connect("toggled", self.allToggle)
@@ -244,19 +248,21 @@ class Main(frontend.UI):
             del i
             if mode == "":
                 if "audio" in tags: mode = "audio"
-                elif "video" in tags and self.settings.get_boolean("minimal-mode") is False:
+                elif "video" in tags and self.settings.get_boolean("minimal-mode") is False and mode == "":
                     mode = "video"
+                    self.reset_player()
                     self.useMode = "video"
                     break
-                else:
-                    mode = "invalid"
+                elif "subrip" in tags and mode == "" and self.nowIn == "video" and self.useMode == "video":
+                    mode = "subtitle"
                     break
+                else:
+                    return False
             elif mode not in tags:
-                mode = "invalid"
-                break
+                return False
             files.append(arg)
-        self.reset_player()
         if mode == "audio":
+            self.reset_player()
             self.clickedE = files
             self.window._loc_but.set_active(True)
             self.window._main_stack._sup_stack.set_visible_child(self.window._main_stack._sup_spinbox)
@@ -265,6 +271,8 @@ class Main(frontend.UI):
             self.clickedE = arguments
             self.window._str_but.set_active(True)
             self.on_playBut_clicked(arguments[0].get_path())
+        elif mode == "subtitle":
+            self.subdone(arguments[0].get_path(), True)
         else: self.clickedE = False
 
     def on_drop(self, drop_target, value, *_):
@@ -336,6 +344,11 @@ class Main(frontend.UI):
             self.toast_templ.set_title(self._('Deleted Playlist Successfully'))
             self.window._main_toast.add_toast(self.toast_templ)
             GLib.idle_add(self.flap_init, tmlist)
+            if curnum == self.toolClass.plnum:
+                self.toolClass.plnum = -1
+            elif curnum < self.toolClass.plnum:
+                self.toolClass.plnum -= 1
+            self.toolClass.themer(self.provider, self.window, self.color, self.tnum)
 
     def on_rescan_order(self, _): GLib.Thread.new(None, self.loader, self.folderPath, True)
 
@@ -354,6 +367,7 @@ class Main(frontend.UI):
         self.toast_templ.set_title(self._('Saved Playlist Successfully'))
         self.window._main_toast.add_toast(self.toast_templ)
         GLib.idle_add(self.flap_init, tmlist)
+        self.toolClass.themer(self.provider, self.window, self.color, self.tnum)
 
     def createPipeline(self, mode):
         if mode == "local":
@@ -510,7 +524,11 @@ class Main(frontend.UI):
         else: self.fcconstructer(self._("Choose a Video File"), Gtk.FileChooserAction.OPEN, "Videos", self.window)
 
     def reset_player(self):
+        print("We reset")
         if self.nowIn == "audio" and self.useMode == "audio":
+            try: self.stop(arg=False)
+            except: print("Not stopping")
+        if self.nowIn == "video" and self.useMode == "video":
             try: self.stop(arg=False)
             except: print("Not stopping")
         else:
@@ -522,9 +540,9 @@ class Main(frontend.UI):
     def on_response(self, dialog, response, _, ftype):
         if response == Gtk.ResponseType.ACCEPT:
             if ftype == "Music":
+                self.toolClass.plnum = -1
                 self.reset_player()
                 self.folderPath = dialog.get_files()[0].get_path()
-                self.toolClass.plnum = -1
                 print("Folder selected: " + self.folderPath)
                 self.window._main_stack._sup_stack.set_visible_child(self.window._main_stack._sup_spinbox)
                 GLib.Thread.new(None, self.loader, self.folderPath)
@@ -572,7 +590,9 @@ class Main(frontend.UI):
         self.playlist[self.ednum]["album"] = self.sub2._al_ent.get_text()
         self.playlist[self.ednum]["title"] = self.sub2._ti_ent.get_text()
         if self.toolClass.plnum != -1:
-            self.on_order_save()
+            self.on_order_save(None)
+        uuid = hashlib.md5(GLib.path_get_basename(self.editingFile).encode()).hexdigest()
+        os.remove(f"{self.cacheDir}/hbud/cached_{uuid}.jpg")
         self.sub2_hide("xy")
         GLib.idle_add(self.window._main_stack._sup_box.remove, self.playlist[self.ednum]["widget"])
         self.neo_playlist_gen("modular")
@@ -632,13 +652,14 @@ class Main(frontend.UI):
 
     def fetch_cur(self):
         path = self.playlist[self.ednum]["uri"].replace("file://", "")
+        print(path)
         try:
             results = acoustid.match(self.API_KEY, path, force_fpcalc=True)
         except acoustid.NoBackendError as e:
             print("chromaprint library/tool not found", file=sys.stderr)
             print(e)
-        except acoustid.FingerprintGenerationError:
-            print("fingerprint could not be calculated", file=sys.stderr)
+        except acoustid.FingerprintGenerationError as e:
+            print("fingerprint could not be calculated", e)
         except acoustid.WebServiceError as exc:
             print("web service request failed:", exc.message, file=sys.stderr)
         self.chosefrom, i = [], 0
@@ -707,6 +728,12 @@ class Main(frontend.UI):
             if item["hidden"] is False and i<self.tnum: self.visnum += 1
         if self.tnum == self.ednum: self.play()
 
+    def next_cur(self, *_):
+        print(self.playlist[self.ednum])
+        try: self.popover.unparent()
+        except: print("no unparent")
+        self.reorderer(self.ednum, self.tnum+1, True)
+
     def on_next(self, arg):
         self.toolClass.stopKar = True
         if self.nowIn == self.useMode or "clickMode" in arg:
@@ -734,7 +761,7 @@ class Main(frontend.UI):
             self.binary = MediaFile(self.playlist[self.tnum]["uri"]).art
             if not self.binary: return ""
             else:
-                uuid = hashlib.md5(self.url.encode()).hexdigest()
+                uuid = hashlib.md5(GLib.path_get_basename(self.url).encode()).hexdigest()
                 tmpLoc = f"{self.cacheDir}/hbud/mpris_thumbnail_{uuid}.jpg"
                 if not os.path.isfile(tmpLoc):
                     f = open(tmpLoc, "wb")
@@ -745,7 +772,7 @@ class Main(frontend.UI):
             if mode == "meta": self.binary = MediaFile(self.editingFile).art
             elif mode == "brainz": self.binary = bitMage
             else:
-                uuid = hashlib.md5(mode.encode()).hexdigest()
+                uuid = hashlib.md5(GLib.path_get_basename(mode.replace("file://", "")).encode()).hexdigest()
                 self.binary = MediaFile(mode.replace('file://', '')).art
             if not self.binary:
                 if mode == "meta" or mode == "brainz":
@@ -755,7 +782,7 @@ class Main(frontend.UI):
             else:
                 if uuid is not None: tmpLoc = f"{self.cacheDir}/hbud/cached_{uuid}.jpg"
                 else: tmpLoc = f"{self.cacheDir}/hbud/cacheCover.jpg"
-                if not os.path.isfile(tmpLoc):
+                if not os.path.isfile(tmpLoc) or "cacheCover" in tmpLoc:
                     f = open(tmpLoc, "wb")
                     f.write(self.binary)
                     f.close()
@@ -892,9 +919,14 @@ class Main(frontend.UI):
         self.subtitle_dict = subtitles
         return
 
-    def subdone(self, _):
-        data = self.local_sub(Gst.uri_get_location(self.uri))
-        if data is not None: self.subtitle_dict.append({"index" : "none", "lang" : "local", "content" : data})
+    def subdone(self, args, misc=False):
+        if misc is False:
+            data = self.local_sub(Gst.uri_get_location(self.uri))
+            if data is not None: self.subtitle_dict.append({"index" : "none", "lang" : "local", "content" : data})
+        else:
+            print(args)
+            with open (args, 'r') as subfile: data = subfile.read()
+            self.subtitle_dict.append({"index" : "none", "lang" : "local", "content" : data})
         popbox = Gtk.Box.new(1, 2)
         if len(self.subtitle_dict) >= 1:
             check0 = Gtk.CheckButton.new_with_label(self._("Empty"))
@@ -1021,7 +1053,7 @@ class Main(frontend.UI):
         self.toolClass.stopKar, self.hardReset, self.needSub, self.hardreset2 = True, True, False, True
         raise SystemExit
 
-    def reorderer(self, src, dst):
+    def reorderer(self, src, dst, misc=False):
         if self.sorted is True or self.searched is True: return
         else:
             srcBox = self.playlist[src]["widget"]
@@ -1030,7 +1062,8 @@ class Main(frontend.UI):
                 [cutList.append(playlistLoc[i]) for i in range(dst, src+1)]
                 rby, corrector = 1, dst
             elif dst > src:
-                [cutList.append(playlistLoc[i]) for i in range(src, dst+1)]
+                if misc is False: [cutList.append(playlistLoc[i]) for i in range(src, dst+1)]
+                else: [cutList.append(playlistLoc[i]) for i in range(src, dst)]
                 rby, corrector = -1, src
             cutList = deque(cutList)
             cutList.rotate(rby)
@@ -1359,9 +1392,10 @@ class Main(frontend.UI):
                 GLib.idle_add(self.window._label_end.show)
                 GLib.idle_add(self.window._drop_but.show)
                 self.window.set_resizable(True)
-                widList = self.neo_playlist_gen()
-                for i in widList:
-                    GLib.idle_add(self.window._main_stack._sup_box.append, i)
+                if self.playlist is not None:
+                    widList = self.neo_playlist_gen()
+                    for i in widList:
+                        GLib.idle_add(self.window._main_stack._sup_box.append, i)
             else:
                 GLib.idle_add(self.window._head_box.hide)
                 GLib.idle_add(self.window._toggle_pane_button.hide)

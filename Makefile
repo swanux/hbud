@@ -10,7 +10,7 @@ UNINSTALL = rm -rf
 install:
 	@# app source
 	mkdir -p $(prefix)/bin/
-	$(INSTALL) DEV_FILES/source/fpcalc -t $(prefix)/bin/fpcalc
+	$(INSTALL) DEV_FILES/source/fpcalc -t $(prefix)/bin/.
 	python3 -m nuitka DEV_FILES/source/hbud.py --remove-output --clean-cache=all --follow-import-to=hbud -o $(prefix)/bin/hbud
 
 	@# desktop file
