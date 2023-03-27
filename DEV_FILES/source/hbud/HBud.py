@@ -89,6 +89,7 @@ class Main(frontend.UI):
         coco = Gdk.RGBA()
         coco.parse(self.color)
         self.prefwin._colorer.set_rgba(coco)
+        print(self.color, self.window, self.provider)
         self.toolClass.themer(self.provider, self.window, self.color)
         self.adj = self.window._main_stack._sup_scroll.get_vadjustment()
 
@@ -1094,12 +1095,18 @@ class Main(frontend.UI):
                 if keyval == 102 and self.settings.get_boolean("minimal-mode") is False and self.useMode == "audio":
                     self.on_dropped("key") # F
                 elif keyval == 111: self.on_openFolderBut_clicked(None) # O
+                elif keyval == 63: # ?
+                    self.on_shortcuts_show(None)
+                elif keyval == 44: # ,
+                    self.on_infBut_clicked(None)
+                elif keyval == 115: # S
+                    self.on_order_save(None)
                 elif keyval == 65289: # Tab
                     if self.useMode == "video": self.window._loc_but.set_active(True)
                     else: self.window._str_but.set_active(True)
             elif keyval == 32 and self.url: self.on_playBut_clicked(0) # Space
-            elif keyval == 65480:
-                if self.useMode == "video": self.on_karaoke_activate(0) # F11
+            elif keyval == 102:
+                if self.useMode == "video": self.on_karaoke_activate(0) # F
             elif keyval == 65363: self.on_next("") # Right
             elif keyval == 65361: self.on_prev("") # Left
             elif keyval == 65535 and self.useMode == "audio" and self.settings.get_boolean("minimal-mode") is False: # Delete

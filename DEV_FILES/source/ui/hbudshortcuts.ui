@@ -44,6 +44,12 @@
             </child>
             <child>
               <object class="GtkShortcutsShortcut">
+                  <property name="accelerator">&lt;ctrl&gt;S</property>
+                  <property name="title" translatable="yes">Save Playlist</property>
+              </object>
+            </child>
+            <child>
+              <object class="GtkShortcutsShortcut">
                   <property name="accelerator">Delete</property>
                   <property name="title" translatable="yes">Remove Current Song from Playqueue</property>
               </object>
@@ -67,7 +73,7 @@
             </child>
             <child>
               <object class="GtkShortcutsShortcut">
-                <property name="accelerator">F11</property>
+                <property name="accelerator">F</property>
                 <property name="title" translatable="yes">Fullscreen / Unfullscreen</property>
               </object>
             </child>
@@ -92,6 +98,18 @@
               <object class="GtkShortcutsShortcut">
                 <property name="accelerator">space</property>
                 <property name="title" translatable="yes">Play / Pause</property>
+              </object>
+            </child>
+            <child>
+              <object class="GtkShortcutsShortcut">
+                  <property name="accelerator">&lt;ctrl&gt;comma</property>
+                  <property name="title" translatable="yes">Open Preferences Window</property>
+              </object>
+            </child>
+            <child>
+              <object class="GtkShortcutsShortcut">
+                  <property name="accelerator">&lt;ctrl&gt;question</property>
+                  <property name="title" translatable="yes">Open Keyboard Shortcuts Window</property>
               </object>
             </child>
           </object>

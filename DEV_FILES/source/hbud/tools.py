@@ -46,8 +46,7 @@ class Tools():
             #hub_menu contents, #hub_menu arrow {
                 background-color: rgba(0,0,0,%s);
             }""" % (c,c,w,self.plnum,c,self.o,self.o)
-            css = str.encode(css)
-            provider.load_from_data(css)
+            provider.load_from_data(css, -1)
             GLib.idle_add(window.get_style_context().add_provider_for_display, Gdk.Display.get_default(), provider, Gtk.STYLE_PROVIDER_PRIORITY_APPLICATION)
 
     def get_lyric(self, title, artist, DAPI):
