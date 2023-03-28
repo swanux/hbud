@@ -134,6 +134,10 @@ class MainStack(Gtk.Stack):
         self._drop_music = Gtk.DropTarget(formats=content, actions=Gdk.DragAction.COPY)
         self.add_controller(self._drop_music)
 
+        renderer_text = self._combo_sort.get_cells()[0]
+        renderer_text.set_property("width-chars", 1)
+        renderer_text.set_property("ellipsize", 3)
+
         controllers = self._overlay_scale.observe_controllers()
         for controller in controllers:
             if isinstance(controller, gi.repository.Gtk.GestureClick):

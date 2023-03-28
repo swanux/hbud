@@ -89,7 +89,6 @@ class Main(frontend.UI):
         coco = Gdk.RGBA()
         coco.parse(self.color)
         self.prefwin._colorer.set_rgba(coco)
-        print(self.color, self.window, self.provider)
         self.toolClass.themer(self.provider, self.window, self.color)
         self.adj = self.window._main_stack._sup_scroll.get_vadjustment()
 
