@@ -13,6 +13,7 @@
       <object class="GtkStackPage">
         <property name="child">
           <object class="AdwFlap" id="_side_flap">
+            <property name="modal">True</property>
             <property name="name">side_flap</property>
             <property name="fold-policy">ADW_FLAP_FOLD_POLICY_ALWAYS</property>
             <property name="fold-threshold-policy">ADW_FOLD_THRESHOLD_POLICY_NATURAL</property>

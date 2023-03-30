@@ -244,6 +244,8 @@ class MainWindow(Adw.Window):
 
         _adj_over = self._main_stack._overlay_scale.get_adjustment()
         _adj_win = self._slider.get_adjustment()
+        _adj_over.set_step_increment(8)
+        _adj_win.set_step_increment(8)
         self._main_stack._side_flap.bind_property(
             "reveal-flap", self._toggle_pane_button, "active",
             GObject.BindingFlags.SYNC_CREATE | GObject.BindingFlags.BIDIRECTIONAL)

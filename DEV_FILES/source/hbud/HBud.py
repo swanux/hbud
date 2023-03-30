@@ -23,6 +23,7 @@ class Main(frontend.UI):
         self.toolClass.position = 0
         self.toolClass.o = self.settings.get_int("opacity")/10
         self.mpris_adapter = None
+        self.chapters = {}
         GLib.Thread.new(None, mpris.init, self)
         self.toolClass.label1 = self.sub._label1
         self.toolClass.label2 = self.sub._label2
@@ -369,6 +370,9 @@ class Main(frontend.UI):
         GLib.idle_add(self.flap_init, tmlist)
         self.toolClass.themer(self.provider, self.window, self.color, self.tnum)
 
+    def _onMediaInfoUpdated(self, a, b):
+        print(a, b)
+
     def createPipeline(self, mode):
         if mode == "local":
             self.videoPipe, self.audioPipe = Gst.ElementFactory.make("playbin3"), Gst.ElementFactory.make("playbin3")
@@ -387,7 +391,7 @@ class Main(frontend.UI):
             bus.add_signal_watch()
             bus.connect("message", self.on_message)
 
-    def on_dropped(self, button):
+    def on_dropped(self, _):
         if self.window._drop_but.get_sensitive() is True:
             if self.window._main_stack._top_reveal.get_reveal_child() is False:
                 GLib.idle_add(self.window._drop_but.set_icon_name, "go-up")
@@ -858,7 +862,7 @@ class Main(frontend.UI):
         if self.useMode == self.nowIn:
             seek_time_secs = self.window._slider.get_value()
             if seek_time_secs < self.toolClass.position: self.toolClass.seekBack = True
-            self.player.seek_simple(Gst.Format.TIME,  Gst.SeekFlags.FLUSH | Gst.SeekFlags.FLUSH, seek_time_secs * Gst.SECOND)
+            self.player.seek_simple(Gst.Format.TIME,  Gst.SeekFlags.FLUSH | Gst.SeekFlags.KEY_UNIT, seek_time_secs * Gst.SECOND)
             self.toolClass.position = seek_time_secs
             GLib.idle_add(self.updateSlider, True)
         self.seeking = False
@@ -984,6 +988,9 @@ class Main(frontend.UI):
         else: return None
 
     def play(self, misc=""):
+        self.chapters = {}
+        GLib.idle_add(self.window._slider.clear_marks)
+        GLib.idle_add(self.window._main_stack._overlay_scale.clear_marks)
         if "/" in misc:
             self.url, self.nowIn, self.player = "file://"+misc, "video", self.videoPipe
         elif self.clickedE is not False and self.useMode == "video":
@@ -1127,6 +1134,24 @@ class Main(frontend.UI):
             self.player.set_state(Gst.State.NULL)
             err, debug = message.parse_error()
             print (f"Error: {err}", debug)
+        elif t == Gst.MessageType.TOC:
+            if self.chapters == {}:
+                tocs = message.parse_toc()
+                entries = tocs[0].get_entries()
+                entrylist = entries[0].get_sub_entries()
+                for i in entrylist:
+                    if i.get_entry_type() == Gst.TocEntryType(3):
+                        taglist = i.get_tags()
+                        name = taglist.nth_tag_name(0)
+                        value = taglist.get_string(name)[1]
+                        self.chapters[i.get_start_stop_times()[1]] = value
+                print(self.chapters)
+                GLib.idle_add(self.draw_chapters)
+
+    def draw_chapters(self):
+        for i in self.chapters:
+            self.window._slider.add_mark(i/Gst.SECOND, 2)
+            self.window._main_stack._overlay_scale.add_mark(i/Gst.SECOND, 2)
     
     def _on_notify(self, emitter, param):
         if param.name in ["default-width", "default-height"]:
