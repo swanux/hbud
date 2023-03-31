@@ -123,6 +123,8 @@ class MainStack(Gtk.Stack):
     _overlay_hub = Gtk.Template.Child()
     _current_time = Gtk.Template.Child()
     _end_time = Gtk.Template.Child()
+    _chapter_pop = Gtk.Template.Child()
+    _chapter_lab = Gtk.Template.Child()
     # Page 3
     _rd_box = Gtk.Template.Child()
     _rd_title = Gtk.Template.Child()
@@ -234,6 +236,8 @@ class MainWindow(Adw.Window):
     _lyr_spin = Gtk.Template.Child()
     _sub_track = Gtk.Template.Child()
     _prefbut = Gtk.Template.Child()
+    _chapter_pop = Gtk.Template.Child()
+    _chapter_lab = Gtk.Template.Child()
     def __init__(self):
         super().__init__()
         _ = gettext.gettext
@@ -244,8 +248,6 @@ class MainWindow(Adw.Window):
 
         _adj_over = self._main_stack._overlay_scale.get_adjustment()
         _adj_win = self._slider.get_adjustment()
-        _adj_over.set_step_increment(8)
-        _adj_win.set_step_increment(8)
         self._main_stack._side_flap.bind_property(
             "reveal-flap", self._toggle_pane_button, "active",
             GObject.BindingFlags.SYNC_CREATE | GObject.BindingFlags.BIDIRECTIONAL)

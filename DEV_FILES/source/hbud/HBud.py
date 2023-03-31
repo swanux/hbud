@@ -224,13 +224,17 @@ class Main(frontend.UI):
     
     def on_pref_close (self, *_): self.prefwin.hide()
 
-    def highlight(self, widget, *_):
+    def highlight(self, widget, _, x, y):
         print(widget.get_button())
         if widget.get_button() == 3:
             self.ednum = int(widget.get_widget().get_name().replace("trackbox_", ""))
             self.popover = Gtk.PopoverMenu.new_from_model(self.menu)
-            self.popover.set_autohide(True)
             self.popover.set_parent(widget.get_widget())
+            self.popover.set_has_arrow(False)
+            r = Gdk.Rectangle()
+            r.x = x+124
+            r.y = y+10
+            self.popover.set_pointing_to(r)
             self.popover.popup()
         elif widget.get_button() == 1:
             nownum = int(widget.get_widget().get_name().replace("trackbox_", ""))
@@ -853,8 +857,27 @@ class Main(frontend.UI):
 
     def on_slider_grab(self, *_): self.seeking = True
     
-    def on_slider_grabbed(self, *_):
-        current_time = str(timedelta(seconds=round(self.window._slider.get_value())))
+    def on_slider_grabbed(self, scale):
+        value = scale.get_value()
+        marker = int(value*Gst.SECOND)
+        if marker in self.chapters:
+            _, end = scale.get_slider_range()
+            destX, _ = scale.translate_coordinates(scale.get_parent(), 0, 0)
+            r = Gdk.Rectangle()
+            r.x = destX+end-12
+            r.y = -5
+            if scale == self.window._slider and self.fulle is False:
+                self.window._chapter_lab.set_text(self.chapters[marker])
+                self.window._chapter_pop.set_pointing_to(r)
+                self.window._chapter_pop.popup()
+            elif scale == self.window._main_stack._overlay_scale and self.fulle is True:
+                self.window._main_stack._chapter_lab.set_text(self.chapters[marker])
+                self.window._main_stack._chapter_pop.set_pointing_to(r)
+                self.window._main_stack._chapter_pop.popup()
+        else:
+            self.window._chapter_pop.popdown()
+            self.window._main_stack._chapter_pop.popdown()
+        current_time = str(timedelta(seconds=round(value)))
         GLib.idle_add(self.window._slider.set_tooltip_text, f"{current_time}")
 
 
@@ -988,7 +1011,6 @@ class Main(frontend.UI):
         else: return None
 
     def play(self, misc=""):
-        self.chapters = {}
         GLib.idle_add(self.window._slider.clear_marks)
         GLib.idle_add(self.window._main_stack._overlay_scale.clear_marks)
         if "/" in misc:
@@ -1002,6 +1024,7 @@ class Main(frontend.UI):
             else:
                 if self.videoPipe.get_state(1)[1] == Gst.State.NULL: return
                 self.player, self.nowIn = self.videoPipe, "video"
+                GLib.idle_add(self.draw_chapters)
         else:
             try: self.url, self.nowIn, self.player = "file://"+self.playlist[self.tnum]["uri"], "audio", self.audioPipe
             except: return
@@ -1017,6 +1040,7 @@ class Main(frontend.UI):
         if misc != "continue":
             self.player.set_state(Gst.State.NULL)
             self.player.set_property("uri", Gst.filename_to_uri(self.url.replace("file://", "")))
+            if self.useMode == "video": self.chapters = {}
         self.player.set_state(Gst.State.PLAYING)
         self.uri = self.player.get_property("uri")
         GLib.idle_add(self.window._play_but.set_icon_name, "media-playback-pause")
@@ -1149,9 +1173,10 @@ class Main(frontend.UI):
                 GLib.idle_add(self.draw_chapters)
 
     def draw_chapters(self):
-        for i in self.chapters:
-            self.window._slider.add_mark(i/Gst.SECOND, 2)
-            self.window._main_stack._overlay_scale.add_mark(i/Gst.SECOND, 2)
+        if self.chapters != {}:
+            for i in self.chapters:
+                self.window._slider.add_mark(i/Gst.SECOND, 2)
+                self.window._main_stack._overlay_scale.add_mark(i/Gst.SECOND, 2)
     
     def _on_notify(self, emitter, param):
         if param.name in ["default-width", "default-height"]:
