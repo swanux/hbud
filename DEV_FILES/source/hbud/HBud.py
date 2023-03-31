@@ -1177,6 +1177,9 @@ class Main(frontend.UI):
             for i in self.chapters:
                 self.window._slider.add_mark(i/Gst.SECOND, 2)
                 self.window._main_stack._overlay_scale.add_mark(i/Gst.SECOND, 2)
+            x, y = self.window.get_default_size()
+            self.window.set_default_size(x+1, y+1)
+            GLib.idle_add(self.window.set_default_size, x, y)
     
     def _on_notify(self, emitter, param):
         if param.name in ["default-width", "default-height"]:
