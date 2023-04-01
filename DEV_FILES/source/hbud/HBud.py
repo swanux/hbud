@@ -59,11 +59,26 @@ class Main(frontend.UI):
             widget._ed_but.connect("clicked", self.edit_saved_list)
             self.window._main_stack._play_list_box.append(widget)
 
+    def get_files(self, path):
+        for entry in os.scandir(path):
+            if entry.is_file():
+                yield entry
+            elif entry.is_dir():
+                yield from self.get_files(entry.path)
+
     def load_saved_list(self, button):
         tmlist = json.loads(self.settings.get_string("saved-order"))
         self.toolClass.plnum = int(button.get_name().replace("start_but_", ""))
         print(self.toolClass.plnum)
         self.reset_player()
+        mydb = {}
+        for file in self.get_files("/run/user/1000/doc/"):
+            mydb[file.name] = file.path
+        for i in tmlist[self.toolClass.plnum]["content"]:
+            if os.path.isfile(f"{i['uri']}") is False:
+                i["uri"] = mydb[GLib.path_get_basename(i["uri"])]
+                print("URI override was needed: {}".format(i["uri"]))
+        self.settings.set_string("saved-order", json.dumps(tmlist))
         self.playlist = tmlist[self.toolClass.plnum]["content"]
         self.folderPath = GLib.path_get_dirname(self.playlist[0]["uri"])
         print(self.folderPath)
@@ -228,14 +243,13 @@ class Main(frontend.UI):
         print(widget.get_button())
         if widget.get_button() == 3:
             self.ednum = int(widget.get_widget().get_name().replace("trackbox_", ""))
-            self.popover = Gtk.PopoverMenu.new_from_model(self.menu)
-            self.popover.set_parent(widget.get_widget())
-            self.popover.set_has_arrow(False)
+            self.window._right_pop.unparent()
+            self.window._right_pop.set_parent(widget.get_widget())
             r = Gdk.Rectangle()
             r.x = x+124
             r.y = y+10
-            self.popover.set_pointing_to(r)
-            self.popover.popup()
+            self.window._right_pop.set_pointing_to(r)
+            self.window._right_pop.popup()
         elif widget.get_button() == 1:
             nownum = int(widget.get_widget().get_name().replace("trackbox_", ""))
             if self.tnum == nownum: return
@@ -474,12 +488,13 @@ class Main(frontend.UI):
         return widList
 
     def metas(self, location, extrapath, misc=False):
-        tf = Gio.File.new_for_path(location)
-        i = tf.query_info(Gio.FILE_ATTRIBUTE_STANDARD_CONTENT_TYPE,
-                        Gio.FileQueryInfoFlags.NONE,
-                        None)
-        tags = i.get_content_type()
-        if "audio" not in tags: return
+        if misc is False:
+            tf = Gio.File.new_for_path(location)
+            i = tf.query_info(Gio.FILE_ATTRIBUTE_STANDARD_CONTENT_TYPE,
+                            Gio.FileQueryInfoFlags.NONE,
+                            None)
+            tags = i.get_content_type()
+            if "audio" not in tags: return
         f = MediaFile(location)
         title, artist, album, year, length = f.title, f.artist, f.album, f.year, ":".join(str(timedelta(seconds=round(f.length))).split(":")[1:])
         if not title: title = os.path.splitext(extrapath)[0]
@@ -502,7 +517,8 @@ class Main(frontend.UI):
             else:
                 pltmpin = os.scandir(path)
                 for i in pltmpin:
-                    self.metas(f"{path}/{i.name}", i.name, misc)
+                    if skippl is True: self.metas(f"{path}/{i.name}", i.name, "skipper")
+                    else: self.metas(f"{path}/{i.name}", i.name, misc)
         if misc is False:
             if skippl is False: self.playlist = self.pltmp
             widList = self.neo_playlist_gen()
@@ -551,6 +567,7 @@ class Main(frontend.UI):
                 self.toolClass.plnum = -1
                 self.reset_player()
                 self.folderPath = dialog.get_files()[0].get_path()
+                print(self.folderPath)
                 print("Folder selected: " + self.folderPath)
                 self.window._main_stack._sup_stack.set_visible_child(self.window._main_stack._sup_spinbox)
                 GLib.Thread.new(None, self.loader, self.folderPath)
@@ -611,7 +628,6 @@ class Main(frontend.UI):
         GLib.idle_add(self.sub2._mag_spin.stop)
 
     def ed_cur(self, *_):
-        self.popover.unparent()
         self.editingFile = self.playlist[self.ednum]["uri"].replace("file://", "")
         self.sub2._yr_ent.set_value(self.playlist[self.ednum]["year"])
         self.sub2._ar_ent.set_text(self.playlist[self.ednum]["artist"])
@@ -724,8 +740,7 @@ class Main(frontend.UI):
 
     def del_cur(self, *_):
         print(self.playlist[self.ednum])
-        try: self.popover.unparent()
-        except: print("no unparent")
+        self.window._right_pop.unparent()
         torem = self.playlist[self.ednum]["widget"]
         GLib.idle_add(self.window._main_stack._sup_box.remove, torem)
         self.playlist.remove(self.playlist[self.ednum])
@@ -738,8 +753,6 @@ class Main(frontend.UI):
 
     def next_cur(self, *_):
         print(self.playlist[self.ednum])
-        try: self.popover.unparent()
-        except: print("no unparent")
         self.reorderer(self.ednum, self.tnum+1, True)
 
     def on_next(self, arg):

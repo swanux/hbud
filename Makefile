@@ -44,7 +44,7 @@ test:
 	cp DEV_FILES/data/gschema.xml DEV_FILES/schemas/io.github.swanux.hbud.gschema.xml
 	glib-compile-schemas DEV_FILES/schemas/
 	glib-compile-resources DEV_FILES/data/gresources.xml --target=DEV_FILES/io.github.swanux.hbud.gresource
-	LANG=$(language).UTF-8 HDIR="DEV_FILES/source/" GTK_DEBUG=interactive DEV_FILES/source/./hbud.py
+	LANG=$(language).UTF-8 HDIR="DEV_FILES/source/" DEV_FILES/source/./hbud.py
 
 
 uninstall:

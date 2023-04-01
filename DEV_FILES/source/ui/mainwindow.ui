@@ -104,6 +104,13 @@
                   </object>
                 </child>
                 <child>
+                  <object class="GtkPopoverMenu" id="_right_pop">
+                    <property name="has-arrow">False</property>
+                    <property name="name">right_pop</property>
+                    <property name="position">GTK_POS_BOTTOM</property>
+                  </object>
+                </child>
+                <child>
                   <object class="GtkRevealer">
                     <property name="transition-type">GTK_REVEALER_TRANSITION_TYPE_SLIDE_UP</property>
                     <property name="transition-duration">800</property>

@@ -238,6 +238,7 @@ class MainWindow(Adw.Window):
     _prefbut = Gtk.Template.Child()
     _chapter_pop = Gtk.Template.Child()
     _chapter_lab = Gtk.Template.Child()
+    _right_pop = Gtk.Template.Child()
     def __init__(self):
         super().__init__()
         _ = gettext.gettext
@@ -270,15 +271,18 @@ class MainWindow(Adw.Window):
                 self._slider_click = controller
                 break
 
+        self.menu_factory(self._prefbut, [_('Preferences'), _('Keyboard Shortcuts'), _('About')],
+                        ["app.pref", "app.shortcuts", "app.about"])
+        self.menu_factory(self._right_pop, [_('Delete from Current Playqueue'), _('Play Next'), _('Edit Metadata')],
+                        ["app.delete", "app.nextthis", "app.edit"])
+
+    def menu_factory(self, popover, items, signals):
         menu = Gio.Menu()
-        menu_item = Gio.MenuItem.new(_('Preferences'), "app.pref")
-        menu.append_item(menu_item)
-        menu_item = Gio.MenuItem.new(_('Keyboard Shortcuts'), "app.shortcuts")
-        menu.append_item(menu_item)
-        menu_item = Gio.MenuItem.new(_('About'), "app.about")
-        menu.append_item(menu_item)
+        for i, item in enumerate(items):
+            menu_item = Gio.MenuItem.new(item, signals[i])
+            menu.append_item(menu_item)
         menu.freeze()
-        self._prefbut.set_menu_model(menu)
+        popover.set_menu_model(menu)
 
 
 @Gtk.Template(resource_path='/io/github/swanux/hbud/DEV_FILES/source/ui/sub2.ui')
@@ -321,10 +325,15 @@ class Sub(Adw.Window):
 class UI(Adw.Application):
     build_version = CONSTANTS["version"]
     def __init__(self):
-        super().__init__(flags=Gio.ApplicationFlags.HANDLES_OPEN)
+        super().__init__(flags=Gio.ApplicationFlags.HANDLES_OPEN, application_id=CONSTANTS["app_id"])
         self._ = gettext.gettext
         Gst.init(None)
         Adw.init()
+        self.document = Gio.DBusProxy.new_for_bus_sync(
+            Gio.BusType.SESSION, Gio.DBusProxyFlags.NONE,
+            None, "org.freedesktop.portal.Documents",
+            "/org/freedesktop/portal/documents",
+            "org.freedesktop.portal.Documents", None)
         self.useMode, self.duration_nanosecs, self.remaining = "audio", 0, 0
         self.searchDict = {"1" : ["artist", False], "2" : ["artist", True], "3" : ["title", False], "4" : ["title", True], "5" : ["year", False], "6" : ["year", True], "7" : ["length", False], "8" : ["length", True]}
         self.playlistPlayer, self.needSub, self.nowIn = False, False, ""
@@ -347,14 +356,6 @@ class UI(Adw.Application):
         self.choser_window.set_content(handle)
         self.choser_window.set_title(self._("Which one is correct?"))
         self.seeking = False
-        self.menu = Gio.Menu()
-        menu_item = Gio.MenuItem.new(self._('Delete from Current Playqueue'), "app.delete")
-        self.menu.append_item(menu_item)
-        menu_item = Gio.MenuItem.new(self._('Play Next'), "app.nextthis")
-        self.menu.append_item(menu_item)
-        menu_item = Gio.MenuItem.new(self._('Edit Metadata'), "app.edit")
-        self.menu.append_item(menu_item)
-        self.menu.freeze()
         self.about = Adw.AboutWindow(application_name=CONSTANTS["name"],
                     version=self.build_version, copyright="Copyright © {}".format(CONSTANTS["years"]),
                     issue_url=CONSTANTS["help_url"], license_type=Gtk.License.GPL_3_0,
