@@ -3,11 +3,8 @@
   <requires lib="libadwaita" version="1.1"/>
   <requires lib="gtk" version="4.6"/>
 
-  <template class="MainWindow" parent="AdwWindow">
+  <template class="MainWindow" parent="AdwApplicationWindow">
     <property name="name">main</property>
-    <child>
-      <object class="GtkEventControllerKey" id="_ev_key_main"/>
-    </child>
     <child>
       <object class="GtkEventControllerMotion" id="_main_motion"/>
     </child>
@@ -86,6 +83,7 @@
                     <child type="end">
                       <object class="GtkMenuButton" id="_prefbut">
                         <property name="icon-name">open-menu-symbolic</property>
+                        <property name="menu-model">_main_menu</property>
                         <property name="can-focus">False</property>
                       </object>
                     </child>
@@ -107,7 +105,8 @@
                   <object class="GtkPopoverMenu" id="_right_pop">
                     <property name="has-arrow">False</property>
                     <property name="name">right_pop</property>
-                    <property name="position">GTK_POS_BOTTOM</property>
+                    <property name="menu-model">_right_menu</property>
+                    <property name="position">GTK_POS_RIGHT</property>
                   </object>
                 </child>
                 <child>
@@ -280,4 +279,42 @@
       </object>
     </child>
   </template>
+
+  <menu id="_main_menu">
+    <section>
+      <item>
+        <attribute name="label" translatable="true">Preferences</attribute>
+        <attribute name="action">app.pref</attribute>
+      </item>
+      <item>
+        <attribute name="label" translatable="true">Keyboard Shortcuts</attribute>
+        <attribute name="action">win.show-help-overlay</attribute>
+      </item>
+    </section>
+    <section>
+      <item>
+        <attribute name="label" translatable="true">About HBud</attribute>
+        <attribute name="action">app.about</attribute>
+      </item>
+    </section>
+  </menu>
+
+  <menu id="_right_menu">
+    <section>
+      <item>
+        <attribute name="label" translatable="true">Play Next</attribute>
+        <attribute name="action">app.nextthis</attribute>
+      </item>
+      <item>
+        <attribute name="label" translatable="true">Edit Metadata</attribute>
+        <attribute name="action">app.edit</attribute>
+      </item>
+    </section>
+    <section>
+      <item>
+        <attribute name="label" translatable="true">Delete from Current Playqueue</attribute>
+        <attribute name="action">app.delete</attribute>
+      </item>
+    </section>
+  </menu>
 </interface>

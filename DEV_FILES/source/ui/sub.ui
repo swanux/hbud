@@ -8,9 +8,6 @@
     <property name="default-width">560</property>
     <property name="default-height">360</property>
     <child>
-      <object class="GtkEventControllerKey" id="_ev_key_sub"/>
-    </child>
-    <child>
         <object class="GtkWindowHandle">
           <child>
             <object class="GtkBox">

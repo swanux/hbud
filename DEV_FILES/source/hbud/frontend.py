@@ -152,7 +152,6 @@ class HbudShortcuts(Gtk.ShortcutsWindow):
     __gtype_name__ = 'HbudShortcuts'
     def __init__(self): super().__init__()
 
-
 @Gtk.Template(resource_path='/io/github/swanux/hbud/DEV_FILES/source/ui/prefwin.ui')
 class PrefWin(Adw.PreferencesWindow):
     __gtype_name__ = 'PrefWin'
@@ -183,6 +182,7 @@ class PrefWin(Adw.PreferencesWindow):
     _vavp9dec = Gtk.Template.Child()
     def __init__(self):
         super().__init__()
+        self.connect("close-request", self.on_close)
         settings.bind("theme", self._darkew, "active-id", Gio.SettingsBindFlags.DEFAULT)
         settings.bind("relative-size", self._sub_spin, "value", Gio.SettingsBindFlags.DEFAULT)
         settings.bind("opacity", self._opac_spin, "value", Gio.SettingsBindFlags.DEFAULT)
@@ -209,15 +209,16 @@ class PrefWin(Adw.PreferencesWindow):
             else: icon = "process-stop-symbolic"
             self.present_codecs[c][1].set_from_icon_name(icon)
 
+    def on_close(self, *_): self.hide()
+
 
 @Gtk.Template(resource_path='/io/github/swanux/hbud/DEV_FILES/source/ui/mainwindow.ui')
-class MainWindow(Adw.Window):
+class MainWindow(Adw.ApplicationWindow):
     __gtype_name__ = 'MainWindow'
     _main_stack = Gtk.Template.Child()
     _toggle_pane_button = Gtk.Template.Child()
     _head_reveal = Gtk.Template.Child()
     _main_toast = Gtk.Template.Child()
-    _ev_key_main = Gtk.Template.Child()
     _head_box = Gtk.Template.Child()
     _str_but = Gtk.Template.Child()
     _loc_but = Gtk.Template.Child()
@@ -235,7 +236,6 @@ class MainWindow(Adw.Window):
     _karaoke_but = Gtk.Template.Child()
     _lyr_spin = Gtk.Template.Child()
     _sub_track = Gtk.Template.Child()
-    _prefbut = Gtk.Template.Child()
     _chapter_pop = Gtk.Template.Child()
     _chapter_lab = Gtk.Template.Child()
     _right_pop = Gtk.Template.Child()
@@ -271,19 +271,6 @@ class MainWindow(Adw.Window):
                 self._slider_click = controller
                 break
 
-        self.menu_factory(self._prefbut, [_('Preferences'), _('Keyboard Shortcuts'), _('About')],
-                        ["app.pref", "app.shortcuts", "app.about"])
-        self.menu_factory(self._right_pop, [_('Delete from Current Playqueue'), _('Play Next'), _('Edit Metadata')],
-                        ["app.delete", "app.nextthis", "app.edit"])
-
-    def menu_factory(self, popover, items, signals):
-        menu = Gio.Menu()
-        for i, item in enumerate(items):
-            menu_item = Gio.MenuItem.new(item, signals[i])
-            menu.append_item(menu_item)
-        menu.freeze()
-        popover.set_menu_model(menu)
-
 
 @Gtk.Template(resource_path='/io/github/swanux/hbud/DEV_FILES/source/ui/sub2.ui')
 class Sub2(Adw.Window):
@@ -305,7 +292,6 @@ class Sub2(Adw.Window):
 @Gtk.Template(resource_path='/io/github/swanux/hbud/DEV_FILES/source/ui/sub.ui')
 class Sub(Adw.Window):
     __gtype_name__ = 'Sub'
-    _ev_key_sub = Gtk.Template.Child()
     _sub_stackhead = Gtk.Template.Child()
     _sub_box = Gtk.Template.Child()
     _sub_box2 = Gtk.Template.Child()
@@ -329,15 +315,12 @@ class UI(Adw.Application):
         self._ = gettext.gettext
         Gst.init(None)
         Adw.init()
-        self.document = Gio.DBusProxy.new_for_bus_sync(
-            Gio.BusType.SESSION, Gio.DBusProxyFlags.NONE,
-            None, "org.freedesktop.portal.Documents",
-            "/org/freedesktop/portal/documents",
-            "org.freedesktop.portal.Documents", None)
+        self.create_actions(self.__actions, ['pref', 'about'], [['<primary>comma'], None])
+        self.set_accels_for_action("win.show-help-overlay", ['<primary>question'])
         self.useMode, self.duration_nanosecs, self.remaining = "audio", 0, 0
         self.searchDict = {"1" : ["artist", False], "2" : ["artist", True], "3" : ["title", False], "4" : ["title", True], "5" : ["year", False], "6" : ["year", True], "7" : ["length", False], "8" : ["length", True]}
         self.playlistPlayer, self.needSub, self.nowIn = False, False, ""
-        self.fulle, self.resete, self.keepReset, self.hardReset, self.tnum, self.sorted, self.aborte, self.hardreset2, self.resete2, self.clocking, self.searched = False, False, False, False, -1, False, False, False, False, False, False
+        self.fulle, self.resete, self.keepReset, self.hardReset, self.tnum, self.sorted, self.aborte, self.searched = False, False, False, False, -1, False, False, False
         self.playing, self.res, self.title, self.countermove, self.mx, self.my = False, False, None, 0, 0, 0
         self.offset, self.playlist = 0, None
         self.cacheDir = GLib.get_user_cache_dir()
@@ -356,27 +339,54 @@ class UI(Adw.Application):
         self.choser_window.set_content(handle)
         self.choser_window.set_title(self._("Which one is correct?"))
         self.seeking = False
-        self.about = Adw.AboutWindow(application_name=CONSTANTS["name"],
-                    version=self.build_version, copyright="Copyright © {}".format(CONSTANTS["years"]),
-                    issue_url=CONSTANTS["help_url"], license_type=Gtk.License.GPL_3_0,
-                    developer_name="Dániel Kolozsi", developers=["Dániel Kolozsi"],
-                    designers=["Seh", "Dániel Kolozsi"],
-                    translator_credits=self._("Dániel Kolozsi"),
-                    application_icon=CONSTANTS["app_id"],
-                    comments=CONSTANTS["app_desc"],
-                    website=CONSTANTS["main_url"],
-                    release_notes=CONSTANTS["rel_notes"], default_height=650)
         self.provider, self.styles = Gtk.CssProvider(), Adw.StyleManager.get_default()
         self.settings = settings
         self.window = MainWindow()
+        self.window.set_help_overlay(HbudShortcuts())
         self.sub = Sub()
         self.sub2 = Sub2()
         self.sub2.set_transient_for(self.window)
         self.choser_window.set_transient_for(self.sub2)
-        self.shortcuts = HbudShortcuts()
-        self.shortcuts.set_transient_for(self.window)
         self.prefwin = PrefWin()
         self.prefwin.set_transient_for(self.window)
-        self.about.set_transient_for(self.window)
         self.switchDict = {"locBut" : [self.window._main_stack._side_flap, "audio-input-microphone", "audio", self.window._str_but],
                            "strBut" : [self.window._main_stack._str_box, "view-fullscreen", "video", self.window._loc_but]}
+
+    def create_actions(self, callback, names, shortcuts=None):
+        for i, item in enumerate(names):
+            action = Gio.SimpleAction.new(item, None)
+            action.connect("activate", callback)
+            self.add_action(action)
+            if shortcuts[i]:
+                self.set_accels_for_action(f"app.{item}", shortcuts[i])
+
+    def __actions(self, action, _):
+        name = action.get_name()
+        if name == "about":
+            about = Adw.AboutWindow(application_name=CONSTANTS["name"],
+                        version=self.build_version, copyright="Copyright © {}".format(CONSTANTS["years"]),
+                        issue_url=CONSTANTS["help_url"], license_type=Gtk.License.GPL_3_0,
+                        developer_name="Dániel Kolozsi", developers=["Dániel Kolozsi"],
+                        designers=["Seh", "Dániel Kolozsi"],
+                        translator_credits=self._("Dániel Kolozsi"),
+                        application_icon=CONSTANTS["app_id"],
+                        comments=CONSTANTS["app_desc"],
+                        website=CONSTANTS["main_url"],
+                        release_notes=CONSTANTS["rel_notes"],
+                        default_height=650, transient_for=self.window)
+            about.present()
+        elif name == "pref":
+            GLib.idle_add(self.get_directory_size, f"{self.cacheDir}/hbud")
+            self.prefwin.present()
+
+    def get_directory_size(self, dir_path):
+        dir = Gio.File.new_for_path(dir_path)
+        enumerator = dir.enumerate_children(Gio.FILE_ATTRIBUTE_STANDARD_SIZE,
+                                            Gio.FileQueryInfoFlags.NONE,
+                                            None)
+        total_size = 0
+        for child_info in enumerator:
+            total_size += child_info.get_size()
+        del dir, enumerator
+        self.prefwin._clear_cache.set_label(self._("Clear {}").format(GLib.format_size(total_size)))
+        return False
