@@ -71,6 +71,26 @@
                 </property>
               </object>
             </child>
+            <child>
+              <object class="AdwPreferencesRow">
+                <property name="title" translatable="yes">Background Blur</property>
+                <property name="child">
+                  <object class="AdwActionRow">
+                    <property name="title" translatable="yes">Background Blur</property>
+                    <child>
+                      <object class="GtkComboBoxText" id="_blurmode">
+                        <property name="valign">center</property>
+                        <items>
+                        <item id="135" translatable="yes">Solid</item>
+                        <item id="55" translatable="yes">Soft</item>
+                        <item id="0" translatable="yes">Off</item>
+                        </items>
+                      </object>
+                    </child>
+                  </object>
+                </property>
+              </object>
+            </child>
           </object>
         </child>
         

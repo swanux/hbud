@@ -22,8 +22,9 @@ class Main(frontend.UI):
         self.toolClass = tools.Tools()
         self.toolClass.position = 0
         self.toolClass.o = self.settings.get_int("opacity")/10
+        self.toolClass.b = int(self.settings.get_string("blur-mode"))
         self.mpris_adapter = None
-        self.chapters = {}
+        self.chapters, self.url = {}, ""
         self.clocks = [None, None]
         GLib.Thread.new(None, mpris.init, self)
         self.toolClass.label1 = self.sub._label1
@@ -403,9 +404,12 @@ class Main(frontend.UI):
                 if self.switchDict[btn][2] == "video" and self.nowIn == "audio": self.on_playBut_clicked("xy")
                 elif self.nowIn == "video" and self.switchDict[btn][2] != "video": self.on_playBut_clicked("xy")
             self.useMode = self.switchDict[btn][2]
+            if self.useMode == "video": self.load_cover("", self.window._background)
+            elif self.toolClass.b != 0: self.load_cover(self.url, self.window._background)
             self.needSub = False
             GLib.idle_add(self.switchDict[btn][3].set_active, False)
-        elif self.window._main_stack.get_visible_child() == self.switchDict[btn][0]: GLib.idle_add(button.set_active, True) 
+        elif self.window._main_stack.get_visible_child() == self.switchDict[btn][0]:
+            GLib.idle_add(button.set_active, True)
 
     def purger(self):
         child = self.window._main_stack._sup_box.get_first_child()
@@ -729,8 +733,7 @@ class Main(frontend.UI):
                 self.play()
                 if self.sub.get_visible(): self.on_karaoke_activate("xy")
                 if self.useMode == "audio" and arg != "clickMode" and self.settings.get_boolean("autoscroll") is True and self.settings.get_boolean("minimal-mode") is False:
-                    try: self.adj.set_value(self.visnum*79-self.settings.get_int("positioning"))
-                    except: print("nah")
+                    self.adj.set_value(self.visnum*79-self.settings.get_int("positioning"))
             elif self.nowIn == "video":
                 self.seeking = True
                 GLib.idle_add(self.window._slider.set_value, self.window._slider.get_value() + 10)
@@ -739,6 +742,7 @@ class Main(frontend.UI):
 
     def load_cover(self, mode="", bitMage=""):
         uuid = None
+        self.binary = None
         if mode == "mpris":
             self.binary = MediaFile(self.playlist[self.tnum]["uri"]).art
             if not self.binary: return ""
@@ -753,14 +757,17 @@ class Main(frontend.UI):
         else:
             if mode == "meta": self.binary = MediaFile(self.editingFile).art
             elif mode == "brainz": self.binary = bitMage
-            else:
+            elif mode != "":
                 uuid = hashlib.md5(GLib.path_get_basename(mode.replace("file://", "")).encode()).hexdigest()
                 self.binary = MediaFile(mode.replace('file://', '')).art
             if not self.binary:
                 if mode == "meta" or mode == "brainz":
                     GLib.idle_add(self.sub2._meta_cover.set_from_icon_name, "emblem-music-symbolic")
-                else:
+                elif bitMage != self.window._background:
                     GLib.idle_add(bitMage.set_from_icon_name, "emblem-music-symbolic")
+                else:
+                    GLib.idle_add(self.window._main_stack._background.set_child, None)
+                    GLib.idle_add(self.window._background.set_filename, None)
             else:
                 if uuid is not None: tmpLoc = f"{self.cacheDir}/hbud/cached_{uuid}.jpg"
                 else: tmpLoc = f"{self.cacheDir}/hbud/cacheCover.jpg"
@@ -772,8 +779,16 @@ class Main(frontend.UI):
                     coverBuf = GdkPixbuf.Pixbuf.new_from_file_at_scale(tmpLoc, 100, 100, True)
                     GLib.idle_add(self.sub2._meta_cover.set_from_pixbuf, coverBuf)
                 else:
-                    coverBuf = GdkPixbuf.Pixbuf.new_from_file_at_scale(tmpLoc, 65, 65, True)
-                    GLib.idle_add(bitMage.set_from_pixbuf, coverBuf)
+                    if bitMage == self.window._background:
+                        coverBuf = GdkPixbuf.Pixbuf.new_from_file_at_scale(tmpLoc, 308, 308, True)
+                        GLib.idle_add(bitMage.set_filename, tmpLoc)
+                        pic = Gtk.Picture.new_for_pixbuf(coverBuf)
+                        pic.set_name("_background")
+                        pic.set_content_fit(Gtk.ContentFit.COVER)
+                        GLib.idle_add(self.window._main_stack._background.set_child, pic)
+                    else:
+                        coverBuf = GdkPixbuf.Pixbuf.new_from_file_at_scale(tmpLoc, 65, 65, True)
+                        GLib.idle_add(bitMage.set_from_pixbuf, coverBuf)
 
     def on_prev(self, _):
         self.toolClass.stopKar = True
@@ -791,8 +806,7 @@ class Main(frontend.UI):
                 self.play()
                 if self.sub.get_visible(): self.on_karaoke_activate("xy")
                 if self.useMode == "audio" and self.settings.get_boolean("autoscroll") is True and self.settings.get_boolean("minimal-mode") is False:
-                    try: self.adj.set_value(self.visnum*79-self.settings.get_int("positioning"))
-                    except: print("nah")
+                    self.adj.set_value(self.visnum*79-self.settings.get_int("positioning"))
             elif self.nowIn == "video":
                 self.seeking = True
                 GLib.idle_add(self.window._slider.set_value, self.window._slider.get_value() - 10)
@@ -1007,6 +1021,10 @@ class Main(frontend.UI):
         print("Play")
         self.res, self.playing, self.toolClass.position = True, True, 0
         if self.useMode == "audio":
+            self.visnum = 0
+            for i, item in enumerate(self.playlist):
+                if item["hidden"] is False and i<self.tnum: self.visnum += 1
+            if self.toolClass.b != 0: self.load_cover(self.url, self.window._background)
             self.title = self.playlist[self.tnum]["title"]
             if self.settings.get_boolean("minimal-mode") is True:
                 self.window._main_stack._rd_title.set_text(self.playlist[self.tnum]["title"])
@@ -1043,8 +1061,7 @@ class Main(frontend.UI):
             self.visnum = 0
             for i, item in enumerate(self.playlist):
                 if item["hidden"] is False and i<self.tnum: self.visnum += 1
-            try: self.adj.set_value(self.visnum*79-self.settings.get_int("positioning"))
-            except: pass
+            self.adj.set_value(self.visnum*79-self.settings.get_int("positioning"))
         if self.nowIn == self.useMode or self.nowIn == "" or "/" in str(button):
             if self.playing is False:
                 if self.res is False or "/" in str(button):
@@ -1386,12 +1403,18 @@ class Main(frontend.UI):
                     GLib.idle_add(self.window._main_stack._rd_year.set_text, str(self.playlist[self.tnum]["year"]))
                 except: pass
                 self.window.set_resizable(False)
-            GLib.idle_add(self.on_pref_close)
+            GLib.idle_add(self.prefwin.hide)
             GLib.idle_add(self.window.hide)
             GLib.idle_add(self.window.present)
         elif key == "theme":
-            self.theme = self.themeDict[obj.get_string("theme")]
+            self.theme = self.themeDict[obj.get_string(key)]
             self.styles.set_color_scheme(self.theme)
+        elif key == "blur-mode":
+            self.toolClass.b = int(obj.get_string(key))
+            if self.toolClass.b == 0:
+                self.load_cover("", self.window._background)
+            else: self.load_cover(self.url, self.window._background)
+            self.toolClass.themer(self.provider, self.window, self.color, self.tnum)
         elif key is None:
             self.color = obj.get_rgba().to_string()
             self.settings.set_string("color", self.color)

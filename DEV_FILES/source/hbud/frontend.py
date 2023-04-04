@@ -106,6 +106,7 @@ class MainStack(Gtk.Stack):
     _play_list_box = Gtk.Template.Child()
     _flap_stack = Gtk.Template.Child()
     _nope_lab = Gtk.Template.Child()
+    _background = Gtk.Template.Child()
     # Page 2
     _str_box = Gtk.Template.Child()
     _video_picture = Gtk.Template.Child()
@@ -156,6 +157,7 @@ class HbudShortcuts(Gtk.ShortcutsWindow):
 class PrefWin(Adw.PreferencesWindow):
     __gtype_name__ = 'PrefWin'
     _darkew = Gtk.Template.Child()
+    _blurmode = Gtk.Template.Child()
     _colorer = Gtk.Template.Child()
     _sub_spin = Gtk.Template.Child()
     _opac_spin = Gtk.Template.Child()
@@ -184,6 +186,7 @@ class PrefWin(Adw.PreferencesWindow):
         super().__init__()
         self.connect("close-request", self.on_close)
         settings.bind("theme", self._darkew, "active-id", Gio.SettingsBindFlags.DEFAULT)
+        settings.bind("blur-mode", self._blurmode, "active-id", Gio.SettingsBindFlags.DEFAULT)
         settings.bind("relative-size", self._sub_spin, "value", Gio.SettingsBindFlags.DEFAULT)
         settings.bind("opacity", self._opac_spin, "value", Gio.SettingsBindFlags.DEFAULT)
         settings.bind("relative-margin", self._sub_marspin, "value", Gio.SettingsBindFlags.DEFAULT)
@@ -239,9 +242,11 @@ class MainWindow(Adw.ApplicationWindow):
     _chapter_pop = Gtk.Template.Child()
     _chapter_lab = Gtk.Template.Child()
     _right_pop = Gtk.Template.Child()
+    _background = Gtk.Template.Child()
     def __init__(self):
         super().__init__()
         _ = gettext.gettext
+        self.set_size_request(392, 253)
         settings.bind("width", self, "default-width", Gio.SettingsBindFlags.DEFAULT)
         settings.bind("height", self, "default-height", Gio.SettingsBindFlags.DEFAULT)
         settings.bind("is-maximized", self, "maximized", Gio.SettingsBindFlags.DEFAULT)

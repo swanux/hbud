@@ -9,259 +9,271 @@
       <object class="GtkEventControllerMotion" id="_main_motion"/>
     </child>
     <child>
-      <object class="GtkWindowHandle">
+      <object class="GtkOverlay">
+        <property name="hexpand">True</property>
+        <property name="vexpand">True</property>
         <child>
-          <object class="GtkBox">
-            <property name="orientation">vertical</property>
-            <child>
-              <object class="GtkRevealer" id="_head_reveal">
-                <property name="transition-type">GTK_REVEALER_TRANSITION_TYPE_SLIDE_DOWN</property>
-                <property name="transition-duration">800</property>
-                <property name="reveal-child">True</property>
-                <child>
-                  <object class="AdwHeaderBar">
-                    <style><class name="flat"/></style>
-                    <property name="title-widget">
-                      <object class="AdwWindowTitle" id="_title">
-                        <property name="title">HBud</property>
-                      </object>
-                    </property>
-                    <child type="start">
-                      <object class="GtkRevealer">
-                        <property name="transition-type">GTK_REVEALER_TRANSITION_TYPE_SLIDE_LEFT</property>
-                        <property name="reveal-child"
-                          bind-source="_drop_but_reveal"
-                          bind-property="reveal-child"
-                          bind-flags="sync-create"/>
-                        <child>
-                          <object class="GtkToggleButton" id="_toggle_pane_button">
-                            <property name="icon-name">sidebar-show-symbolic</property>
-                            <property name="active">False</property>
-                            <property name="can-focus">False</property>
-                          </object>
-                        </child>
-                      </object>
-                    </child>
-                    <child type="start">
-                      <object class="GtkBox" id="_head_box">
-                        <style><class name="linked"/></style>
-                        <child>
-                          <object class="GtkToggleButton" id="_loc_but">
-                            <property name="tooltip-text" translatable="yes">Audio</property>
-                            <property name="name">locBut</property>
-                            <property name="icon-name">audio-headphones-symbolic</property>
-                            <property name="can-focus">False</property>
-                          </object>
-                        </child>
-                        <child>
-                          <object class="GtkToggleButton" id="_str_but">
-                            <property name="tooltip-text" translatable="yes">Video</property>
-                            <property name="name">strBut</property>
-                            <property name="icon-name">video-x-generic-symbolic</property>
-                            <property name="can-focus">False</property>
-                          </object>
-                        </child>
-                      </object>
-                    </child>
-                    <child type="start">
-                      <object class="GtkRevealer" id="_drop_but_reveal">
-                        <property name="transition-type">GTK_REVEALER_TRANSITION_TYPE_SLIDE_RIGHT</property>
-                        <property name="reveal-child"
-                          bind-source="_loc_but"
-                          bind-property="active"
-                          bind-flags="sync-create"/>
-                        <child>
-                          <object class="GtkButton" id="_drop_but">
-                            <property name="icon-name">go-down</property>
-                            <property name="sensitive">False</property>
-                            <property name="tooltip-text" translatable="yes">More Options</property>
-                            <property name="can-focus">False</property>
-                          </object>
-                        </child>
-                      </object>
-                    </child>
-                    <child type="end">
-                      <object class="GtkMenuButton" id="_prefbut">
-                        <property name="icon-name">open-menu-symbolic</property>
-                        <property name="menu-model">_main_menu</property>
-                        <property name="can-focus">False</property>
-                      </object>
-                    </child>
-                  </object>
-                </child>
-              </object>
-            </child>
+          <object class="GtkPicture" id="_background">
+            <property name="name">_background</property>
+            <property name="content-fit">GTK_CONTENT_FIT_COVER</property>
+          </object>
+        </child>
+        <child type="overlay">
+          <object class="GtkWindowHandle">
             <child>
               <object class="GtkBox">
                 <property name="orientation">vertical</property>
                 <child>
-                  <object class="AdwToastOverlay" id="_main_toast">
+                  <object class="GtkRevealer" id="_head_reveal">
+                    <property name="transition-type">GTK_REVEALER_TRANSITION_TYPE_SLIDE_DOWN</property>
+                    <property name="transition-duration">800</property>
+                    <property name="reveal-child">True</property>
                     <child>
-                      <object class="MainStack" id="_main_stack"></object>
+                      <object class="AdwHeaderBar">
+                        <style><class name="flat"/></style>
+                        <property name="title-widget">
+                          <object class="AdwWindowTitle" id="_title">
+                            <property name="title">HBud</property>
+                          </object>
+                        </property>
+                        <child type="start">
+                          <object class="GtkRevealer">
+                            <property name="transition-type">GTK_REVEALER_TRANSITION_TYPE_SLIDE_LEFT</property>
+                            <property name="reveal-child"
+                              bind-source="_drop_but_reveal"
+                              bind-property="reveal-child"
+                              bind-flags="sync-create"/>
+                            <child>
+                              <object class="GtkToggleButton" id="_toggle_pane_button">
+                                <property name="icon-name">sidebar-show-symbolic</property>
+                                <property name="active">False</property>
+                                <property name="can-focus">False</property>
+                              </object>
+                            </child>
+                          </object>
+                        </child>
+                        <child type="start">
+                          <object class="GtkBox" id="_head_box">
+                            <style><class name="linked"/></style>
+                            <child>
+                              <object class="GtkToggleButton" id="_loc_but">
+                                <property name="tooltip-text" translatable="yes">Audio</property>
+                                <property name="name">locBut</property>
+                                <property name="icon-name">audio-headphones-symbolic</property>
+                                <property name="can-focus">False</property>
+                              </object>
+                            </child>
+                            <child>
+                              <object class="GtkToggleButton" id="_str_but">
+                                <property name="tooltip-text" translatable="yes">Video</property>
+                                <property name="name">strBut</property>
+                                <property name="icon-name">video-x-generic-symbolic</property>
+                                <property name="can-focus">False</property>
+                              </object>
+                            </child>
+                          </object>
+                        </child>
+                        <child type="start">
+                          <object class="GtkRevealer" id="_drop_but_reveal">
+                            <property name="transition-type">GTK_REVEALER_TRANSITION_TYPE_SLIDE_RIGHT</property>
+                            <property name="reveal-child"
+                              bind-source="_loc_but"
+                              bind-property="active"
+                              bind-flags="sync-create"/>
+                            <child>
+                              <object class="GtkButton" id="_drop_but">
+                                <property name="icon-name">go-down</property>
+                                <property name="sensitive">False</property>
+                                <property name="tooltip-text" translatable="yes">More Options</property>
+                                <property name="can-focus">False</property>
+                              </object>
+                            </child>
+                          </object>
+                        </child>
+                        <child type="end">
+                          <object class="GtkMenuButton" id="_prefbut">
+                            <property name="icon-name">open-menu-symbolic</property>
+                            <property name="menu-model">_main_menu</property>
+                            <property name="can-focus">False</property>
+                          </object>
+                        </child>
+                      </object>
                     </child>
                   </object>
                 </child>
                 <child>
-                  <object class="GtkPopoverMenu" id="_right_pop">
-                    <property name="has-arrow">False</property>
-                    <property name="name">right_pop</property>
-                    <property name="menu-model">_right_menu</property>
-                    <property name="position">GTK_POS_RIGHT</property>
-                  </object>
-                </child>
-                <child>
-                  <object class="GtkRevealer">
-                    <property name="transition-type">GTK_REVEALER_TRANSITION_TYPE_SLIDE_UP</property>
-                    <property name="transition-duration">800</property>
-                    <property name="reveal-child"
-                      bind-source="_head_reveal"
-                      bind-property="reveal-child"
-                      bind-flags="sync-create"/>
+                  <object class="GtkBox">
+                    <property name="orientation">vertical</property>
                     <child>
-                      <object class="GtkBox" id="_bottom">
-                        <property name="orientation">vertical</property>
-                        <property name="hexpand">True</property>
-                        <property name="margin-bottom">7</property>
-                        <property name="margin-start">7</property>
-                        <property name="margin-end">2</property>
+                      <object class="AdwToastOverlay" id="_main_toast">
                         <child>
-                          <object class="GtkBox">
-                            <child>
-                              <object class="GtkLabel" id="_label">
-                                <property name="width-chars">7</property>
-                                <property name="label">0:00:00</property>
-                                <style><class name="title-4"/></style>
-                              </object>
-                            </child>
+                          <object class="MainStack" id="_main_stack"></object>
+                        </child>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkPopoverMenu" id="_right_pop">
+                        <property name="has-arrow">False</property>
+                        <property name="name">right_pop</property>
+                        <property name="menu-model">_right_menu</property>
+                        <property name="position">GTK_POS_RIGHT</property>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkRevealer">
+                        <property name="transition-type">GTK_REVEALER_TRANSITION_TYPE_SLIDE_UP</property>
+                        <property name="transition-duration">800</property>
+                        <property name="reveal-child"
+                          bind-source="_head_reveal"
+                          bind-property="reveal-child"
+                          bind-flags="sync-create"/>
+                        <child>
+                          <object class="GtkBox" id="_bottom">
+                            <property name="orientation">vertical</property>
+                            <property name="hexpand">True</property>
+                            <property name="margin-bottom">7</property>
+                            <property name="margin-start">7</property>
+                            <property name="margin-end">2</property>
                             <child>
                               <object class="GtkBox">
-                                <property name="orientation">vertical</property>
-                                <property name="hexpand">True</property>
-                                <property name="valign">center</property>
                                 <child>
-                                  <object class="GtkPopover" id="_chapter_pop">
-                                    <property name="autohide">False</property>
-                                    <property name="has-arrow">False</property>
-                                    <property name="position">GTK_POS_TOP</property>
+                                  <object class="GtkLabel" id="_label">
+                                    <property name="width-chars">7</property>
+                                    <property name="label">0:00:00</property>
+                                    <style><class name="title-4"/></style>
+                                  </object>
+                                </child>
+                                <child>
+                                  <object class="GtkBox">
+                                    <property name="orientation">vertical</property>
+                                    <property name="hexpand">True</property>
+                                    <property name="valign">center</property>
                                     <child>
-                                      <object class="GtkLabel" id="_chapter_lab">
-                                        <style><class name="title-4"/></style>
+                                      <object class="GtkPopover" id="_chapter_pop">
+                                        <property name="autohide">False</property>
+                                        <property name="has-arrow">False</property>
+                                        <property name="position">GTK_POS_TOP</property>
+                                        <child>
+                                          <object class="GtkLabel" id="_chapter_lab">
+                                            <style><class name="title-4"/></style>
+                                          </object>
+                                        </child>
+                                      </object>
+                                    </child>
+                                    <child>
+                                      <object class="GtkScale" id="_slider">
+                                        <property name="orientation">horizontal</property>
+                                        <property name="has-tooltip">True</property>
+                                        <property name="hexpand">True</property>
+                                        <property name="can-focus">False</property>
+                                        <property name="draw-value">False</property>
+                                        <property name="margin-start">6</property>
+                                        <property name="margin-end">6</property>
                                       </object>
                                     </child>
                                   </object>
                                 </child>
                                 <child>
-                                  <object class="GtkScale" id="_slider">
-                                    <property name="orientation">horizontal</property>
-                                    <property name="has-tooltip">True</property>
-                                    <property name="hexpand">True</property>
-                                    <property name="can-focus">False</property>
-                                    <property name="draw-value">False</property>
-                                    <property name="margin-start">6</property>
-                                    <property name="margin-end">6</property>
+                                  <object class="GtkLabel" id="_label_end">
+                                    <property name="width-chars">7</property>
+                                    <property name="label">0:00:00</property>
+                                    <style><class name="title-4"/></style>
                                   </object>
                                 </child>
                               </object>
                             </child>
-                            <child>
-                              <object class="GtkLabel" id="_label_end">
-                                <property name="width-chars">7</property>
-                                <property name="label">0:00:00</property>
-                                <style><class name="title-4"/></style>
-                              </object>
-                            </child>
-                          </object>
-                        </child>
-                        <child>
-                          <object class="GtkBox">
-                            <property name="margin-end">5</property>
                             <child>
                               <object class="GtkBox">
-                                <style><class name="linked"/></style>
-                                <property name="homogeneous">True</property>
-                                <property name="hexpand">True</property>
-                                <property name="margin-end">7</property>
+                                <property name="margin-end">5</property>
                                 <child>
-                                  <object class="GtkButton" id="_ofo_but">
-                                    <property name="icon-name">folder-open</property>
-                                    <property name="can-focus">False</property>
-                                  </object>
-                                </child>
-                                <child>
-                                  <object class="GtkButton" id="_prev_but">
-                                    <property name="icon-name">media-skip-backward</property>
-                                    <property name="can-focus">False</property>
-                                  </object>
-                                </child>
-                                <child>
-                                  <object class="GtkButton" id="_play_but">
-                                    <property name="can-focus">False</property>
-                                    <property name="icon-name">media-playback-start</property>
-                                  </object>
-                                </child>
-                                <child>
-                                  <object class="GtkButton" id="_next_but">
-                                    <property name="icon-name">media-skip-forward</property>
-                                    <property name="can-focus">False</property>
-                                  </object>
-                                </child>
-                              </object>
-                            </child>
-                            <child>
-                              <object class="GtkRevealer">
-                                <property name="transition-type">GTK_REVEALER_TRANSITION_TYPE_SLIDE_RIGHT</property>
-                                <property name="reveal-child"
-                                  bind-source="_loc_but"
-                                  bind-property="active"
-                                  bind-flags="sync-create"/>
-                                <child>
-                                  <object class="GtkButton" id="_shuff_but">
-                                    <property name="icon-name">media-playlist-shuffle</property>
-                                    <property name="can-focus">False</property>
-                                  </object>
-                                </child>
-                              </object>
-                            </child>
-                            <child>
-                              <object class="GtkRevealer">
-                                <property name="transition-type">GTK_REVEALER_TRANSITION_TYPE_SLIDE_LEFT</property>
-                                <property name="reveal-child"
-                                  bind-source="_str_but"
-                                  bind-property="active"
-                                  bind-flags="sync-create"/>
-                                <child>
-                                  <object class="GtkMenuButton" id="_sub_track">
-                                    <property name="can-focus">False</property>
-                                    <property name="icon-name">media-view-subtitles-symbolic</property>
-                                    <property name="sensitive">False</property>
-                                    <property name="direction">up</property>
-                                    <property name="popover">
-                                      <object class="GtkPopover"></object>
-                                    </property>
-                                  </object>
-                                </child>
-                              </object>
-                            </child>
-                            <child>
-                              <object class="GtkStack" id="_lyr_stack">
-                                <property name="margin-start">7</property>
-                                <child>
-                                  <object class="GtkStackPage">
-                                    <property name="child">
-                                      <object class="GtkButton" id="_karaoke_but">
+                                  <object class="GtkBox">
+                                    <style><class name="linked"/></style>
+                                    <property name="homogeneous">True</property>
+                                    <property name="hexpand">True</property>
+                                    <property name="margin-end">7</property>
+                                    <child>
+                                      <object class="GtkButton" id="_ofo_but">
+                                        <property name="icon-name">folder-open</property>
                                         <property name="can-focus">False</property>
-                                        <property name="icon-name">audio-input-microphone</property>
                                       </object>
-                                    </property>
+                                    </child>
+                                    <child>
+                                      <object class="GtkButton" id="_prev_but">
+                                        <property name="icon-name">media-skip-backward</property>
+                                        <property name="can-focus">False</property>
+                                      </object>
+                                    </child>
+                                    <child>
+                                      <object class="GtkButton" id="_play_but">
+                                        <property name="can-focus">False</property>
+                                        <property name="icon-name">media-playback-start</property>
+                                      </object>
+                                    </child>
+                                    <child>
+                                      <object class="GtkButton" id="_next_but">
+                                        <property name="icon-name">media-skip-forward</property>
+                                        <property name="can-focus">False</property>
+                                      </object>
+                                    </child>
                                   </object>
                                 </child>
                                 <child>
-                                  <object class="GtkStackPage">
-                                    <property name="child">
-                                      <object class="GtkSpinner" id="_lyr_spin">
-                                        <property name="height-request">32</property>
+                                  <object class="GtkRevealer">
+                                    <property name="transition-type">GTK_REVEALER_TRANSITION_TYPE_SLIDE_RIGHT</property>
+                                    <property name="reveal-child"
+                                      bind-source="_loc_but"
+                                      bind-property="active"
+                                      bind-flags="sync-create"/>
+                                    <child>
+                                      <object class="GtkButton" id="_shuff_but">
+                                        <property name="icon-name">media-playlist-shuffle</property>
+                                        <property name="can-focus">False</property>
                                       </object>
-                                    </property>
+                                    </child>
+                                  </object>
+                                </child>
+                                <child>
+                                  <object class="GtkRevealer">
+                                    <property name="transition-type">GTK_REVEALER_TRANSITION_TYPE_SLIDE_LEFT</property>
+                                    <property name="reveal-child"
+                                      bind-source="_str_but"
+                                      bind-property="active"
+                                      bind-flags="sync-create"/>
+                                    <child>
+                                      <object class="GtkMenuButton" id="_sub_track">
+                                        <property name="can-focus">False</property>
+                                        <property name="icon-name">media-view-subtitles-symbolic</property>
+                                        <property name="sensitive">False</property>
+                                        <property name="direction">up</property>
+                                        <property name="popover">
+                                          <object class="GtkPopover"></object>
+                                        </property>
+                                      </object>
+                                    </child>
+                                  </object>
+                                </child>
+                                <child>
+                                  <object class="GtkStack" id="_lyr_stack">
+                                    <property name="margin-start">7</property>
+                                    <child>
+                                      <object class="GtkStackPage">
+                                        <property name="child">
+                                          <object class="GtkButton" id="_karaoke_but">
+                                            <property name="can-focus">False</property>
+                                            <property name="icon-name">audio-input-microphone</property>
+                                          </object>
+                                        </property>
+                                      </object>
+                                    </child>
+                                    <child>
+                                      <object class="GtkStackPage">
+                                        <property name="child">
+                                          <object class="GtkSpinner" id="_lyr_spin">
+                                            <property name="height-request">32</property>
+                                          </object>
+                                        </property>
+                                      </object>
+                                    </child>
                                   </object>
                                 </child>
                               </object>

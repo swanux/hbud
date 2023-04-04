@@ -14,8 +14,15 @@ class Tools():
             css = """image {
                 border-radius: 10px;
             }
-            #videosink {
+
+            #_background {
                 border-radius: 0px;
+                filter: blur(%spx) saturate(2) brightness(0.9);
+            }
+            #_flap_background {
+                background: @window_bg_color;
+            }
+            #videosink {
                 background: black;
             }
             entry.search {
@@ -41,9 +48,6 @@ class Tools():
             scale marks.top {
                 margin-top: 6px;
             }
-            #side_scroll, #side_flap {
-                background: @window_bg_color;
-            }
             highlight {
                 min-height: 16px;
             }
@@ -53,10 +57,13 @@ class Tools():
             }
             #hub_menu contents, #hub_menu arrow {
                 background-color: rgba(0,0,0,%s);
-            }""" % (c,c,w,self.plnum,c,c,self.o,self.o)
-            provider.load_from_data(css, -1)
+            }""" % (self.b,c,c,w,self.plnum,c,c,self.o,self.o)
+            css = css.encode()
+            provider.load_from_data(css)
             GLib.idle_add(window.get_style_context().add_provider_for_display, Gdk.Display.get_default(), provider, Gtk.STYLE_PROVIDER_PRIORITY_APPLICATION)
-
+            # provider.load_from_data(css, -1)
+            # GLib.idle_add(window.get_style_context().add_provider_for_display, Gdk.Display.get_default(), provider, Gtk.STYLE_PROVIDER_PRIORITY_APPLICATION)
+# background: @window_bg_color;
     def get_lyric(self, title, artist, DAPI):
         DAPI.title, DAPI.artist = title, artist
         try: result = DAPI.getLyrics()
