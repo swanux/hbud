@@ -5,6 +5,7 @@
 
   <template class="PlayListBox" parent="AdwActionRow">
     <property name="width-request">300</property>
+    <style><class name="trackrow"/></style>
     <property name="height-request">10</property>
     <property name="valign">start</property>
     <property name="title">Name</property>

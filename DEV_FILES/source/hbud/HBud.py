@@ -148,6 +148,7 @@ class Main(frontend.UI):
         coco = Gdk.RGBA()
         coco.parse(self.color)
         self.prefwin._colorer.set_rgba(coco)
+        self.calculate_contrast()
         self.toolClass.themer(self.provider, self.window, self.color)
         self.adj = self.window._main_stack._sup_scroll.get_vadjustment()
 
@@ -214,6 +215,16 @@ class Main(frontend.UI):
         shutil.rmtree(f"{self.cacheDir}/hbud")
         os.mkdir(f"{self.cacheDir}/hbud")
         GLib.idle_add(self.prefwin._clear_cache.set_label, self._("Clear 0 bytes"))
+
+    def calculate_contrast(self):
+        colors = self.color.replace("rgb(", "").replace(")", "").split(",")
+        lcolor = 0.2126*(int(colors[0])/255)+0.7152*(int(colors[1])/255)+0.0722*(int(colors[2])/255)
+        if 1.05/(lcolor+0.05) > (lcolor+0.05)/0.05:
+            print("white is better")
+            self.toolClass.color = "#FFFFFF"
+        else:
+            print("black is better")
+            self.toolClass.color = "#000000"
 
     def highlight(self, widget, _, x, y):
         print(widget.get_button())
@@ -1418,6 +1429,7 @@ class Main(frontend.UI):
         elif key is None:
             self.color = obj.get_rgba().to_string()
             self.settings.set_string("color", self.color)
+            self.calculate_contrast()
             self.toolClass.themer(self.provider, self.window, self.color, self.tnum)
 
     def hwa_change(self):

@@ -11,6 +11,7 @@ class Tools():
         print("Tools inited")
 
     def themer(self, provider, window, c, w=""):
+            ca = c.replace(")", ",0.3)").replace("rgb", "rgba")
             css = """image {
                 border-radius: 10px;
             }
@@ -33,7 +34,11 @@ class Tools():
             }
             #trackbox_%s, #playlistbox_%s{
                 background: %s;
-                color: #000;
+                color: %s;
+                border-radius: 10px;
+            }
+            .trackrow:hover {
+                background: %s;
                 border-radius: 10px;
             }
             scale slider {
@@ -57,13 +62,13 @@ class Tools():
             }
             #hub_menu contents, #hub_menu arrow {
                 background-color: rgba(0,0,0,%s);
-            }""" % (self.b,c,c,w,self.plnum,c,c,self.o,self.o)
-            css = css.encode()
-            provider.load_from_data(css)
-            GLib.idle_add(window.get_style_context().add_provider_for_display, Gdk.Display.get_default(), provider, Gtk.STYLE_PROVIDER_PRIORITY_APPLICATION)
-            # provider.load_from_data(css, -1)
+            }""" % (self.b,c,c,w,self.plnum,c,self.color,ca,c,self.o,self.o)
+            # css = css.encode()
+            # provider.load_from_data(css)
             # GLib.idle_add(window.get_style_context().add_provider_for_display, Gdk.Display.get_default(), provider, Gtk.STYLE_PROVIDER_PRIORITY_APPLICATION)
-# background: @window_bg_color;
+            provider.load_from_data(css, -1)
+            GLib.idle_add(window.get_style_context().add_provider_for_display, Gdk.Display.get_default(), provider, Gtk.STYLE_PROVIDER_PRIORITY_APPLICATION)
+
     def get_lyric(self, title, artist, DAPI):
         DAPI.title, DAPI.artist = title, artist
         try: result = DAPI.getLyrics()
