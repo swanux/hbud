@@ -49,6 +49,7 @@ class PlayListBox(Adw.ActionRow):
     _start_but = Gtk.Template.Child()
     _ed_but = Gtk.Template.Child()
     _del_but = Gtk.Template.Child()
+    _row_click = Gtk.Template.Child()
     def __init__(self, title, subtitle, id):
         super().__init__()
         self.set_title(title)
@@ -57,6 +58,7 @@ class PlayListBox(Adw.ActionRow):
         self._del_but.set_name(f"del_but_{id}")
         self._ed_but.set_name(f"ed_but_{id}")
         self._start_but.set_name(f"start_but_{id}")
+        self._row_click.set_name(f"start_but_{id}")
 
 
 @Gtk.Template(resource_path='/io/github/swanux/hbud/DEV_FILES/source/ui/deldialog.ui')
@@ -324,9 +326,9 @@ class UI(Adw.Application):
         self.set_accels_for_action("win.show-help-overlay", ['<primary>question'])
         self.useMode, self.duration_nanosecs, self.remaining = "audio", 0, 0
         self.searchDict = {"1" : ["artist", False], "2" : ["artist", True], "3" : ["title", False], "4" : ["title", True], "5" : ["year", False], "6" : ["year", True], "7" : ["length", False], "8" : ["length", True]}
-        self.playlistPlayer, self.needSub, self.nowIn = False, False, ""
-        self.fulle, self.resete, self.keepReset, self.hardReset, self.tnum, self.sorted, self.aborte, self.searched = False, False, False, False, -1, False, False, False
-        self.playing, self.res, self.title, self.countermove, self.mx, self.my = False, False, None, 0, 0, 0
+        self.needSub = False
+        self.fulle, self.resete, self.keepReset, self.hardReset, self.sorted, self.aborte, self.searched = False, False, False, False, False, False, False
+        self.countermove, self.mx, self.my = 0, 0, 0
         self.offset, self.playlist = 0, None
         self.cacheDir = GLib.get_user_cache_dir()
         if os.path.isdir(f"{self.cacheDir}/hbud") is False: os.mkdir(f"{self.cacheDir}/hbud")

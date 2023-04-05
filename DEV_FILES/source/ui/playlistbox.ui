@@ -13,13 +13,8 @@
     <property name="margin-start">4</property>
     <property name="margin-end">4</property>
     <child>
-      <object class="GtkGestureClick">
+      <object class="GtkGestureClick" id="_row_click">
         <property name="button">1</property>
-      </object>
-    </child>
-    <child>
-      <object class="GtkGestureClick">
-        <property name="button">3</property>
       </object>
     </child>
     <child>

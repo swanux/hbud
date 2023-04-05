@@ -43,9 +43,9 @@ class Adapter(MprisAdapter):
         pass
 
     def get_playstate(self) -> PlayState:
-        if self.hbud_main.res is False and self.hbud_main.playing is False:
+        if self.hbud_main.player.resume is False and self.hbud_main.player.playing is False:
             return PlayState.STOPPED
-        elif self.hbud_main.playing is False and self.hbud_main.res is True:
+        elif self.hbud_main.player.playing is False and self.hbud_main.player.resume is True:
             return PlayState.PAUSED
         return PlayState.PLAYING
 
@@ -56,7 +56,7 @@ class Adapter(MprisAdapter):
         pass
 
     def is_playlist(self) -> bool:
-        return self.hbud_main.nowIn == "audio"
+        return self.hbud_main.player.nowIn == "audio"
 
     def set_repeating(self, val: bool):
         pass
@@ -86,16 +86,16 @@ class Adapter(MprisAdapter):
         return False
 
     def can_go_next(self) -> bool:
-        return self.hbud_main.nowIn == "audio"
+        return self.hbud_main.player.nowIn == "audio"
 
     def can_go_previous(self) -> bool:
-        return self.hbud_main.nowIn == "audio"
+        return self.hbud_main.player.nowIn == "audio"
 
     def can_play(self) -> bool:
-        return self.hbud_main.res
+        return self.hbud_main.player.resume
 
     def can_pause(self) -> bool:
-        return self.hbud_main.res
+        return self.hbud_main.player.resume
 
     def can_seek(self) -> bool:
         return False
@@ -105,15 +105,15 @@ class Adapter(MprisAdapter):
 
     def metadata(self) -> dict:
         try:
-            if self.hbud_main.nowIn == "video":
+            if self.hbud_main.player.nowIn == "video":
                 return {
                 'mpris:trackid': '/track/1',
                 'mpris:artUrl': "",
-                'xesam:title': GLib.path_get_basename(self.hbud_main.url.replace("file://", "")),
+                'xesam:title': GLib.path_get_basename(self.hbud_main.url),
                 'xesam:artist': [""]
             }
             else:
-                song = self.hbud_main.playlist[self.hbud_main.tnum]
+                song = self.hbud_main.playlist[self.hbud_main.player.id]
                 return {
                     'mpris:trackid': '/track/1',
                     'mpris:artUrl': self.hbud_main.load_cover(mode="mpris"),

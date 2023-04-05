@@ -3,7 +3,24 @@
 
 import gi
 gi.require_version('Gtk', '4.0')
-from gi.repository import Gtk, Gdk, GLib
+from gi.repository import Gtk, Gdk, GLib, Gst
+
+class Player():
+    def __init__(self, video_widget):
+        self.url = None
+        self.id = -1
+        self.nowIn = None
+        self.resume = False
+        self.playing = False
+        self.engines = {"audio":Gst.ElementFactory.make("playbin3"), "video":Gst.ElementFactory.make("playbin3")}
+        Gst.util_set_object_arg(self.engines["video"], "flags", "video+audio+deinterlace+soft-colorbalance")
+        Gst.util_set_object_arg(self.engines["audio"], "flags", "audio+soft-volume")
+        sink = Gst.ElementFactory.make("gtk4paintablesink", "sink")
+        paintable = sink.get_property("paintable")
+        video_sink = Gst.ElementFactory.make("glsinkbin", "video-sink")
+        video_sink.set_property("sink", sink)
+        self.engines["video"].set_property("video-sink", video_sink)
+        video_widget.set_paintable(paintable)
 
 class Tools():
     def __init__(self):
@@ -15,7 +32,6 @@ class Tools():
             css = """image {
                 border-radius: 10px;
             }
-
             #_background {
                 border-radius: 0px;
                 filter: blur(%spx) saturate(2) brightness(0.9);
