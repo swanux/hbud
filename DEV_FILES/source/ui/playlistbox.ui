@@ -5,18 +5,12 @@
 
   <template class="PlayListBox" parent="AdwActionRow">
     <property name="width-request">300</property>
-    <style><class name="trackrow"/></style>
     <property name="height-request">10</property>
     <property name="valign">start</property>
     <property name="title">Name</property>
     <property name="subtitle">0 Tracks</property>
     <property name="margin-start">4</property>
     <property name="margin-end">4</property>
-    <child>
-      <object class="GtkGestureClick" id="_row_click">
-        <property name="button">1</property>
-      </object>
-    </child>
     <child>
       <object class="GtkBox">
         <style><class name="linked"/></style>
@@ -42,7 +36,7 @@
         <child>
           <object class="GtkButton" id="_del_but">
             <property name="valign">center</property>
-            <property name="icon-name">edit-delete-symbolic</property>
+            <property name="icon-name">user-trash-symbolic</property>
             <property name="halign">end</property>
             <property name="hexpand">False</property>
             <property name="tooltip-text" translatable="yes">Delete</property>

@@ -41,9 +41,9 @@ class Main(frontend.UI):
         self.clickedE = False
         self.create_actions(self.__general_action,
             ['delete', 'edit', 'nextthis', 'up', 'down', 'fullscreen', 'playpause', 'search',
-                'open', 'save', 'tab', 'left', 'right'],
+                'open', 'save', 'tab', 'left', 'right', 'sidebar'],
             [['Delete'], ['<primary>e'], None, ['Up'], ['Down'], ['f'],['space'], ['<primary>f'],
-                ['<primary>o'], ['<primary>s'], ['<primary>Tab'], ['Left'], ['Right']])
+                ['<primary>o'], ['<primary>s'], ['<primary>Tab'], ['Left'], ['Right'], ['<primary>b']])
 
     def __general_action(self, action, _):
         name = action.get_name()
@@ -80,6 +80,8 @@ class Main(frontend.UI):
             else: self.window._str_but.set_active(True)
         elif name == "left": self.on_prev("")
         elif name == "right": self.on_next("")
+        elif name == "sidebar":
+            self.window._toggle_pane_button.set_active(not self.window._toggle_pane_button.get_active())
 
     def do_open(self, files, n_files, _):
         print(files, n_files)
@@ -100,7 +102,6 @@ class Main(frontend.UI):
             widget = frontend.PlayListBox(item["name"], self._("{} Tracks".format(len(item["content"]))), i)
             widget._del_but.connect("clicked", self.on_clear_order)
             widget._start_but.connect("clicked", self.load_saved_list)
-            widget._row_click.connect("pressed", self.load_saved_list)
             widget._ed_but.connect("clicked", self.edit_saved_list)
             self.window._main_stack._play_list_box.append(widget)
 
@@ -141,7 +142,6 @@ class Main(frontend.UI):
         self.connect_bus()
         self.connect_signals()
 
-        self.size3, self.size4 = self.settings.get_int("relative-size")*450, float("0.0{}".format(self.settings.get_int("relative-margin")))*450
         self.toolClass.size, self.toolClass.size2 = 35000, 15000
         self.themeDict = {"0" : 0, "1" : 4, "2" : 1}
         self.theme = self.themeDict[self.settings.get_string("theme")]
@@ -743,13 +743,15 @@ class Main(frontend.UI):
                 if self.clocks[1] is not None: GLib.source_remove(self.clocks[1])
                 self.clocks[1] = GLib.timeout_add(300, self.on_slider_seek)
 
-    def load_cover(self, mode="", bitMage=""):
+    def load_cover(self, mode=None, bitMage=""):
         uuid = None
         self.binary = None
         if mode == "meta": self.binary = MediaFile(self.editingFile).art
         elif mode == "brainz": self.binary = bitMage
         else:
-            if mode == "mpris" or mode == "blur": url = self.player.url
+            if mode == "mpris" or mode == "blur":
+                if self.player.nowIn == "video": return
+                url = self.player.url
             else: url = mode
             if url is not None:
                 uuid = hashlib.md5(GLib.path_get_basename(url).encode()).hexdigest()
@@ -848,11 +850,11 @@ class Main(frontend.UI):
             r = Gdk.Rectangle()
             r.x = destX+end-12
             r.y = -5
-            if scale == self.window._slider and self.fulle is False:
+            if scale == self.window._slider and self.settings.get_boolean("is-fullscreen") is False:
                 self.window._chapter_lab.set_text(self.chapters[marker])
                 self.window._chapter_pop.set_pointing_to(r)
                 self.window._chapter_pop.popup()
-            elif scale == self.window._main_stack._overlay_scale and self.fulle is True:
+            elif scale == self.window._main_stack._overlay_scale and self.settings.get_boolean("is-fullscreen") is True:
                 self.window._main_stack._chapter_lab.set_text(self.chapters[marker])
                 self.window._main_stack._chapter_pop.set_pointing_to(r)
                 self.window._main_stack._chapter_pop.popup()
@@ -892,7 +894,7 @@ class Main(frontend.UI):
                 self.window._slider.set_value(self.toolClass.position)
             fvalue, svalue = str(timedelta(seconds=round(self.toolClass.position))), str(timedelta(seconds=int(self.remaining)))
             if self.settings.get_boolean("minimal-mode") is True: fvalue, svalue = ":".join(fvalue.split(":")[1:]), ":".join(svalue.split(":")[1:])
-            if self.fulle is False:
+            if self.settings.get_boolean("is-fullscreen") is False:
                 self.window._label.set_text(fvalue)
                 self.window._label_end.set_text(svalue)
             else:
@@ -1038,17 +1040,17 @@ class Main(frontend.UI):
         if self.player.nowIn == "video" and misc != "continue": self.subtitle_search_on_play()
         self.mpris_adapter.emit_all()
         self.mpris_adapter.on_playback()
-        GLib.idle_add(self.ranger)
+        GLib.timeout_add(10, self.ranger)
 
     def ranger(self):
-        while True:
-            GLib.usleep(20000)
-            try:
-                self.duration_nanosecs = self.player.engines[self.player.nowIn].query_duration(Gst.Format.TIME)[1]
-                if self.duration_nanosecs == -1: raise Exception
-                GLib.idle_add(self.window._slider.set_range, 0, float(self.duration_nanosecs) / Gst.SECOND)
-                break
-            except: pass
+        try:
+            self.duration_nanosecs = self.player.engines[self.player.nowIn].query_duration(Gst.Format.TIME)[1]
+            if self.duration_nanosecs == -1: raise Exception
+            GLib.idle_add(self.window._slider.set_range, 0, float(self.duration_nanosecs) / Gst.SECOND)
+            return False
+        except:
+            print("not yet")
+            return True
 
     def on_playBut_clicked(self, button, *_):
         if self.window._play_but.is_visible() is False and self.window._main_stack._video_picture.is_visible() is False: return
@@ -1128,25 +1130,10 @@ class Main(frontend.UI):
         if param.name in ["default-width", "default-height"]:
             x, y = emitter.get_size(Gtk.Orientation.HORIZONTAL), emitter.get_size(Gtk.Orientation.VERTICAL)
             try:
-                if emitter == self.window:
-                    if self.needSub is True:
-                        self.size3, self.size4 = self.settings.get_int("relative-size")*y, float("0.0{}".format(self.settings.get_int("relative-margin")))*y
-                else: self.toolClass.size, self.toolClass.size2 = 50*x, 21.4285714*x
+                if emitter != self.window:
+                    self.toolClass.size, self.toolClass.size2 = 50*x, 21.4285714*x
             except: return
         elif param.name == "maximized":
-            sizThread = futures.ThreadPoolExecutor(max_workers=1)
-            sizThread.submit(self.different_resize, emitter)
-        elif param.name == "fullscreened":
-            self.fulle = self.window.is_fullscreen()
-            if self.fulle is True:
-                GLib.idle_add(self.switch_popover, self.window._sub_track, self.window._main_stack._overlay_subs)
-                GLib.idle_add(self.window._main_stack._overlay_time.set_text, "{} / {}".format(self.window._label.get_text(), self.window._label_end.get_text()))
-                self.window._head_reveal.set_reveal_child(False)
-            else:
-                GLib.idle_add(self.switch_popover, self.window._main_stack._overlay_subs, self.window._sub_track)
-                GLib.idle_add(self.window._label.set_text, self.window._main_stack._overlay_time.get_text().split(" / ")[0])
-                GLib.idle_add(self.window._label_end.set_text, self.window._main_stack._overlay_time.get_text().split(" / ")[1])
-                self.window._head_reveal.set_reveal_child(True)
             sizThread = futures.ThreadPoolExecutor(max_workers=1)
             sizThread.submit(self.different_resize, emitter)
 
@@ -1160,8 +1147,7 @@ class Main(frontend.UI):
     def different_resize(self, emitter):
         GLib.usleep(300000)
         x, y = emitter.get_size(Gtk.Orientation.HORIZONTAL), emitter.get_size(Gtk.Orientation.VERTICAL)
-        if emitter == self.window: self.size3, self.size4 = self.settings.get_int("relative-size")*y, float("0.0{}".format(self.settings.get_int("relative-margin")))*y
-        else: self.toolClass.size, self.toolClass.size2 = 50*x, 21.4285714*x
+        if emitter != self.window: self.toolClass.size, self.toolClass.size2 = 50*x, 21.4285714*x
 
     def on_off_but_clicked(self, _):
         self.sub._off_spin.update()
@@ -1257,7 +1243,7 @@ class Main(frontend.UI):
                     GLib.idle_add(self.sub._sub_stackhead.show)
                     self.sub.present()
         elif self.useMode == "video":
-            if self.fulle is False:
+            if self.settings.get_boolean("is-fullscreen") is False:
                 self.window.fullscreen()
                 self.window._main_stack._overlay_revealer.set_reveal_child(True)
                 self.revealed = True
@@ -1312,7 +1298,7 @@ class Main(frontend.UI):
         return not self.revealed
 
     def mouse_moving(self, _, x, y):
-        if self.fulle is True and self.window._main_stack._hub_motion.contains_pointer() is False\
+        if self.settings.get_boolean("is-fullscreen") is True and self.window._main_stack._hub_motion.contains_pointer() is False\
         and self.window._main_stack._hub_motion2.contains_pointer() is False\
         and self.window._main_stack._overlay_motion.contains_pointer() is False:
             if self.mx != x and self.my != y and self.revealed is False:
@@ -1339,7 +1325,7 @@ class Main(frontend.UI):
         return self.revealed
 
     def reveal_time(self):
-        if self.fulle is True:
+        if self.settings.get_boolean("is-fullscreen") is True:
             print("Reveal?")
             self.window.set_cursor(self.blank_cur)
             self.window._main_stack._overlay_revealer.set_reveal_child(False)
@@ -1354,9 +1340,11 @@ class Main(frontend.UI):
             GLib.usleep(1000)
             for line in subtitle:
                 if self.toolClass.position >= line.start.total_seconds() and self.toolClass.position <= line.end.total_seconds():
-                    if self.settings.get_boolean("dark-background") is True: GLib.idle_add(self.window._main_stack._subtitles.set_markup, f"<span size='{int(self.size3)}' color='white' background='black'>{line.content}</span>")
-                    else: GLib.idle_add(self.window._main_stack._subtitles.set_markup, f"<span size='{int(self.size3)}' color='white'>{line.content}</span>")
-                    self.window._main_stack._subtitles.set_margin_bottom(self.size4)
+                    size = self.settings.get_int("relative-size")*self.settings.get_int("height")
+                    margin = float("0.0{}".format(self.settings.get_int("relative-margin")))*self.settings.get_int("height")
+                    if self.settings.get_boolean("dark-background") is True: GLib.idle_add(self.window._main_stack._subtitles.set_markup, f"<span size='{size}' color='white' background='black'>{line.content}</span>")
+                    else: GLib.idle_add(self.window._main_stack._subtitles.set_markup, f"<span size='{size}' color='white'>{line.content}</span>")
+                    self.window._main_stack._subtitles.set_margin_bottom(margin)
                     GLib.idle_add(self.window._main_stack._subtitles.show)
                     while self.needSub is True and self.toolClass.position <= line.end.total_seconds() and self.toolClass.position >= line.start.total_seconds():
                         GLib.usleep(1000)
@@ -1413,6 +1401,18 @@ class Main(frontend.UI):
             self.settings.set_string("color", self.color)
             self.calculate_contrast()
             self.toolClass.themer(self.provider, self.window, self.color, self.player.id)
+        elif key == "is-fullscreen":
+            if obj.get_boolean(key) is True:
+                GLib.idle_add(self.switch_popover, self.window._sub_track, self.window._main_stack._overlay_subs)
+                GLib.idle_add(self.window._main_stack._overlay_time.set_text, "{} / {}".format(self.window._label.get_text(), self.window._label_end.get_text()))
+                self.window._head_reveal.set_reveal_child(False)
+            else:
+                GLib.idle_add(self.switch_popover, self.window._main_stack._overlay_subs, self.window._sub_track)
+                GLib.idle_add(self.window._label.set_text, self.window._main_stack._overlay_time.get_text().split(" / ")[0])
+                GLib.idle_add(self.window._label_end.set_text, self.window._main_stack._overlay_time.get_text().split(" / ")[1])
+                self.window._head_reveal.set_reveal_child(True)
+            sizThread = futures.ThreadPoolExecutor(max_workers=1)
+            sizThread.submit(self.different_resize, self.window)
 
     def hwa_change(self):
         if self.settings.get_boolean("hwa-enabled") is True:

@@ -60,6 +60,12 @@
                 <property name="title" translatable="yes">Edit Metadata of Current Song</property>
               </object>
             </child>
+            <child>
+              <object class="GtkShortcutsShortcut">
+                <property name="accelerator">&lt;ctrl&gt;b</property>
+                <property name="title" translatable="yes">Toggle Sidebar</property>
+              </object>
+            </child>
           </object>
         </child>
         <child>

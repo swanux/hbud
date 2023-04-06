@@ -247,6 +247,7 @@
                       <object class="GtkBox">
                         <property name="spacing">8</property>
                         <property name="name">overlay_box</property>
+                        <property name="overflow">hidden</property>
                         <property name="margin-bottom">10</property>
                         <child>
                           <object class="GtkButton" id="_overlay_play">
