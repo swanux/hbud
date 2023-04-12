@@ -113,6 +113,9 @@
                                       <property name="wrap">True</property>
                                       <property name="wrap-mode">word</property>
                                       <property name="justify">center</property>
+                                      <attributes>
+                                        <attribute name="weight" value="PANGO_WEIGHT_HEAVY"/>
+                                      </attributes>
                                     </object>
                                   </child>
                                   <child>

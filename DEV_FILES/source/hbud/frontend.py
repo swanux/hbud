@@ -246,7 +246,7 @@ class MainWindow(Adw.ApplicationWindow):
     def __init__(self):
         super().__init__()
         _ = gettext.gettext
-        self.set_size_request(392, 253)
+        self.set_size_request(404, 253)
         settings.bind("width", self, "default-width", Gio.SettingsBindFlags.DEFAULT)
         settings.bind("height", self, "default-height", Gio.SettingsBindFlags.DEFAULT)
         settings.bind("is-maximized", self, "maximized", Gio.SettingsBindFlags.DEFAULT)

@@ -13,7 +13,7 @@ class Player():
         self.resume = False
         self.playing = False
         self.engines = {"audio":Gst.ElementFactory.make("playbin3"), "video":Gst.ElementFactory.make("playbin3")}
-        Gst.util_set_object_arg(self.engines["video"], "flags", "video+audio+deinterlace+soft-colorbalance")
+        Gst.util_set_object_arg(self.engines["video"], "flags", "video+audio+deinterlace+soft-colorbalance+buffering+enable-last-sample+native-audio")
         Gst.util_set_object_arg(self.engines["audio"], "flags", "audio+soft-volume")
         sink = Gst.ElementFactory.make("gtk4paintablesink", "sink")
         paintable = sink.get_property("paintable")

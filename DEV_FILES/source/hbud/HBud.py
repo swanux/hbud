@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 
 import gi, srt, azapi, json, os, sys, acoustid, musicbrainzngs, subprocess, hashlib, shutil
+# import yt_dlp
 from concurrent import futures
 from time import time
 from operator import itemgetter
@@ -869,7 +870,8 @@ class Main(frontend.UI):
         if self.useMode == self.player.nowIn:
             seek_time_secs = self.window._slider.get_value()
             if seek_time_secs < self.toolClass.position: self.toolClass.seekBack = True
-            self.player.engines[self.player.nowIn].seek_simple(Gst.Format.TIME,  Gst.SeekFlags.FLUSH, seek_time_secs * Gst.SECOND)
+            print("seek??")
+            self.player.engines[self.player.nowIn].seek_simple(Gst.Format.TIME,  Gst.SeekFlags.FLUSH | Gst.SeekFlags.KEY_UNIT, round(seek_time_secs * Gst.SECOND))
             self.toolClass.position = seek_time_secs
             GLib.idle_add(self.updateSlider, True)
         self.seeking = False
@@ -1001,7 +1003,7 @@ class Main(frontend.UI):
             if item["hidden"] is False and i<self.player.id: self.visnum += 1
             if i >= self.player.id: break
 
-    def play(self, misc=""):
+    def play(self, misc="", misc2=None):
         GLib.idle_add(self.window._slider.clear_marks)
         GLib.idle_add(self.window._main_stack._overlay_scale.clear_marks)
         if "/" in misc:
@@ -1030,9 +1032,13 @@ class Main(frontend.UI):
                 self.window._main_stack._rd_year.set_text(str(self.playlist[self.player.id]["year"]))
             else: self.toolClass.themer(self.provider, self.window, self.color, self.player.id)
         if misc != "continue":
-            self.player.engines[self.player.nowIn].set_state(Gst.State.NULL)
-            self.player.engines[self.player.nowIn].set_property("uri", Gst.filename_to_uri(self.player.url))
             if self.useMode == "video": self.chapters = {}
+            self.player.engines[self.player.nowIn].set_state(Gst.State.NULL)
+            if "https" not in misc:
+                self.player.engines[self.player.nowIn].set_property("uri", Gst.filename_to_uri(self.player.url))
+            else:
+                self.player.engines[self.player.nowIn].set_property("uri", misc)
+                self.player.engines[self.player.nowIn].set_property("suburi", misc2)
         self.player.engines[self.player.nowIn].set_state(Gst.State.PLAYING)
         GLib.idle_add(self.window._play_but.set_icon_name, "media-playback-pause")
         GLib.timeout_add(500, self.updateSlider)
@@ -1040,7 +1046,7 @@ class Main(frontend.UI):
         if self.player.nowIn == "video" and misc != "continue": self.subtitle_search_on_play()
         self.mpris_adapter.emit_all()
         self.mpris_adapter.on_playback()
-        GLib.timeout_add(10, self.ranger)
+        GLib.timeout_add(40, self.ranger)
 
     def ranger(self):
         try:
@@ -1103,6 +1109,22 @@ class Main(frontend.UI):
             self.player.engines[self.player.nowIn].set_state(Gst.State.NULL)
             err, debug = message.parse_error()
             print (f"Error: {err}", debug)
+        # elif t == Gst.MessageType.BUFFERING:
+        #     percent = message.parse_buffering()
+        #     if percent == 100:
+        #         print("Buffering complete")
+        #         self.player.engines[self.player.nowIn].set_state(Gst.State.PLAYING)
+        #     else:
+        #         print("Buffering {}%".format(percent))
+        #         self.player.engines[self.player.nowIn].set_state(Gst.State.PAUSED)
+        # elif t == Gst.MessageType.STREAM_COLLECTION:
+        #     collection = message.parse_stream_collection()
+        #     n = collection.get_size()
+        #     self.stream_ids = []
+        #     for i in range(n):
+        #         stream = collection.get_stream(i)
+        #         print(stream.get_stream_type())
+        #         self.stream_ids.append(stream.get_stream_id())
         elif t == Gst.MessageType.TOC:
             if self.chapters == {}:
                 tocs = message.parse_toc()

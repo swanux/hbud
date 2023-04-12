@@ -195,6 +195,9 @@
                   <object class="GtkLabel" id="_subtitles">
                     <property name="name">thetitle</property>
                     <property name="valign">end</property>
+                    <attributes>
+                      <attribute name="weight" value="PANGO_WEIGHT_HEAVY"/>
+                    </attributes>
                   </object>
                 </child>
                 <child type="overlay">
