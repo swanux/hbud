@@ -2,7 +2,6 @@
 # -*- coding: utf-8 -*-
 
 import gi, srt, azapi, json, os, sys, acoustid, musicbrainzngs, subprocess, hashlib, shutil
-# import yt_dlp
 from concurrent import futures
 from time import time
 from operator import itemgetter
@@ -136,38 +135,44 @@ class Main(frontend.UI):
         GLib.Thread.new(None, self.loader, self.folderPath, False, True)
 
     def do_activate(self):
-        self.confDir = GLib.get_user_config_dir()
-        self.API_KEY = "Erv1I6jCqZ"
-        musicbrainzngs.set_useragent("hbud", "0.4.2", "https://github.com/swanux/hbud")
-        self.DAPI = azapi.AZlyrics('duckduckgo', accuracy=0.65)
-        self.connect_bus()
-        self.connect_signals()
+        if self.has_window is True:
+            print("Has window")
+            self.window.present()
+        else:
+            print("First window")
+            self.has_window = True
+            self.confDir = GLib.get_user_config_dir()
+            self.API_KEY = "Erv1I6jCqZ"
+            musicbrainzngs.set_useragent("hbud", "0.4.2", "https://github.com/swanux/hbud")
+            self.DAPI = azapi.AZlyrics('duckduckgo', accuracy=0.65)
+            self.connect_bus()
+            self.connect_signals()
 
-        self.toolClass.size, self.toolClass.size2 = 35000, 15000
-        self.themeDict = {"0" : 0, "1" : 4, "2" : 1}
-        self.theme = self.themeDict[self.settings.get_string("theme")]
-        self.styles.set_color_scheme(self.theme)
-        self.color = self.settings.get_string("color")
-        coco = Gdk.RGBA()
-        coco.parse(self.color)
-        self.prefwin._colorer.set_rgba(coco)
-        self.calculate_contrast()
-        self.toolClass.themer(self.provider, self.window, self.color)
-        self.adj = self.window._main_stack._sup_scroll.get_vadjustment()
+            self.toolClass.size, self.toolClass.size2 = 35000, 15000
+            self.themeDict = {"0" : 0, "1" : 4, "2" : 1}
+            self.theme = self.themeDict[self.settings.get_string("theme")]
+            self.styles.set_color_scheme(self.theme)
+            self.color = self.settings.get_string("color")
+            coco = Gdk.RGBA()
+            coco.parse(self.color)
+            self.prefwin._colorer.set_rgba(coco)
+            self.calculate_contrast()
+            self.toolClass.themer(self.provider, self.window, self.color)
+            self.adj = self.window._main_stack._sup_scroll.get_vadjustment()
 
-        # Display the program
-        self.window.set_application(self)
-        self.window.present()
-        self.hwa_change()
-        if self.settings.get_boolean("minimal-mode") is True:
-            GLib.idle_add(self.window._head_box.hide)
-            GLib.idle_add(self.window._toggle_pane_button.hide)
-            GLib.idle_add(self.window._main_stack.set_visible_child, self.window._main_stack._rd_box)
-            GLib.idle_add(self.window.set_default_size, 1, 1)
-            GLib.idle_add(self.window._label_end.hide)
-            GLib.idle_add(self.window._drop_but.hide)
-            self.window.set_resizable(False)
-        self.window._loc_but.set_active(True)
+            # Display the program
+            self.window.set_application(self)
+            self.window.present()
+            self.hwa_change()
+            if self.settings.get_boolean("minimal-mode") is True:
+                GLib.idle_add(self.window._head_box.hide)
+                GLib.idle_add(self.window._toggle_pane_button.hide)
+                GLib.idle_add(self.window._main_stack.set_visible_child, self.window._main_stack._rd_box)
+                GLib.idle_add(self.window.set_default_size, 1, 1)
+                GLib.idle_add(self.window._label_end.hide)
+                GLib.idle_add(self.window._drop_but.hide)
+                self.window.set_resizable(False)
+            self.window._loc_but.set_active(True)
 
     def connect_signals(self):
         self.window.connect("close-request", self.on_main_delete_event)

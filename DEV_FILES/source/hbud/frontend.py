@@ -246,7 +246,7 @@ class MainWindow(Adw.ApplicationWindow):
     def __init__(self):
         super().__init__()
         _ = gettext.gettext
-        self.set_size_request(404, 253)
+        self.set_size_request(392, 253)
         settings.bind("width", self, "default-width", Gio.SettingsBindFlags.DEFAULT)
         settings.bind("height", self, "default-height", Gio.SettingsBindFlags.DEFAULT)
         settings.bind("is-maximized", self, "maximized", Gio.SettingsBindFlags.DEFAULT)
@@ -320,6 +320,7 @@ class UI(Adw.Application):
         self._ = gettext.gettext
         Gst.init(None)
         Adw.init()
+        self.has_window = False
         self.create_actions(self.__actions, ['pref', 'about'], [['<primary>comma'], None])
         self.set_accels_for_action("win.show-help-overlay", ['<primary>question'])
         self.useMode, self.duration_nanosecs, self.remaining = "audio", 0, 0
