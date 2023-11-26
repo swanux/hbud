@@ -1,278 +1,286 @@
-# SOME DESCRIPTIVE TITLE.
-# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# Turkish translations for PACKAGE package.
+# Copyright (C) 2023 THE PACKAGE'S COPYRIGHT HOLDER
 # This file is distributed under the same license as the PACKAGE package.
-# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+# Automatically generated, 2023.
 #
-#, fuzzy
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-11-26 19:33+0000\n"
-"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
-"Language-Team: LANGUAGE <LL@li.org>\n"
-"Language: \n"
+"PO-Revision-Date: 2023-11-26 17:56+0000\n"
+"Last-Translator: Tuğşat Enes Bulut <tugsatenes@proton.me>\n"
+"Language-Team: none\n"
+"Language: tr\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
 #: DEV_FILES/source/ui/prefwin.ui:284
 msgid ""
 "A minimal player mode, better performance and less distraction\n"
 "Note: The window will be refreshed after state change"
 msgstr ""
+"Minimal oynatıcı modu, daha iyi performans ve daha az dikkat dağınıklığı\n"
+"Not: Durum değişikliğinden sonra pencere yenilenecektir"
 
 #: DEV_FILES/source/ui/prefwin.ui:37 DEV_FILES/source/ui/prefwin.ui:40
 msgid "Accent Color"
-msgstr ""
+msgstr "Vurgu Rengi"
 
 #: DEV_FILES/source/ui/sub2.ui:159
 msgid "Album"
-msgstr ""
+msgstr "Albüm"
 
 #: DEV_FILES/source/ui/sub2.ui:55
 msgid "Album :"
-msgstr ""
+msgstr "Albüm :"
 
 #: DEV_FILES/source/ui/prefwin.ui:14
 msgid "Appearance"
-msgstr ""
+msgstr "Görünüm"
 
 #: DEV_FILES/source/ui/sub.ui:50
 msgid "Apply"
-msgstr ""
+msgstr "Uygula"
 
 #: DEV_FILES/source/ui/sub2.ui:44
 msgid "Artist :"
-msgstr ""
+msgstr "Sanatçı :"
 
 #: DEV_FILES/source/ui/mainwindow.ui:60
 msgid "Audio"
-msgstr ""
+msgstr "Ses"
 
 #: DEV_FILES/source/ui/prefwin.ui:241 DEV_FILES/source/ui/prefwin.ui:244
 msgid "Auto-scroll"
-msgstr ""
+msgstr "Otomatik kaydırma"
 
 #: DEV_FILES/source/ui/prefwin.ui:257 DEV_FILES/source/ui/prefwin.ui:260
 msgid "Auto-scroll Positioning"
-msgstr ""
+msgstr "Otomatik Kaydırma Konumlandırma"
 
 #: DEV_FILES/source/ui/prefwin.ui:245
 msgid ""
 "Automatically scroll to make the current song visible - might be useful, but "
 "might be annoying"
 msgstr ""
+"Mevcut şarkıyı görünür kılmak için otomatik olarak kaydır - yararlı "
+"olabilir, ancak can sıkıcı olabilir"
 
 #: DEV_FILES/source/ui/prefwin.ui:76 DEV_FILES/source/ui/prefwin.ui:79
 msgid "Background Blur"
-msgstr ""
+msgstr "Arka Plan Bulanıklığı"
 
 #: DEV_FILES/source/ui/prefwin.ui:238
 msgid "Behavior"
-msgstr ""
+msgstr "Davranış"
 
 #: DEV_FILES/source/ui/sub2.ui:212
 msgid "Browse"
-msgstr ""
+msgstr "Gözat"
 
 #: DEV_FILES/source/hbud/HBud.py:578
 msgid "Cancel"
-msgstr ""
+msgstr "İptal"
 
 #: DEV_FILES/source/hbud/HBud.py:535
 msgid "Choose a Folder"
-msgstr ""
+msgstr "Bir Klasör Seç"
 
 #: DEV_FILES/source/hbud/HBud.py:536
 msgid "Choose a Video File"
-msgstr ""
+msgstr "Bir Video Seç"
 
 #: DEV_FILES/source/hbud/HBud.py:595
 msgid "Choose an Image File"
-msgstr ""
+msgstr "Bir Resim Seç"
 
 #: DEV_FILES/source/hbud/HBud.py:225
 msgid "Clear 0 bytes"
-msgstr ""
+msgstr "0 baytı temizle"
 
 #: DEV_FILES/source/ui/prefwin.ui:314 DEV_FILES/source/ui/prefwin.ui:317
 msgid "Clear Cache"
-msgstr ""
+msgstr "Önbelleği Temizle"
 
 #: DEV_FILES/source/ui/prefwin.ui:318
 msgid "Clear cached album cover images to free up space"
-msgstr ""
+msgstr "Yer açmak için önbelleğe alınmış albüm kapağı resimlerini temizleyin"
 
 #: DEV_FILES/source/hbud/frontend.py:397
 msgid "Clear {}"
-msgstr ""
+msgstr "Temizle {}"
 
 #: DEV_FILES/source/hbud/HBud.py:1307
 msgid ""
 "Could Not Fetch Lyrics for the Current Track.\n"
 "Please Provide it Manually."
 msgstr ""
+"Mevcut Parça İçin Şarkı Sözleri Getirilemedi.\n"
+"Lütfen Manuel Olarak Sağlayın."
 
 #: DEV_FILES/source/ui/sub2.ui:88
 msgid "Cover Art :"
-msgstr ""
+msgstr "Kapak Resmi :"
 
 #: DEV_FILES/source/ui/prefwin.ui:26
 msgid "Dark"
-msgstr ""
+msgstr "Karanlık"
 
 #: DEV_FILES/source/ui/prefwin.ui:148 DEV_FILES/source/ui/prefwin.ui:151
 msgid "Dark Background"
-msgstr ""
+msgstr "Karanlık Arkaplan"
 
 #: DEV_FILES/source/ui/prefwin.ui:106
 msgid "Default is 30"
-msgstr ""
+msgstr "Varsayılan 30'dur"
 
 #: DEV_FILES/source/ui/prefwin.ui:261
 msgid ""
 "Default is 5 - increase to make the current song appear further down on the "
 "screen"
 msgstr ""
+"Varsayılan 5'tir - mevcut şarkının daha aşağıda görünmesini sağlamak için "
+"artırın"
 
 #: DEV_FILES/source/ui/prefwin.ui:129
 msgid "Default is 66"
-msgstr ""
+msgstr "Varsayılan 66'dır"
 
 #: DEV_FILES/source/ui/prefwin.ui:57
 msgid "Default is 7"
-msgstr ""
+msgstr "Varsayılan 7'dir"
 
 #: DEV_FILES/source/ui/prefwin.ui:218
 msgid "Default is High"
-msgstr ""
+msgstr "Varsayılan çok Yüksek"
 
 #: DEV_FILES/source/hbud/frontend.py:68
 msgid "Delete Playlist \"{}\"?"
-msgstr ""
+msgstr "Çalma Listesini Sil \"{}\"?"
 
 #: DEV_FILES/source/hbud/HBud.py:359
 msgid "Deleted Playlist Successfully"
-msgstr ""
+msgstr "Çalma Listesi Başarıyla Silindi"
 
 #: DEV_FILES/source/hbud/HBud.py:689
 msgid "Did Not Find Any Match Online"
-msgstr ""
+msgstr "İnternette Herhangi Bir Eşleşme Bulunamadı"
 
 #: DEV_FILES/source/ui/mainstack.ui:77
 msgid "Do Not Sort"
-msgstr ""
+msgstr "Sıralamayın"
 
 #: DEV_FILES/source/hbud/frontend.py:377
 msgid "Dániel Kolozsi"
-msgstr ""
+msgstr "Dániel Kolozsi"
 
 #: DEV_FILES/source/hbud/HBud.py:951
 msgid "Empty"
-msgstr ""
+msgstr "Boş"
 
 #: DEV_FILES/source/hbud/HBud.py:1351
 #, python-brace-format
 msgid "Ends At: {endtime}"
-msgstr ""
+msgstr "Bitiyor: {endtime}"
 
 #: DEV_FILES/source/ui/sub2.ui:110
 msgid "Fetch Metadata"
-msgstr ""
+msgstr "Meta Veriyi Getir"
 
 #: DEV_FILES/source/ui/prefwin.ui:10
 msgid "General"
-msgstr ""
+msgstr "Genel"
 
 #: DEV_FILES/source/ui/sub2.ui:9
 msgid "HBud - Metadata Editor"
-msgstr ""
+msgstr "HBud - Meta Veri Düzenleyici"
 
 #: DEV_FILES/source/ui/prefwin.ui:297 DEV_FILES/source/ui/prefwin.ui:300
 msgid "Hardware Acceleration"
-msgstr ""
+msgstr "Donanım Hızlandırma"
 
 #: DEV_FILES/source/ui/prefwin.ui:405
 msgid "Hardware Decoding"
-msgstr ""
+msgstr "Donanım Kod Çözme"
 
 #: DEV_FILES/source/ui/prefwin.ui:224
 msgid "High (500px)"
-msgstr ""
+msgstr "Yüksek (500px)"
 
 #: DEV_FILES/source/hbud/HBud.py:586
 msgid "Image Files"
-msgstr ""
+msgstr "Resim Dosyaları"
 
 #: DEV_FILES/source/ui/sub.ui:67
 msgid "Is this lyrics correct?"
-msgstr ""
+msgstr "Bu şarkı sözleri doğru mu?"
 
 #: DEV_FILES/source/ui/sub2.ui:147
 msgid "John Doe"
-msgstr ""
+msgstr "John Doe"
 
 #: DEV_FILES/source/ui/prefwin.ui:339
 msgid "Library Versions"
-msgstr ""
+msgstr "Kütüphane Versiyonları"
 
 #: DEV_FILES/source/ui/prefwin.ui:27
 msgid "Light"
-msgstr ""
+msgstr "Açık"
 
 #: DEV_FILES/source/ui/mainstack.ui:158
 msgid "Loading Content..."
-msgstr ""
+msgstr "İçerik Yükleniyor..."
 
 #: DEV_FILES/source/hbud/HBud.py:956
 msgid "Local"
-msgstr ""
+msgstr "Yerel"
 
 #: DEV_FILES/source/ui/sub2.ui:77
 msgid "Lyrics :"
-msgstr ""
+msgstr "Şarkı Sözleri :"
 
 #: DEV_FILES/source/ui/prefwin.ui:125 DEV_FILES/source/ui/prefwin.ui:128
 msgid "Margin"
-msgstr ""
+msgstr "Kenar boşluğu"
 
 #: DEV_FILES/source/hbud/HBud.py:717
 msgid "Metadata Fetched Successfully"
-msgstr ""
+msgstr "Meta Veriler Başarıyla Getirildi"
 
 #: DEV_FILES/source/ui/prefwin.ui:280 DEV_FILES/source/ui/prefwin.ui:283
 msgid "Minimal Mode"
-msgstr ""
+msgstr "Minimal Mod"
 
 #: DEV_FILES/source/ui/mainwindow.ui:87
 msgid "More Options"
-msgstr ""
+msgstr "Diğer Seçenekler"
 
 #: DEV_FILES/source/ui/sub.ui:79
 msgid "No"
-msgstr ""
+msgstr "Hayır"
 
 #: DEV_FILES/source/ui/mainstack.ui:31
 msgid "No Saved Playlists"
-msgstr ""
+msgstr "Kayıtlı Çalma Listesi Yok"
 
 #: DEV_FILES/source/hbud/HBud.py:965
 msgid "No Subtitles Found"
-msgstr ""
+msgstr "Altyazı Bulunamadı"
 
 #: DEV_FILES/source/hbud/HBud.py:630
 msgid "None of the above"
-msgstr ""
+msgstr "Yukarıdakilerin hiçbiri"
 
 #: DEV_FILES/source/ui/prefwin.ui:225
 msgid "Normal (250px)"
-msgstr ""
+msgstr "Normal (250px)"
 
 #: DEV_FILES/source/ui/prefwin.ui:86
 msgid "Off"
-msgstr ""
+msgstr "Kapalı"
 
 #: DEV_FILES/source/ui/sub.ui:30
 msgid "Offset (ms):"
@@ -280,142 +288,144 @@ msgstr ""
 
 #: DEV_FILES/source/hbud/HBud.py:578
 msgid "Open"
-msgstr ""
+msgstr "Açık"
 
 #: DEV_FILES/source/ui/prefwin.ui:214 DEV_FILES/source/ui/prefwin.ui:217
 msgid "Preferred Album Cover Quality"
-msgstr ""
+msgstr "Tercih Edilen Albüm Kapağı Kalitesi"
 
 #: DEV_FILES/source/hbud/frontend.py:78
 msgid "Rename Playlist ({})"
-msgstr ""
+msgstr "Çalma Listesini Yeniden Adlandır ({})"
 
 #: DEV_FILES/source/ui/mainstack.ui:108
 msgid "Rescan"
-msgstr ""
+msgstr "Yeniden tara"
 
 #: DEV_FILES/source/hbud/HBud.py:526
 msgid ""
 "Rescan Complete\n"
 "{} Tracks Added"
 msgstr ""
+"Yeniden Tarama Tamamlandı\n"
+"{} Parça Eklendi"
 
 #: DEV_FILES/source/ui/mainstack.ui:106
 msgid "Rescan your music library, append new tracks"
-msgstr ""
+msgstr "Müzik kitaplığınızı yeniden tarayın, yeni parçalar ekleyin"
 
 #: DEV_FILES/source/ui/mainstack.ui:101 DEV_FILES/source/ui/sub2.ui:244
 msgid "Save"
-msgstr ""
+msgstr "Kaydet"
 
 #: DEV_FILES/source/ui/mainstack.ui:99
 msgid "Save Playlist"
-msgstr ""
+msgstr "Çalma Listesini Kaydet"
 
 #: DEV_FILES/source/hbud/HBud.py:382
 msgid "Saved Playlist Successfully"
-msgstr ""
+msgstr "Çalma Listesi Kaydedildi"
 
 #: DEV_FILES/source/ui/prefwin.ui:166
 msgid "Services"
-msgstr ""
+msgstr "Servisler"
 
 #: DEV_FILES/source/ui/prefwin.ui:102 DEV_FILES/source/ui/prefwin.ui:105
 msgid "Size"
-msgstr ""
+msgstr "Boyut"
 
 #: DEV_FILES/source/ui/prefwin.ui:85
 msgid "Soft"
-msgstr ""
+msgstr "Yumuşak"
 
 #: DEV_FILES/source/ui/prefwin.ui:84
 msgid "Solid"
-msgstr ""
+msgstr "Katı"
 
 #: DEV_FILES/source/ui/mainstack.ui:78
 msgid "Sort by Artist (a-z)"
-msgstr ""
+msgstr "Sanatçılara Göre Sırala (a-z)"
 
 #: DEV_FILES/source/ui/mainstack.ui:79
 msgid "Sort by Artist (z-a)"
-msgstr ""
+msgstr "Sanatçılara Göre Sırala (z-a"
 
 #: DEV_FILES/source/ui/mainstack.ui:84
 msgid "Sort by Length (0-9)"
-msgstr ""
+msgstr "Uzunluğa Göre Sırala (0-9)"
 
 #: DEV_FILES/source/ui/mainstack.ui:85
 msgid "Sort by Length (9-0)"
-msgstr ""
+msgstr "Uzunluğa Göre Sırala (9-0)"
 
 #: DEV_FILES/source/ui/mainstack.ui:80
 msgid "Sort by Title (a-z)"
-msgstr ""
+msgstr "Başlığa Göre Sırala (a-z)"
 
 #: DEV_FILES/source/ui/mainstack.ui:81
 msgid "Sort by Title (z-a)"
-msgstr ""
+msgstr "Başlığa Göre Sırala (z-a)"
 
 #: DEV_FILES/source/ui/mainstack.ui:82
 msgid "Sort by Year (0-9)"
-msgstr ""
+msgstr "Yıla Göre Sırala (0-9)"
 
 #: DEV_FILES/source/ui/mainstack.ui:83
 msgid "Sort by Year (9-0)"
-msgstr ""
+msgstr "Yıla Göre Sırala (9-0)"
 
 #: DEV_FILES/source/ui/prefwin.ui:99
 msgid "Subtitles"
-msgstr ""
+msgstr "Altyazılar"
 
 #: DEV_FILES/source/ui/prefwin.ui:25
 msgid "System"
-msgstr ""
+msgstr "Sistem"
 
 #: DEV_FILES/source/ui/prefwin.ui:335
 msgid "System Info"
-msgstr ""
+msgstr "Sistem Bilgisi"
 
 #: DEV_FILES/source/ui/prefwin.ui:17 DEV_FILES/source/ui/prefwin.ui:20
 msgid "Theme"
-msgstr ""
+msgstr "Tema"
 
 #: DEV_FILES/source/ui/sub2.ui:171
 msgid "Title"
-msgstr ""
+msgstr "Başlık"
 
 #: DEV_FILES/source/ui/sub2.ui:66
 msgid "Title :"
-msgstr ""
+msgstr "Başlık :"
 
 #: DEV_FILES/source/ui/prefwin.ui:223
 msgid "Ultra High (1200px)"
-msgstr ""
+msgstr "Ultra Yüksek (1200px)"
 
 #: DEV_FILES/source/hbud/HBud.py:487 DEV_FILES/source/hbud/HBud.py:488
 #: DEV_FILES/source/hbud/HBud.py:955
 msgid "Unknown"
-msgstr ""
+msgstr "Bilinmeyen"
 
 #: DEV_FILES/source/hbud/HBud.py:378
 msgid "Unnamed Playlist"
-msgstr ""
+msgstr "İsimsiz Çalma Listesi"
 
 #: DEV_FILES/source/ui/mainwindow.ui:68
 msgid "Video"
-msgstr ""
+msgstr "Video"
 
 #: DEV_FILES/source/hbud/HBud.py:581
 msgid "Video Files"
-msgstr ""
+msgstr "Video Dosyaları"
 
 #: DEV_FILES/source/ui/prefwin.ui:53 DEV_FILES/source/ui/prefwin.ui:56
 msgid "Video Overlay Controls Opacity"
-msgstr ""
+msgstr "Video Yerleşimi Opaklık Kontrolleri"
 
 #: DEV_FILES/source/hbud/HBud.py:966
 msgid "Visit OpenSubtitles or Subscene"
-msgstr ""
+msgstr "OpenSubtitles veya Subscene'i ziyaret edin"
 
 #: DEV_FILES/source/ui/prefwin.ui:301
 msgid ""
@@ -423,19 +433,22 @@ msgid ""
 "Note: Turning this off may result in increased stability but worse "
 "performance"
 msgstr ""
+"Donanım hızlandırması için VA kullanılıp kullanılmayacağı\n"
+"Not: Bunun kapatılması kararlılığın artmasına ancak performansın düşmesine "
+"neden olabilir"
 
 #: DEV_FILES/source/hbud/frontend.py:346
 msgid "Which one is correct?"
-msgstr ""
+msgstr "Hangisi doğru?"
 
 #: DEV_FILES/source/ui/sub2.ui:33
 msgid "Year :"
-msgstr ""
+msgstr "Yıl :"
 
 #: DEV_FILES/source/ui/sub.ui:73
 msgid "Yes"
-msgstr ""
+msgstr "Evet"
 
 #: DEV_FILES/source/hbud/HBud.py:102
 msgid "{} Tracks"
-msgstr ""
+msgstr "{} Parçalar"
