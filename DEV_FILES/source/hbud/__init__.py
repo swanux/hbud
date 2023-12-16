@@ -2,7 +2,7 @@ LANGUAGES = ['en', 'hu']
 
 CONSTANTS = {
     "version" : "0.4.2 - Theresa",
-    "years" : "2021-2023",
+    "years" : "2021-2024",
     "name" : "HBud",
     "main_url" : "https://github.com/swanux/hbud",
     "bug_url" : "https://github.com/swanux/hbud/issues/labels/bug",

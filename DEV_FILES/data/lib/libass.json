@@ -5,8 +5,8 @@
         {
             "type": "git",
             "url": "https://github.com/libass/libass.git",
-            "tag": "0.17.0",
-            "commit": "bef4b43ef1882b77f789f611d9cd24271ccdd65b"
+            "tag": "0.17.1",
+            "commit": "e8ad72accd3a84268275a9385beb701c9284e5b3"
         },
         {
             "type":"script",

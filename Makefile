@@ -89,9 +89,10 @@ translate-upgrade:
 py-module-gen:
 	rm -rf hbud-env
 	python3 -m venv hbud-env
+	hbud-env/bin/python3 -m pip install --upgrade pip
 	hbud-env/bin/python3 -m pip install azapi srt mediafile pydbus pyacoustid musicbrainzngs pyicu ordered-set nuitka
 	hbud-env/bin/python3 -m pip freeze > requirements.txt
-	tools/flatpak-pip-gen.py --runtime='org.gnome.Sdk//43' -r='requirements.txt' --output pypi-dependencies
+	tools/flatpak-pip-gen.py --runtime='org.gnome.Sdk//45' -r='requirements.txt' --output pypi-dependencies
 
 
 clean:

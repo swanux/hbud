@@ -70,7 +70,7 @@ class Main(frontend.UI):
             if self.player.id+1 > len(self.playlist)-1: self.reorderer(self.player.id, 0)
             else: self.reorderer(self.player.id, self.player.id+1)
         elif name == "fullscreen" and self.useMode == "video": self.on_karaoke_activate(0)
-        elif name == "playpause" and self.player.url: self.on_playBut_clicked(0)
+        elif name == "playpause" and self.player.url[self.player.nowIn]: self.on_playBut_clicked(0)
         elif name == "search" and self.settings.get_boolean("minimal-mode") is False and self.useMode == "audio":
             self.on_dropped("key")
         elif name == "open": self.on_openFolderBut_clicked(None)
@@ -322,9 +322,9 @@ class Main(frontend.UI):
         for i in widList:
             GLib.idle_add(self.window._main_stack._sup_box.append, i)
         num = 0
-        if self.player.url is not None:
+        if self.player.url[self.player.nowIn] is not None:
             for item in self.playlist:
-                if item["uri"] == self.player.url: break
+                if item["uri"] == self.player.url[self.player.nowIn]: break
                 else: num += 1
             self.player.id = num
         self.toolClass.themer(self.provider, self.window, self.color, self.player.id)
@@ -462,10 +462,10 @@ class Main(frontend.UI):
                         if name == "modular" and i == self.ednum: self.window._main_stack._sup_box.insert_child_after(trBox, self.playlist[i-1]["widget"])
                     if name != "modular" and trBox is not None: widList.append(trBox)
                 if name != "modular" and name != "append":
-                    if self.player.url is not None:
+                    if self.player.url[self.player.nowIn] is not None:
                         num = 0
                         for item in self.playlist:
-                            if item["uri"] == self.player.url: break
+                            if item["uri"] == self.player.url[self.player.nowIn]: break
                             else: num += 1
                         self.player.id = num
                     self.toolClass.themer(self.provider, self.window, self.color, self.player.id)
@@ -547,7 +547,7 @@ class Main(frontend.UI):
             try: self.player.engines[self.player.nowIn].set_state(Gst.State.PAUSED)
             except: print("Not pausing")
         self.player.id = -1
-        self.player.url = None
+        self.player.url[self.player.nowIn] = None
         self.load_cover(None, self.window._background)
         self.toolClass.themer(self.provider, self.window, self.color, self.player.id)
 
@@ -757,7 +757,7 @@ class Main(frontend.UI):
         else:
             if mode == "mpris" or mode == "blur":
                 if self.player.nowIn == "video": return
-                url = self.player.url
+                url = self.player.url[self.player.nowIn]
             else: url = mode
             if url is not None:
                 uuid = hashlib.md5(GLib.path_get_basename(url).encode()).hexdigest()
@@ -940,7 +940,7 @@ class Main(frontend.UI):
 
     def subdone(self, args, misc=False):
         if misc is False:
-            data = self.local_sub(self.player.url)
+            data = self.local_sub(self.player.url[self.player.nowIn])
             if data is not None: self.subtitle_dict.append({"index" : "none", "lang" : "local", "content" : data})
         else:
             print(args)
@@ -982,7 +982,7 @@ class Main(frontend.UI):
         GLib.idle_add(self.window._sub_track.set_sensitive, False)
         self.subtitle_dict = []
         subber = futures.ThreadPoolExecutor(max_workers=4)
-        submitted = subber.submit(self.extract_sub, self.player.url, [])
+        submitted = subber.submit(self.extract_sub, self.player.url[self.player.nowIn], [])
         submitted.add_done_callback(self.subdone)
 
     def local_sub(self, videofile):
@@ -1012,9 +1012,9 @@ class Main(frontend.UI):
         GLib.idle_add(self.window._slider.clear_marks)
         GLib.idle_add(self.window._main_stack._overlay_scale.clear_marks)
         if "/" in misc:
-            self.player.url, self.player.nowIn = misc, "video"
+            self.player.url["video"], self.player.nowIn = misc, "video"
         elif self.clickedE is not False and self.useMode == "video":
-            self.player.url, self.player.nowIn = self.clickedE[0].get_path().replace("file://", ""), "video"
+            self.player.url["video"], self.player.nowIn = self.clickedE[0].get_path().replace("file://", ""), "video"
         elif misc == "continue":
             if self.useMode == "audio":
                 if self.player.engines["audio"].get_state(1)[1] == Gst.State.NULL: return
@@ -1024,7 +1024,7 @@ class Main(frontend.UI):
                 self.player.nowIn = "video"
                 GLib.idle_add(self.draw_chapters)
         else:
-            self.player.url, self.player.nowIn = self.playlist[self.player.id]["uri"], "audio"
+            self.player.url["audio"], self.player.nowIn = self.playlist[self.player.id]["uri"], "audio"
             if self.player.id == -1: return
         print("Play")
         self.player.resume, self.player.playing, self.toolClass.position = True, True, 0
@@ -1039,11 +1039,7 @@ class Main(frontend.UI):
         if misc != "continue":
             if self.useMode == "video": self.chapters = {}
             self.player.engines[self.player.nowIn].set_state(Gst.State.NULL)
-            if "https" not in misc:
-                self.player.engines[self.player.nowIn].set_property("uri", Gst.filename_to_uri(self.player.url))
-            else:
-                self.player.engines[self.player.nowIn].set_property("uri", misc)
-                self.player.engines[self.player.nowIn].set_property("suburi", misc2)
+            self.player.engines[self.player.nowIn].set_property("uri", Gst.filename_to_uri(self.player.url[self.player.nowIn]))
         self.player.engines[self.player.nowIn].set_state(Gst.State.PLAYING)
         GLib.idle_add(self.window._play_but.set_icon_name, "media-playback-pause")
         GLib.timeout_add(500, self.updateSlider)
@@ -1150,7 +1146,7 @@ class Main(frontend.UI):
                 self.window._slider.add_mark(i/Gst.SECOND, 2)
                 self.window._main_stack._overlay_scale.add_mark(i/Gst.SECOND, 2)
             x, y = self.window.get_default_size()
-            self.window.set_default_size(x+1, y+1)
+            GLib.timeout_add(50, self.window.set_default_size, x+1, y+1)
             GLib.idle_add(self.window.set_default_size, x, y)
     
     def _on_notify(self, emitter, param):
@@ -1179,13 +1175,13 @@ class Main(frontend.UI):
     def on_off_but_clicked(self, _):
         self.sub._off_spin.update()
         self.toolClass.offset = int(self.sub._off_spin.get_value())
-        f = MediaFile(self.player.url)
+        f = MediaFile(self.player.url[self.player.nowIn])
         f.offset = self.toolClass.offset
         f.save()
         self.sub.set_focus(None)
 
     def on_correct_lyr(self, _):
-        f = MediaFile(self.player.url)
+        f = MediaFile(self.player.url[self.player.nowIn])
         f.lyrics = self.tmp_lyric
         f.save()
         GLib.idle_add(self.sub._sub_stackhead.hide)
@@ -1213,8 +1209,8 @@ class Main(frontend.UI):
                     if ".srt" in i or ".txt" in i:
                         neo_dbnow.append(f"{self.folderPath}/misc/{i}")
                 self.sub.set_title(f'{track} - {artist}')
-                tmp = os.path.splitext(self.player.url)[0]
-                neo_tmp = os.path.splitext(GLib.path_get_basename(self.player.url))[0]
+                tmp = os.path.splitext(self.player.url[self.player.nowIn])[0]
+                neo_tmp = os.path.splitext(GLib.path_get_basename(self.player.url[self.player.nowIn]))[0]
                 if f"{tmp}.srt" not in dbnow and f"{self.folderPath}/misc/{neo_tmp}.srt" not in neo_dbnow:
                     GLib.idle_add(self.sub._off_but.hide)
                     GLib.idle_add(self.sub._off_lab.hide)
@@ -1230,7 +1226,7 @@ class Main(frontend.UI):
                         GLib.idle_add(self.sub._sub_stackhead.hide)
                     else:
                         try:
-                            f = MediaFile(self.player.url)
+                            f = MediaFile(self.player.url[self.player.nowIn])
                             lyric = f.lyrics
                             print(lyric)
                             if lyric != "":
@@ -1248,7 +1244,7 @@ class Main(frontend.UI):
                     GLib.idle_add(self.sub._off_but.show)
                     GLib.idle_add(self.sub._off_lab.show)
                     GLib.idle_add(self.sub._off_spin.show)
-                    f = MediaFile(self.player.url)
+                    f = MediaFile(self.player.url[self.player.nowIn])
                     try:
                         field = MediaField(MP3DescStorageStyle(u'offset'), StorageStyle(u'offset'))
                         f.add_field(u'offset', field)

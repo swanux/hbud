@@ -7,7 +7,7 @@ from gi.repository import Gtk, Gdk, GLib, Gst
 
 class Player():
     def __init__(self, video_widget):
-        self.url = None
+        self.url = {"audio":None, "video":None}
         self.id = -1
         self.nowIn = None
         self.resume = False
@@ -63,7 +63,6 @@ class Tools():
             }
             scale mark indicator {
                 min-height: 7px;
-                min-width: 2px;
                 color: %s;
             }
             scale marks.top {

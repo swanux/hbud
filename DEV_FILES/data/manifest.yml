@@ -1,6 +1,6 @@
 app-id: io.github.swanux.hbud
 runtime: org.gnome.Platform
-runtime-version: '44'
+runtime-version: '45'
 sdk: org.gnome.Sdk
 command: hbud
 sdk-extensions:
@@ -45,8 +45,8 @@ modules:
       - install -Dm755 target/release/libgstgtk4.so -t /app/lib/gstreamer-1.0
     sources:
     - type: archive
-      url: https://github.com/swanux/hbud/releases/download/v0.4.2/gtk4paintablesink_230309.tar.xz
-      sha256: a9e23356b6df9d2b25046fee782a70318f749fc0ac6a0b8daa81257b208ed11f
+      url: https://github.com/swanux/hbud/releases/download/v0.4.2/gtk4paintablesink_231216.tar.xz
+      sha256: 801f967bc76f06025c1a77c80b7a6d0b28c6975469ff9ff382c1918dac126ce5
 
   - name: io.github.swanux.hbud
     buildsystem: simple

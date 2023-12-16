@@ -189,12 +189,10 @@
                                   <object class="GtkButton" id="_ofo_but">
                                     <property name="icon-name">folder-open</property>
                                     <property name="can-focus">False</property>
-                                    <!-- <style><class name="flat"/></style> -->
                                   </object>
                                 </child>
                                 <child>
                                   <object class="GtkBox">
-                                    <!-- <style><class name="linked"/></style> -->
                                     <property name="homogeneous">True</property>
                                     <property name="hexpand">True</property>
                                     <property name="margin-start">7</property>
@@ -233,7 +231,6 @@
                                       <object class="GtkButton" id="_shuff_but">
                                         <property name="icon-name">media-playlist-shuffle</property>
                                         <property name="can-focus">False</property>
-                                        <!-- <style><class name="flat"/></style> -->
                                       </object>
                                     </child>
                                   </object>
@@ -251,7 +248,6 @@
                                         <property name="icon-name">media-view-subtitles-symbolic</property>
                                         <property name="sensitive">False</property>
                                         <property name="direction">up</property>
-                                        <!-- <style><class name="flat"/></style> -->
                                         <property name="popover">
                                           <object class="GtkPopover"></object>
                                         </property>

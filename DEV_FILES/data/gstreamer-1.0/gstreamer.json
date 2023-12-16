@@ -67,53 +67,9 @@
         {
             "type": "git",
             "url": "https://gitlab.freedesktop.org/gstreamer/gstreamer.git",
-            "tag": "1.20.5",
-            "commit": "f7806a854aad960eae3288db4a67a574f92428fe",
+            "tag": "1.22.7",
+            "commit": "4d13eddc8b6d3f42ba44682ba42048acf170547f",
             "disable-submodules": true
-        },
-        {
-            "type": "patch",
-            "path": "gst-libav-stop-caching-codecs.patch"
-        },
-        {
-            "type": "patch",
-            "path": "gst-plugins-base-autodetect-subtitle-text-encoding.patch"
-        },
-        {
-            "type": "patch",
-            "path": "gst-plugins-base-do-not-set-backbuffer.patch"
-        },
-        {
-            "type": "patch",
-            "path": "gst-plugins-base-glupload-filter-formats.patch"
-        },
-        {
-            "type": "patch",
-            "path": "gst-plugins-base-do-not-use-drm-modifiers-on-desktop.patch"
-        },
-        {
-            "type": "patch",
-            "path": "gst-plugins-good-matroska-fix-attachments-detection.patch"
-        },
-        {
-            "type": "patch",
-            "path": "gst-plugins-good-matroska-support-seek-nearest-keyframe.patch"
-        },
-        {
-            "type": "patch",
-            "path": "gst-plugins-bad-dashdemux-sidx-range-download.patch"
-        },
-        {
-            "type": "patch",
-            "path": "gst-plugins-bad-dashdemux-improve-initial-representation-selection.patch"
-        },
-        {
-            "type": "patch",
-            "path": "gst-plugins-bad-mpdparser-fix-missing-uri-query.patch"
-        },
-        {
-            "type": "patch",
-            "path": "gst-plugins-bad-workaround-playbin2-missing-videometa.patch"
         }
     ]
 }
